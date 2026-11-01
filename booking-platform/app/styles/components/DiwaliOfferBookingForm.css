@@ -115,6 +115,79 @@
   letter-spacing: -0.01em;
 }
 
+/* Spotlight Discount Highlight Card matching media_1793545767944_e6f822fb.jpg */
+.diw-discount-highlight-card {
+  background: rgba(28, 10, 16, 0.45);
+  border: 1.5px dashed rgba(232, 185, 67, 0.55);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.diw-discount-badge-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.diw-discount-big {
+  font-size: 19px;
+  font-weight: 900;
+  color: #E8B943;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+.diw-discount-tagline {
+  font-size: 11px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.diw-discount-info-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.diw-discount-min {
+  font-size: 10.5px;
+  color: #E8D9CF;
+  line-height: 1.2;
+}
+
+.diw-discount-min strong {
+  color: #FFFFFF;
+}
+
+.diw-coupon-pill-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.diw-coupon-pill {
+  background: #E8B943;
+  color: #19171C;
+  font-family: monospace;
+  font-weight: 900;
+  font-size: 11.5px;
+  padding: 2.5px 8px;
+  border-radius: 4px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
 /* Spotlight Date-Lock Box */
 .diw-date-lock-card {
   background: rgba(26, 10, 16, 0.62);

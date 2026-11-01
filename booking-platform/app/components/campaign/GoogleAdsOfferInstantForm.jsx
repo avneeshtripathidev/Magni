@@ -327,13 +327,13 @@ export default function GoogleAdsOfferInstantForm() {
           transition={{ type: 'spring', damping: 28, stiffness: 380 }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* 1. WINE RED PROMOTIONAL HERO BANNER (60% GOOGLE ADS OFFER FORM) */}
+          {/* 1. WINE RED PROMOTIONAL HERO BANNER MATCHING media_1793545767944_e6f822fb.jpg */}
           <div className="diw-promo-header">
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
-                <span>🪔</span>
-                <span>VALID ONLY UNTIL DIWALI!</span>
+                <span>🎁</span>
+                <span>EXCLUSIVE DIWALI OFFER</span>
               </div>
 
               <button
@@ -346,19 +346,17 @@ export default function GoogleAdsOfferInstantForm() {
               </button>
             </div>
 
-            {/* Headline */}
-            <h2 className="diw-title">Your Dream Event Starts Here!</h2>
-
-            {/* Spotlight Date-Lock Box */}
-            <div className="diw-date-lock-card">
-              <div className="diw-lock-info-col">
-                <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
-                <span className="diw-lock-headline">Lock Your Event Booking at Just ₹2,499</span>
+            {/* Discount Highlight Spotlight Card */}
+            <div className="diw-discount-highlight-card">
+              <div className="diw-discount-badge-col">
+                <span className="diw-discount-big">10% EXTRA OFF</span>
+                <span className="diw-discount-tagline">YOUR EVENT BOOKING!</span>
               </div>
-              <div className="diw-lock-price-badge">
-                <span className="diw-lock-original-price">₹10,000</span>
-                <span className="diw-lock-current-price">₹2,499</span>
-                <span className="diw-lock-price-lbl">DATE LOCK</span>
+              <div className="diw-discount-info-col">
+                <span className="diw-discount-min">On bookings worth <strong>₹10,000 or more.</strong></span>
+                <div className="diw-coupon-pill-wrap">
+                  <span className="diw-coupon-pill">DIW100</span>
+                </div>
               </div>
             </div>
           </div>
@@ -366,36 +364,7 @@ export default function GoogleAdsOfferInstantForm() {
           {!isSuccess ? (
             /* 2. WARM IVORY FORM BODY */
             <div className="diw-form-body">
-              {/* Triple Discount Showcase Grid */}
-              <div className="diw-triple-discount-wrap">
-                <div className="diw-triple-discount-header">
-                  <span>SAVE UP TO 65%</span>
-                </div>
-                <div className="diw-triple-cards-grid">
-                  {/* Card 1: Package Offer */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">PACKAGE OFFER</span>
-                    <span className="diw-triple-val">45%–50% OFF</span>
-                    <span className="diw-triple-lbl">Event Booking</span>
-                  </div>
-
-                  {/* Card 2: Diwali Special (Highlighted) */}
-                  <div className="diw-triple-card diw-triple-card-featured">
-                    <span className="diw-triple-pill diw-pill-gold">DIWALI SPECIAL 🪔</span>
-                    <span className="diw-triple-val diw-val-gold">+10% EXTRA</span>
-                    <span className="diw-triple-lbl diw-lbl-gold">Code: DIW100</span>
-                  </div>
-
-                  {/* Card 3: Welcome Gift */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">WELCOME GIFT 🎁</span>
-                    <span className="diw-triple-val">+5% FIRST OFF</span>
-                    <span className="diw-triple-lbl">1st Booking Bonus</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 3 Black Boxes removed as requested */}
+              {/* Note: 3 black trust boxes removed as requested: 'only this sectoin remove from here' */}
 
               {/* Enquiry Form */}
               <form className="diw-form" onSubmit={handleSubmitLead}>
@@ -518,7 +487,7 @@ export default function GoogleAdsOfferInstantForm() {
                   className="diw-submit-btn"
                   disabled={isSubmitting}
                 >
-                  <span>{isSubmitting ? 'Securing Your Offer & Date...' : 'Unlock My Offer & Lock Date →'}</span>
+                  <span>{isSubmitting ? 'Securing Your Diwali Gift...' : 'CLAIM MY DIWALI GIFT →'}</span>
                 </button>
               </form>
             </div>

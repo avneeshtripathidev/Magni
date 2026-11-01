@@ -331,13 +331,13 @@ export default function DiwaliOfferBookingForm() {
           transition={{ type: 'spring', damping: 28, stiffness: 380 }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* 1. WINE RED PROMOTIONAL HERO BANNER */}
+          {/* 1. WINE RED PROMOTIONAL HERO BANNER MATCHING media_1793545767944_e6f822fb.jpg */}
           <div className="diw-promo-header">
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
-                <span>🪔</span>
-                <span>VALID ONLY UNTIL DIWALI!</span>
+                <span>🎁</span>
+                <span>EXCLUSIVE DIWALI OFFER</span>
               </div>
 
               <button
@@ -350,19 +350,17 @@ export default function DiwaliOfferBookingForm() {
               </button>
             </div>
 
-            {/* Headline */}
-            <h2 className="diw-title">Your Dream Event Starts Here!</h2>
-
-            {/* Spotlight Date-Lock Card */}
-            <div className="diw-date-lock-card">
-              <div className="diw-lock-info-col">
-                <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
-                <span className="diw-lock-headline">Lock Your Event Booking at Just ₹2,499</span>
+            {/* Discount Highlight Spotlight Card */}
+            <div className="diw-discount-highlight-card">
+              <div className="diw-discount-badge-col">
+                <span className="diw-discount-big">10% EXTRA OFF</span>
+                <span className="diw-discount-tagline">YOUR EVENT BOOKING!</span>
               </div>
-              <div className="diw-lock-price-badge">
-                <span className="diw-lock-original-price">₹10,000</span>
-                <span className="diw-lock-current-price">₹2,499</span>
-                <span className="diw-lock-price-lbl">DATE LOCK</span>
+              <div className="diw-discount-info-col">
+                <span className="diw-discount-min">On bookings worth <strong>₹10,000 or more.</strong></span>
+                <div className="diw-coupon-pill-wrap">
+                  <span className="diw-coupon-pill">{settings.couponCode || 'DIW100'}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -370,34 +368,7 @@ export default function DiwaliOfferBookingForm() {
           {!isSuccess ? (
             /* 2. WARM IVORY FORM BODY */
             <div className="diw-form-body">
-              {/* Triple Discount Showcase Grid */}
-              <div className="diw-triple-discount-wrap">
-                <div className="diw-triple-discount-header">
-                  <span>SAVE UP TO 65%</span>
-                </div>
-                <div className="diw-triple-cards-grid">
-                  {/* Card 1: Package Offer */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">PACKAGE OFFER</span>
-                    <span className="diw-triple-val">45%–50% OFF</span>
-                    <span className="diw-triple-lbl">Event Booking</span>
-                  </div>
-
-                  {/* Card 2: Diwali Special (Highlighted) */}
-                  <div className="diw-triple-card diw-triple-card-featured">
-                    <span className="diw-triple-pill diw-pill-gold">DIWALI SPECIAL 🪔</span>
-                    <span className="diw-triple-val diw-val-gold">+10% EXTRA</span>
-                    <span className="diw-triple-lbl diw-lbl-gold">Code: {settings.couponCode || 'DIW100'}</span>
-                  </div>
-
-                  {/* Card 3: Welcome Gift */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">WELCOME GIFT 🎁</span>
-                    <span className="diw-triple-val">+5% FIRST OFF</span>
-                    <span className="diw-triple-lbl">1st Booking Bonus</span>
-                  </div>
-                </div>
-              </div>
+              {/* Note: 3 black trust boxes removed as requested: 'only this sectoin remove from here' */}
 
               {/* Enquiry Form */}
               <form className="diw-form" onSubmit={handleSubmit}>
@@ -448,28 +419,25 @@ export default function DiwaliOfferBookingForm() {
                       value={formData.eventType}
                       onChange={(e) => handleInputChange('eventType', e.target.value)}
                     >
-                      <option value="Wedding Ceremony">Wedding Ceremony</option>
+                      <option value="Wedding">Wedding</option>
                       <option value="Birthday Party">Birthday Party</option>
                       <option value="Engagement / Roka">Engagement / Roka</option>
                       <option value="Corporate Event">Corporate Event</option>
                       <option value="Anniversary Celebration">Anniversary Celebration</option>
                       <option value="Private House Party">Private House Party</option>
-                      <option value="Cocktail & Sundowner">Cocktail & Sundowner</option>
-                      <option value="Sufi / Ghazal Night">Sufi / Ghazal Night</option>
-                      <option value="Bhajan / Devotional">Bhajan / Devotional</option>
                       <option value="Other">Other</option>
                     </select>
                   </div>
 
                   <div className="diw-form-group">
                     <label htmlFor="diw-city">
-                      Event City / Location <span className="req">*</span>
+                      Event City <span className="req">*</span>
                     </label>
                     <input
                       id="diw-city"
                       type="text"
                       required
-                      placeholder="Enter city / location"
+                      placeholder="Enter your city"
                       value={formData.location}
                       className={errors.location ? 'diw-input-err' : ''}
                       onChange={(e) => handleInputChange('location', e.target.value)}
@@ -497,7 +465,7 @@ export default function DiwaliOfferBookingForm() {
 
                   <div className="diw-form-group">
                     <label htmlFor="diw-budget">
-                      Estimated Event Budget <span className="req">*</span>
+                      Estimated Booking Budget <span className="req">*</span>
                     </label>
                     <select
                       id="diw-budget"
@@ -521,7 +489,7 @@ export default function DiwaliOfferBookingForm() {
                   className="diw-submit-btn"
                   disabled={isSubmitting}
                 >
-                  <span>{isSubmitting ? 'Securing Your Offer & Date...' : 'Unlock My Offer & Lock Date →'}</span>
+                  <span>{isSubmitting ? 'Securing Your Diwali Gift...' : 'CLAIM MY DIWALI GIFT →'}</span>
                 </button>
               </form>
             </div>
