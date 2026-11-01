@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
 import { buildEmailTemplate, row, buildSection, parseDevice } from '@/app/services/api/contact.service.js';
 import { sendAdminWhatsAppNotification } from '@/app/services/api/whatsapp.service.js';
+import { extractClientIp, extractLocality } from '@/app/utils/visitorExtractor.js';
 export const dynamic = 'force-dynamic';
 
 function getSupabaseAdmin() {
@@ -43,12 +44,7 @@ export async function POST(req) {
     const userAgent = req.headers.get('user-agent') || data.userAgent || '';
     const deviceStr = parseDevice(userAgent, data.deviceType || data.device);
     
-    let clientIp = 
-      req.headers.get('cf-connecting-ip') ||
-      req.headers.get('x-real-ip') ||
-      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      data.ip ||
-      '';
+    const clientIp = extractClientIp(req, data.ip);
 
     const supabase = getSupabaseAdmin();
 
@@ -106,13 +102,43 @@ export async function POST(req) {
     let latitude = data.latitude ? parseFloat(data.latitude) : null;
     let longitude = data.longitude ? parseFloat(data.longitude) : null;
     let detectedLocation = data.detectedLocation || data.detected_location || '';
+    let city = data.city || '';
+    let region = data.region || data.state || '';
+    let country = data.country || '';
+    let isp = data.isp || '';
+
+    // Server-side Geolocation fallback if client geolocation was blocked by ad-blocker or missed
+    if ((!city || !latitude || !detectedLocation) && clientIp && clientIp !== '127.0.0.1' && clientIp !== '::1' && !clientIp.startsWith('::ffff:127.0.0.1')) {
+      try {
+        const locality = await extractLocality(req, clientIp);
+        if (locality) {
+          if (!city && locality.city) city = locality.city;
+          if (!region && locality.region) region = locality.region;
+          if (!country && locality.country) country = locality.country;
+          if (!latitude && locality.latitude) latitude = locality.latitude;
+          if (!longitude && locality.longitude) longitude = locality.longitude;
+          if (!isp && locality.isp) isp = locality.isp;
+          if (!detectedLocation) {
+            const parts = [city, region, country].filter(Boolean);
+            if (parts.length > 0) detectedLocation = parts.join(', ');
+          }
+        }
+      } catch (locErr) {
+        console.warn('[ContactAPI] Geolocation resolution warning:', locErr);
+      }
+    }
+
     if (!detectedLocation && data.location) detectedLocation = data.location;
-    if (!detectedLocation && data.city) detectedLocation = data.city;
+    if (!detectedLocation && city) detectedLocation = city;
 
     // Mutate data object for email template
     data.latitude = latitude;
     data.longitude = longitude;
     data.detectedLocation = detectedLocation;
+    data.city = city;
+    data.region = region;
+    data.country = country;
+    data.isp = isp;
     data.ipAddress = clientIp || 'unknown';
     data.device = deviceStr;
 
