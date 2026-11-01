@@ -41,14 +41,11 @@ export default function GoogleAdsOfferInstantForm() {
   const searchParams = useSearchParams();
   const hasFiredViewRef = useRef(false);
 
-  // Geolocation detection
+  // Geolocation detection (stored for attribution metadata, no auto-prefill in city field)
   useEffect(() => {
     getSilentLocationIfGranted().then(geo => {
       if (geo && geo.success) {
         setGeoData({ latitude: geo.latitude, longitude: geo.longitude, detectedLocation: geo.detectedLocation });
-        if (geo.city || geo.detectedLocation) {
-          setFormData(prev => ({ ...prev, location: prev.location || geo.city || geo.detectedLocation }));
-        }
       }
     });
   }, []);

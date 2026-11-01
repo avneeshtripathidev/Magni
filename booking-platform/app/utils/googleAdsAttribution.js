@@ -60,7 +60,7 @@ export function isGoogleAdsTraffic() {
     const isPaidMedium = /cpc|ppc|paid|google_ad|paidsearch|ad/i.test(utmMedium);
     const isGooglePaid = utmSource.includes('google') && isPaidMedium;
 
-    if (hasAdClickId || isGooglePaid) {
+    if (hasAdClickId || isGooglePaid || params.get('offer') === 'true' || params.get('variant') === 'offer') {
       return true;
     }
 
@@ -102,7 +102,8 @@ export function getGoogleAdsFormVariant() {
     // 2. QA / Debug override via URL parameters
     const params = new URLSearchParams(window.location.search);
     const variantParam = (params.get('form_variant') || params.get('variant') || '').toLowerCase();
-    if (variantParam === 'offer' || variantParam === 'offer_form') {
+    const isExplicitOffer = params.get('offer') === 'true' || params.get('offer') === '1' || variantParam === 'offer' || variantParam === 'offer_form';
+    if (isExplicitOffer) {
       sessionStorage.setItem(STORAGE_KEY_GADS_VARIANT, 'offer_form');
       return 'offer_form';
     }
@@ -133,7 +134,15 @@ export function getGoogleAdsFormVariant() {
  */
 export function isGoogleAdsOfferEligible() {
   if (typeof window === 'undefined') return false;
-  return isGoogleAdsTraffic() && getGoogleAdsFormVariant() === 'offer_form';
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const hash = window.location.hash;
+    const isExplicitOffer = params.get('offer') === 'true' || params.get('offer') === '1' || params.get('variant') === 'offer' || hash === '#offer' || hash === '#lock-booking';
+    if (isExplicitOffer) return true;
+    return isGoogleAdsTraffic() && getGoogleAdsFormVariant() === 'offer_form';
+  } catch (e) {
+    return false;
+  }
 }
 
 /**

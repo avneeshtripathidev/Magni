@@ -159,20 +159,20 @@ export default function LeadCaptureModal() {
     }
 
     window.addEventListener('open-lead-capture', handleOpen)
-    window.addEventListener('open-quick-booking', handleOpen)
 
-    // Open automatically on website arrival after 2.2 seconds if not previously dismissed in this session
     if (typeof window !== 'undefined') {
       const hash = window.location.hash
       const search = window.location.search
-      if (hash === '#offers' || hash === '#book-99' || hash === '#lead-capture' || search.includes('open=offers')) {
-        setIsOpen(true)
+      // If campaign offer is explicitly active, suppress lead capture
+      if (!search.includes('offer=true') && !search.includes('variant=offer') && hash !== '#offer' && hash !== '#lock-booking') {
+        if (hash === '#offers' || hash === '#book-99' || hash === '#lead-capture' || search.includes('open=offers')) {
+          setIsOpen(true)
+        }
       }
     }
 
     return () => {
       window.removeEventListener('open-lead-capture', handleOpen)
-      window.removeEventListener('open-quick-booking', handleOpen)
     }
   }, [])
 

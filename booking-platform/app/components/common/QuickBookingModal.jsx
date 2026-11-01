@@ -17,7 +17,17 @@ export default function QuickBookingModal() {
   const pathname = usePathname()
 
   useEffect(() => {
-    const handleOpen = () => setIsOpen(true)
+    const handleOpen = () => {
+      // If user came via an explicit offer link or offer is active, route to the offer form
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('offer') === 'true' || params.get('variant') === 'offer' || window.location.hash === '#offer') {
+          window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
+          return;
+        }
+      }
+      setIsOpen(true);
+    };
     window.addEventListener('open-quick-booking', handleOpen)
     window.addEventListener('open-token-booking', handleOpen)
     window.addEventListener('open-instant-form', handleOpen)
@@ -27,6 +37,10 @@ export default function QuickBookingModal() {
       if (typeof window !== 'undefined') {
         const hash = window.location.hash
         const search = window.location.search
+        // If an offer is explicitly active, do not open QuickBookingModal
+        if (search.includes('offer=true') || search.includes('variant=offer') || hash === '#offer' || hash === '#lock-booking') {
+          return
+        }
         if (
           hash === '#book-99' ||
           hash === '#instant-form' ||
@@ -59,25 +73,12 @@ export default function QuickBookingModal() {
     }
   }, [])
 
-  // Auto-open mandatory form once per tab/session:
-  // Home page timing is 6 seconds (6000ms), other pages timing is 4 seconds (4000ms)
+  // QuickBookingModal is exclusively user-initiated (via button clicks or explicit #quick-booking anchor)
+  // Auto-open is disabled to prevent intrusive popups under every condition
   useEffect(() => {
-    if (hasAutoOpenedInCurrentTab) return
-    // Respect 60/40 allocation: suppress generic modal only if Google Ads user is in the 60% offer group;
-    // the 40% control group and ALL organic/direct visitors receive this normal instant form.
-    if (isGoogleAdsOfferEligible()) return
-
-    const delay = 3000 // 3 seconds optimal conversion delay
-
-    const autoOpenTimer = setTimeout(() => {
-      if (!hasAutoOpenedInCurrentTab) {
-        setIsOpen(true)
-        hasAutoOpenedInCurrentTab = true
-      }
-    }, delay)
-
-    return () => {
-      clearTimeout(autoOpenTimer)
+    // Suppress QuickBookingModal whenever any campaign/offer is active
+    if (isGoogleAdsOfferEligible()) {
+      setIsOpen(false);
     }
   }, [pathname])
 
