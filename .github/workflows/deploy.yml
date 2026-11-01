@@ -22,17 +22,16 @@ jobs:
       - name: Test Booking Platform Before Release
         working-directory: booking-platform
         run: |
-          npm install --prefer-offline --no-audit
+          npm install --legacy-peer-deps --no-audit --prefer-offline
           npm test
 
       - name: Test Admin Portal Before Release
         working-directory: admin-portal
         run: |
-          npm install --prefer-offline --no-audit
+          npm install --legacy-peer-deps --no-audit --prefer-offline
           npm test
 
       - name: Deployment Gatekeeper Passed
         run: |
           echo "🎉 All Automated Tests, Security Audits, and Campaign Validations Passed!"
           echo "Ready for zero-downtime production deployment."
-
