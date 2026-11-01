@@ -382,6 +382,7 @@ export default function DiwaliOfferBookingForm() {
                       type="text"
                       required
                       placeholder="Enter your name"
+                      autoComplete="off"
                       value={formData.name}
                       className={errors.name ? 'diw-input-err' : ''}
                       onChange={(e) => handleInputChange('name', e.target.value)}
@@ -398,6 +399,7 @@ export default function DiwaliOfferBookingForm() {
                       type="tel"
                       required
                       placeholder="Enter mobile number"
+                      autoComplete="off"
                       value={formData.phone}
                       className={errors.phone ? 'diw-input-err' : ''}
                       onChange={(e) => {
@@ -438,6 +440,7 @@ export default function DiwaliOfferBookingForm() {
                       type="text"
                       required
                       placeholder="Enter your city"
+                      autoComplete="off"
                       value={formData.location}
                       className={errors.location ? 'diw-input-err' : ''}
                       onChange={(e) => handleInputChange('location', e.target.value)}

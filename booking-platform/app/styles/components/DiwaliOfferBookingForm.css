@@ -373,6 +373,47 @@
 }
 
 @media (max-width: 600px) {
+  .diw-modal-card {
+    max-width: calc(100vw - 20px) !important;
+    border-radius: 20px !important;
+    margin: auto !important;
+  }
+
+  .diw-promo-header {
+    padding: 14px 14px 12px !important;
+  }
+
+  .diw-discount-highlight-card {
+    padding: 8px 12px !important;
+    gap: 10px !important;
+  }
+
+  .diw-discount-big {
+    font-size: 15px !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+  }
+
+  .diw-discount-tagline {
+    font-size: 9.5px !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .diw-discount-min {
+    font-size: 9.5px !important;
+    line-height: 1.2 !important;
+  }
+
+  .diw-coupon-pill {
+    font-size: 11px !important;
+    padding: 2.5px 7px !important;
+  }
+
+  .diw-form-body {
+    padding: 14px 14px 18px !important;
+  }
+
   .diw-form-grid {
     grid-template-columns: 1fr;
     gap: 8px;
