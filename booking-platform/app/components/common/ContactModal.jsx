@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { bookingService } from '@/app/services/bookingService'
 import { validateName, validateEmail, validatePhone } from '@helpers/validation';
 import { getUserGeolocation, getCachedGeolocation, getSilentLocationIfGranted } from '@/app/utils/geolocation'
+import { isGoogleAdsOfferEligible } from '@/app/utils/googleAdsAttribution'
 import '@/app/styles/components/ContactModal.css'
 
 export default function ContactModal() {
@@ -40,6 +41,17 @@ export default function ContactModal() {
       const artist = e.detail?.artist || null;
       const plan = e.detail?.pricingPlan || null;
       const service = e.detail?.service || null;
+
+      // Route general booking clicks according to 60/40 Google Ads split:
+      // 60% Google Ads visitors receive the new form; other every person receives the instant form.
+      if (!artist && !plan && !service && (type === 'booking' || type === 'offer')) {
+        if (isGoogleAdsOfferEligible()) {
+          window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
+        } else {
+          window.dispatchEvent(new CustomEvent('open-quick-booking'));
+        }
+        return;
+      }
 
       setFormType(type);
       setInitialArtist(artist);
@@ -289,7 +301,7 @@ function InnerContactForm({ formType, initialArtist, initialPlan, initialService
       <div className="lux-form-row">
         <div className="lux-form-group">
           <label htmlFor="modal-name">Name</label>
-          <input id="modal-name" name="name" type="text" required placeholder="e.g. Arjun Sharma" value={formData.name} onChange={handleChange} autoComplete="name" />
+          <input id="modal-name" name="name" type="text" required placeholder="e.g. Avneesh Tripathi" value={formData.name} onChange={handleChange} autoComplete="name" />
         </div>
         <div className="lux-form-group">
           <label htmlFor="modal-phone">Phone no.</label>

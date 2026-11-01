@@ -118,7 +118,7 @@ export default function EventForm({ copyToClipboard, setSubmitted }) {
             <input
               id="evt-name"
               name="name"
-              type="text" required placeholder="e.g. Arjun Sharma"
+              type="text" required placeholder="e.g. Avneesh Tripathi"
               value={formData.name}
               onChange={handleChange}
               autoComplete="name"

@@ -1,0 +1,699 @@
+/* ==============================================================================
+   GOOGLE ADS OFFER INSTANT FORM (DEDICATED CAMPAIGN COMPONENT)
+   Minimalist Luxury Design — Magnevents Official Burgundy (#7E3044) & White
+   ============================================================================== */
+
+.gao-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.gao-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 10, 14, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 1;
+}
+
+/* Minimalist Luxury Modal Card */
+.gao-modal-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 490px;
+  margin: auto;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: radial-gradient(ellipse 120% 70% at 50% -15%, rgba(126, 48, 68, 0.48) 0%, rgba(35, 31, 38, 0.98) 55%, #19171b 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  padding: 24px 22px 20px;
+  box-shadow: 
+    0 30px 90px rgba(0, 0, 0, 0.85),
+    0 0 35px rgba(126, 48, 68, 0.28),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  box-sizing: border-box;
+}
+
+/* Ambient Burgundy Top Glow */
+.gao-ambient-glow {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 120px;
+  background: radial-gradient(ellipse at 50% 20%, rgba(126, 48, 68, 0.45) 0%, rgba(228, 95, 96, 0.12) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header Top Bar */
+.gao-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.gao-offer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(126, 48, 68, 0.35);
+  border: 1px solid rgba(228, 95, 96, 0.45);
+  border-radius: 100px;
+  font-size: clamp(9px, 2.4vw, 10.5px);
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px rgba(126, 48, 68, 0.25);
+  max-width: calc(100% - 46px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gao-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.gao-close-btn:hover {
+  background: rgba(126, 48, 68, 0.4);
+  border-color: rgba(228, 95, 96, 0.6);
+  color: #FFFFFF;
+  transform: scale(1.05);
+}
+
+/* Campaign Headline & Copy */
+.gao-title {
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 12px 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.gao-subtitle {
+  font-size: 12px;
+  color: rgba(245, 240, 233, 0.72);
+  margin: 0 0 14px 0;
+  line-height: 1.45;
+}
+
+/* Minimalist Offer Spotlight Strip */
+.gao-spotlight-card {
+  background: linear-gradient(135deg, rgba(126, 48, 68, 0.28) 0%, rgba(41, 39, 42, 0.6) 100%);
+  border: 1px solid rgba(228, 95, 96, 0.35);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.gao-spotlight-left {
+  flex: 1;
+}
+
+.gao-spotlight-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #E45F60;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.gao-spotlight-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.3;
+}
+
+.gao-spotlight-desc {
+  font-size: 10px;
+  color: rgba(245, 240, 233, 0.68);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+.gao-spotlight-price {
+  text-align: right;
+  flex-shrink: 0;
+  background: rgba(126, 48, 68, 0.35);
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(228, 95, 96, 0.35);
+}
+
+.gao-price-orig {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: line-through;
+  margin-bottom: 1px;
+}
+
+.gao-price-now {
+  font-size: 18px;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.gao-price-label {
+  font-size: 8.5px;
+  color: #D8C4B7;
+  font-weight: 700;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Minimalist Trust Features Row */
+.gao-props-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+/* ==============================================================================
+   TRIPLE DISCOUNT STACK SHOWCASE
+   45%-50% Event Offer + 10% Extra Diwali Offer + 5% First Booking Discount
+   ============================================================================== */
+.gao-triple-discounts {
+  background: linear-gradient(180deg, rgba(126, 48, 68, 0.28) 0%, rgba(35, 31, 38, 0.72) 100%);
+  border: 1px solid rgba(232, 185, 67, 0.35);
+  border-radius: 14px;
+  padding: 10px 10px 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+.gao-triple-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #E8B943;
+}
+
+.gao-triple-icon {
+  font-size: 11px;
+}
+
+.gao-discounts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.gao-discount-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 7px 3px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.gao-card-badge {
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #D8C4B7;
+  margin-bottom: 3px;
+  white-space: nowrap;
+}
+
+.gao-card-badge.festive {
+  background: rgba(232, 185, 67, 0.18);
+  color: #E8B943;
+  border: 1px solid rgba(232, 185, 67, 0.35);
+}
+
+.gao-card-badge.welcome {
+  background: rgba(228, 95, 96, 0.18);
+  color: #E45F60;
+  border: 1px solid rgba(228, 95, 96, 0.35);
+}
+
+.gao-card-pct {
+  font-size: clamp(12px, 2.7vw, 14.5px);
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.1;
+  margin: 2px 0 2px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.gao-card-diwali .gao-card-pct {
+  color: #E8B943;
+  text-shadow: 0 0 10px rgba(232, 185, 67, 0.35);
+}
+
+.gao-card-first .gao-card-pct {
+  color: #FFFFFF;
+}
+
+.gao-card-desc {
+  font-size: clamp(8px, 1.9vw, 9.5px);
+  color: rgba(245, 240, 233, 0.72);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.gao-card-diwali {
+  background: linear-gradient(135deg, rgba(126, 48, 68, 0.52) 0%, rgba(232, 185, 67, 0.15) 100%);
+  border: 1px solid rgba(232, 185, 67, 0.45);
+  box-shadow: 0 2px 10px rgba(126, 48, 68, 0.3);
+}
+
+.gao-card-first {
+  background: linear-gradient(135deg, rgba(228, 95, 96, 0.22) 0%, rgba(41, 39, 42, 0.6) 100%);
+  border: 1px solid rgba(228, 95, 96, 0.35);
+}
+
+.gao-prop-item {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.gao-prop-item span.icon {
+  font-size: 11px;
+}
+
+/* Form Styles */
+.gao-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gao-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+@media (max-width: 500px) {
+  .gao-form-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+}
+
+.gao-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gao-form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+
+.gao-form-group label span.req {
+  color: #E45F60;
+  margin-left: 2px;
+}
+
+.gao-form-group input,
+.gao-form-group select {
+  width: 100%;
+  padding: 9.5px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.gao-form-group input:focus,
+.gao-form-group select:focus {
+  border-color: #E45F60;
+  box-shadow: 0 0 0 3px rgba(126, 48, 68, 0.35);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.gao-form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 12px;
+}
+
+.gao-form-group select option {
+  background: #1F1B24;
+  color: #FFFFFF;
+}
+
+.gao-input-err {
+  border-color: #EF4444 !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+.gao-err-msg {
+  font-size: 10.5px;
+  color: #F87171;
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+/* Primary CTA Button — Burgundy & White Luxury Touch */
+.gao-submit-btn {
+  width: 100%;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #7E3044 0%, #A03752 50%, #7E3044 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 
+    0 8px 24px rgba(126, 48, 68, 0.42),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 4px;
+}
+
+.gao-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  background: linear-gradient(135deg, #8E2B43 0%, #B83A58 50%, #8E2B43 100%);
+  box-shadow: 
+    0 12px 30px rgba(126, 48, 68, 0.58),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.gao-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Secondary CTA & WhatsApp */
+.gao-secondary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.gao-secondary-btn {
+  flex: 1;
+  padding: 8.5px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.gao-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+.gao-wa-btn {
+  background: rgba(37, 211, 102, 0.08);
+  border-color: rgba(37, 211, 102, 0.25);
+  color: #25D366;
+}
+
+.gao-wa-btn:hover {
+  background: rgba(37, 211, 102, 0.16);
+  color: #25D366;
+}
+
+/* Trust Signals Footer */
+.gao-trust-footer {
+  text-align: center;
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.42);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ==============================================================================
+   SCREEN 2: QUALIFIED LEAD & ADVANCE DATE-LOCK PAYMENT FLOW
+   ============================================================================== */
+
+.gao-success-pass {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 14px;
+  margin: 14px 0;
+  text-align: left;
+}
+
+.gao-pass-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.gao-ref-badge {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 800;
+  color: #FFFFFF;
+  background: rgba(126, 48, 68, 0.25);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(228, 95, 96, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gao-copy-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+}
+
+.gao-pass-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  font-size: 11px;
+}
+
+.gao-pass-item span.lbl {
+  color: rgba(255, 255, 255, 0.45);
+  display: block;
+  font-size: 9.5px;
+  text-transform: uppercase;
+}
+
+.gao-pass-item span.val {
+  color: #FFFFFF;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+/* Advance Booking Lock Box */
+.gao-advance-box {
+  background: linear-gradient(135deg, rgba(126, 48, 68, 0.25) 0%, rgba(35, 31, 38, 0.8) 100%);
+  border: 1.5px solid rgba(228, 95, 96, 0.35);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.gao-advance-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gao-advance-desc {
+  font-size: 11.5px;
+  color: rgba(245, 240, 233, 0.8);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.gao-advance-terms {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.gao-advance-terms li {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  line-height: 1.35;
+}
+
+.gao-advance-terms li::before {
+  content: '✓';
+  color: #E45F60;
+  font-weight: 800;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.gao-pay-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #7E3044 0%, #A03752 50%, #7E3044 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(126, 48, 68, 0.45);
+  transition: all 0.2s ease;
+}
+
+.gao-pay-btn:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  background: linear-gradient(135deg, #8E2B43 0%, #B83A58 50%, #8E2B43 100%);
+  box-shadow: 0 12px 30px rgba(126, 48, 68, 0.6);
+}
+
+.gao-pay-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Confirmed Date Pass */
+.gao-confirmed-card {
+  text-align: center;
+  padding: 14px 6px;
+}
+
+.gao-confirmed-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(126, 48, 68, 0.25);
+  border: 2px solid #E45F60;
+  color: #FFFFFF;
+  font-size: 26px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  box-shadow: 0 0 25px rgba(126, 48, 68, 0.4);
+}

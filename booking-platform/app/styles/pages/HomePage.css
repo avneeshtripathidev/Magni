@@ -3923,7 +3923,7 @@
   transition: all 0.4s var(--ease-premium);
   display: flex;
   flex-direction: column;
-  height: 410px;
+  height: 470px;
 }
 
 .hp-feat-card-v2:hover {
@@ -7219,76 +7219,86 @@
   .hp-sw-stats-row {
     display: flex;
     align-items: center;
-    gap: 13px;
-    margin-top: 0;
+    gap: 14px;
+    margin-top: 28px;
     user-select: none;
     flex-wrap: wrap;
   }
 
   .hp-sw-stat-card {
-    background: rgba(30, 27, 35, 0.92);
-    border: 1px solid rgba(216, 196, 183, 0.2);
-    border-radius: 16px;
-    padding: 12px 22px;
+    background: linear-gradient(135deg, rgba(42, 33, 41, 0.72) 0%, rgba(26, 21, 28, 0.82) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    border-radius: 16px !important;
+    padding: 10px 20px !important;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 114px;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    min-width: 110px;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    box-shadow: 
+      0 6px 20px rgba(0, 0, 0, 0.35), 
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
   }
 
   .hp-sw-stat-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(232, 185, 67, 0.5);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
+    transform: translateY(-2px) !important;
+    border-color: rgba(232, 185, 67, 0.45) !important;
+    background: linear-gradient(135deg, rgba(50, 40, 49, 0.82) 0%, rgba(34, 27, 36, 0.92) 100%) !important;
+    box-shadow: 
+      0 12px 30px rgba(0, 0, 0, 0.5), 
+      0 0 16px rgba(232, 185, 67, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   }
 
   .hp-sw-stat-val {
-    font-size: 22px;
-    font-weight: 800;
-    color: #FFFFFF;
-    line-height: 1.15;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    letter-spacing: -0.01em;
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #FAF7F2 !important;
+    line-height: 1.15 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    letter-spacing: -0.01em !important;
+    text-shadow: none !important;
   }
 
   .hp-sw-stat-star {
-    color: #FFD152;
-    font-size: 19px;
-    filter: drop-shadow(0 0 6px rgba(255, 209, 82, 0.45));
+    color: #E8B943 !important;
+    font-size: 16px !important;
+    filter: none !important;
   }
 
   .hp-sw-stat-accent-blue {
-    color: #D4E4FF;
-    text-shadow: 0 0 12px rgba(180, 210, 255, 0.4);
+    color: #FAF7F2 !important;
+    text-shadow: none !important;
   }
 
   .hp-sw-stat-accent-purple {
-    color: #E4E9FF;
-    text-shadow: 0 0 12px rgba(200, 215, 255, 0.4);
+    color: #FAF7F2 !important;
+    text-shadow: none !important;
   }
 
   .hp-sw-stat-lbl {
-    font-size: 10.5px;
-    font-weight: 800;
-    color: #FFA291;
-    letter-spacing: 0.09em;
-    margin-top: 5px;
-    text-transform: uppercase;
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    color: #D8C4B7 !important;
+    letter-spacing: 0.08em !important;
+    margin-top: 4px !important;
+    text-transform: uppercase !important;
+    opacity: 0.88 !important;
   }
 
   /* ======================================================== */
   /* RIGHT: LIVE SOUNDCHECK PASS CARD (WINE RED + ROSE STONE) */
   /* ======================================================== */
   .hp-sw-artist-showcase-card {
-    width: 506px;
-    max-width: 530px;
+    width: 545px;
+    max-width: 570px;
     flex-shrink: 0;
     background: 
       linear-gradient(#29272A, #29272A) padding-box, 

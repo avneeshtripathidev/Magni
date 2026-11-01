@@ -118,7 +118,7 @@ export default function EventRegistrationPage() {
                     <input
                       id="evtpg-name"
                       name="name"
-                      type="text" required placeholder="e.g. Arjun Sharma"
+                      type="text" required placeholder="e.g. Avneesh Tripathi"
                       value={formData.name}
                       onChange={handleChange}
                       autoComplete="name"

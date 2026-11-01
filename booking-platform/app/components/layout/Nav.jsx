@@ -130,8 +130,9 @@ export default function Nav() {
                 }
               }}
               aria-label="Register as an Artist"
-            >
-              Register
+             aria-label="Are you an Artist? Join Magnevents">
+              <span className="cta-long-text">Are you an Artist?</span>
+              <span className="cta-short-text">Are you an Artist?</span>
             </button>
 
             <button aria-label="Toggle navigation menu" className={`lux-hamburger ${menuOpen ? 'is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>

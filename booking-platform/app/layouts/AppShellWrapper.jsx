@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Nav from '@/app/components/layout/Nav';
+import TopOfferAnnouncementStrip from '@/app/components/layout/TopOfferAnnouncementStrip';
 import BottomNav from '@/app/components/layout/BottomNav';
 import Footer from '@/app/components/common/Footer';
 import { useMouseGlow } from '@/app/hooks/useMouseGlow';
@@ -36,6 +37,7 @@ export function AppShellWrapper({ children }) {
       
       {!hideChrome && (
         <div id="unified-header" className="unified-header-container">
+          <TopOfferAnnouncementStrip />
           <Nav />
         </div>
       )}

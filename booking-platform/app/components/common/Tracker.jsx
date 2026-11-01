@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { captureAndPersistGoogleAdsAttribution } from '@/app/utils/googleAdsAttribution';
 
 export default function Tracker() {
   const pathname = usePathname();
@@ -9,6 +10,7 @@ export default function Tracker() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    captureAndPersistGoogleAdsAttribution();
 
     // Skip analytics tracking if running in localhost / local development
     if (

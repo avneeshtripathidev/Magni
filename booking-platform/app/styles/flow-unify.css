@@ -64,7 +64,7 @@
 }
 
 .flow-unify-shell .page-enter.has-nav-offset {
-  padding-top: var(--nav-height, 68px);
+  padding-top: calc(var(--nav-height, 68px) + var(--top-strip-height, 0px));
 }
 
 @media (max-width: 768px) {

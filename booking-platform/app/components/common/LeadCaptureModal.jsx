@@ -964,7 +964,7 @@ function MinimalBookingForm({ currentCard, onSelectEvent, onClose }) {
             setFormData(prev => ({ ...prev, name: e.target.value }))
             if (errorMsg) setErrorMsg('')
           }}
-          placeholder="Your Full Name (e.g. Rahul Sharma)"
+          placeholder="Your Full Name (e.g. Avneesh Tripathi)"
           style={{
             width: '100%',
             height: '46px',

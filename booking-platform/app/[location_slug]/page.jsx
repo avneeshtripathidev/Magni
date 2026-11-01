@@ -27,7 +27,12 @@ export default async function LocationServicePage({ params }) {
   const rawSlug = decodeURIComponent(awaitedParams.location_slug || '').trim();
   const location_slug = rawSlug.toLowerCase().replace(/[\s_]+/g, '-').replace(/\/+$/, '');
   
-  const validKeywords = ['singer', 'band', 'dj', 'comedian', 'anchor', 'dancer', 'magician', 'guitarist', 'music', 'artist', 'ghazal', 'gazal', 'sufi', 'gig'];
+  const validKeywords = [
+    'singer', 'band', 'dj', 'comedian', 'anchor', 'dancer', 'magician', 
+    'guitarist', 'music', 'musician', 'artist', 'ghazal', 'gazal', 'sufi', 
+    'gig', 'entertainment', 'packages', 'sangeet', 'mehndi', 'acoustic', 
+    'corporate', 'wedding', 'party', 'function', 'reception', 'engagement'
+  ];
   const isValidKeyword = validKeywords.some(kw => location_slug.includes(kw));
 
   const majorCities = [
@@ -72,7 +77,10 @@ export default async function LocationServicePage({ params }) {
   if (slugLower.includes('ghazal') || slugLower.includes('gazal')) parsedSubCategory = 'Gazals';
   else if (slugLower.includes('sufi')) parsedSubCategory = 'Sufi';
   else if (slugLower.includes('sangeet')) parsedSubCategory = 'Sangeet';
-  else if (slugLower.includes('wedding')) parsedSubCategory = 'Wedding';
+  else if (slugLower.includes('mehndi')) parsedSubCategory = 'Mehndi';
+  else if (slugLower.includes('corporate') || slugLower.includes('office') || slugLower.includes('gala') || slugLower.includes('function')) parsedSubCategory = 'Corporate';
+  else if (slugLower.includes('acoustic')) parsedSubCategory = 'Acoustic';
+  else if (slugLower.includes('wedding') || slugLower.includes('reception') || slugLower.includes('engagement') || slugLower.includes('shaadi')) parsedSubCategory = 'Wedding';
   else if (slugLower.includes('retro')) parsedSubCategory = 'Retro';
   else if (slugLower.includes('punjabi')) parsedSubCategory = 'Punjabi';
   else if (slugLower.includes('bollywood')) parsedSubCategory = 'Bollywood';

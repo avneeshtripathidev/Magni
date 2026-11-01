@@ -49,25 +49,7 @@ export default function PricingPage() {
   return (
     <main className="pricing-pg">
       <div className="pricing-shell">
-        <header className="pricing-header">
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="pricing-title"
-          >
-            Book Top Singers <br />
-            <span className="accent-text">Starting At Just ...</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="pricing-subtitle"
-          >
-            Select the perfect ensemble to elevate your event. From intimate whispers to <br />
-            grand stadium energy
-          </motion.p>
-        </header>
+        <h1 className="sr-only">Live Artist Pricing & Packages</h1>
 
         <div className="pricing-grid">
           {loading ? (

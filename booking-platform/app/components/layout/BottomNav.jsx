@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { HomeIcon, ArtistsIcon, PhoneIcon, AIIcon, PricingIcon } from '@/app/components/icons/NavigationIcons';
+import { HomeIcon, ArtistsIcon, FormIcon, AIIcon, PricingIcon } from '@/app/components/icons/NavigationIcons';
 import '@/app/styles/components/BottomNav.css';
 
 function Tab({ path, icon, label, isActive, isHighlight = false, badgeText = null, badgeBg = null, onClick = null }) {
@@ -69,16 +69,16 @@ export default function BottomNav() {
         {/* Artists */}
         <Tab path="/artists" icon={(c) => <ArtistsIcon color={c} size={22} />} label="Artists" isActive={active('/artists')} />
 
-        {/* Center FAB — Book */}
+        {/* Center FAB — Instant Form / Book */}
         <div className="bnav-fab-slot">
           <button
             type="button"
             className="bnav-fab"
             onClick={handleOpenContact}
-            aria-label="Book Now"
+            aria-label="Instant Booking Form"
           >
             <span className="bnav-fab-ring" />
-            <PhoneIcon color="#fff" size={20} />
+            <FormIcon color="#fff" size={20} />
             <span className="bnav-fab-label">BOOK</span>
           </button>
         </div>

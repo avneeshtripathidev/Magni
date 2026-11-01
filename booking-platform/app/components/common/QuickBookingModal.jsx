@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { validateName, validatePhone } from '@helpers/validation'
 import { bookingService } from '@/app/services/bookingService'
 import { getSilentLocationIfGranted } from '@/app/utils/geolocation'
+import { isGoogleAdsTraffic, isGoogleAdsOfferEligible, getGoogleAdsFormVariant } from '@/app/utils/googleAdsAttribution'
 import '@/app/styles/components/ContactModal.css'
 
 // Module-scoped flag: isolated to each individual browser tab's JavaScript runtime
@@ -62,9 +63,11 @@ export default function QuickBookingModal() {
   // Home page timing is 6 seconds (6000ms), other pages timing is 4 seconds (4000ms)
   useEffect(() => {
     if (hasAutoOpenedInCurrentTab) return
+    // Respect 60/40 allocation: suppress generic modal only if Google Ads user is in the 60% offer group;
+    // the 40% control group and ALL organic/direct visitors receive this normal instant form.
+    if (isGoogleAdsOfferEligible()) return
 
-    const isHomePage = !pathname || pathname === '/' || pathname === ''
-    const delay = isHomePage ? 6000 : 4000
+    const delay = 3000 // 3 seconds optimal conversion delay
 
     const autoOpenTimer = setTimeout(() => {
       if (!hasAutoOpenedInCurrentTab) {
@@ -594,7 +597,7 @@ function InnerQuickBookingForm({ onClose }) {
               id="qb-name" 
               type="text" 
               required 
-              placeholder="e.g. Arjun Sharma" 
+              placeholder="e.g. Avneesh Tripathi" 
               value={formData.name} 
               onChange={(e) => {
                 setFormData({ ...formData, name: e.target.value })

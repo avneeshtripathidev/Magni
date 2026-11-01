@@ -608,7 +608,7 @@ export default function SEOLandingHero({
                           <input
                             id="h-tok-name"
                             type="text"
-                            placeholder="e.g. Rahul Sharma"
+                            placeholder="e.g. Avneesh Tripathi"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="hero-tok99-input"

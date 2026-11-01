@@ -1,4 +1,5 @@
 import { getCachedGeolocation } from '../utils/geolocation';
+import { getGoogleAdsAttribution } from '../utils/googleAdsAttribution';
 
 const budgetMap = {
   '5k_10k': '₹5,000 - ₹10,000',
@@ -163,7 +164,14 @@ const enrichFormData = (formData = {}) => {
     formLink: formLink || pageUrl,
     referrer,
     keywords: keywords || formData?.eventType || 'Live Artist Booking',
-    utm_source: utmSource || null,
+    utm_source: utmSource || getGoogleAdsAttribution()?.utm_source || null,
+    gclid: formData?.gclid || getGoogleAdsAttribution()?.gclid || null,
+    gbraid: formData?.gbraid || getGoogleAdsAttribution()?.gbraid || null,
+    wbraid: formData?.wbraid || getGoogleAdsAttribution()?.wbraid || null,
+    utm_content: formData?.utm_content || getGoogleAdsAttribution()?.utm_content || null,
+    utm_term: formData?.utm_term || getGoogleAdsAttribution()?.utm_term || null,
+    campaign_id: formData?.campaignId || formData?.campaign_id || null,
+    campaign_name: formData?.campaignName || formData?.campaign_name || null,
     utm_medium: utmMedium || null,
     utm_campaign: utmCampaign || null,
     latitude: formData?.latitude || cachedGeo?.latitude || null,

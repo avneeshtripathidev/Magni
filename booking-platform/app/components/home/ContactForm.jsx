@@ -82,7 +82,7 @@ export default function ContactForm() {
       <div className="hp-form-row">
         <div className="hp-form-field">
           <label>Full Name *</label>
-          <input type="text" name="name" value={form.name} onChange={handle} placeholder="Your full name" required />
+          <input type="text" name="name" value={form.name} onChange={handle} placeholder="e.g. Avneesh Tripathi" required />
         </div>
         <div className="hp-form-field">
           <label>Phone Number *</label>

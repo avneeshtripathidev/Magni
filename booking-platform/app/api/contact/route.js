@@ -96,6 +96,7 @@ export async function POST(req) {
     if (deviceStr) notesArray.push(`Device: ${deviceStr}`);
     if (data.keywords) notesArray.push(`Keywords: ${data.keywords}`);
     if (data.formName || data.formType) notesArray.push(`Source Form: ${data.formName || data.formType}`);
+    if (data.formVariant || data.form_variant) notesArray.push(`Form Variant: ${data.formVariant || data.form_variant}`);
 
     let extraNotes = notesArray.join('\n') || 'No additional notes.';
 
@@ -163,7 +164,18 @@ export async function POST(req) {
       source_form: data.formName || data.formType || 'Website Form',
       utm_source: data.utm_source || null,
       utm_medium: data.utm_medium || null,
-      utm_campaign: data.utm_campaign || null
+      utm_campaign: data.utm_campaign || null,
+      reference_code: data.referenceCode || null,
+      gclid: data.gclid || null,
+      gbraid: data.gbraid || null,
+      wbraid: data.wbraid || null,
+      utm_content: data.utm_content || null,
+      utm_term: data.utm_term || null,
+      campaign_id: data.campaignId || data.campaign_id || null,
+      campaign_name: data.campaignName || data.campaign_name || null,
+      advance_amount: data.advanceAmount ? Number(data.advanceAmount) : null,
+      payment_status: data.paymentStatus || 'unpaid',
+      form_variant: data.formVariant || data.form_variant || null
     };
 
     if (data.selectedArtist && data.selectedArtist.id) {

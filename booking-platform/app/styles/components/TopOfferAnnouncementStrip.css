@@ -1,0 +1,198 @@
+/* ==============================================================================
+   DIWALI OFFER TOP ANNOUNCEMENT STRIP
+   Understated Luxury Dark Palette: Subtle Dark Wine (#1C151B) & Champagne (#E8B943)
+   Clean, refined, non-distracting header banner
+   ============================================================================== */
+
+.top-offer-strip-root {
+  width: 100%;
+  height: 38px;
+  background: linear-gradient(90deg, #181318 0%, #231720 50%, #181318 100%);
+  color: #E6DFD7;
+  position: relative;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.top-offer-strip-root:hover {
+  background: linear-gradient(90deg, #1D171D 0%, #2B1C27 50%, #1D171D 100%);
+  border-bottom-color: rgba(232, 185, 67, 0.25);
+}
+
+.top-offer-strip-inner {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Left Offer Message */
+.top-offer-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #DDD4CA;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-offer-left span.gift-icon {
+  font-size: 14px;
+  line-height: 1;
+  display: inline-block;
+  opacity: 0.9;
+}
+
+.top-offer-desktop-msg {
+  display: inline;
+}
+
+.top-offer-mobile-msg {
+  display: none;
+}
+
+.top-offer-left span.highlight-gold {
+  color: #E8B943;
+  font-weight: 600;
+}
+
+/* Right Coupon Tag & CTA */
+.top-offer-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #DDD4CA;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.top-offer-label {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: #A39A92;
+  font-weight: 500;
+}
+
+.top-offer-coupon-tag {
+  color: #E8B943;
+  background: rgba(232, 185, 67, 0.12);
+  border: 1px solid rgba(232, 185, 67, 0.35);
+  font-family: monospace;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  line-height: 1.25;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-offer-strip-root:hover .top-offer-coupon-tag {
+  background: rgba(232, 185, 67, 0.2);
+  border-color: rgba(232, 185, 67, 0.55);
+  color: #F5D382;
+}
+
+.top-offer-arrow {
+  color: #A39A92;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.top-offer-strip-root:hover .top-offer-arrow {
+  transform: translateX(3px);
+  color: #E8B943;
+}
+
+/* ==============================================================================
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   ============================================================================== */
+
+@media (max-width: 768px) {
+  .top-offer-strip-root {
+    height: 34px;
+    padding: 0 10px;
+  }
+
+  .top-offer-strip-inner {
+    padding: 0 4px;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .top-offer-desktop-msg {
+    display: none;
+  }
+
+  .top-offer-mobile-msg {
+    display: inline;
+  }
+
+  .top-offer-left {
+    font-size: 11.5px;
+    gap: 6px;
+  }
+
+  .top-offer-left span.gift-icon {
+    font-size: 12px;
+  }
+
+  .top-offer-right {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .top-offer-label {
+    font-size: 10px;
+  }
+
+  .top-offer-coupon-tag {
+    font-size: 10.5px;
+    padding: 1.5px 6px;
+  }
+
+  .top-offer-arrow {
+    font-size: 11.5px;
+  }
+}
+
+/* Very Small Mobile Screens (<= 420px) */
+@media (max-width: 420px) {
+  .top-offer-label {
+    display: none; /* Hide "USE CODE:" to save critical space */
+  }
+
+  .top-offer-left {
+    font-size: 11px;
+  }
+
+  .top-offer-coupon-tag {
+    font-size: 10px;
+    padding: 1.5px 5px;
+  }
+}

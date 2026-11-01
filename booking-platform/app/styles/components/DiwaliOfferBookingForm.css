@@ -1,0 +1,467 @@
+/* ==============================================================================
+   PREMIUM DIWALI PROMOTIONAL POPUP
+   Warm Ivory Modal Canvas (#FAF7F2) + Luxury Wine Red Banner (#7E3044)
+   Marigold Highlights (#E8B943) + Brand Coral CTA (#E45F60) + Soft Charcoal (#29272A)
+   ============================================================================== */
+
+.diw-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.diw-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 12, 17, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1;
+}
+
+/* Modal Card Surface: Warm Ivory Background with Rounded Corners */
+.diw-modal-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 505px;
+  margin: auto;
+  max-height: calc(100vh - 28px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #FAF7F2;
+  border: 1.5px solid rgba(126, 48, 68, 0.28);
+  border-radius: 24px;
+  box-shadow: 
+    0 30px 90px rgba(0, 0, 0, 0.75), 
+    0 0 35px rgba(126, 48, 68, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #29272A;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ==============================================================================
+   1. WINE RED PROMOTIONAL HERO BANNER (TOP SECTION)
+   ============================================================================== */
+
+.diw-promo-header {
+  background: linear-gradient(135deg, #7E3044 0%, #5E1F2F 100%);
+  padding: 16px 20px 16px;
+  color: #FFFFFF;
+  position: relative;
+  border-bottom: 2px solid #E8B943;
+}
+
+.diw-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.diw-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(232, 185, 67, 0.65);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #E8B943;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.diw-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.diw-close-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.06);
+}
+
+/* Main Heading (Elegant Serif) */
+.diw-title {
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(20px, 4vw, 24px);
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 4px 0 12px;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+}
+
+/* Spotlight Date-Lock Box */
+.diw-date-lock-card {
+  background: rgba(26, 10, 16, 0.62);
+  border: 1px solid rgba(232, 185, 67, 0.45);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+}
+
+.diw-lock-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.diw-lock-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #E8B943;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.diw-lock-headline {
+  font-size: 14px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.25;
+}
+
+.diw-lock-price-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(232, 185, 67, 0.5);
+  border-radius: 10px;
+  padding: 5px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 80px;
+  text-align: center;
+}
+
+.diw-lock-original-price {
+  font-size: 10px;
+  color: #D8C4B7;
+  text-decoration: line-through;
+  line-height: 1;
+}
+
+.diw-lock-current-price {
+  font-size: 17px;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.15;
+  margin: 2px 0 1px;
+}
+
+.diw-lock-price-lbl {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #FFA291;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ==============================================================================
+   2. WARM IVORY FORM BODY (BOTTOM SECTION)
+   ============================================================================== */
+
+.diw-form-body {
+  background: #FAF7F2;
+  padding: 14px 18px 18px;
+}
+
+/* Triple Discount Showcase Grid */
+.diw-triple-discount-wrap {
+  background: rgba(126, 48, 68, 0.05);
+  border: 1px solid rgba(126, 48, 68, 0.18);
+  border-radius: 14px;
+  padding: 9px 10px;
+  margin-bottom: 14px;
+}
+
+.diw-triple-discount-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #7E3044;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.diw-triple-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.diw-triple-card {
+  background: #FFFFFF;
+  border: 1px solid #E2D7CF;
+  border-radius: 10px;
+  padding: 7px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.diw-triple-card-featured {
+  background: linear-gradient(135deg, #FFFDF8 0%, #FFF5EC 100%);
+  border: 1.5px solid #E8B943;
+  box-shadow: 0 4px 12px rgba(232, 185, 67, 0.22);
+}
+
+.diw-triple-pill {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #7A6F68;
+  background: #F0EAE3;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.diw-pill-gold {
+  color: #8C5808;
+  background: rgba(232, 185, 67, 0.25);
+  border: 1px solid rgba(232, 185, 67, 0.5);
+}
+
+.diw-triple-val {
+  font-size: 13.5px;
+  font-weight: 900;
+  color: #29272A;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.diw-val-gold {
+  color: #9C2740;
+  font-size: 14px;
+}
+
+.diw-triple-lbl {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #8C827A;
+  margin-top: 3px;
+}
+
+.diw-lbl-gold {
+  color: #7E3044;
+  font-weight: 800;
+  font-family: monospace;
+}
+
+/* Form Layout & Fields */
+.diw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.diw-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .diw-form-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .diw-hide-mobile {
+    display: none !important;
+  }
+}
+
+.diw-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.diw-form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #29272A;
+  letter-spacing: 0.01em;
+}
+
+.diw-form-group label span.req {
+  color: #E45F60;
+  margin-left: 2px;
+}
+
+.diw-form-group input,
+.diw-form-group select {
+  width: 100%;
+  padding: 8.5px 11px;
+  background: #FFFFFF;
+  border: 1.5px solid #D8C4B7;
+  border-radius: 10px;
+  color: #1F1B24;
+  font-size: 12.5px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.diw-form-group select {
+  font-size: 11.5px;
+  padding-right: 20px;
+  cursor: pointer;
+}
+
+.diw-form-group input::placeholder {
+  color: #8C827A;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.diw-form-group input:focus,
+.diw-form-group select:focus {
+  border-color: #E45F60;
+  box-shadow: 0 0 0 3px rgba(228, 95, 96, 0.18);
+  background: #FFFFFF;
+}
+
+.diw-input-err {
+  border-color: #EF4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.diw-err-msg {
+  font-size: 10px;
+  color: #DC2626;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+/* ==============================================================================
+   PRIMARY CORAL CTA BUTTON (#E45F60)
+   ============================================================================== */
+
+.diw-submit-btn {
+  width: 100%;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #E45F60 0%, #D65050 100%);
+  border: none;
+  border-radius: 12px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 
+    0 8px 24px rgba(228, 95, 96, 0.35), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 4px;
+}
+
+.diw-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: 0 12px 30px rgba(228, 95, 96, 0.45);
+  background: linear-gradient(135deg, #EB7273 0%, #E45F60 100%);
+}
+
+.diw-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ==============================================================================
+   SUCCESS STATE CONFIRMATION
+   ============================================================================== */
+
+.diw-success-card {
+  text-align: center;
+  padding: 24px 20px;
+  background: #FAF7F2;
+}
+
+.diw-success-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1.5px solid #10B981;
+  color: #10B981;
+  font-size: 26px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.diw-success-pass {
+  background: #FFFFFF;
+  border: 1.5px solid rgba(232, 185, 67, 0.5);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: left;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.diw-success-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.diw-success-grid span.lbl {
+  color: #665E58;
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.diw-success-grid span.val {
+  color: #29272A;
+  font-weight: 700;
+}

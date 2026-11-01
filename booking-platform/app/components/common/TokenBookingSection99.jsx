@@ -282,7 +282,7 @@ export default function TokenBookingSection99({
                           name="name"
                           type="text"
                           required
-                          placeholder="e.g. Rahul Sharma"
+                          placeholder="e.g. Avneesh Tripathi"
                           value={formData.name}
                           onChange={handleChange}
                           className="tok99-input"

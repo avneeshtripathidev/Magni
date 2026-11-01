@@ -231,7 +231,7 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
               cursor: 'pointer'
             }}
           >
-            Register as Artist
+            Are you an Artist?
           </button>
 
           {showiOSGuide && (

@@ -45,3 +45,5 @@ helpers/scripts/
 *.xlsx
 *.csv
 *.tsv
+
+scratch/

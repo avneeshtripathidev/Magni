@@ -289,11 +289,35 @@ export default function HeroSection() {
               </a>
             </div>
 
+            {/* 7. PRESTIGIOUS ACHIEVEMENTS & MILESTONES ROW */}
+            <div className="hp-sw-stats-row">
+              <div className="hp-sw-stat-card">
+                <div className="hp-sw-stat-val">
+                  <span className="hp-sw-stat-star">★</span> 4.9
+                </div>
+                <div className="hp-sw-stat-lbl">2,500+ REVIEWS</div>
+              </div>
+
+              <div className="hp-sw-stat-card">
+                <div className="hp-sw-stat-val">
+                  1,500+
+                </div>
+                <div className="hp-sw-stat-lbl">VERIFIED ARTISTS</div>
+              </div>
+
+              <div className="hp-sw-stat-card">
+                <div className="hp-sw-stat-val">
+                  100%
+                </div>
+                <div className="hp-sw-stat-lbl">ARRIVAL GUARANTEE</div>
+              </div>
+            </div>
+
           </div>
 
           {/* RIGHT: INTERACTIVE LIVE SOUNDCHECK PASS CARD (DESKTOP) */}
           <div className="hp-sw-artist-showcase-card">
-            <div className="hp-sw-card-img-wrap" style={{ height: '410px' }}>
+            <div className="hp-sw-card-img-wrap" style={{ height: '470px' }}>
               {HERO_SPOTLIGHT_SLIDES.map((slideSrc, sIdx) => (
                 <div
                   key={typeof slideSrc === 'string' ? slideSrc : sIdx}
@@ -316,6 +340,21 @@ export default function HeroSection() {
                   />
                 </div>
               ))}
+            </div>
+
+            {/* Achievement Footer Bar (Slim, Compact Live Status) */}
+            <div className="hp-sw-card-footer" style={{ background: '#1E1B23', padding: '9px 16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '9px', width: '100%' }}>
+                <span style={{ display: 'inline-flex', width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', flexShrink: 0 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ color: '#F5F0E9', fontSize: '12.5px', fontWeight: '800', letterSpacing: '0.02em' }}>
+                    Artists Soundchecking Now
+                  </span>
+                  <span style={{ color: '#D8C4B7', fontSize: '11px', fontWeight: '500', opacity: 0.85 }}>
+                    • Available for Tonight&apos;s House Parties &amp; Events
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 

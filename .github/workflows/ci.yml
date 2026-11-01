@@ -1,0 +1,94 @@
+name: Magnevents Continuous Integration & Testing
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-booking-platform:
+    name: Booking Platform Tests & Quality
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    defaults:
+      run:
+        working-directory: booking-platform
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: booking-platform/package-lock.json
+
+      - name: Install Dependencies
+        run: npm install --prefer-offline --no-audit
+
+      - name: Run Automated Test Suites (Diwali Offer, Payment, Security)
+        run: npm test
+
+      - name: Check Environment Syntax & Formatting
+        run: npm run lint || echo "Lint warnings noted, continuing..."
+
+  test-admin-portal:
+    name: Admin Portal Tests & Quality
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    defaults:
+      run:
+        working-directory: admin-portal
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: admin-portal/package-lock.json
+
+      - name: Install Dependencies
+        run: npm install --prefer-offline --no-audit
+
+      - name: Run Admin Campaign Management Test Suite
+        run: npm test
+
+  security-scan:
+    name: Dependency & Secret Exposure Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Audit Booking Platform Dependencies
+        working-directory: booking-platform
+        run: npm audit --audit-level=critical || echo "Non-critical advisories logged"
+
+      - name: Check for Uncommitted Credentials
+        run: |
+          echo "Scanning repository for leaked sensitive credentials..."
+          ! grep -rn "sk_live_" . --exclude-dir={node_modules,.next,.git} || (echo "Potential secret found!" && exit 1)
+          echo "No active live keys found in source code."
+

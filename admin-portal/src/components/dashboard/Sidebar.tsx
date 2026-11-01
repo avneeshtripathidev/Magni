@@ -24,7 +24,9 @@ import {
   Terminal,
   ClipboardList,
   Globe,
-  FileText
+  FileText,
+  Target,
+  Sparkles
 } from 'lucide-react';
 
 export const navSections = [
@@ -33,6 +35,7 @@ export const navSections = [
     items: [
       { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
       { name: 'Live Visitors', href: '/dashboard/analytics', icon: Activity },
+      { name: 'Google Ads Analytics', href: '/dashboard/campaign-analytics', icon: Target },
       { name: 'Artists', href: '/dashboard/artists', icon: Mic2 },
       { name: 'Bookings', href: '/dashboard/bookings', icon: CalendarCheck },
       {
@@ -51,6 +54,7 @@ export const navSections = [
   {
     title: 'Content Management',
     items: [
+      { name: 'Diwali Offer', href: '/dashboard/diwali-offer', icon: Sparkles },
       { name: 'Custom Forms', href: '/dashboard/forms', icon: ClipboardList },
       {
         name: 'Edit',
@@ -63,6 +67,7 @@ export const navSections = [
           { name: 'Blogs', href: '/dashboard/blogs' },
           { name: 'Service Videos', href: '/dashboard/service-videos' },
           { name: 'Ad', href: '/dashboard/top-ad' },
+          { name: 'Diwali Offer', href: '/dashboard/diwali-offer' },
         ]
       },
       { name: 'Browse', href: '/dashboard/browse', icon: Eye },

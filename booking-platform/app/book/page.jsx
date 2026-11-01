@@ -131,7 +131,7 @@ export default function BookPage() {
               <div className="lux-form-row">
                 <div className="lux-form-group">
                   <label htmlFor="sp-name">Name</label>
-                  <input id="sp-name" name="name" type="text" required placeholder="e.g. Arjun Sharma" value={formData.name} onChange={handleChange} autoComplete="name" />
+                  <input id="sp-name" name="name" type="text" required placeholder="e.g. Avneesh Tripathi" value={formData.name} onChange={handleChange} autoComplete="name" />
                 </div>
                 <div className="lux-form-group">
                   <label htmlFor="sp-phone">Phone no.</label>

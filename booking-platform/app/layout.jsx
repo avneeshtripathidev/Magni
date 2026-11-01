@@ -14,6 +14,8 @@ import { AppShellWrapper } from '@/app/layouts/AppShellWrapper';
 const ContactModal = dynamic(() => import('@/app/components/common/ContactModal'), { ssr: false })
 const RegisterModal = dynamic(() => import('@/app/components/common/RegisterModal'), { ssr: false })
 const QuickBookingModal = dynamic(() => import('@/app/components/common/QuickBookingModal'), { ssr: false })
+const GoogleAdsOfferInstantForm = dynamic(() => import('@/app/components/campaign/GoogleAdsOfferInstantForm'), { ssr: false })
+const DiwaliOfferBookingForm = dynamic(() => import('@/app/components/campaign/DiwaliOfferBookingForm'), { ssr: false })
 const FloatingWhatsApp = dynamic(() => import('@/app/components/common/FloatingWhatsApp'), { ssr: false })
 const AIAssistantModal = dynamic(() => import('@/app/components/common/AIAssistantModal'), { ssr: false })
 const PWAInstallPrompt = dynamic(() => import('@/app/components/common/PWAInstallPrompt'), { ssr: false })
@@ -270,6 +272,8 @@ export default function RootLayout({ children }) {
           <ContactModal />
           <RegisterModal />
           <QuickBookingModal />
+          <GoogleAdsOfferInstantForm />
+          <DiwaliOfferBookingForm />
           <FloatingWhatsApp />
           <AIAssistantModal />
           <PWAInstallPrompt />
