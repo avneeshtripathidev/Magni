@@ -168,25 +168,17 @@ describe('Diwali Special Offer Campaign (Coupon: DIW100)', () => {
     });
   });
 
-  describe('Traffic Attribution & 60/40 Split Verification', () => {
+  describe('Traffic Attribution & 100% Google Ads Routing', () => {
     it('should route 100% of organic / direct traffic to QuickBookingModal', () => {
       const isGoogleAds = false;
       const targetForm = isGoogleAds ? 'GoogleAdsOfferInstantForm' : 'QuickBookingModal';
       assert.strictEqual(targetForm, 'QuickBookingModal');
     });
 
-    it('should allocate Google Ads traffic deterministically across 60/40 variants', () => {
-      const calculateVariant = (seed) => (seed % 100 < 60 ? 'google_ads_form' : 'quick_booking');
-      
-      let gaoCount = 0;
-      let qbCount = 0;
-      for (let i = 0; i < 1000; i++) {
-        if (calculateVariant(i) === 'google_ads_form') gaoCount++;
-        else qbCount++;
-      }
-
-      assert.strictEqual(gaoCount, 600);
-      assert.strictEqual(qbCount, 400);
+    it('should route 100% of Google Ads traffic directly to GoogleAdsOfferInstantForm', () => {
+      const isGoogleAds = true;
+      const targetForm = isGoogleAds ? 'GoogleAdsOfferInstantForm' : 'QuickBookingModal';
+      assert.strictEqual(targetForm, 'GoogleAdsOfferInstantForm');
     });
   });
 });

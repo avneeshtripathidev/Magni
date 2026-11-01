@@ -206,16 +206,6 @@ export default function GoogleAdsOfferInstantForm() {
     const phoneErr = validatePhone(formData.phone);
     if (phoneErr) errs.phone = phoneErr;
 
-    if (!formData.location?.trim()) {
-      errs.location = 'Please enter your event city / location';
-    }
-
-    // Only validate date on desktop where the field is visible (hidden on mobile)
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
-    if (!isMobile && !formData.date) {
-      errs.date = 'Please select expected event date';
-    }
-
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -233,8 +223,8 @@ export default function GoogleAdsOfferInstantForm() {
       await bookingService.submitInstantRequest({
         name: formData.name.trim(),
         phone: formData.phone.trim(),
-        eventType: formData.eventType || 'Event Booking',
-        location: formData.location.trim(),
+        eventType: formData.eventType || 'Wedding Ceremony',
+        location: formData.location?.trim() || 'Flexible / Pan India',
         date: formData.date || 'Flexible / To be decided',
         budget: `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
         type: 'google_ads_lead',
@@ -294,7 +284,7 @@ export default function GoogleAdsOfferInstantForm() {
 
   const createWhatsAppUrl = () => {
     const adminPhone = process.env.NEXT_PUBLIC_ADMIN_PHONE || '918076515257';
-    const text = `Hi Magnevents, I claimed my Diwali Offer & Date Lock (₹2,499) with Coupon DIW100 for ${formData.eventType} on ${formData.date} in ${formData.location}. Budget: ₹${formData.budgetAmount.toLocaleString('en-IN')}, Ref Code: ${referenceCode}. Please share verified artist quotes and lock date!`;
+    const text = `Hi Magnevents, I claimed my Diwali Offer & Date Lock (₹2,499) with Coupon DIW100 for ${formData.eventType}. Budget: ₹${formData.budgetAmount.toLocaleString('en-IN')}, Ref Code: ${referenceCode}. Please share verified artist quotes and lock date!`;
     return `https://wa.me/${adminPhone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
   };
 
@@ -324,13 +314,13 @@ export default function GoogleAdsOfferInstantForm() {
           transition={{ type: 'spring', damping: 28, stiffness: 380 }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* 1. WINE RED PROMOTIONAL HERO BANNER MATCHING media_1793545767944_e6f822fb.jpg */}
+          {/* 1. WINE RED PROMOTIONAL HERO BANNER (MATCHING media_1793554544528_d984c3a0.jpg) */}
           <div className="diw-promo-header">
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
-                <span>🎁</span>
-                <span>EXCLUSIVE DIWALI OFFER</span>
+                <span>🪔</span>
+                <span>VALID ONLY UNTIL DIWALI!</span>
               </div>
 
               <button
@@ -343,17 +333,19 @@ export default function GoogleAdsOfferInstantForm() {
               </button>
             </div>
 
-            {/* Discount Highlight Spotlight Card */}
-            <div className="diw-discount-highlight-card">
-              <div className="diw-discount-badge-col">
-                <span className="diw-discount-big">10% EXTRA OFF</span>
-                <span className="diw-discount-tagline">YOUR EVENT BOOKING!</span>
+            {/* Headline */}
+            <h2 className="diw-title">Your Dream Event Starts Here!</h2>
+
+            {/* Spotlight Date-Lock Box */}
+            <div className="diw-date-lock-card">
+              <div className="diw-lock-info-col">
+                <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
+                <span className="diw-lock-headline">Lock Your Event Booking at Just ₹2,499</span>
               </div>
-              <div className="diw-discount-info-col">
-                <span className="diw-discount-min">On bookings worth <strong>₹10,000 or more.</strong></span>
-                <div className="diw-coupon-pill-wrap">
-                  <span className="diw-coupon-pill">DIW100</span>
-                </div>
+              <div className="diw-lock-price-badge">
+                <span className="diw-lock-original-price">₹10,000</span>
+                <span className="diw-lock-current-price">₹2,499</span>
+                <span className="diw-lock-price-lbl">DATE LOCK</span>
               </div>
             </div>
           </div>
@@ -361,9 +353,36 @@ export default function GoogleAdsOfferInstantForm() {
           {!isSuccess ? (
             /* 2. WARM IVORY FORM BODY */
             <div className="diw-form-body">
-              {/* Note: 3 black trust boxes removed as requested: 'only this sectoin remove from here' */}
+              {/* Triple Discount Showcase Grid */}
+              <div className="diw-triple-discount-wrap">
+                <div className="diw-triple-discount-header">
+                  <span>SAVE UP TO 65%</span>
+                </div>
+                <div className="diw-triple-cards-grid">
+                  {/* Card 1: Package Offer */}
+                  <div className="diw-triple-card">
+                    <span className="diw-triple-pill">PACKAGE OFFER</span>
+                    <span className="diw-triple-val">45%–50% OFF</span>
+                    <span className="diw-triple-lbl">Event Booking</span>
+                  </div>
 
-              {/* Enquiry Form */}
+                  {/* Card 2: Diwali Special (Highlighted) */}
+                  <div className="diw-triple-card diw-triple-card-featured">
+                    <span className="diw-triple-pill diw-pill-gold">DIWALI SPECIAL 🪔</span>
+                    <span className="diw-triple-val diw-val-gold">+10% EXTRA</span>
+                    <span className="diw-triple-lbl diw-lbl-gold">Code: DIW100</span>
+                  </div>
+
+                  {/* Card 3: Welcome Gift */}
+                  <div className="diw-triple-card">
+                    <span className="diw-triple-pill">WELCOME GIFT 🎁</span>
+                    <span className="diw-triple-val">+5% FIRST OFF</span>
+                    <span className="diw-triple-lbl">1st Booking Bonus</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enquiry Form: Clean 4 Fields (City & Date removed per user request) */}
               <form className="diw-form" onSubmit={handleSubmitLead}>
                 <div className="diw-form-grid">
                   <div className="diw-form-group">
@@ -374,7 +393,7 @@ export default function GoogleAdsOfferInstantForm() {
                       id="gao-name"
                       type="text"
                       required
-                      placeholder="Enter your name"
+                      placeholder="e.g. Avneesh Tripathi"
                       autoComplete="off"
                       value={formData.name}
                       className={errors.name ? 'diw-input-err' : ''}
@@ -391,7 +410,7 @@ export default function GoogleAdsOfferInstantForm() {
                       id="gao-phone"
                       type="tel"
                       required
-                      placeholder="Enter mobile number"
+                      placeholder="+91 98765-43210"
                       autoComplete="off"
                       value={formData.phone}
                       className={errors.phone ? 'diw-input-err' : ''}
@@ -405,7 +424,7 @@ export default function GoogleAdsOfferInstantForm() {
                 </div>
 
                 <div className="diw-form-grid">
-                  <div className="diw-form-group diw-field-event-type diw-hide-mobile">
+                  <div className="diw-form-group">
                     <label htmlFor="gao-event-type">
                       Event Type <span className="req">*</span>
                     </label>
@@ -428,40 +447,6 @@ export default function GoogleAdsOfferInstantForm() {
                   </div>
 
                   <div className="diw-form-group">
-                    <label htmlFor="gao-city">
-                      Event City / Location <span className="req">*</span>
-                    </label>
-                    <input
-                      id="gao-city"
-                      type="text"
-                      required
-                      placeholder="Enter city / location"
-                      autoComplete="off"
-                      value={formData.location}
-                      className={errors.location ? 'diw-input-err' : ''}
-                      onChange={(e) => handleInputChange('location', e.target.value)}
-                    />
-                    {errors.location && <span className="diw-err-msg">{errors.location}</span>}
-                  </div>
-                </div>
-
-                <div className="diw-form-grid">
-                  <div className="diw-form-group diw-field-event-date diw-hide-mobile">
-                    <label htmlFor="gao-date">
-                      Expected Event Date <span className="req">*</span>
-                    </label>
-                    <input
-                      id="gao-date"
-                      type="date"
-                      min={new Date().toISOString().split('T')[0]}
-                      value={formData.date}
-                      className={errors.date ? 'diw-input-err' : ''}
-                      onChange={(e) => handleInputChange('date', e.target.value)}
-                    />
-                    {errors.date && <span className="diw-err-msg">{errors.date}</span>}
-                  </div>
-
-                  <div className="diw-form-group">
                     <label htmlFor="gao-budget">
                       Estimated Event Budget <span className="req">*</span>
                     </label>
@@ -471,12 +456,12 @@ export default function GoogleAdsOfferInstantForm() {
                       onChange={(e) => handleInputChange('budgetAmount', Number(e.target.value))}
                     >
                       <option value={10000}>₹10,000 - ₹20,000 (10% Extra OFF)</option>
-                      <option value={25000}>₹20,000 - ₹35,000 (16% Extra OFF)</option>
-                      <option value={35000}>₹35,000 - ₹50,000 (18% Extra OFF)</option>
-                      <option value={50000}>₹50,000 - ₹80,000 (20% Extra OFF)</option>
-                      <option value={80000}>₹80,000 - ₹1,20,000 (22% Extra OFF)</option>
-                      <option value={120000}>₹1,20,000 - ₹2,00,000 (24% Extra OFF)</option>
-                      <option value={200000}>₹2,00,000+ (28% Extra OFF)</option>
+                      <option value={25000}>₹20,000 - ₹35,000 (Eligible for 16% Extra OFF)</option>
+                      <option value={35000}>₹35,000 - ₹50,000 (Eligible for 18% Extra OFF)</option>
+                      <option value={50000}>₹50,000 - ₹80,000 (Eligible for 20% Extra OFF)</option>
+                      <option value={80000}>₹80,000 - ₹1,20,000 (Eligible for 22% Extra OFF)</option>
+                      <option value={120000}>₹1,20,000 - ₹2,00,000 (Eligible for 24% Extra OFF)</option>
+                      <option value={200000}>₹2,00,000+ (Eligible for 28% Extra OFF)</option>
                     </select>
                   </div>
                 </div>
@@ -487,7 +472,7 @@ export default function GoogleAdsOfferInstantForm() {
                   className="diw-submit-btn"
                   disabled={isSubmitting}
                 >
-                  <span>{isSubmitting ? 'Securing Your Diwali Gift...' : 'CLAIM MY DIWALI GIFT →'}</span>
+                  <span>{isSubmitting ? 'Securing Your Offer & Date...' : 'Unlock My Offer & Lock Date →'}</span>
                 </button>
               </form>
             </div>
@@ -535,12 +520,12 @@ export default function GoogleAdsOfferInstantForm() {
                     <span className="val val-savings">₹2,499 Priority Lock</span>
                   </div>
                   <div>
-                    <span className="lbl">Event Date</span>
-                    <span className="val">{formData.date || 'To Be Confirmed'}</span>
+                    <span className="lbl">Event Category</span>
+                    <span className="val">{formData.eventType || 'Live Artists'}</span>
                   </div>
                   <div>
-                    <span className="lbl">Event City</span>
-                    <span className="val">{formData.location || 'Pan India'}</span>
+                    <span className="lbl">Booking Budget</span>
+                    <span className="val">₹{formData.budgetAmount.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 

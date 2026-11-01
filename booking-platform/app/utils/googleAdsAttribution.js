@@ -28,9 +28,6 @@ export function getOrCreateSessionId() {
   }
 }
 
-/**
- * Checks whether URL query or stored session indicates a Google Ads visit
- */
 export function isGoogleAdsTraffic() {
   if (typeof window === 'undefined') return false;
 
@@ -98,34 +95,18 @@ export function getGoogleAdsFormVariant() {
     return 'normal_form';
   }
 
+  // 2. 100% of Google Ads source visitors receive the campaign offer form
   try {
-    // 2. QA / Debug override via URL parameters
     const params = new URLSearchParams(window.location.search);
     const variantParam = (params.get('form_variant') || params.get('variant') || '').toLowerCase();
-    const isExplicitOffer = params.get('offer') === 'true' || params.get('offer') === '1' || variantParam === 'offer' || variantParam === 'offer_form';
-    if (isExplicitOffer) {
-      sessionStorage.setItem(STORAGE_KEY_GADS_VARIANT, 'offer_form');
-      return 'offer_form';
-    }
-    if (variantParam === 'normal' || variantParam === 'normal_form' || variantParam === 'control') {
+    if (variantParam === 'normal' || variantParam === 'control') {
       sessionStorage.setItem(STORAGE_KEY_GADS_VARIANT, 'normal_form');
       return 'normal_form';
     }
+    sessionStorage.setItem(STORAGE_KEY_GADS_VARIANT, 'offer_form');
+  } catch (e) {}
 
-    // 3. Existing session assignment check (prevents flip-flopping across page visits)
-    const storedVariant = sessionStorage.getItem(STORAGE_KEY_GADS_VARIANT);
-    if (storedVariant === 'offer_form' || storedVariant === 'normal_form') {
-      return storedVariant;
-    }
-
-    // 4. Compute 60/40 allocation: 60% offer_form, 40% normal_form
-    const isOffer = Math.random() < 0.6;
-    const assignedVariant = isOffer ? 'offer_form' : 'normal_form';
-    sessionStorage.setItem(STORAGE_KEY_GADS_VARIANT, assignedVariant);
-    return assignedVariant;
-  } catch (e) {
-    return 'offer_form';
-  }
+  return 'offer_form';
 }
 
 /**

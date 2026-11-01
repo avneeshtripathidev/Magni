@@ -217,15 +217,7 @@ export default function DiwaliOfferBookingForm() {
     const phoneErr = validatePhone(formData.phone);
     if (phoneErr) errs.phone = phoneErr;
 
-    if (!formData.location?.trim()) {
-      errs.location = 'Please enter your event city';
-    }
-
-    // Only validate date on desktop where the field is visible (hidden on mobile)
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
-    if (!isMobile && !formData.date) {
-      errs.date = 'Please select expected event date';
-    }
+    // City and Date fields removed per user request
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -412,7 +404,7 @@ export default function DiwaliOfferBookingForm() {
                 </div>
 
                 <div className="diw-form-grid">
-                  <div className="diw-form-group diw-field-event-type diw-hide-mobile">
+                  <div className="diw-form-group">
                     <label htmlFor="diw-event-type">
                       Event Type <span className="req">*</span>
                     </label>
@@ -429,41 +421,6 @@ export default function DiwaliOfferBookingForm() {
                       <option value="Private House Party">Private House Party</option>
                       <option value="Other">Other</option>
                     </select>
-                  </div>
-
-                  <div className="diw-form-group">
-                    <label htmlFor="diw-city">
-                      Event City <span className="req">*</span>
-                    </label>
-                    <input
-                      id="diw-city"
-                      type="text"
-                      required
-                      placeholder="Enter your city"
-                      autoComplete="off"
-                      value={formData.location}
-                      className={errors.location ? 'diw-input-err' : ''}
-                      onChange={(e) => handleInputChange('location', e.target.value)}
-                    />
-                    {errors.location && <span className="diw-err-msg">{errors.location}</span>}
-                  </div>
-                </div>
-
-                <div className="diw-form-grid">
-                  <div className="diw-form-group diw-field-event-date diw-hide-mobile">
-                    <label htmlFor="diw-date">
-                      Expected Event Date <span className="req">*</span>
-                    </label>
-                    <input
-                      id="diw-date"
-                      type="date"
-                      min={new Date().toISOString().split('T')[0]}
-                      max="2030-12-31"
-                      value={formData.date}
-                      className={errors.date ? 'diw-input-err' : ''}
-                      onChange={(e) => handleInputChange('date', e.target.value)}
-                    />
-                    {errors.date && <span className="diw-err-msg">{errors.date}</span>}
                   </div>
 
                   <div className="diw-form-group">
@@ -544,12 +501,12 @@ export default function DiwaliOfferBookingForm() {
                     </span>
                   </div>
                   <div>
-                    <span className="lbl">Event Date</span>
-                    <span className="val">{formData.date || 'To Be Confirmed'}</span>
+                    <span className="lbl">Event Category</span>
+                    <span className="val">{formData.eventType || 'Live Artists'}</span>
                   </div>
                   <div>
-                    <span className="lbl">Event City</span>
-                    <span className="val">{formData.location || 'Pan India'}</span>
+                    <span className="lbl">Booking Budget</span>
+                    <span className="val">₹{formData.budgetAmount.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
