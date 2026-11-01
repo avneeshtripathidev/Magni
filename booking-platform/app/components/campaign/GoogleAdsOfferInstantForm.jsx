@@ -494,63 +494,75 @@ export default function GoogleAdsOfferInstantForm() {
           ) : (
             /* SUCCESS STATE */
             <div className="diw-success-card">
-              <div className="diw-success-icon">✓</div>
-              <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#FFF', margin: '0 0 6px 0' }}>
+              <div className="diw-success-icon-wrap">
+                <div className="diw-success-icon">✓</div>
+              </div>
+
+              <h2 className="diw-success-title">
                 Diwali Offer &amp; Date Lock Claimed! 🎁
               </h2>
-              <p style={{ fontSize: '13px', color: '#D8C4B7', margin: '0 0 14px 0', lineHeight: 1.45 }}>
-                Your <strong>{savings.pct}% EXTRA DISCOUNT</strong> with Coupon <strong>DIW100</strong> and <strong>₹2,499 Date Lock Pass</strong> have been secured for your {formData.eventType} in {formData.location}!
+
+              <p className="diw-success-desc">
+                Your <strong>{savings.pct}% EXTRA DISCOUNT</strong> with Coupon <strong>DIW100</strong> and <strong>₹2,499 Date Lock Pass</strong> have been secured for your <strong>{formData.eventType}</strong>{formData.location ? ` in ${formData.location}` : ''}!
               </p>
 
               <div className="diw-success-pass">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px dashed rgba(232,185,67,0.35)' }}>
+                <div className="diw-pass-header">
                   <div>
-                    <span style={{ fontSize: '10px', color: '#8C827A', textTransform: 'uppercase' }}>Enquiry Reference ID</span>
-                    <div style={{ fontFamily: 'monospace', fontSize: '15px', fontWeight: 900, color: '#E8B943', marginTop: '2px' }}>
+                    <span className="diw-pass-ref-label">Official Priority Pass</span>
+                    <div className="diw-pass-ref-code">
                       {referenceCode}
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={handleCopyRef}
-                    style={{ background: 'rgba(232,185,67,0.15)', border: '1px solid rgba(232,185,67,0.35)', color: '#E8B943', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 700 }}
+                    className="diw-pass-copy-btn"
                   >
                     {copied ? '✓ Copied' : 'Copy ID'}
                   </button>
                 </div>
 
+                <div className="diw-pass-divider" />
+
                 <div className="diw-success-grid">
                   <div>
                     <span className="lbl">Applied Coupon</span>
-                    <span className="val" style={{ color: '#E8B943' }}>DIW100 ({savings.pct}% OFF)</span>
+                    <span className="val val-coupon">DIW100 ({savings.pct}% OFF)</span>
                   </div>
                   <div>
                     <span className="lbl">Date Lock Pass</span>
-                    <span className="val" style={{ color: '#FFF' }}>₹2,499 Priority Lock</span>
+                    <span className="val val-savings">₹2,499 Priority Lock</span>
                   </div>
                   <div>
                     <span className="lbl">Event Date</span>
-                    <span className="val">{formData.date}</span>
+                    <span className="val">{formData.date || 'To Be Confirmed'}</span>
                   </div>
                   <div>
-                    <span className="lbl">Event Location</span>
-                    <span className="val">{formData.location}</span>
+                    <span className="lbl">Event City</span>
+                    <span className="val">{formData.location || 'Pan India'}</span>
                   </div>
+                </div>
+
+                <div className="diw-pass-guarantee">
+                  <span>✓ 100% Date Lock Priority</span>
+                  <span>•</span>
+                  <span>Direct Artist Pricing</span>
                 </div>
               </div>
 
-              <div style={{ fontSize: '12px', color: '#D8C4B7', marginBottom: '14px', lineHeight: 1.4 }}>
-                A Magnevents booking concierge is preparing verified artist availability with your Diwali discounts unlocked and Date Lock reserved.
-              </div>
+              <p className="diw-concierge-note">
+                ⚡ A Magnevents booking concierge is preparing verified artist availability with your Diwali discounts unlocked and Date Lock reserved.
+              </p>
 
               <a
                 href={createWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="diw-submit-btn"
-                style={{ textDecoration: 'none', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="diw-whatsapp-btn"
               >
                 <span>💬 Connect on WhatsApp with ID</span>
+                <span>→</span>
               </a>
             </div>
           )}
