@@ -51,6 +51,56 @@ export default function TopOfferAnnouncementStrip() {
     };
   }, [isVisible]);
 
+  // 3. Scroll effect: as user scrolls down, ad bar scrolls up out of view, while navbar stays pinned at top
+  useEffect(() => {
+    if (!isVisible) {
+      const header = document.getElementById('unified-header');
+      if (header) {
+        header.style.transform = 'translateY(0px)';
+      }
+      return;
+    }
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY || 0;
+          const isMobile = window.innerWidth <= 768;
+          if (isMobile) {
+            const header = document.getElementById('unified-header');
+            if (header) header.style.transform = 'translateY(0px)';
+            ticking = false;
+            return;
+          }
+
+          const stripEl = document.querySelector('.top-offer-strip-root');
+          const stripHeight = stripEl ? stripEl.offsetHeight : 38;
+          const header = document.getElementById('unified-header');
+          if (header) {
+            // Translate header up by at most stripHeight so only the ad bar scrolls away,
+            // leaving the navbar locked at top: 0 for all scrollY >= stripHeight
+            const translateY = Math.min(scrollY, stripHeight);
+            header.style.transform = `translateY(-${translateY}px)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      const header = document.getElementById('unified-header');
+      if (header) {
+        header.style.transform = 'translateY(0px)';
+      }
+    };
+  }, [isVisible]);
+
   useEffect(() => {
     if (isVisible && !hasFiredViewRef.current) {
       hasFiredViewRef.current = true;

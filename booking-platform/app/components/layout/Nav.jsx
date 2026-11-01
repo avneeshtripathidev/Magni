@@ -38,7 +38,8 @@ export default function Nav() {
   const scrolled = useScrolled(20);
   const scrollDirection = useScrollDirection();
   const isLight = false;
-  const isHidden = scrollDirection === 'down' && scrolled;
+  // Nav bar stays sticky and visible when scrolling down (only ad bar scrolls up out of view)
+  const isHidden = false;
 
   useEffect(() => {
     setMenuOpen(false);
