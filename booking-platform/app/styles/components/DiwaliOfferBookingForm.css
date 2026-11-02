@@ -1,9 +1,7 @@
 /* ==============================================================================
-   MAGNEVENTS ULTRA-LUXURY DIWALI & INSTANT OFFER BOOKING MODAL
-   Deep Royal Velvet Obsidian (#170A12 - #11050C)
-   Imperial Gold Highlights (#E8B943, #FFD700)
-   Vibrant Brand Coral CTA (#E65A5A - #B82424)
-   Precision Glassmorphism & High-Contrast Typography
+   PREMIUM DIWALI PROMOTIONAL POPUP
+   Warm Ivory Modal Canvas (#FAF7F2) + Luxury Wine Red Banner (#7E3044)
+   Marigold Highlights (#E8B943) + Brand Coral CTA (#E45F60) + Soft Charcoal (#29272A)
    ============================================================================== */
 
 .diw-modal-root {
@@ -13,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 14px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -22,65 +20,49 @@
 .diw-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(10, 5, 8, 0.88);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(15, 12, 17, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   z-index: 1;
 }
 
-/* Modal Card Surface: Royal Velvet Obsidian Canvas with Gold Metallic Rim */
+/* Modal Card Surface: Warm Ivory Background with Rounded Corners */
 .diw-modal-card {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 510px;
+  max-width: 505px;
   margin: auto;
-  max-height: calc(100vh - 32px);
+  max-height: calc(100vh - 28px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  background: linear-gradient(175deg, #1F0B17 0%, #15070F 45%, #0F050A 100%);
-  border: 1.5px solid rgba(232, 185, 67, 0.45);
+  background: #FAF7F2;
+  border: 1.5px solid rgba(126, 48, 68, 0.28);
   border-radius: 24px;
   box-shadow: 
-    0 35px 110px rgba(0, 0, 0, 0.9), 
-    0 0 50px rgba(232, 185, 67, 0.16),
-    0 0 1px 1px rgba(255, 255, 255, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+    0 30px 90px rgba(0, 0, 0, 0.75), 
+    0 0 35px rgba(126, 48, 68, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #29272A;
   box-sizing: border-box;
   overflow: hidden;
 }
 
-/* Subtle Ambient Gold Radial Glow at Top Center */
-.diw-modal-card::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 320px;
-  height: 140px;
-  background: radial-gradient(ellipse at center, rgba(232, 185, 67, 0.22) 0%, rgba(126, 48, 68, 0.1) 60%, transparent 80%);
-  pointer-events: none;
-  z-index: 0;
-}
-
 /* ==============================================================================
-   1. ROYAL WINE & GOLD HERO BANNER (TOP SECTION)
+   1. WINE RED PROMOTIONAL HERO BANNER (TOP SECTION)
    ============================================================================== */
 
 .diw-promo-header {
-  background: linear-gradient(135deg, rgba(126, 48, 68, 0.55) 0%, rgba(45, 12, 25, 0.75) 100%);
-  padding: 18px 22px 16px;
+  background: linear-gradient(135deg, #7E3044 0%, #5E1F2F 100%);
+  padding: 16px 20px 16px;
   color: #FFFFFF;
   position: relative;
-  border-bottom: 1px solid rgba(232, 185, 67, 0.35);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-bottom: 2px solid #E8B943;
 }
 
 .diw-promo-header.is-success-header {
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(232, 185, 67, 0.35);
+  padding: 12px 18px;
+  border-bottom: 1.5px solid rgba(232, 185, 67, 0.45);
 }
 
 .diw-promo-header.is-success-header .diw-header-top {
@@ -91,35 +73,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-  position: relative;
-  z-index: 2;
+  margin-bottom: 8px;
 }
 
-/* Glowing Gold Festive Badge */
 .diw-badge-tag {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 13px;
-  background: linear-gradient(135deg, rgba(232, 185, 67, 0.2) 0%, rgba(217, 119, 6, 0.28) 100%);
+  gap: 6px;
+  padding: 4px 11px;
+  background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(232, 185, 67, 0.65);
   border-radius: 100px;
   font-size: 11px;
   font-weight: 800;
-  color: #FFE58F;
-  letter-spacing: 0.06em;
+  color: #E8B943;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), 0 0 12px rgba(232, 185, 67, 0.2);
 }
 
-/* Close Button with Smooth Frosted Glass & Gold Hover */
 .diw-close-btn {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 700;
@@ -127,115 +104,37 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.22s ease;
+  transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
 .diw-close-btn:hover {
-  background: rgba(232, 185, 67, 0.25);
-  border-color: #E8B943;
-  color: #FFE58F;
-  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.06);
 }
 
-/* Main Heading (Elegant Playfair Serif) */
+/* Main Heading (Elegant Serif) */
 .diw-title {
   font-family: var(--font-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(21px, 4.2vw, 25px);
+  font-size: clamp(20px, 4vw, 24px);
   font-weight: 800;
   color: #FFFFFF;
   margin: 4px 0 12px;
   line-height: 1.22;
   letter-spacing: -0.01em;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Spotlight Date-Lock Box */
-.diw-date-lock-card {
-  background: linear-gradient(135deg, rgba(28, 10, 18, 0.75) 0%, rgba(45, 12, 28, 0.85) 100%);
-  border: 1px solid rgba(232, 185, 67, 0.5);
-  border-radius: 16px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.diw-lock-info-col {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  text-align: left;
-}
-
-.diw-lock-badge {
-  font-size: 10px;
-  font-weight: 800;
-  color: #E8B943;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-
-.diw-lock-headline {
-  font-size: 14.5px;
-  font-weight: 800;
-  color: #FFFFFF;
-  line-height: 1.25;
-}
-
-.diw-lock-price-badge {
-  background: linear-gradient(135deg, rgba(232, 185, 67, 0.18) 0%, rgba(217, 119, 6, 0.25) 100%);
-  border: 1px solid rgba(232, 185, 67, 0.65);
-  border-radius: 12px;
-  padding: 6px 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  min-width: 85px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-.diw-lock-original-price {
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.55);
-  text-decoration: line-through;
-  line-height: 1;
-}
-
-.diw-lock-current-price {
-  font-size: 18px;
-  font-weight: 900;
-  color: #FFFFFF;
-  line-height: 1.15;
-  margin: 2px 0 1px;
-  text-shadow: 0 1px 6px rgba(232, 185, 67, 0.4);
-}
-
-.diw-lock-price-lbl {
-  font-size: 9px;
-  font-weight: 800;
-  color: #FFE58F;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* Spotlight Discount Highlight Card */
+/* Spotlight Discount Highlight Card matching media_1793545767944_e6f822fb.jpg */
 .diw-discount-highlight-card {
-  background: linear-gradient(135deg, rgba(232, 185, 67, 0.14) 0%, rgba(126, 48, 68, 0.32) 100%);
-  border: 1px solid rgba(232, 185, 67, 0.55);
-  border-radius: 16px;
-  padding: 12px 16px;
+  background: rgba(28, 10, 16, 0.45);
+  border: 1.5px dashed rgba(232, 185, 67, 0.55);
+  border-radius: 12px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-top: 4px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .diw-discount-badge-col {
@@ -246,12 +145,9 @@
 }
 
 .diw-discount-big {
-  font-size: 21px;
+  font-size: 19px;
   font-weight: 900;
-  background: linear-gradient(135deg, #FFF0B3 0%, #E8B943 55%, #C9961A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 8px rgba(232, 185, 67, 0.35));
+  color: #E8B943;
   letter-spacing: 0.02em;
   line-height: 1.15;
 }
@@ -260,7 +156,7 @@
   font-size: 11px;
   font-weight: 800;
   color: #FFFFFF;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -268,60 +164,127 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 5px;
   text-align: right;
   flex-shrink: 0;
 }
 
 .diw-discount-min {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.25;
+  font-size: 10.5px;
+  color: #E8D9CF;
+  line-height: 1.2;
 }
 
 .diw-discount-min strong {
   color: #FFFFFF;
-  font-weight: 700;
 }
 
 .diw-coupon-pill-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .diw-coupon-pill {
-  background: linear-gradient(135deg, #FFDE6A 0%, #E8B943 100%);
-  color: #170E04;
-  font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
+  background: #E8B943;
+  color: #19171C;
+  font-family: monospace;
   font-weight: 900;
-  font-size: 12px;
-  padding: 3.5px 11px;
-  border-radius: 6px;
+  font-size: 11.5px;
+  padding: 2.5px 8px;
+  border-radius: 4px;
   line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+/* Spotlight Date-Lock Box */
+.diw-date-lock-card {
+  background: rgba(26, 10, 16, 0.62);
+  border: 1px solid rgba(232, 185, 67, 0.45);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+}
+
+.diw-lock-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.diw-lock-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #E8B943;
   letter-spacing: 0.06em;
-  box-shadow: 0 2px 8px rgba(232, 185, 67, 0.45);
+  text-transform: uppercase;
+}
+
+.diw-lock-headline {
+  font-size: 14px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.25;
+}
+
+.diw-lock-price-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(232, 185, 67, 0.5);
+  border-radius: 10px;
+  padding: 5px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 80px;
+  text-align: center;
+}
+
+.diw-lock-original-price {
+  font-size: 10px;
+  color: #D8C4B7;
+  text-decoration: line-through;
+  line-height: 1;
+}
+
+.diw-lock-current-price {
+  font-size: 17px;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.15;
+  margin: 2px 0 1px;
+}
+
+.diw-lock-price-lbl {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #FFA291;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* ==============================================================================
-   2. ROYAL DARK GLASS FORM BODY (BOTTOM SECTION)
+   2. WARM IVORY FORM BODY (BOTTOM SECTION)
    ============================================================================== */
 
 .diw-form-body {
-  background: transparent;
-  padding: 18px 22px 22px;
-  position: relative;
-  z-index: 1;
+  background: #FAF7F2;
+  padding: 14px 18px 18px;
 }
 
 /* Triple Discount Showcase Grid */
 .diw-triple-discount-wrap {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(232, 185, 67, 0.28);
-  border-radius: 16px;
-  padding: 10px 12px;
-  margin-bottom: 16px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: rgba(126, 48, 68, 0.05);
+  border: 1px solid rgba(126, 48, 68, 0.18);
+  border-radius: 14px;
+  padding: 9px 10px;
+  margin-bottom: 14px;
 }
 
 .diw-triple-discount-header {
@@ -329,212 +292,300 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
-  color: #FFE58F;
-  letter-spacing: 0.06em;
+  color: #7E3044;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 }
 
 .diw-triple-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 7px;
 }
 
 .diw-triple-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 8px 6px;
-  text-align: center;
+  background: #FFFFFF;
+  border: 1px solid #E2D7CF;
+  border-radius: 10px;
+  padding: 7px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  transition: all 0.2s ease;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .diw-triple-card-featured {
-  background: linear-gradient(135deg, rgba(232, 185, 67, 0.16) 0%, rgba(217, 119, 6, 0.22) 100%);
-  border: 1px solid rgba(232, 185, 67, 0.55);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(135deg, #FFFDF8 0%, #FFF5EC 100%);
+  border: 1.5px solid #E8B943;
+  box-shadow: 0 4px 12px rgba(232, 185, 67, 0.22);
 }
 
 .diw-triple-pill {
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.65);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
+  color: #7A6F68;
+  background: #F0EAE3;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-bottom: 4px;
 }
 
 .diw-pill-gold {
-  color: #FFE58F;
+  color: #8C5808;
+  background: rgba(232, 185, 67, 0.25);
+  border: 1px solid rgba(232, 185, 67, 0.5);
 }
 
 .diw-triple-val {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 900;
-  color: #FFFFFF;
+  color: #29272A;
   line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
 .diw-val-gold {
-  color: #FFDE6A;
-  text-shadow: 0 1px 4px rgba(232, 185, 67, 0.4);
+  color: #9C2740;
+  font-size: 14px;
 }
 
 .diw-triple-lbl {
-  font-size: 9px;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #8C827A;
+  margin-top: 3px;
 }
 
 .diw-lbl-gold {
-  color: #FFE58F;
-  font-weight: 700;
+  color: #7E3044;
+  font-weight: 800;
+  font-family: monospace;
 }
 
-/* Form Structure */
+/* Form Layout & Fields */
 .diw-form {
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 9px;
 }
 
 .diw-form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .diw-modal-card {
+    max-width: calc(100vw - 20px) !important;
+    border-radius: 20px !important;
+    margin: auto !important;
+  }
+
+  .diw-promo-header {
+    padding: 14px 14px 12px !important;
+  }
+
+  .diw-discount-highlight-card {
+    padding: 8px 12px !important;
+    gap: 10px !important;
+  }
+
+  .diw-discount-big {
+    font-size: 15px !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+  }
+
+  .diw-discount-tagline {
+    font-size: 9.5px !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .diw-discount-min {
+    font-size: 9.5px !important;
+    line-height: 1.2 !important;
+  }
+
+  .diw-coupon-pill {
+    font-size: 11px !important;
+    padding: 2.5px 7px !important;
+  }
+
+  .diw-form-body {
+    padding: 14px 14px 18px !important;
+  }
+
+  .diw-form-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .diw-hide-mobile {
+    display: none !important;
+  }
+
+  /* Success Screen Mobile Rules */
+  .diw-success-card {
+    padding: 18px 14px 22px !important;
+  }
+
+  .diw-success-title {
+    font-size: 20px !important;
+  }
+
+  .diw-success-desc {
+    font-size: 12.5px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .diw-success-pass {
+    padding: 14px 14px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .diw-pass-ref-code {
+    font-size: 16px !important;
+  }
+
+  .diw-success-grid {
+    gap: 10px 10px !important;
+  }
+
+  .diw-success-grid .val {
+    font-size: 12.5px !important;
+  }
+
+  .diw-pass-guarantee {
+    font-size: 9.5px !important;
+  }
+
+  .diw-whatsapp-btn {
+    padding: 12px 16px !important;
+    font-size: 13.5px !important;
+  }
 }
 
 .diw-form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
   text-align: left;
 }
 
 .diw-form-group label {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
-  color: #F8F5F2;
-  letter-spacing: 0.03em;
+  color: #29272A;
+  letter-spacing: 0.01em;
 }
 
 .diw-form-group label span.req {
-  color: #FF6B6B;
+  color: #E45F60;
   margin-left: 2px;
-  font-weight: 900;
 }
 
 .diw-form-group input,
 .diw-form-group select {
   width: 100%;
-  padding: 10.5px 13px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(232, 185, 67, 0.32);
-  border-radius: 12px;
-  color: #FFFFFF;
-  font-size: 13px;
+  padding: 8.5px 11px;
+  background: #FFFFFF;
+  border: 1.5px solid #D8C4B7;
+  border-radius: 10px;
+  color: #1F1B24;
+  font-size: 12.5px;
   font-family: inherit;
   outline: none;
-  transition: all 0.22s ease;
+  transition: all 0.2s ease;
   box-sizing: border-box;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .diw-form-group select {
-  font-size: 12.5px;
-  padding-right: 28px;
+  font-size: 11.5px;
+  padding-right: 20px;
   cursor: pointer;
 }
 
-.diw-form-group select option {
-  background: #1C0A15;
-  color: #FFFFFF;
-  padding: 8px;
-}
-
 .diw-form-group input::placeholder {
-  color: rgba(255, 255, 255, 0.38);
+  color: #8C827A;
   font-weight: 400;
+  opacity: 0.85;
 }
 
 .diw-form-group input:focus,
 .diw-form-group select:focus {
-  border-color: #E8B943;
-  box-shadow: 0 0 0 3px rgba(232, 185, 67, 0.22), inset 0 2px 4px rgba(0, 0, 0, 0.3);
-  background: rgba(255, 255, 255, 0.09);
+  border-color: #E45F60;
+  box-shadow: 0 0 0 3px rgba(228, 95, 96, 0.18);
+  background: #FFFFFF;
 }
 
 .diw-input-err {
   border-color: #EF4444 !important;
-  background: rgba(239, 68, 68, 0.12) !important;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
 }
 
 .diw-err-msg {
-  font-size: 10.5px;
-  color: #F87171;
+  font-size: 10px;
+  color: #DC2626;
   font-weight: 600;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 /* ==============================================================================
-   PRIMARY HIGH-CONVERTING LUXURY CTA BUTTON
+   PRIMARY CORAL CTA BUTTON (#E45F60)
    ============================================================================== */
 
 .diw-submit-btn {
   width: 100%;
-  padding: 14px 22px;
-  background: linear-gradient(135deg, #E65A5A 0%, #D43838 50%, #B82424 100%);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 14px;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #E45F60 0%, #D65050 100%);
+  border: none;
+  border-radius: 12px;
   color: #FFFFFF;
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.03em;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   box-shadow: 
-    0 10px 28px rgba(228, 95, 96, 0.48), 
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    0 8px 24px rgba(228, 95, 96, 0.35), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .diw-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(228, 95, 96, 0.62);
-  background: linear-gradient(135deg, #ED6C6C 0%, #DF4242 50%, #C42929 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 12px 30px rgba(228, 95, 96, 0.45);
+  background: linear-gradient(135deg, #EB7273 0%, #E45F60 100%);
 }
 
 .diw-submit-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
-  transform: none;
 }
 
 /* ==============================================================================
-   SUCCESS STATE: LUXURY VIP GOLDEN PASS & CELEBRATION
+   SUCCESS STATE: LUXURY CELEBRATION & VIP GOLDEN PASS
    ============================================================================== */
 
 .diw-success-card {
   text-align: center;
   padding: 24px 22px 26px;
-  background: transparent;
+  background: #FAF7F2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  z-index: 1;
 }
 
 .diw-success-icon-wrap {
@@ -543,51 +594,50 @@
 }
 
 .diw-success-icon {
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   color: #FFFFFF;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
   box-shadow: 
-    0 0 0 6px rgba(16, 185, 129, 0.2),
-    0 10px 24px rgba(16, 185, 129, 0.45);
+    0 0 0 6px rgba(16, 185, 129, 0.15),
+    0 8px 20px rgba(16, 185, 129, 0.35);
 }
 
 .diw-success-title {
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 900;
-  color: #FFE58F;
+  color: #5E1F2F;
   margin: 10px 0 6px 0;
   letter-spacing: -0.015em;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .diw-success-desc {
   font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.85);
+  color: #4A423D;
   margin: 0 0 16px 0;
   line-height: 1.5;
   max-width: 440px;
 }
 
 .diw-success-desc strong {
-  color: #FFE58F;
+  color: #7E3044;
   font-weight: 800;
 }
 
 /* Luxury VIP Golden Ticket Pass */
 .diw-success-pass {
-  background: linear-gradient(145deg, rgba(28, 10, 18, 0.85) 0%, rgba(45, 14, 30, 0.95) 60%, rgba(20, 8, 14, 0.9) 100%);
+  background: linear-gradient(145deg, #1A0A12 0%, #29101C 60%, #170810 100%);
   border: 1.5px solid #E8B943;
   border-radius: 18px;
   padding: 18px 20px 14px;
@@ -597,9 +647,9 @@
   text-align: left;
   position: relative;
   box-shadow: 
-    0 16px 40px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(232, 185, 67, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 14px 35px rgba(94, 31, 47, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .diw-pass-header {
@@ -620,16 +670,16 @@
 
 .diw-pass-ref-code {
   font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 900;
   color: #FFF9E6;
   letter-spacing: 0.06em;
   margin-top: 2px;
-  text-shadow: 0 0 14px rgba(232, 185, 67, 0.5);
+  text-shadow: 0 0 12px rgba(232, 185, 67, 0.4);
 }
 
 .diw-pass-copy-btn {
-  background: rgba(232, 185, 67, 0.18);
+  background: rgba(232, 185, 67, 0.15);
   border: 1.2px solid #E8B943;
   color: #FCD34D;
   padding: 5px 12px;
@@ -649,7 +699,7 @@
 }
 
 .diw-pass-divider {
-  border-top: 1px dashed rgba(232, 185, 67, 0.35);
+  border-top: 1.5px dashed rgba(232, 185, 67, 0.35);
   margin: 12px 0 14px;
 }
 
@@ -660,7 +710,7 @@
 }
 
 .diw-success-grid .lbl {
-  color: rgba(255, 255, 255, 0.65);
+  color: #BFAEA4;
   display: block;
   font-size: 10px;
   font-weight: 700;
@@ -687,21 +737,21 @@
 }
 
 .diw-pass-guarantee {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 10px;
   margin-top: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 10.5px;
-  color: #FFE58F;
+  color: #E8B943;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
 .diw-concierge-note {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.72);
+  color: #5A524D;
   line-height: 1.45;
   margin-bottom: 16px;
   max-width: 440px;
@@ -710,10 +760,10 @@
 /* WhatsApp CTA Button */
 .diw-whatsapp-btn {
   width: 100%;
-  padding: 14px 22px;
+  padding: 13px 20px;
   background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  border: none;
+  border-radius: 12px;
   color: #FFFFFF;
   font-size: 14.5px;
   font-weight: 800;
@@ -723,137 +773,19 @@
   justify-content: center;
   gap: 8px;
   box-shadow: 
-    0 10px 28px rgba(37, 211, 102, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 8px 24px rgba(37, 211, 102, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: all 0.25s ease;
   box-sizing: border-box;
   cursor: pointer;
 }
 
 .diw-whatsapp-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(37, 211, 102, 0.58);
+  transform: translateY(-1.5px);
+  box-shadow: 0 12px 30px rgba(37, 211, 102, 0.45);
 }
 
-/* ==============================================================================
-   RESPONSIVE DESIGN (MOBILE / TABLET OPTIMIZATIONS)
-   ============================================================================== */
-
-@media (max-width: 540px) {
-  .diw-modal-root {
-    padding: 10px;
-  }
-
-  .diw-modal-card {
-    border-radius: 20px;
-    max-height: calc(100vh - 20px);
-  }
-
-  .diw-promo-header {
-    padding: 15px 16px 14px;
-  }
-
-  .diw-form-body {
-    padding: 14px 16px 18px;
-  }
-
-  .diw-discount-highlight-card {
-    padding: 10px 13px;
-    gap: 10px;
-  }
-
-  .diw-discount-big {
-    font-size: 19px;
-  }
-
-  .diw-discount-min {
-    font-size: 10px;
-  }
-
-  .diw-form-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .diw-form-group input,
-  .diw-form-group select {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  .diw-submit-btn {
-    padding: 13px 18px;
-    font-size: 14px;
-  }
-}
-
-/* ==============================================================================
-   SPECIFIC COMPACT SIZING: DIWALI OFFER MODAL ONLY
-   Fixes "too broad" appearance on desktop/laptop while leaving all other forms untouched
-   ============================================================================== */
+/* Specific compact width for Diwali Offer modal (not too broad) */
 .diw-diwali-compact-modal {
-  max-width: 410px !important;
-  border-radius: 20px;
-}
-
-.diw-diwali-compact-modal .diw-promo-header {
-  padding: 15px 18px 13px;
-}
-
-.diw-diwali-compact-modal .diw-form-body {
-  padding: 14px 18px 18px;
-}
-
-.diw-diwali-compact-modal .diw-discount-highlight-card {
-  padding: 9px 13px;
-  gap: 10px;
-}
-
-.diw-diwali-compact-modal .diw-discount-big {
-  font-size: 19px;
-}
-
-.diw-diwali-compact-modal .diw-discount-tagline {
-  font-size: 10px;
-  letter-spacing: 0.04em;
-}
-
-.diw-diwali-compact-modal .diw-discount-min {
-  font-size: 10px;
-  line-height: 1.2;
-}
-
-.diw-diwali-compact-modal .diw-coupon-pill {
-  font-size: 11px;
-  padding: 3px 9px;
-}
-
-.diw-diwali-compact-modal .diw-form {
-  gap: 11px;
-}
-
-.diw-diwali-compact-modal .diw-form-grid {
-  gap: 10px;
-}
-
-.diw-diwali-compact-modal .diw-form-group {
-  gap: 4px;
-}
-
-.diw-diwali-compact-modal .diw-form-group label {
-  font-size: 11px;
-}
-
-.diw-diwali-compact-modal .diw-form-group input,
-.diw-diwali-compact-modal .diw-form-group select {
-  padding: 9px 11px;
-  font-size: 12px;
-  border-radius: 10px;
-}
-
-.diw-diwali-compact-modal .diw-submit-btn {
-  padding: 12.5px 18px;
-  font-size: 13.5px;
-  border-radius: 12px;
-  margin-top: 2px;
+  max-width: 430px !important;
 }
