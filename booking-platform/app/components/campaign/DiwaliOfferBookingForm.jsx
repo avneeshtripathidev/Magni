@@ -328,7 +328,7 @@ export default function DiwaliOfferBookingForm() {
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
-                <span>🎁</span>
+                <span>🪔</span>
                 <span>{isSuccess ? 'OFFICIAL PASS' : (settings.offerBadge || 'EXCLUSIVE DIWALI OFFER')}</span>
               </div>
 
@@ -375,7 +375,7 @@ export default function DiwaliOfferBookingForm() {
                       id="diw-name"
                       type="text"
                       required
-                      placeholder="Enter your name"
+                      placeholder="e.g. Avneesh Tripathi"
                       autoComplete="off"
                       value={formData.name}
                       className={errors.name ? 'diw-input-err' : ''}
@@ -392,7 +392,7 @@ export default function DiwaliOfferBookingForm() {
                       id="diw-phone"
                       type="tel"
                       required
-                      placeholder="Enter mobile number"
+                      placeholder="+91 98765-43210"
                       autoComplete="off"
                       value={formData.phone}
                       className={errors.phone ? 'diw-input-err' : ''}
