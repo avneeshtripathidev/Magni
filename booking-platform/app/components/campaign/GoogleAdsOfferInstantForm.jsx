@@ -412,7 +412,7 @@ export default function GoogleAdsOfferInstantForm() {
         />
 
         <motion.div
-          className="diw-modal-card"
+          className="diw-modal-card diw-diwali-compact-modal"
           initial={{ opacity: 0, scale: 0.94, y: 18 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 18 }}
@@ -444,8 +444,16 @@ export default function GoogleAdsOfferInstantForm() {
                 <h2 className="diw-title">Your Dream Event Starts Here!</h2>
                 <div className="diw-date-lock-card">
                   <div className="diw-lock-info-col">
-                    <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
+                    <div className="diw-lock-badge-row">
+                      <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
+                      <span className="diw-lock-save-pill">SAVE UP TO 65%</span>
+                    </div>
                     <span className="diw-lock-headline">Lock Your Event Booking at Just ₹2,499</span>
+                    <div className="diw-lock-perks-row">
+                      <span>45%–50% Package Off</span>
+                      <span className="diw-lock-dot">•</span>
+                      <span>+10% Extra (Code: <strong className="diw-lock-code">DIW100</strong>)</span>
+                    </div>
                   </div>
                   <div className="diw-lock-price-badge">
                     <span className="diw-lock-original-price">₹10,000</span>
@@ -460,34 +468,6 @@ export default function GoogleAdsOfferInstantForm() {
           {!isSuccess ? (
             /* 2. WARM IVORY FORM BODY */
             <div className="diw-form-body">
-              {/* Triple Discount Showcase Grid */}
-              <div className="diw-triple-discount-wrap">
-                <div className="diw-triple-discount-header">
-                  <span>SAVE UP TO 65%</span>
-                </div>
-                <div className="diw-triple-cards-grid">
-                  {/* Card 1: Package Offer */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">PACKAGE OFFER</span>
-                    <span className="diw-triple-val">45%–50% OFF</span>
-                    <span className="diw-triple-lbl">Event Booking</span>
-                  </div>
-
-                  {/* Card 2: Diwali Special (Highlighted) */}
-                  <div className="diw-triple-card diw-triple-card-featured">
-                    <span className="diw-triple-pill diw-pill-gold">DIWALI SPECIAL 🪔</span>
-                    <span className="diw-triple-val diw-val-gold">+10% EXTRA</span>
-                    <span className="diw-triple-lbl diw-lbl-gold">Code: DIW100</span>
-                  </div>
-
-                  {/* Card 3: Welcome Gift */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">WELCOME GIFT 🎁</span>
-                    <span className="diw-triple-val">+5% FIRST OFF</span>
-                    <span className="diw-triple-lbl">1st Booking Bonus</span>
-                  </div>
-                </div>
-              </div>
 
               {/* Enquiry Form: Clean 4 Fields (City & Date removed per user request) */}
               <form className="diw-form" onSubmit={handleSubmitLead}>

@@ -217,12 +217,52 @@
   text-align: left;
 }
 
+.diw-lock-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .diw-lock-badge {
   font-size: 9.5px;
   font-weight: 800;
   color: #E8B943;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.diw-lock-save-pill {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #FFFFFF;
+  background: #C53030;
+  padding: 1.5px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.diw-lock-perks-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #E2D7CF;
+  margin-top: 1px;
+}
+
+.diw-lock-dot {
+  color: rgba(232, 185, 67, 0.65);
+  font-size: 8px;
+}
+
+.diw-lock-code {
+  color: #FCD34D;
+  font-family: monospace;
+  font-weight: 800;
 }
 
 .diw-lock-headline {
