@@ -52,6 +52,27 @@ export async function POST(req) {
       } catch (locErr) {}
     }
 
+    // Accurately verify if this visitor actually came via Paid Ads
+    const hasAdClickId = !!(attribution.gclid || attribution.gbraid || attribution.wbraid);
+    const isPaidMedium = /^(cpc|ppc|paid|google_ad|paidsearch|ad)$/i.test(attribution.utm_medium || '');
+    const isGooglePaidAd = hasAdClickId || (attribution.utm_source?.includes('google') && isPaidMedium);
+
+    const referrer = attribution.referrer || req.headers.get('referer') || '';
+    const isOrganicGoogle = !isGooglePaidAd && (referrer.toLowerCase().includes('google.') || attribution.utm_medium === 'organic');
+
+    let resolvedTrafficSource = 'Direct Visit';
+    let resolvedChannelType = 'Direct';
+    if (isGooglePaidAd) {
+      resolvedTrafficSource = 'Google Ads';
+      resolvedChannelType = 'Paid Search';
+    } else if (isOrganicGoogle) {
+      resolvedTrafficSource = 'Google Search (Organic)';
+      resolvedChannelType = 'Organic Search';
+    } else if (attribution.traffic_source) {
+      resolvedTrafficSource = attribution.traffic_source;
+      resolvedChannelType = 'Referral';
+    }
+
     const funnelRecord = {
       event_name: eventName,
       campaign_id: campaignId ? String(campaignId) : null,
@@ -66,13 +87,15 @@ export async function POST(req) {
       gclid: attribution.gclid || null,
       gbraid: attribution.gbraid || null,
       wbraid: attribution.wbraid || null,
-      utm_source: attribution.utm_source || 'google',
-      utm_medium: attribution.utm_medium || 'cpc',
-      utm_campaign: attribution.utm_campaign || campaignName || null,
+      utm_source: attribution.utm_source || (isGooglePaidAd ? 'google' : (isOrganicGoogle ? 'google' : 'direct')),
+      utm_medium: attribution.utm_medium || (isGooglePaidAd ? 'cpc' : (isOrganicGoogle ? 'organic' : 'direct')),
+      utm_campaign: isGooglePaidAd ? (attribution.utm_campaign || campaignName || null) : null,
       metadata: {
         ...metadata,
         fullUrl: attribution.landing_page || null,
-        referrer: attribution.referrer || null,
+        referrer: referrer || null,
+        isAd: isGooglePaidAd,
+        trafficSource: resolvedTrafficSource,
         timestamp: new Date().toISOString()
       }
     };
@@ -82,41 +105,43 @@ export async function POST(req) {
       // 1. Insert into dedicated campaign_funnel_events
       try {
         await supabase.from('campaign_funnel_events').insert([funnelRecord]);
-      } catch (fErr) {
-        // Table might not exist yet before migration
-      }
+      } catch (fErr) {}
 
-      // 2. Also record in analytics table so general stream records this conversion
-      try {
-        await supabase.from('analytics').insert([{
-          path: attribution.landing_page ? new URL(attribution.landing_page, 'https://magnevents.in').pathname : '/google-ads-offer',
-          type: eventName,
-          user_agent: userAgent,
-          ip_address: clientIp,
-          session_id: sessionId,
-          city: city,
-          region: region,
-          country: country,
-          device_type: deviceType,
-          details: {
-            isAd: true,
-            trafficSource: 'Google Ads',
-            campaign: {
-              campaignName: campaignName || 'Google Ads Campaign',
-              campaignId: campaignId,
-              adPlatform: 'Google Ads',
-              channelType: 'Paid Search',
-              adClickId: attribution.gclid || attribution.gbraid || attribution.wbraid,
-              utmSource: attribution.utm_source,
-              utmMedium: attribution.utm_medium,
-              utmCampaign: attribution.utm_campaign
-            },
-            conversionEvent: eventName,
-            referenceCode: referenceCode,
-            metadata
-          }
-        }]);
-      } catch (aErr) {}
+      // 2. Only record actual conversion events (not passive announcement strip views) in general analytics
+      if (eventName !== 'offer_strip_view') {
+        try {
+          await supabase.from('analytics').insert([{
+            path: attribution.landing_page ? new URL(attribution.landing_page, 'https://magnevents.in').pathname : '/google-ads-offer',
+            type: eventName,
+            user_agent: userAgent,
+            ip_address: clientIp,
+            session_id: sessionId,
+            city: city,
+            region: region,
+            country: country,
+            device_type: deviceType,
+            referrer: referrer || null,
+            details: {
+              isAd: isGooglePaidAd,
+              trafficSource: resolvedTrafficSource,
+              channelType: resolvedChannelType,
+              campaign: isGooglePaidAd ? {
+                campaignName: campaignName || 'Google Ads Campaign',
+                campaignId: campaignId,
+                adPlatform: 'Google Ads',
+                channelType: 'Paid Search',
+                adClickId: attribution.gclid || attribution.gbraid || attribution.wbraid,
+                utmSource: attribution.utm_source,
+                utmMedium: attribution.utm_medium,
+                utmCampaign: attribution.utm_campaign
+              } : null,
+              conversionEvent: eventName,
+              referenceCode: referenceCode,
+              metadata
+            }
+          }]);
+        } catch (aErr) {}
+      }
     }
 
     return NextResponse.json({

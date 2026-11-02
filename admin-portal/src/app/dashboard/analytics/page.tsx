@@ -296,35 +296,40 @@ export default function AnalyticsPage() {
     const userUtm = user.utm || user.campaignParams || {};
     const path = record.path || '/';
 
+    const referrerStr = (record.referrer || user.referrer || '').toLowerCase();
+    const utmMediumStr = (userUtm.utm_medium || userUtm.medium || campaignObj.utmMedium || '').toLowerCase();
+    const rawSource = record.details?.trafficSource || user.trafficSource || (record.referrer ? 'Referral' : 'Direct');
+
     const hasGclid = path.includes('gclid=') || !!campaignObj.adClickId || !!userUtm.gclid;
     const hasFbclid = path.includes('fbclid=') || !!userUtm.fbclid;
-    const hasCampaignParam = path.includes('utm_campaign=') || path.includes('campaign_id=') || !!campaignObj.campaignName || !!userUtm.utm_campaign;
-    const isPaidMedium = /cpc|ppc|paid|ad|meta_ad|google_ad/i.test(userUtm.utm_medium || userUtm.medium || campaignObj.utmMedium || '');
+    const hasRealAdClickId = hasGclid || hasFbclid || path.includes('wbraid=') || path.includes('gbraid=') || !!userUtm.wbraid || !!userUtm.gbraid;
+    const isPaidMedium = /^(cpc|ppc|paid|google_ad|paidsearch|meta_ad|ad)$/i.test(utmMediumStr);
 
-    const isAd = campaignObj.isAd === true || 
-                 record.details?.isAd === true || 
-                 hasGclid || 
-                 hasFbclid || 
+    // If visitor came from organic search engine (or direct) without ad click ID or paid medium, they are NOT an ad
+    const isGoogleOrganic = (referrerStr.includes('google.') || rawSource.toLowerCase().includes('organic')) && !hasRealAdClickId && !isPaidMedium;
+
+    const isAd = !isGoogleOrganic && (
+                 hasRealAdClickId || 
                  isPaidMedium || 
-                 (hasCampaignParam && !record.referrer);
+                 (campaignObj.isAd === true && (hasRealAdClickId || isPaidMedium)) ||
+                 (record.details?.isAd === true && (hasRealAdClickId || isPaidMedium))
+               );
 
-    const adPlatform = campaignObj.adPlatform || 
-                       (hasGclid ? 'Google Ads' : hasFbclid ? 'Meta / Instagram Ads' : isAd ? 'Paid Campaign' : null);
+    const adPlatform = isAd ? (campaignObj.adPlatform || (hasGclid ? 'Google Ads' : hasFbclid ? 'Meta / Instagram Ads' : 'Paid Campaign')) : null;
 
-    const campaignName = campaignObj.campaignName || userUtm.utm_campaign || userUtm.campaign || null;
-    const campaignId = campaignObj.campaignId || userUtm.campaign_id || userUtm.utm_id || null;
-    const adClickId = campaignObj.adClickId || userUtm.gclid || userUtm.fbclid || (hasGclid ? 'gclid detected' : null);
-    const keyword = campaignObj.keyword || userUtm.utm_term || null;
+    const campaignName = isAd ? (campaignObj.campaignName || userUtm.utm_campaign || userUtm.campaign || null) : null;
+    const campaignId = isAd ? (campaignObj.campaignId || userUtm.campaign_id || userUtm.utm_id || null) : null;
+    const adClickId = isAd ? (campaignObj.adClickId || userUtm.gclid || userUtm.fbclid || (hasGclid ? 'gclid detected' : null)) : null;
+    const keyword = isAd ? (campaignObj.keyword || userUtm.utm_term || null) : null;
 
     // Traffic Source Classification
-    const rawSource = record.details?.trafficSource || user.trafficSource || (record.referrer ? 'Referral' : 'Direct');
     let channelCategory: 'ad' | 'organic' | 'social' | 'direct' | 'referral' = 'direct';
     let channelLabel = '🔗 Direct Visit';
 
     if (isAd) {
       channelCategory = 'ad';
       channelLabel = `🎯 ${adPlatform || 'Paid Ad'}${campaignName ? `: ${campaignName}` : ''}`;
-    } else if (rawSource.toLowerCase().includes('google') || rawSource.toLowerCase().includes('bing') || rawSource.toLowerCase().includes('yahoo')) {
+    } else if (isGoogleOrganic || referrerStr.includes('google.') || rawSource.toLowerCase().includes('google') || rawSource.toLowerCase().includes('bing') || rawSource.toLowerCase().includes('yahoo')) {
       channelCategory = 'organic';
       channelLabel = '🔍 Google Search (Organic)';
     } else if (rawSource.toLowerCase().includes('instagram') || rawSource.toLowerCase().includes('facebook') || rawSource.toLowerCase().includes('youtube') || rawSource.toLowerCase().includes('whatsapp') || rawSource.toLowerCase().includes('twitter') || rawSource.toLowerCase().includes('x.com')) {

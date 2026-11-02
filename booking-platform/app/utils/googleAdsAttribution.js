@@ -51,33 +51,36 @@ export function isGoogleAdsTraffic() {
     const wbraid = params.get('wbraid');
     const utmSource = (params.get('utm_source') || '').toLowerCase();
     const utmMedium = (params.get('utm_medium') || '').toLowerCase();
-    const campaignId = params.get('campaign_id') || params.get('campaign');
 
+    // If medium is organic, it is definitely NOT a paid ad
+    if (utmMedium === 'organic') {
+      return false;
+    }
+
+    // A visitor is STRICTLY Google Ads if they possess a valid Google click identifier
+    // or utm_source=google combined with an explicit paid ad medium (cpc, ppc, paid, ad)
     const hasAdClickId = !!(gclid || gbraid || wbraid);
-    const isPaidMedium = /cpc|ppc|paid|google_ad|paidsearch|ad/i.test(utmMedium);
+    const isPaidMedium = /^(cpc|ppc|paid|google_ad|paidsearch|ad)$/i.test(utmMedium);
     const isGooglePaid = utmSource.includes('google') && isPaidMedium;
 
-    const hash = window.location.hash || '';
-    const hasOfferHash = hash === '#offer' || hash === '#instant-form' || hash === '#instant' || hash === '#instant-booking' || hash === '#lock-booking' || hash === '#google-offer';
-    const isExplicitInstant = params.get('offer') === 'true' || params.get('offer') === '1' || params.get('instant_form') === 'true' || params.get('instant') === 'true' || params.get('variant') === 'offer';
-
-    if (hasAdClickId || isGooglePaid || utmSource.includes('google') || hasOfferHash || isExplicitInstant) {
+    if (hasAdClickId || isGooglePaid) {
       return true;
     }
 
-    // 2. Check active session storage (user navigating to subsequent pages)
+    // 2. Check active session storage ONLY if verified from real ad click parameters
+    const stored = sessionStorage.getItem(STORAGE_KEY_CAMPAIGN);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.gclid || parsed.gbraid || parsed.wbraid || (parsed.utm_source?.includes('google') && /^(cpc|ppc|paid|google_ad)$/i.test(parsed.utm_medium || ''))) {
+          return true;
+        }
+      } catch (e) {}
+    }
+
     const storedIsGads = sessionStorage.getItem(STORAGE_KEY_IS_GADS);
     if (storedIsGads === 'true') {
       return true;
-    }
-
-    // 3. Check parsed stored attribution
-    const stored = sessionStorage.getItem(STORAGE_KEY_CAMPAIGN);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.gclid || parsed.gbraid || parsed.wbraid || (parsed.utm_source?.includes('google') && /cpc|ppc|paid/i.test(parsed.utm_medium || ''))) {
-        return true;
-      }
     }
   } catch (e) {}
 
@@ -169,20 +172,40 @@ export function captureAndPersistGoogleAdsAttribution() {
       try { existingData = JSON.parse(cached); } catch (e) {}
     }
 
+    const referrer = document.referrer || '';
+    let detectedSource = 'Direct Visit';
+    let isOrganicSearch = false;
+
+    if (referrer) {
+      const refLower = referrer.toLowerCase();
+      if (refLower.includes('google.')) {
+        detectedSource = 'Google Search (Organic)';
+        isOrganicSearch = true;
+      } else if (refLower.includes('bing.')) {
+        detectedSource = 'Bing Search (Organic)';
+        isOrganicSearch = true;
+      } else if (refLower.includes('yahoo.')) {
+        detectedSource = 'Yahoo Search (Organic)';
+        isOrganicSearch = true;
+      } else {
+        detectedSource = 'Referral';
+      }
+    }
+
     const attribution = {
       gclid: gclid || existingData.gclid || null,
       gbraid: gbraid || existingData.gbraid || null,
       wbraid: wbraid || existingData.wbraid || null,
-      utm_source: utmSource || existingData.utm_source || (isAd ? 'google' : null),
-      utm_medium: utmMedium || existingData.utm_medium || (isAd ? 'cpc' : null),
+      utm_source: utmSource || existingData.utm_source || (isAd ? 'google' : (isOrganicSearch ? 'google' : null)),
+      utm_medium: utmMedium || existingData.utm_medium || (isAd ? 'cpc' : (isOrganicSearch ? 'organic' : null)),
       utm_campaign: utmCampaign || existingData.utm_campaign || null,
       utm_content: utmContent || existingData.utm_content || null,
       utm_term: utmTerm || existingData.utm_term || null,
       landing_page: existingData.landing_page || window.location.href,
-      referrer: existingData.referrer || document.referrer || 'Direct',
+      referrer: existingData.referrer || referrer || 'Direct',
       first_visit_timestamp: existingData.first_visit_timestamp || new Date().toISOString(),
       session_id: sessionId,
-      traffic_source: isAd ? 'Google Ads' : (existingData.traffic_source || 'Direct'),
+      traffic_source: isAd ? 'Google Ads' : (isOrganicSearch ? 'Google Search (Organic)' : (existingData.traffic_source || detectedSource)),
       form_variant: isAd ? getGoogleAdsFormVariant() : 'normal_form'
     };
 
@@ -190,6 +213,8 @@ export function captureAndPersistGoogleAdsAttribution() {
     if (isAd) {
       sessionStorage.setItem(STORAGE_KEY_IS_GADS, 'true');
       localStorage.setItem('magnevents_last_gads_visit', new Date().toISOString());
+    } else {
+      sessionStorage.removeItem(STORAGE_KEY_IS_GADS);
     }
 
     return attribution;
