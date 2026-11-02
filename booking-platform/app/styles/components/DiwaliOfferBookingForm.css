@@ -786,3 +786,74 @@
     font-size: 14px;
   }
 }
+
+/* ==============================================================================
+   SPECIFIC COMPACT SIZING: DIWALI OFFER MODAL ONLY
+   Fixes "too broad" appearance on desktop/laptop while leaving all other forms untouched
+   ============================================================================== */
+.diw-diwali-compact-modal {
+  max-width: 410px !important;
+  border-radius: 20px;
+}
+
+.diw-diwali-compact-modal .diw-promo-header {
+  padding: 15px 18px 13px;
+}
+
+.diw-diwali-compact-modal .diw-form-body {
+  padding: 14px 18px 18px;
+}
+
+.diw-diwali-compact-modal .diw-discount-highlight-card {
+  padding: 9px 13px;
+  gap: 10px;
+}
+
+.diw-diwali-compact-modal .diw-discount-big {
+  font-size: 19px;
+}
+
+.diw-diwali-compact-modal .diw-discount-tagline {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.diw-diwali-compact-modal .diw-discount-min {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.diw-diwali-compact-modal .diw-coupon-pill {
+  font-size: 11px;
+  padding: 3px 9px;
+}
+
+.diw-diwali-compact-modal .diw-form {
+  gap: 11px;
+}
+
+.diw-diwali-compact-modal .diw-form-grid {
+  gap: 10px;
+}
+
+.diw-diwali-compact-modal .diw-form-group {
+  gap: 4px;
+}
+
+.diw-diwali-compact-modal .diw-form-group label {
+  font-size: 11px;
+}
+
+.diw-diwali-compact-modal .diw-form-group input,
+.diw-diwali-compact-modal .diw-form-group select {
+  padding: 9px 11px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+.diw-diwali-compact-modal .diw-submit-btn {
+  padding: 12.5px 18px;
+  font-size: 13.5px;
+  border-radius: 12px;
+  margin-top: 2px;
+}
