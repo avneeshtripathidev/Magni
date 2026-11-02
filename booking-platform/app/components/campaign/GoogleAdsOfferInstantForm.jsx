@@ -163,17 +163,21 @@ export default function GoogleAdsOfferInstantForm() {
       };
     }
 
-    // Google Ads traffic auto-open:
-    // In local dev, ignore dismissed/submitted locks so developer & tester can always view and test.
-    // In production, open once after 1000ms if not dismissed or submitted in the current session.
-    const canAutoOpen = isEligible && (
-      isLocalDev || (!hasDismissedGoogleAdsOffer() && !hasSubmittedGoogleAdsOffer())
+    // Delay: exactly 6 seconds on home page ('/'), and 4 seconds on other pages
+    const isHomePage = pathname === '/' || pathname === '' || pathname === '/index';
+    const autoOpenDelay = isHomePage ? 6000 : 4000;
+
+    // Auto-open logic:
+    // - In local dev (when starting server), auto-open after 6s (home) or 4s (other pages)
+    // - In production, auto-open for eligible traffic if not dismissed or submitted in the current session
+    const canAutoOpen = isLocalDev || (
+      isEligible && !hasDismissedGoogleAdsOffer() && !hasSubmittedGoogleAdsOffer()
     );
 
     if (canAutoOpen) {
       const autoTimer = setTimeout(() => {
         setIsOpen(true);
-      }, 1000);
+      }, autoOpenDelay);
 
       const onHashChange = () => {
         if (checkHashAndParams()) setIsOpen(true);
