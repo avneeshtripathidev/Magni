@@ -179,11 +179,13 @@ export default async function CityBlogPage({ params }) {
         {/* Luxury Hero Banner with Interactive Booking Engine & Top 5 Verified Artists Showcase */}
         <SEOLandingHero
           heroTitle={blog.title}
-          heroSubtitle={blog.meta_description || `Book verified, celebrated ${category}s directly for weddings, private parties, birthday bashes & celebrations in ${cityName}. 100% Artist Arrival Guarantee.`}
+          heroSubtitle={blog.meta_description || 'Book verified performers directly for your next grand event.'}
           category={category}
           city={cityName}
           subCategory={subCategory}
           topArtists={topArtists}
+          isSpecialTokenPage={true}
+          locationSlug={blog.slug}
         />
 
         {/* Blog Article & Interactive Reading Experience */}

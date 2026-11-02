@@ -510,12 +510,6 @@ export default function DiwaliOfferBookingForm() {
 
                 <div className="diw-success-grid">
                   <div>
-                    <span className="lbl">Estimated Savings</span>
-                    <span className="val val-savings">
-                      {savings.isEligible ? `₹${savings.discountAmt.toLocaleString('en-IN')} (${savings.pct}% OFF)` : `${savings.pct}% OFF`}
-                    </span>
-                  </div>
-                  <div>
                     <span className="lbl">Event Category</span>
                     <span className="val">{formData.eventType || 'Live Artists'}</span>
                   </div>

@@ -27,7 +27,7 @@ export default function SEOLandingHero({
   city = "Bhubaneswar",
   subCategory = "",
   topArtists = [],
-  isSpecialTokenPage = false,
+  isSpecialTokenPage = true,
   locationSlug = ""
 }) {
   const formRef = useRef(null);
