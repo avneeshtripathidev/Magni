@@ -1,12 +1,13 @@
 import { supabase } from '@database/connection/supabase';
 import { defaultBlogs } from '@/app/blog-post/data';
 
-export const revalidate = 86400; 
+export const revalidate = 86400; // Cache at Edge for 24 hours
 
 export default async function sitemap() {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.magnevents.in').replace(/\/+$/, '');
   const now = new Date().toISOString();
 
+  // 1. Core High-Priority Platform Routes
   const coreRoutes = [
     { route: '', priority: 1.0, changeFrequency: 'daily' },
     { route: '/ai-search', priority: 0.95, changeFrequency: 'daily' },
@@ -28,7 +29,10 @@ export default async function sitemap() {
     priority: item.priority,
   }));
 
-  const rawLandingPages = [
+  // 2. High-Intent National Keyword Routes (Broad India Search)
+  const nationalKeywordRoutes = [
+    '/singers-near-me',
+    '/live-singers-near-me',
     '/singer-booking-near-me',
     '/live-singer-for-party',
     '/professional-singer-booking',
@@ -46,6 +50,7 @@ export default async function sitemap() {
     '/sufi-night-for-wedding',
     '/mehndi-singer-booking',
     '/sangeet-singer-booking',
+    '/haldi-ceremony-singer-booking',
     '/reception-live-music',
     '/engagement-party-singer',
     '/wedding-entertainment-packages',
@@ -55,449 +60,217 @@ export default async function sitemap() {
     '/corporate-gala-live-music',
     '/annual-function-singer',
     '/product-launch-entertainment',
-    '/singer-booking-in-delhi',
-    '/singer-booking-in-noida',
-    '/live-band-in-gurgaon',
-    '/sufi-singer-in-lucknow',
-    '/singer-for-party-in-varanasi',
-    '/live-music-in-jaipur',
-    '/corporate-singer-in-bangalore',
-    '/singer-booking-in-pune',
-    '/acoustic-singer-in-bangalore',
-    '/sufi-singer-in-jaipur',
-    '/live-band-in-noida',
-    '/wedding-singer-in-gurgaon',
-    '/corporate-event-singer-in-delhi',
-    '/corporate-event-singer-in-mumbai',
-    '/wedding-entertainment-in-delhi',
-    '/wedding-entertainment-in-mumbai',
-    '/wedding-entertainment-in-jaipur',
     '/singer-booking-price',
     '/wedding-singer-cost',
     '/live-band-booking-price',
     '/sufi-singer-booking-price',
     '/affordable-live-music-packages',
     '/singer-for-party-under-10000',
-    '/singers-near-me',
     '/singer-for-house-party',
     '/live-singer-for-private-party',
     '/live-singer-for-house-party',
     '/house-gig',
     '/book-singer-music-band',
     '/book-live-singer',
-    '/singer-in-delhi',
-    '/singer-in-noida',
-    '/singer-in-gurgaon',
-    '/singer-in-mumbai',
-    '/singer-in-bangalore',
-    '/singer-in-pune',
-    '/singer-in-hyderabad',
-    '/singer-in-kolkata',
-    '/singer-in-jaipur',
-    '/singer-in-lucknow',
-    '/singer-in-ahmedabad',
-    '/singer-in-chandigarh',
-    '/singer-in-bhubaneswar',
-    '/singer-in-chennai',
-    '/singer-in-indore',
-    '/singer-in-bhopal',
-    '/singer-in-kanpur',
-    '/singer-in-nagpur',
-    '/singer-in-patna',
-    '/singer-in-vadodara',
-    '/singer-in-ghaziabad',
-    '/singer-in-faridabad',
-    '/singer-in-varanasi',
-    '/singer-in-agra',
-    '/singer-in-nashik',
-    '/singer-in-ranchi',
-    '/singer-in-amritsar',
-    '/singer-in-ludhiana',
-    '/dj-in-delhi',
-    '/dj-in-noida',
-    '/dj-in-mumbai',
-    '/dj-in-bangalore',
-    '/dj-in-kochi',
-    '/dj-in-pune',
-    '/dj-booking-near-me',
-    '/live-band-in-delhi',
-    '/live-band-in-mumbai',
-    '/live-band-in-pune',
-    '/live-band-in-bangalore',
-    '/live-band-in-hyderabad',
-    '/live-band-in-jaipur',
-    '/live-band-in-chandigarh',
-    '/wedding-singer-in-delhi',
-    '/wedding-singer-in-mumbai',
-    '/wedding-singer-in-pune',
-    '/wedding-singer-in-jaipur',
-    '/wedding-band-in-delhi',
-    '/wedding-band-in-mumbai',
-    '/wedding-band-in-hyderabad',
-    '/book-singer-for-house-party-in-delhi',
-    '/book-live-band-in-delhi',
     '/book-singer-for-wedding',
-    '/corporate-musician-in-bangalore',
-    '/corporate-musician-in-delhi',
-    '/corporate-musician-in-mumbai',
-    '/house-party-singer-in-ahmedabad',
-    '/house-party-singer-in-delhi',
-    '/house-party-singer-in-gurgaon',
-    '/house-party-singer-in-noida',
-    '/wedding-singer-in-chennai',
-    '/sufi-singer-in-kolkata',
-    '/sufi-singer-in-delhi',
-    '/wedding-musicians-in-surat',
-    '/corporate-singer-in-jaipur',
-    '/corporate-musician-in-lucknow',
-    '/live-singer-in-kanpur',
-    '/wedding-singer-in-nagpur',
-    '/private-event-singer-in-indore',
-    '/house-party-singer-in-thane',
-    '/shaadi-singer-in-bhopal',
-    '/sufi-singer-in-visakhapatnam',
-    '/bollywood-singer-in-pimpri-chinchwad',
-    '/birthday-singer-in-patna',
-    '/corporate-singer-in-vadodara',
-    '/shaadi-singer-in-ghaziabad',
-    '/sangeet-singer-in-ludhiana',
-    '/corporate-singer-in-agra',
-    '/ghazal-singer-in-nashik',
-    '/ghazal-singer-in-delhi',
-    '/ghazal-singer-in-mumbai',
-    '/ghazal-singer-in-bhubaneswar',
-    '/live-band-in-ranchi',
-    '/house-party-singer-in-faridabad',
-    '/live-singer-in-meerut',
-    '/acoustic-singer-in-rajkot',
-    '/acoustic-singer-in-delhi',
-    '/corporate-event-singer-in-kalyan-dombivli',
-    '/acoustic-singer-in-vasai-virar',
-    '/live-band-in-varanasi',
-    '/corporate-singer-in-srinagar',
-    '/bollywood-singer-in-aurangabad',
-    '/corporate-event-singer-in-dhanbad',
-    '/acoustic-singer-in-amritsar',
-    '/punjabi-singer-in-navi-mumbai',
-    '/punjabi-singer-in-delhi',
-    '/punjabi-singer-in-chandigarh',
-    '/live-singer-in-allahabad',
-    '/corporate-musician-in-howrah',
-    '/birthday-singer-in-gwalior',
-    '/birthday-singer-in-jabalpur',
-    '/house-party-singer-in-coimbatore',
-    '/live-singer-in-vijayawada',
-    '/corporate-musician-in-jodhpur',
-    '/corporate-musician-in-madurai',
-    '/live-singer-in-raipur',
-    '/corporate-musician-in-kota',
-    '/corporate-musician-in-chandigarh',
-    '/corporate-event-singer-in-guwahati',
-    '/ghazal-singer-in-solapur',
-    '/corporate-event-singer-in-hubli-dharwad',
-    '/live-band-in-mysore',
-    '/corporate-musician-in-tiruchirappalli',
-    '/live-singer-in-bareilly',
-    '/corporate-event-singer-in-aligarh',
-    '/live-band-in-tiruppur',
-    '/corporate-event-singer-in-gurgaon',
-    '/punjabi-singer-in-moradabad',
-    '/corporate-singer-in-jalandhar',
-    '/punjabi-singer-in-salem',
-    '/wedding-band-in-warangal',
-    '/shaadi-singer-in-mira-bhayandar',
-    '/bollywood-singer-in-jalgaon',
-    '/acoustic-singer-in-guntur',
-    '/corporate-singer-in-thiruvananthapuram',
-    '/wedding-band-in-bhiwandi',
-    '/sufi-singer-in-saharanpur',
-    '/live-band-in-gorakhpur',
-    '/wedding-musicians-in-bikaner',
-    '/shaadi-singer-in-amravati',
-    '/corporate-musician-in-noida',
-    '/house-party-singer-in-jamshedpur',
-    '/live-singer-in-bhilai',
-    '/live-music-in-cuttack',
-    '/bollywood-singer-in-firozabad',
-    '/corporate-event-singer-in-kochi',
-    '/shaadi-singer-in-nellore',
-    '/sangeet-singer-in-bhavnagar',
-    '/sangeet-singer-in-dehradun',
-    '/singer-for-events-in-durgapur',
-    '/shaadi-singer-in-asansol',
-    '/birthday-singer-in-rourkela',
-    '/shaadi-singer-in-nanded',
-    '/corporate-musician-in-kolhapur',
-    '/punjabi-singer-in-ajmer',
-    '/wedding-musicians-in-akola',
-    '/singer-for-events-in-gulbarga',
-    '/live-singer-in-jamnagar',
-    '/birthday-singer-in-ujjain',
-    '/birthday-singer-in-loni',
-    '/bollywood-singer-in-siliguri',
-    '/live-band-in-jhansi',
-    '/live-singer-in-ulhasnagar',
-    '/corporate-musician-in-jammu',
-    '/live-music-in-sangli-miraj-kupwad',
-    '/wedding-band-in-mangalore',
-    '/acoustic-singer-in-erode',
-    '/wedding-singer-in-belgaum',
-    '/house-party-singer-in-ambattur',
-    '/sangeet-singer-in-tirunelveli',
-    '/live-band-in-malegaon',
-    '/singer-for-events-in-gaya',
-    '/wedding-singer-in-udaipur',
-    '/live-singer-in-maheshtala',
-    '/corporate-singer-in-davanagere',
-    '/house-party-singer-in-kozhikode',
-    '/wedding-musicians-in-kurnool',
-    '/corporate-event-singer-in-rajpur-sonarpur',
-    '/wedding-band-in-rajahmundry',
-    '/corporate-musician-in-bokaro',
-    '/corporate-musician-in-south-dumdum',
-    '/wedding-musicians-in-bellary',
-    '/bollywood-singer-in-patiala',
-    '/corporate-event-singer-in-gopalpur',
-    '/sangeet-singer-in-agartala',
-    '/corporate-musician-in-bhagalpur',
-    '/wedding-band-in-muzaffarnagar',
-    '/house-party-singer-in-bhatpara',
-    '/shaadi-singer-in-panihati',
-    '/live-music-in-latur',
-    '/singer-for-events-in-dhule',
-    '/punjabi-singer-in-tirupati',
-    '/singer-for-events-in-rohtak',
-    '/private-event-singer-in-korba',
-    '/sangeet-singer-in-bhilwara',
-    '/house-party-singer-in-berhampur',
-    '/acoustic-singer-in-muzaffarpur',
-    '/corporate-event-singer-in-ahmednagar',
-    '/punjabi-singer-in-mathura',
-    '/private-event-singer-in-kollam',
-    '/acoustic-singer-in-avadi',
-    '/live-singer-in-kadapa',
-    '/wedding-singer-in-kamarhati',
-    '/corporate-musician-in-sambalpur',
-    '/corporate-musician-in-bilaspur',
-    '/bollywood-singer-in-shahjahanpur',
-    '/ghazal-singer-in-satara',
-    '/wedding-musicians-in-bijapur',
-    '/punjabi-singer-in-rampur',
-    '/shaadi-singer-in-shivamogga',
-    '/house-party-singer-in-chandrapur',
-    '/wedding-band-in-junagadh',
-    '/private-event-singer-in-thrissur',
-    '/acoustic-singer-in-alwar',
-    '/shaadi-singer-in-bardhaman',
-    '/wedding-band-in-kulti',
-    '/corporate-singer-in-kakinada',
-    '/live-music-in-nizamabad',
-    '/sufi-singer-in-parbhani',
-    '/house-party-singer-in-tumkur',
-    '/shaadi-singer-in-khammam',
-    '/singer-for-events-in-ozhukarai',
-    '/corporate-event-singer-in-bihar-sharif',
-    '/wedding-singer-in-panipat',
-    '/live-band-in-darbhanga',
-    '/house-party-singer-in-bally',
-    '/live-band-in-aizawl',
-    '/wedding-musicians-in-dewas',
-    '/singer-for-events-in-ichalkaranji',
-    '/corporate-event-singer-in-karnal',
-    '/corporate-event-singer-in-bathinda',
-    '/corporate-musician-in-jalna',
-    '/wedding-singer-in-eluru',
-    '/singer-for-events-in-barasat',
-    '/wedding-singer-in-kirari-suleman-nagar',
-    '/live-band-in-purnia',
-    '/birthday-singer-in-satna',
-    '/corporate-event-singer-in-mau',
-    '/sangeet-singer-in-sonipat',
-    '/wedding-singer-in-farrukhabad',
-    '/private-event-singer-in-sagar',
-    '/corporate-singer-in-durg',
-    '/shaadi-singer-in-imphal',
-    '/wedding-singer-in-ratlam',
-    '/bollywood-singer-in-hapur',
-    '/live-band-in-anantapur',
-    '/private-event-singer-in-arrah',
-    '/live-music-in-karimnagar',
-    '/wedding-singer-in-etawah',
-    '/private-event-singer-in-ambernath',
-    '/singer-for-events-in-north-dumdum',
-    '/live-singer-in-bharatpur',
-    '/singer-for-events-in-begusarai',
-    '/shaadi-singer-in-new-delhi',
-    '/corporate-singer-in-gandhidham',
-    '/corporate-singer-in-baranagar',
-    '/singer-for-events-in-tiruvottiyur',
-    '/live-band-in-puducherry',
-    '/corporate-event-singer-in-sikar',
-    '/house-party-singer-in-thoothukudi',
-    '/singer-for-events-in-rewa',
-    '/corporate-singer-in-mirzapur',
-    '/wedding-singer-in-raichur',
-    '/corporate-event-singer-in-pali',
-    '/corporate-event-singer-in-ramagundam',
-    '/singer-for-events-in-silchar',
-    '/corporate-event-singer-in-haridwar',
-    '/live-band-in-vijayanagaram',
-    '/corporate-event-singer-in-tenali',
-    '/house-party-singer-in-nagercoil',
-    '/sangeet-singer-in-sri-ganganagar',
-    '/sangeet-singer-in-karawal-nagar',
-    '/live-music-in-mango',
-    '/punjabi-singer-in-thanjavur',
-    '/sufi-singer-in-bulandshahr',
-    '/corporate-musician-in-uluberia',
-    '/ghazal-singer-in-katni',
-    '/live-music-in-sambhal',
-    '/house-party-singer-in-singrauli',
-    '/singer-for-events-in-nadiad',
-    '/birthday-singer-in-secunderabad',
-    '/live-band-in-naihati',
-    '/live-singer-in-yamunanagar',
-    '/corporate-singer-in-bidhannagar',
-    '/live-band-in-pallavaram',
-    '/wedding-band-in-bidar',
-    '/sufi-singer-in-munger',
-    '/live-singer-in-panchkula',
-    '/wedding-musicians-in-burhanpur',
-    '/live-music-in-raurkela-industrial-township',
-    '/house-party-singer-in-kharagpur',
-    '/wedding-singer-in-dindigul',
-    '/shaadi-singer-in-gandhinagar',
-    '/corporate-singer-in-hospet',
-    '/corporate-musician-in-nangloi-jat',
-    '/corporate-event-singer-in-malda',
-    '/ghazal-singer-in-ongole',
-    '/acoustic-singer-in-deoghar',
-    '/wedding-band-in-chapra',
-    '/live-singer-in-haldia',
-    '/bollywood-singer-in-khandwa',
-    '/sangeet-singer-in-nandyal',
-    '/corporate-event-singer-in-morena',
-    '/sangeet-singer-in-amroha',
-    '/sangeet-singer-in-anand',
-    '/wedding-singer-in-bhind',
-    '/wedding-band-in-bhalswa-jahangir-pur',
-    '/private-event-singer-in-madhyamgram',
-    '/punjabi-singer-in-bhiwani',
-    '/live-music-in-berhampore',
-    '/house-party-singer-in-ambala',
-    '/live-singer-in-morbi',
-    '/wedding-singer-in-fatehpur',
-    '/wedding-singer-in-raebareli',
-    '/corporate-singer-in-khora',
-    '/live-band-in-chittoor',
-    '/birthday-singer-in-bhusawal'
+    '/dj-booking-near-me',
+    '/wedding-dj-booking',
+    '/house-party-dj-booking',
+    '/wedding-anchor-booking',
+    '/corporate-event-anchor',
+    '/standup-comedian-booking',
+    '/magician-booking-near-me',
+    '/qawwali-group-booking',
+    '/ghazal-singer-booking',
+    '/punjabi-singer-booking',
+    '/bhajan-singer-booking',
+    '/mata-ki-chowki-singer-booking'
   ];
 
-  const DELHI_NCR_KEYWORDS = [
-    'delhi',
-    'new-delhi',
-    'noida',
-    'greater-noida',
-    'gurgaon',
-    'gurugram',
-    'ghaziabad',
-    'faridabad',
-    'meerut',
-    'hapur',
-    'bulandshahr',
-    'sonipat',
-    'panipat',
-    'rohtak',
-    'loni',
-    'khora',
-    'karawal-nagar',
-    'kirari-suleman-nagar',
-    'nangloi-jat',
-    'bhalswa-jahangir-pur',
+  // 3. Indian City Clusters Covering All 28 States & 8 Union Territories
+  const DELHI_NCR_CITIES = [
+    'delhi', 'new-delhi', 'noida', 'greater-noida', 'gurgaon', 'gurugram',
+    'ghaziabad', 'faridabad', 'meerut', 'hapur', 'bulandshahr', 'sonipat',
+    'panipat', 'rohtak', 'loni', 'khora', 'karawal-nagar', 'kirari-suleman-nagar',
+    'nangloi-jat', 'bhalswa-jahangir-pur'
   ];
 
-  const MUMBAI_REGION_KEYWORDS = [
-    'mumbai',
-    'navi-mumbai',
-    'thane',
-    'pune',
-    'kalyan-dombivli',
-    'vasai-virar',
-    'mira-bhayandar',
-    'ulhasnagar',
-    'bhiwandi',
-    'pimpri-chinchwad',
+  const MUMBAI_REGION_CITIES = [
+    'mumbai', 'navi-mumbai', 'thane', 'pune', 'pimpri-chinchwad', 'kalyan-dombivli',
+    'vasai-virar', 'mira-bhayandar', 'ulhasnagar', 'bhiwandi', 'panvel'
   ];
 
-  const KEY_METRO_KEYWORDS = [
-    'bangalore',
-    'bengaluru',
-    'hyderabad',
-    'jaipur',
-    'chandigarh',
-    'kolkata',
-    'chennai',
-    'ahmedabad',
-    'lucknow',
-    'goa',
+  const KEY_METRO_CITIES = [
+    'bangalore', 'bengaluru', 'hyderabad', 'secunderabad', 'jaipur', 'chandigarh',
+    'mohali', 'kolkata', 'chennai', 'ahmedabad', 'lucknow', 'goa', 'north-goa',
+    'south-goa', 'indore', 'bhopal', 'surat', 'patna', 'varanasi', 'agra',
+    'kanpur', 'nagpur', 'nashik', 'aurangabad', 'chhatrapati-sambhajinagar',
+    'vadodara', 'rajkot', 'ludhiana', 'amritsar', 'jalandhar', 'dehradun',
+    'ranchi', 'bhubaneswar', 'raipur', 'guwahati', 'kochi', 'thiruvananthapuram',
+    'coimbatore', 'visakhapatnam', 'vijayawada'
   ];
 
-  const isDelhiNcr = (pathOrSlug) => {
-    if (!pathOrSlug) return false;
-    const lower = String(pathOrSlug).toLowerCase();
-    return DELHI_NCR_KEYWORDS.some((kw) => lower.includes(kw));
-  };
+  const ALL_INDIA_TIER2_TIER3_CITIES = [
+    // Uttar Pradesh
+    'prayagraj', 'allahabad', 'bareilly', 'aligarh', 'gorakhpur', 'jhansi', 'mathura',
+    'ayodhya', 'moradabad', 'saharanpur', 'firozabad', 'muzaffarnagar', 'rampur',
+    'shahjahanpur', 'farrukhabad', 'etawah', 'mirzapur', 'sambhal', 'amroha', 'fatehpur',
+    'raebareli', 'sitapur', 'bahraich', 'mau', 'bhind', 'orai',
+    // Punjab & Haryana
+    'patiala', 'bathinda', 'hoshiarpur', 'pathankot', 'moga', 'khanna', 'phagwara',
+    'panchkula', 'ambala', 'karnal', 'hisar', 'yamunanagar', 'kurukshetra', 'bhiwani',
+    'sirsa', 'bahadurgarh', 'jind',
+    // Rajasthan
+    'udaipur', 'jodhpur', 'kota', 'bikaner', 'ajmer', 'bhilwara', 'alwar', 'sikar',
+    'sri-ganganagar', 'pali', 'bharatpur', 'beawar', 'hanumangarh',
+    // Uttarakhand & Himachal Pradesh & J&K
+    'haridwar', 'rishikesh', 'roorkee', 'haldwani', 'nainital', 'kashipur', 'rudrapur',
+    'shimla', 'manali', 'dharamshala', 'solan', 'mandi', 'srinagar', 'jammu',
+    // Gujarat & Maharashtra (Other)
+    'bhavnagar', 'jamnagar', 'gandhinagar', 'junagadh', 'anand', 'navsari', 'morbi',
+    'nadiad', 'bharuch', 'porbandar', 'gandhidham', 'vapi', 'bhuj', 'mehsana', 'valsad',
+    'kolhapur', 'solapur', 'amravati', 'nanded', 'jalgaon', 'akola', 'latur', 'dhule',
+    'ahmednagar', 'chandrapur', 'parbhani', 'ichalkaranji', 'jalna', 'malegaon',
+    'sangli', 'satara', 'bhusawal',
+    // Karnataka, Telangana, Andhra Pradesh, Tamil Nadu, Kerala
+    'mysore', 'mangalore', 'hubli', 'dharwad', 'belgaum', 'gulbarga', 'davanagere',
+    'bellary', 'shimoga', 'tumkur', 'udupi', 'bidar', 'hospet', 'raichur',
+    'warangal', 'nizamabad', 'karimnagar', 'khammam', 'ramagundam',
+    'guntur', 'nellore', 'kurnool', 'rajahmundry', 'tirupati', 'kakinada', 'kadapa',
+    'anantapur', 'vizianagaram', 'eluru', 'ongole', 'nandyal', 'chittoor',
+    'madurai', 'tiruchirappalli', 'salem', 'tiruppur', 'erode', 'tirunelveli', 'vellore',
+    'thoothukudi', 'dindigul', 'thanjavur', 'nagercoil', 'kanchipuram', 'kumbakonam',
+    'kozhikode', 'thrissur', 'kollam', 'palakkad', 'alappuzha', 'kannur', 'kottayam',
+    // West Bengal, Bihar, Jharkhand, Odisha, Madhya Pradesh, Chhattisgarh
+    'howrah', 'durgapur', 'asansol', 'siliguri', 'kharagpur', 'bardhaman', 'malda',
+    'haldia', 'baharampur', 'habra', 'jalpaiguri',
+    'gaya', 'bhagalpur', 'muzaffarpur', 'purnia', 'darbhanga', 'bihar-sharif', 'arrah',
+    'begusarai', 'katihar', 'chapra', 'munger', 'saharsa', 'sasaram', 'hajipur',
+    'jamshedpur', 'dhanbad', 'bokaro', 'deoghar', 'hazaribagh', 'giridih',
+    'cuttack', 'rourkela', 'berhampur', 'sambalpur', 'puri', 'balasore',
+    'gwalior', 'jabalpur', 'ujjain', 'sagar', 'dewas', 'satna', 'ratlam', 'rewa',
+    'katni', 'singrauli', 'burhanpur', 'khandwa', 'chhindwara', 'morena',
+    'bhilai', 'bilaspur', 'korba', 'durg', 'rajnandgaon', 'jagdalpur', 'raigarh',
+    // North East & Union Territories
+    'silchar', 'dibrugarh', 'jorhat', 'tezpur', 'shillong', 'gangtok', 'agartala',
+    'aizawl', 'imphal', 'dimapur', 'kohima', 'itanagar', 'puducherry', 'pondicherry'
+  ];
 
-  const isMumbaiRegion = (pathOrSlug) => {
-    if (!pathOrSlug) return false;
-    const lower = String(pathOrSlug).toLowerCase();
-    return MUMBAI_REGION_KEYWORDS.some((kw) => lower.includes(kw));
-  };
+  // 4. Keyword Patterns Across Geographies
+  const METRO_KEYWORD_PATTERNS = [
+    (c) => `/singer-in-${c}`,
+    (c) => `/book-singer-in-${c}`,
+    (c) => `/live-singer-in-${c}`,
+    (c) => `/female-singer-in-${c}`,
+    (c) => `/male-singer-in-${c}`,
+    (c) => `/singer-for-house-party-in-${c}`,
+    (c) => `/house-party-singer-in-${c}`,
+    (c) => `/wedding-singer-in-${c}`,
+    (c) => `/singer-for-wedding-in-${c}`,
+    (c) => `/sangeet-singer-in-${c}`,
+    (c) => `/cocktail-singer-in-${c}`,
+    (c) => `/birthday-singer-in-${c}`,
+    (c) => `/corporate-singer-in-${c}`,
+    (c) => `/corporate-musician-in-${c}`,
+    (c) => `/sufi-singer-in-${c}`,
+    (c) => `/ghazal-singer-in-${c}`,
+    (c) => `/acoustic-singer-in-${c}`,
+    (c) => `/punjabi-singer-in-${c}`,
+    (c) => `/bollywood-singer-in-${c}`,
+    (c) => `/dj-in-${c}`,
+    (c) => `/wedding-dj-in-${c}`,
+    (c) => `/house-party-dj-in-${c}`,
+    (c) => `/live-band-in-${c}`,
+    (c) => `/wedding-band-in-${c}`,
+    (c) => `/rock-band-in-${c}`,
+    (c) => `/sufi-band-in-${c}`,
+    (c) => `/guitarist-in-${c}`,
+    (c) => `/guitarist-for-house-party-in-${c}`,
+    (c) => `/anchor-in-${c}`,
+    (c) => `/wedding-anchor-in-${c}`,
+    (c) => `/standup-comedian-in-${c}`,
+    (c) => `/magician-in-${c}`,
+    (c) => `/live-music-in-${c}`
+  ];
 
-  const isKeyMetro = (pathOrSlug) => {
-    if (!pathOrSlug) return false;
-    const lower = String(pathOrSlug).toLowerCase();
-    return KEY_METRO_KEYWORDS.some((kw) => lower.includes(kw));
-  };
+  const TIER2_TIER3_PATTERNS = [
+    (c) => `/singer-in-${c}`,
+    (c) => `/book-singer-in-${c}`,
+    (c) => `/live-singer-in-${c}`,
+    (c) => `/wedding-singer-in-${c}`,
+    (c) => `/singer-for-house-party-in-${c}`,
+    (c) => `/dj-in-${c}`,
+    (c) => `/live-band-in-${c}`,
+    (c) => `/wedding-band-in-${c}`,
+    (c) => `/corporate-musician-in-${c}`,
+    (c) => `/bollywood-singer-in-${c}`,
+    (c) => `/sufi-singer-in-${c}`,
+    (c) => `/guitarist-in-${c}`
+  ];
 
-  // Group Landing Pages by Priority Tiers
+  // 5. Generate Priority-Tiered Landing Page Entries
   const delhiNcrLandingPages = [];
   const mumbaiLandingPages = [];
   const keyMetroLandingPages = [];
-  const otherLandingPages = [];
+  const otherIndiaLandingPages = [];
 
-  for (const route of rawLandingPages) {
-    if (isDelhiNcr(route)) {
+  // Delhi NCR (0.98 Priority, Daily Crawl)
+  for (const city of DELHI_NCR_CITIES) {
+    for (const pattern of METRO_KEYWORD_PATTERNS) {
       delhiNcrLandingPages.push({
-        url: `${baseUrl}${route}`,
+        url: `${baseUrl}${pattern(city)}`,
         lastModified: now,
         changeFrequency: 'daily',
         priority: 0.98,
       });
-    } else if (isMumbaiRegion(route)) {
+    }
+  }
+
+  // Mumbai MMR & Pune (0.92 Priority, Daily Crawl)
+  for (const city of MUMBAI_REGION_CITIES) {
+    for (const pattern of METRO_KEYWORD_PATTERNS) {
       mumbaiLandingPages.push({
-        url: `${baseUrl}${route}`,
+        url: `${baseUrl}${pattern(city)}`,
         lastModified: now,
         changeFrequency: 'daily',
         priority: 0.92,
       });
-    } else if (isKeyMetro(route)) {
+    }
+  }
+
+  // Key Metros (0.88 Priority, Daily Crawl)
+  for (const city of KEY_METRO_CITIES) {
+    for (const pattern of METRO_KEYWORD_PATTERNS) {
       keyMetroLandingPages.push({
-        url: `${baseUrl}${route}`,
+        url: `${baseUrl}${pattern(city)}`,
         lastModified: now,
         changeFrequency: 'daily',
-        priority: 0.85,
-      });
-    } else {
-      otherLandingPages.push({
-        url: `${baseUrl}${route}`,
-        lastModified: now,
-        changeFrequency: 'weekly',
-        priority: 0.70,
+        priority: 0.88,
       });
     }
   }
 
+  // All India Tier 2 / 3 (0.75 Priority, Weekly Crawl)
+  for (const city of ALL_INDIA_TIER2_TIER3_CITIES) {
+    for (const pattern of TIER2_TIER3_PATTERNS) {
+      otherIndiaLandingPages.push({
+        url: `${baseUrl}${pattern(city)}`,
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.75,
+      });
+    }
+  }
+
+  // National Keyword Pages
+  const nationalPages = nationalKeywordRoutes.map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: now,
+    changeFrequency: 'daily',
+    priority: 0.94,
+  }));
+
+  // 6. Dynamic Artist Profiles from Supabase
   let artistRoutes = [];
   try {
     const { data: artists } = await supabase
@@ -521,10 +294,8 @@ export default async function sitemap() {
     console.error('Error fetching artists for sitemap:', err);
   }
 
-  let delhiNcrCityRoutes = [];
-  let mumbaiCityRoutes = [];
-  let keyMetroCityRoutes = [];
-  let otherCityRoutes = [];
+  // 7. Dynamic SEO Cities & City Blogs
+  let cityRoutes = [];
   try {
     const { data: cities } = await supabase
       .from('seo_cities')
@@ -532,46 +303,18 @@ export default async function sitemap() {
       .eq('is_active', true);
 
     if (cities && cities.length > 0) {
-      for (const city of cities) {
-        if (isDelhiNcr(city.slug)) {
-          delhiNcrCityRoutes.push({
-            url: `${baseUrl}/city/${city.slug}`,
-            lastModified: city.updated_at ? new Date(city.updated_at).toISOString() : now,
-            changeFrequency: 'daily',
-            priority: 0.95,
-          });
-        } else if (isMumbaiRegion(city.slug)) {
-          mumbaiCityRoutes.push({
-            url: `${baseUrl}/city/${city.slug}`,
-            lastModified: city.updated_at ? new Date(city.updated_at).toISOString() : now,
-            changeFrequency: 'daily',
-            priority: 0.90,
-          });
-        } else if (isKeyMetro(city.slug)) {
-          keyMetroCityRoutes.push({
-            url: `${baseUrl}/city/${city.slug}`,
-            lastModified: city.updated_at ? new Date(city.updated_at).toISOString() : now,
-            changeFrequency: 'daily',
-            priority: 0.82,
-          });
-        } else {
-          otherCityRoutes.push({
-            url: `${baseUrl}/city/${city.slug}`,
-            lastModified: city.updated_at ? new Date(city.updated_at).toISOString() : now,
-            changeFrequency: 'weekly',
-            priority: 0.70,
-          });
-        }
-      }
+      cityRoutes = cities.map((city) => ({
+        url: `${baseUrl}/city/${city.slug}`,
+        lastModified: city.updated_at ? new Date(city.updated_at).toISOString() : now,
+        changeFrequency: 'daily',
+        priority: 0.90,
+      }));
     }
   } catch (err) {
     console.error('Error fetching cities for sitemap:', err);
   }
 
-  let delhiNcrCityBlogRoutes = [];
-  let mumbaiCityBlogRoutes = [];
-  let keyMetroCityBlogRoutes = [];
-  let otherCityBlogRoutes = [];
+  let cityBlogRoutes = [];
   try {
     const { data: seoBlogs } = await supabase
       .from('seo_blogs')
@@ -579,46 +322,20 @@ export default async function sitemap() {
       .eq('status', 'published');
 
     if (seoBlogs && seoBlogs.length > 0) {
-      for (const blog of seoBlogs) {
-        if (!blog.slug || !blog.seo_cities?.slug) continue;
-        const citySlug = blog.seo_cities.slug;
-        const checkStr = `${citySlug}-${blog.slug}`;
-        
-        if (isDelhiNcr(checkStr)) {
-          delhiNcrCityBlogRoutes.push({
-            url: `${baseUrl}/city/${citySlug}/blog/${blog.slug}`,
-            lastModified: blog.updated_at ? new Date(blog.updated_at).toISOString() : now,
-            changeFrequency: 'daily',
-            priority: 0.90,
-          });
-        } else if (isMumbaiRegion(checkStr)) {
-          mumbaiCityBlogRoutes.push({
-            url: `${baseUrl}/city/${citySlug}/blog/${blog.slug}`,
-            lastModified: blog.updated_at ? new Date(blog.updated_at).toISOString() : now,
-            changeFrequency: 'daily',
-            priority: 0.85,
-          });
-        } else if (isKeyMetro(checkStr)) {
-          keyMetroCityBlogRoutes.push({
-            url: `${baseUrl}/city/${citySlug}/blog/${blog.slug}`,
-            lastModified: blog.updated_at ? new Date(blog.updated_at).toISOString() : now,
-            changeFrequency: 'daily',
-            priority: 0.78,
-          });
-        } else {
-          otherCityBlogRoutes.push({
-            url: `${baseUrl}/city/${citySlug}/blog/${blog.slug}`,
-            lastModified: blog.updated_at ? new Date(blog.updated_at).toISOString() : now,
-            changeFrequency: 'weekly',
-            priority: 0.68,
-          });
-        }
-      }
+      cityBlogRoutes = seoBlogs
+        .filter((blog) => blog.slug && blog.seo_cities?.slug)
+        .map((blog) => ({
+          url: `${baseUrl}/city/${blog.seo_cities.slug}/blog/${blog.slug}`,
+          lastModified: blog.updated_at ? new Date(blog.updated_at).toISOString() : now,
+          changeFrequency: 'daily',
+          priority: 0.85,
+        }));
     }
   } catch (err) {
     console.error('Error fetching SEO city blogs for sitemap:', err);
   }
 
+  // 8. General Platform Blogs
   let generalBlogRoutes = [];
   try {
     const { data: blogs } = await supabase
@@ -632,7 +349,7 @@ export default async function sitemap() {
           url: `${baseUrl}/blog-post/${b.slug}`,
           lastModified: b.updated_at ? new Date(b.updated_at).toISOString() : now,
           changeFrequency: 'weekly',
-          priority: 0.75,
+          priority: 0.78,
         }));
     }
 
@@ -641,7 +358,7 @@ export default async function sitemap() {
         url: `${baseUrl}/blog-post/${b.slug}`,
         lastModified: now,
         changeFrequency: 'weekly',
-        priority: 0.75,
+        priority: 0.78,
       }));
       generalBlogRoutes = [...generalBlogRoutes, ...staticBlogUrls];
     }
@@ -649,27 +366,17 @@ export default async function sitemap() {
     console.error('Error fetching general blogs for sitemap:', err);
   }
 
-  // Hierarchy: Core (1.0) -> Delhi-NCR 1st (0.98) -> Mumbai/Pune 2nd (0.92) -> Key Metros 3rd (0.85) -> Artists -> Other Cities
+  // 9. Combine, Deduplicate and Return Full Sitemap
   const allEntries = [
     ...coreRoutes,
-    // 🥇 1st Place: Delhi & Delhi-NCR
+    ...nationalPages,
     ...delhiNcrLandingPages,
-    ...delhiNcrCityRoutes,
-    ...delhiNcrCityBlogRoutes,
-    // 🥈 2nd Place: Mumbai & Mumbai Region (MMR / Pune)
     ...mumbaiLandingPages,
-    ...mumbaiCityRoutes,
-    ...mumbaiCityBlogRoutes,
-    // 🥉 3rd Place: Key Metros (Bangalore, Hyderabad, Jaipur, Chandigarh, Kolkata, Chennai, etc.)
     ...keyMetroLandingPages,
-    ...keyMetroCityRoutes,
-    ...keyMetroCityBlogRoutes,
-    // Artist Profiles
+    ...otherIndiaLandingPages,
+    ...cityRoutes,
+    ...cityBlogRoutes,
     ...artistRoutes,
-    // Other Cities & General Blogs
-    ...otherLandingPages,
-    ...otherCityRoutes,
-    ...otherCityBlogRoutes,
     ...generalBlogRoutes,
   ];
 

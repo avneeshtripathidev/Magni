@@ -29,9 +29,12 @@ export default async function LocationServicePage({ params }) {
   
   const validKeywords = [
     'singer', 'band', 'dj', 'comedian', 'anchor', 'dancer', 'magician', 
-    'guitarist', 'music', 'musician', 'artist', 'ghazal', 'gazal', 'sufi', 
-    'gig', 'entertainment', 'packages', 'sangeet', 'mehndi', 'acoustic', 
-    'corporate', 'wedding', 'party', 'function', 'reception', 'engagement'
+    'guitarist', 'violinist', 'saxophonist', 'flutist', 'pianist', 'dhol',
+    'emcee', 'standup', 'qawwali', 'bhajan', 'music', 'musician', 'artist', 
+    'ghazal', 'gazal', 'sufi', 'gig', 'entertainment', 'packages', 'sangeet', 
+    'mehndi', 'haldi', 'acoustic', 'corporate', 'wedding', 'party', 'function', 
+    'reception', 'engagement', 'anniversary', 'birthday', 'house-party', 'chowki',
+    'bollywood', 'punjabi', 'retro', 'classical'
   ];
   const isValidKeyword = validKeywords.some(kw => location_slug.includes(kw));
 
@@ -42,7 +45,7 @@ export default async function LocationServicePage({ params }) {
     'kanpur', 'nagpur', 'thane', 'visakhapatnam', 'vadodara', 'ludhiana', 'nashik',
     'meerut', 'rajkot', 'varanasi', 'srinagar', 'aurangabad', 'dhanbad', 'amritsar',
     'allahabad', 'ranchi', 'howrah', 'coimbatore', 'jabalpur', 'gwalior', 'vijayawada',
-    'jodhpur', 'madurai', 'raipur', 'kota', 'guwahati', 'chandigarh', 'thiruvananthapuram', 'kochi'
+    'jodhpur', 'madurai', 'raipur', 'kota', 'guwahati', 'thiruvananthapuram', 'kochi'
   ];
 
   if (majorCities.includes(location_slug)) {
@@ -65,19 +68,19 @@ export default async function LocationServicePage({ params }) {
   let parsedCity = 'All Cities';
   const slugLower = location_slug;
   
-  if (slugLower.includes('band')) parsedCategory = 'Live band';
-  else if (slugLower.includes('musician') || slugLower.includes('music') || slugLower.includes('guitarist')) parsedCategory = 'Musician';
+  if (slugLower.includes('band') || slugLower.includes('qawwali')) parsedCategory = 'Live band';
+  else if (slugLower.includes('musician') || slugLower.includes('music') || slugLower.includes('guitarist') || slugLower.includes('violinist') || slugLower.includes('saxophonist') || slugLower.includes('flutist') || slugLower.includes('pianist') || slugLower.includes('dhol')) parsedCategory = 'Musician';
   else if (slugLower.includes('dj')) parsedCategory = 'Dj';
-  else if (slugLower.includes('comedian')) parsedCategory = 'Comedian';
+  else if (slugLower.includes('comedian') || slugLower.includes('standup')) parsedCategory = 'Comedian';
   else if (slugLower.includes('magician')) parsedCategory = 'Magician';
   else if (slugLower.includes('dancer')) parsedCategory = 'Dancer';
-  else if (slugLower.includes('anchor')) parsedCategory = 'Anchor';
-  else if (slugLower.includes('singer') || slugLower.includes('artist') || slugLower.includes('ghazal') || slugLower.includes('gazal') || slugLower.includes('sufi') || slugLower.includes('gig')) parsedCategory = 'Singer';
+  else if (slugLower.includes('anchor') || slugLower.includes('emcee')) parsedCategory = 'Anchor';
+  else if (slugLower.includes('singer') || slugLower.includes('artist') || slugLower.includes('ghazal') || slugLower.includes('gazal') || slugLower.includes('sufi') || slugLower.includes('bhajan') || slugLower.includes('gig')) parsedCategory = 'Singer';
 
   if (slugLower.includes('ghazal') || slugLower.includes('gazal')) parsedSubCategory = 'Gazals';
-  else if (slugLower.includes('sufi')) parsedSubCategory = 'Sufi';
+  else if (slugLower.includes('sufi') || slugLower.includes('qawwali')) parsedSubCategory = 'Sufi';
   else if (slugLower.includes('sangeet')) parsedSubCategory = 'Sangeet';
-  else if (slugLower.includes('mehndi')) parsedSubCategory = 'Mehndi';
+  else if (slugLower.includes('mehndi') || slugLower.includes('haldi')) parsedSubCategory = 'Mehndi';
   else if (slugLower.includes('corporate') || slugLower.includes('office') || slugLower.includes('gala') || slugLower.includes('function')) parsedSubCategory = 'Corporate';
   else if (slugLower.includes('acoustic')) parsedSubCategory = 'Acoustic';
   else if (slugLower.includes('wedding') || slugLower.includes('reception') || slugLower.includes('engagement') || slugLower.includes('shaadi')) parsedSubCategory = 'Wedding';
@@ -85,7 +88,7 @@ export default async function LocationServicePage({ params }) {
   else if (slugLower.includes('punjabi')) parsedSubCategory = 'Punjabi';
   else if (slugLower.includes('bollywood')) parsedSubCategory = 'Bollywood';
   else if (slugLower.includes('rock')) parsedSubCategory = 'Rock';
-  else if (slugLower.includes('classical')) parsedSubCategory = 'Classical';
+  else if (slugLower.includes('classical') || slugLower.includes('bhajan')) parsedSubCategory = 'Classical';
 
   const parts = slugLower.split('-in-');
   if (parts.length > 1) {
