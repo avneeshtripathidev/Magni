@@ -1507,16 +1507,15 @@ export default function SeoCardsSection({ className = '' }) {
             {seoCards.map((card, idx) => (
               <Link href={card.link} key={idx} className="seo-card group">
                 <div className="seo-card-icon">
-                  {card.type === 'wedding' && <Sparkles size={24} />}
-                  {card.type === 'party' && <Music size={24} />}
-                  {card.type === 'live' && <MapPin size={24} />}
-                  {card.type === 'corporate' && <Music size={24} />}
+                  {card.type === 'wedding' && <Sparkles size={14} />}
+                  {card.type === 'party' && <Music size={14} />}
+                  {card.type === 'live' && <MapPin size={14} />}
+                  {card.type === 'corporate' && <Music size={14} />}
                 </div>
                 <div className="seo-card-content">
                   <h3>{card.title}</h3>
-                  {card.subtext && <p className="seo-card-subtext">{card.subtext}</p>}
-                  <span className="seo-card-link-text">Explore Artists →</span>
                 </div>
+                <span className="seo-card-arrow">→</span>
               </Link>
             ))}
           </div>
