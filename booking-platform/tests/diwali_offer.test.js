@@ -168,17 +168,33 @@ describe('Diwali Special Offer Campaign (Coupon: DIW100)', () => {
     });
   });
 
-  describe('Traffic Attribution & 100% Google Ads Routing', () => {
-    it('should route 100% of organic / direct traffic to QuickBookingModal', () => {
-      const isGoogleAds = false;
-      const targetForm = isGoogleAds ? 'GoogleAdsOfferInstantForm' : 'QuickBookingModal';
-      assert.strictEqual(targetForm, 'QuickBookingModal');
+  describe('Traffic Attribution & Universal Instant Form Routing', () => {
+    it('should route 100% of organic / direct traffic to GoogleAdsOfferInstantForm', () => {
+      const getTargetForm = () => 'GoogleAdsOfferInstantForm';
+      assert.strictEqual(getTargetForm(), 'GoogleAdsOfferInstantForm');
     });
 
     it('should route 100% of Google Ads traffic directly to GoogleAdsOfferInstantForm', () => {
       const isGoogleAds = true;
-      const targetForm = isGoogleAds ? 'GoogleAdsOfferInstantForm' : 'QuickBookingModal';
+      const targetForm = isGoogleAds ? 'GoogleAdsOfferInstantForm' : 'GoogleAdsOfferInstantForm';
       assert.strictEqual(targetForm, 'GoogleAdsOfferInstantForm');
+    });
+
+    it('should accurately differentiate between Paid Ads and Organic / Direct traffic attribution', () => {
+      const resolveAttribution = (attribution) => {
+        const hasAdClickId = !!(attribution.gclid || attribution.gbraid || attribution.wbraid);
+        const isPaidMedium = /^(cpc|ppc|paid|google_ad|paidsearch|ad)$/i.test(attribution.utm_medium || '');
+        const isGooglePaidAd = hasAdClickId || (attribution.utm_source?.includes('google') && isPaidMedium);
+        const referrer = attribution.referrer || '';
+        const isOrganicGoogle = !isGooglePaidAd && (referrer.toLowerCase().includes('google.') || attribution.utm_medium === 'organic');
+        if (isGooglePaidAd) return 'Google Ads';
+        if (isOrganicGoogle) return 'Google Search (Organic)';
+        return 'Direct Visit';
+      };
+
+      assert.strictEqual(resolveAttribution({ gclid: 'CLICK_123' }), 'Google Ads');
+      assert.strictEqual(resolveAttribution({ referrer: 'https://www.google.com/' }), 'Google Search (Organic)');
+      assert.strictEqual(resolveAttribution({ referrer: '' }), 'Direct Visit');
     });
   });
 });

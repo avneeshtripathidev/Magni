@@ -168,11 +168,12 @@ export default function GoogleAdsOfferInstantForm() {
     const autoOpenDelay = isHomePage ? 6000 : 4000;
 
     // Auto-open logic:
-    // - In local dev (when starting server), auto-open after 6s (home) or 4s (other pages)
-    // - In production, auto-open for eligible traffic if not dismissed or submitted in the current session
-    const canAutoOpen = isLocalDev || (
-      isEligible && !hasDismissedGoogleAdsOffer() && !hasSubmittedGoogleAdsOffer()
-    );
+    // - Auto-open after 6s on homepage or 4s on other pages for all visitors (with or without Google Ads)
+    // - In local dev, auto-open so developers & testers can reliably verify
+    // - In production, auto-open on first arrival unless dismissed or submitted in the current session
+    const isDismissed = hasDismissedGoogleAdsOffer();
+    const isSubmitted = hasSubmittedGoogleAdsOffer();
+    const canAutoOpen = isLocalDev || (!isDismissed && !isSubmitted);
 
     if (canAutoOpen) {
       const autoTimer = setTimeout(() => {
@@ -318,6 +319,11 @@ export default function GoogleAdsOfferInstantForm() {
     const attribution = getGoogleAdsAttribution();
     const generatedRef = `MGN-DIW-${Math.floor(100000 + Math.random() * 900000)}`;
 
+    const hasAdClickId = !!(attribution.gclid || attribution.gbraid || attribution.wbraid);
+    const isPaidMedium = /^(cpc|ppc|paid|google_ad|paidsearch|ad)$/i.test(attribution.utm_medium || '');
+    const isPaidAd = hasAdClickId || (attribution.utm_source?.includes('google') && isPaidMedium);
+    const isOrganic = !isPaidAd && ((attribution.traffic_source && attribution.traffic_source.includes('Organic')) || attribution.utm_medium === 'organic');
+
     try {
       await bookingService.submitInstantRequest({
         name: formData.name.trim(),
@@ -326,7 +332,7 @@ export default function GoogleAdsOfferInstantForm() {
         location: formData.location?.trim() || 'Flexible / Pan India',
         date: formData.date || 'Flexible / To be decided',
         budget: `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
-        type: 'google_ads_lead',
+        type: isPaidAd ? 'google_ads_lead' : 'instant_lead',
         formName: 'GoogleAdsOfferInstantForm',
         referenceCode: generatedRef,
         campaignId: 'diwali-special',
@@ -337,14 +343,14 @@ export default function GoogleAdsOfferInstantForm() {
         discountAmount: savings.discountAmt,
         finalBookingValue: savings.finalAmt,
         paymentStatus: 'unpaid',
-        gclid: attribution.gclid,
-        gbraid: attribution.gbraid,
-        wbraid: attribution.wbraid,
-        utm_source: attribution.utm_source || 'google',
-        utm_medium: attribution.utm_medium || 'cpc',
-        utm_campaign: attribution.utm_campaign || 'diwali_special_offer',
-        utm_content: attribution.utm_content,
-        utm_term: attribution.utm_term,
+        gclid: attribution.gclid || null,
+        gbraid: attribution.gbraid || null,
+        wbraid: attribution.wbraid || null,
+        utm_source: attribution.utm_source || (isPaidAd ? 'google' : (isOrganic ? 'google' : 'direct')),
+        utm_medium: attribution.utm_medium || (isPaidAd ? 'cpc' : (isOrganic ? 'organic' : 'direct')),
+        utm_campaign: isPaidAd ? (attribution.utm_campaign || 'diwali_special_offer') : null,
+        utm_content: attribution.utm_content || null,
+        utm_term: attribution.utm_term || null,
         latitude: geoData.latitude,
         longitude: geoData.longitude,
         detectedLocation: geoData.detectedLocation
@@ -356,7 +362,7 @@ export default function GoogleAdsOfferInstantForm() {
       recordFunnelEvent('offer_form_submit', { referenceCode: generatedRef });
       recordFunnelEvent('qualified_lead', { referenceCode: generatedRef, eventType: formData.eventType });
 
-      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      if (isPaidAd && typeof window !== 'undefined' && typeof window.gtag === 'function') {
         window.gtag('event', 'conversion', {
           'send_to': 'AW-16657289873/9sBzCMry1eocEJGl6IY-',
           'value': savings.discountAmt || 2499,

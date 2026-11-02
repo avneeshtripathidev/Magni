@@ -110,7 +110,7 @@ export default function VideoModal({ isOpen, video, onClose }) {
                 <button 
                   onClick={() => {
                     onClose();
-                    window.dispatchEvent(new CustomEvent('open-quick-booking', {
+                    window.dispatchEvent(new CustomEvent('open-google-ads-offer', {
                       detail: {
                         category: getCategory(video.title),
                         packageTitle: video.title

@@ -166,7 +166,7 @@ const VideoCard = memo(function VideoCard({ video, index, onVideoClick }) {
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              window.dispatchEvent(new CustomEvent('open-quick-booking', {
+              window.dispatchEvent(new CustomEvent('open-google-ads-offer', {
                 detail: {
                   category: getCategory(video.title),
                   packageTitle: formatTitle(video.title)
