@@ -88,32 +88,127 @@ export default function GoogleAdsOfferInstantForm() {
     }
   };
 
-  // Traffic identification & 3-second auto-open logic
+  // Traffic identification & prompt auto-open logic
   useEffect(() => {
-    const isOfferEligible = isGoogleAdsOfferEligible();
-    const hash = typeof window !== 'undefined' ? window.location.hash : '';
-    const hasOfferHash = hash === '#offer' || hash === '#lock-booking' || hash === '#google-offer' || hash === '#diwali-gift';
-    const isExplicitOffer = searchParams?.get('offer') === 'true' || searchParams?.get('variant') === 'offer';
-
     const handleExplicitOpen = () => {
       setIsOpen(true);
     };
 
+    // Listen to all campaign & booking events
     window.addEventListener('open-google-ads-offer', handleExplicitOpen);
+    window.addEventListener('open-instant-form', handleExplicitOpen);
+    window.addEventListener('open-instant-booking', handleExplicitOpen);
+    window.addEventListener('open-offer-form', handleExplicitOpen);
+    window.addEventListener('open-lock-booking', handleExplicitOpen);
+    window.addEventListener('open-date-lock', handleExplicitOpen);
 
-    if ((isOfferEligible && !hasDismissedGoogleAdsOffer() && !hasSubmittedGoogleAdsOffer()) || hasOfferHash || isExplicitOffer) {
-      const timer = setTimeout(() => {
+    const checkHashAndParams = () => {
+      if (typeof window === 'undefined') return false;
+      const hash = (window.location.hash || '').toLowerCase();
+      const search = window.location.search || '';
+      const params = new URLSearchParams(search);
+
+      const hasOfferHash = [
+        '#offer',
+        '#instant-form',
+        '#instant',
+        '#instant-booking',
+        '#lock-booking',
+        '#google-offer',
+        '#diwali-gift',
+        '#offer-form'
+      ].includes(hash);
+
+      const isExplicitOffer =
+        params.get('offer') === 'true' ||
+        params.get('offer') === '1' ||
+        params.get('instant_form') === 'true' ||
+        params.get('instant') === 'true' ||
+        params.get('instant') === '1' ||
+        params.get('variant') === 'offer' ||
+        params.get('form') === 'instant';
+
+      return hasOfferHash || isExplicitOffer;
+    };
+
+    const isExplicit = checkHashAndParams();
+    const isEligible = isGoogleAdsOfferEligible();
+    const isLocalDev = typeof window !== 'undefined' && (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1'
+    );
+
+    // If explicit query param / hash: open immediately (200ms)
+    if (isExplicit) {
+      const explicitTimer = setTimeout(() => {
         setIsOpen(true);
-      }, 3000);
+      }, 200);
+
+      const onHashChange = () => {
+        if (checkHashAndParams()) setIsOpen(true);
+      };
+      window.addEventListener('hashchange', onHashChange);
+      window.addEventListener('popstate', onHashChange);
 
       return () => {
-        clearTimeout(timer);
+        clearTimeout(explicitTimer);
         window.removeEventListener('open-google-ads-offer', handleExplicitOpen);
+        window.removeEventListener('open-instant-form', handleExplicitOpen);
+        window.removeEventListener('open-instant-booking', handleExplicitOpen);
+        window.removeEventListener('open-offer-form', handleExplicitOpen);
+        window.removeEventListener('open-lock-booking', handleExplicitOpen);
+        window.removeEventListener('open-date-lock', handleExplicitOpen);
+        window.removeEventListener('hashchange', onHashChange);
+        window.removeEventListener('popstate', onHashChange);
       };
     }
 
+    // Google Ads traffic auto-open:
+    // In local dev, ignore dismissed/submitted locks so developer & tester can always view and test.
+    // In production, open once after 1000ms if not dismissed or submitted in the current session.
+    const canAutoOpen = isEligible && (
+      isLocalDev || (!hasDismissedGoogleAdsOffer() && !hasSubmittedGoogleAdsOffer())
+    );
+
+    if (canAutoOpen) {
+      const autoTimer = setTimeout(() => {
+        setIsOpen(true);
+      }, 1000);
+
+      const onHashChange = () => {
+        if (checkHashAndParams()) setIsOpen(true);
+      };
+      window.addEventListener('hashchange', onHashChange);
+      window.addEventListener('popstate', onHashChange);
+
+      return () => {
+        clearTimeout(autoTimer);
+        window.removeEventListener('open-google-ads-offer', handleExplicitOpen);
+        window.removeEventListener('open-instant-form', handleExplicitOpen);
+        window.removeEventListener('open-instant-booking', handleExplicitOpen);
+        window.removeEventListener('open-offer-form', handleExplicitOpen);
+        window.removeEventListener('open-lock-booking', handleExplicitOpen);
+        window.removeEventListener('open-date-lock', handleExplicitOpen);
+        window.removeEventListener('hashchange', onHashChange);
+        window.removeEventListener('popstate', onHashChange);
+      };
+    }
+
+    const onHashChange = () => {
+      if (checkHashAndParams()) setIsOpen(true);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    window.addEventListener('popstate', onHashChange);
+
     return () => {
       window.removeEventListener('open-google-ads-offer', handleExplicitOpen);
+      window.removeEventListener('open-instant-form', handleExplicitOpen);
+      window.removeEventListener('open-instant-booking', handleExplicitOpen);
+      window.removeEventListener('open-offer-form', handleExplicitOpen);
+      window.removeEventListener('open-lock-booking', handleExplicitOpen);
+      window.removeEventListener('open-date-lock', handleExplicitOpen);
+      window.removeEventListener('hashchange', onHashChange);
+      window.removeEventListener('popstate', onHashChange);
     };
   }, [pathname, searchParams]);
 

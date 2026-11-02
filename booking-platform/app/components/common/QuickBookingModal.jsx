@@ -30,24 +30,37 @@ export default function QuickBookingModal() {
     };
     window.addEventListener('open-quick-booking', handleOpen)
     window.addEventListener('open-token-booking', handleOpen)
-    window.addEventListener('open-instant-form', handleOpen)
-    window.addEventListener('open-instant-booking', handleOpen)
+
+    // Route instant-form triggers directly to Date-Lock GoogleAdsOfferInstantForm
+    const handleInstantFormTrigger = () => {
+      window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
+    };
+    window.addEventListener('open-instant-form', handleInstantFormTrigger)
+    window.addEventListener('open-instant-booking', handleInstantFormTrigger)
 
     const checkHash = () => {
       if (typeof window !== 'undefined') {
         const hash = window.location.hash
         const search = window.location.search
-        // If an offer is explicitly active, do not open QuickBookingModal
-        if (search.includes('offer=true') || search.includes('variant=offer') || hash === '#offer' || hash === '#lock-booking') {
-          return
+        // If an offer is explicitly active or instant form hash, route to GoogleAdsOfferInstantForm
+        if (
+          search.includes('offer=true') ||
+          search.includes('variant=offer') ||
+          search.includes('instant_form') ||
+          search.includes('instant=true') ||
+          hash === '#offer' ||
+          hash === '#instant-form' ||
+          hash === '#instant' ||
+          hash === '#lock-booking'
+        ) {
+          window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
+          return;
         }
         if (
           hash === '#book-99' ||
-          hash === '#instant-form' ||
           hash === '#quick-booking' ||
           hash === '#quick-contact' ||
-          search.includes('quick-booking') ||
-          search.includes('instant-form')
+          search.includes('quick-booking')
         ) {
           setIsOpen(true)
         }

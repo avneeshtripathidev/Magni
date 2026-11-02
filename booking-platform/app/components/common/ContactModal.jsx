@@ -42,14 +42,9 @@ export default function ContactModal() {
       const plan = e.detail?.pricingPlan || null;
       const service = e.detail?.service || null;
 
-      // Route general booking clicks according to 60/40 Google Ads split:
-      // 60% Google Ads visitors receive the new form; other every person receives the instant form.
+      // Route all general booking and offer clicks directly to the Instant Form
       if (!artist && !plan && !service && (type === 'booking' || type === 'offer')) {
-        if (isGoogleAdsOfferEligible()) {
-          window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
-        } else {
-          window.dispatchEvent(new CustomEvent('open-quick-booking'));
-        }
+        window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
         return;
       }
 

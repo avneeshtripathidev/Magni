@@ -57,7 +57,11 @@ export function isGoogleAdsTraffic() {
     const isPaidMedium = /cpc|ppc|paid|google_ad|paidsearch|ad/i.test(utmMedium);
     const isGooglePaid = utmSource.includes('google') && isPaidMedium;
 
-    if (hasAdClickId || isGooglePaid || params.get('offer') === 'true' || params.get('variant') === 'offer') {
+    const hash = window.location.hash || '';
+    const hasOfferHash = hash === '#offer' || hash === '#instant-form' || hash === '#instant' || hash === '#instant-booking' || hash === '#lock-booking' || hash === '#google-offer';
+    const isExplicitInstant = params.get('offer') === 'true' || params.get('offer') === '1' || params.get('instant_form') === 'true' || params.get('instant') === 'true' || params.get('variant') === 'offer';
+
+    if (hasAdClickId || isGooglePaid || utmSource.includes('google') || hasOfferHash || isExplicitInstant) {
       return true;
     }
 
@@ -117,8 +121,19 @@ export function isGoogleAdsOfferEligible() {
   if (typeof window === 'undefined') return false;
   try {
     const params = new URLSearchParams(window.location.search);
-    const hash = window.location.hash;
-    const isExplicitOffer = params.get('offer') === 'true' || params.get('offer') === '1' || params.get('variant') === 'offer' || hash === '#offer' || hash === '#lock-booking';
+    const hash = window.location.hash || '';
+    const isExplicitOffer =
+      params.get('offer') === 'true' ||
+      params.get('offer') === '1' ||
+      params.get('instant_form') === 'true' ||
+      params.get('instant') === 'true' ||
+      params.get('variant') === 'offer' ||
+      hash === '#offer' ||
+      hash === '#instant-form' ||
+      hash === '#instant' ||
+      hash === '#instant-booking' ||
+      hash === '#lock-booking' ||
+      hash === '#google-offer';
     if (isExplicitOffer) return true;
     return isGoogleAdsTraffic() && getGoogleAdsFormVariant() === 'offer_form';
   } catch (e) {
@@ -213,17 +228,16 @@ export function setDismissedGoogleAdsOffer() {
 
 export function hasSubmittedGoogleAdsOffer() {
   if (typeof window === 'undefined') return false;
-  return (
-    sessionStorage.getItem(STORAGE_KEY_SUBMITTED) === 'true' ||
-    localStorage.getItem(STORAGE_KEY_SUBMITTED) === 'true'
-  );
+  // Session-scoped only: never permanently block in localStorage so returning visitors & QA can always view
+  return sessionStorage.getItem(STORAGE_KEY_SUBMITTED) === 'true';
 }
 
 export function setSubmittedGoogleAdsOffer(refCode) {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(STORAGE_KEY_SUBMITTED, 'true');
-    localStorage.setItem(STORAGE_KEY_SUBMITTED, 'true');
+    // Clear legacy permanent blockers from localStorage
+    localStorage.removeItem(STORAGE_KEY_SUBMITTED);
     if (refCode) {
       sessionStorage.setItem('magnevents_offer_last_ref', refCode);
     }
