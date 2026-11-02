@@ -3,13 +3,20 @@
 import { useEffect } from 'react';
 
 /**
- * QuickBookingModal is permanently routed to the high-converting Date-Lock Instant Form (GoogleAdsOfferInstantForm).
- * This guarantees the user's preferred 4-field luxury date lock form is universally presented
- * across all traffic channels (Google Ads, organic search, direct visitors, and local dev),
+ * QuickBookingModal is permanently retired.
+ * General quick booking requests are now routed to the Main Booking Form (ContactModal),
  * completely retiring and eliminating the legacy beige modal.
  */
 export default function QuickBookingModal() {
   useEffect(() => {
+    const handleForwardToMainBooking = (e) => {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('open-contact-modal', {
+          detail: { type: 'booking', ...(e?.detail || {}) }
+        }));
+      }
+    };
+
     const handleForwardToInstantOffer = (e) => {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('open-google-ads-offer', {
@@ -18,8 +25,8 @@ export default function QuickBookingModal() {
       }
     };
 
-    window.addEventListener('open-quick-booking', handleForwardToInstantOffer);
-    window.addEventListener('open-token-booking', handleForwardToInstantOffer);
+    window.addEventListener('open-quick-booking', handleForwardToMainBooking);
+    window.addEventListener('open-token-booking', handleForwardToMainBooking);
     window.addEventListener('open-instant-form', handleForwardToInstantOffer);
     window.addEventListener('open-instant-booking', handleForwardToInstantOffer);
 
@@ -27,16 +34,15 @@ export default function QuickBookingModal() {
       if (typeof window !== 'undefined') {
         const hash = (window.location.hash || '').toLowerCase();
         const search = (window.location.search || '').toLowerCase();
-        if (
+        if (hash === '#instant-form' || hash === '#instant' || search.includes('instant_form') || hash === '#offer') {
+          window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
+        } else if (
           hash === '#book-99' ||
           hash === '#quick-booking' ||
           hash === '#quick-contact' ||
-          hash === '#instant-form' ||
-          hash === '#instant' ||
-          search.includes('quick-booking') ||
-          search.includes('instant_form')
+          search.includes('quick-booking')
         ) {
-          window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
+          window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'booking' } }));
         }
       }
     };
@@ -52,8 +58,8 @@ export default function QuickBookingModal() {
     }
 
     return () => {
-      window.removeEventListener('open-quick-booking', handleForwardToInstantOffer);
-      window.removeEventListener('open-token-booking', handleForwardToInstantOffer);
+      window.removeEventListener('open-quick-booking', handleForwardToMainBooking);
+      window.removeEventListener('open-token-booking', handleForwardToMainBooking);
       window.removeEventListener('open-instant-form', handleForwardToInstantOffer);
       window.removeEventListener('open-instant-booking', handleForwardToInstantOffer);
       window.removeEventListener('hashchange', checkHash);

@@ -110,10 +110,10 @@ export default function VideoModal({ isOpen, video, onClose }) {
                 <button 
                   onClick={() => {
                     onClose();
-                    window.dispatchEvent(new CustomEvent('open-google-ads-offer', {
+                    window.dispatchEvent(new CustomEvent('open-contact-modal', {
                       detail: {
-                        category: getCategory(video.title),
-                        packageTitle: video.title
+                        type: 'booking',
+                        artist: { name: video.title, category: getCategory(video.title) }
                       }
                     }));
                   }} 

@@ -42,11 +42,7 @@ export default function ContactModal() {
       const plan = e.detail?.pricingPlan || null;
       const service = e.detail?.service || null;
 
-      // Route all general booking and offer clicks directly to the Instant Form
-      if (!artist && !plan && !service && (type === 'booking' || type === 'offer')) {
-        window.dispatchEvent(new CustomEvent('open-google-ads-offer'));
-        return;
-      }
+
 
       setFormType(type);
       setInitialArtist(artist);

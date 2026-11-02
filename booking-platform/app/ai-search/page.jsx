@@ -340,11 +340,8 @@ function AISearchContent() {
 
   const handleBookArtist = (artistName, category = 'Live Singer') => {
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('open-google-ads-offer', {
-        detail: { artistName, eventType: category }
-      }));
       window.dispatchEvent(new CustomEvent('open-contact-modal', {
-        detail: { type: 'booking', artistName }
+        detail: { type: 'booking', artist: { name: artistName, category } }
       }));
     }
   };
