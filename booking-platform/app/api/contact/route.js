@@ -56,22 +56,30 @@ export async function POST(req) {
 
     // 4. Calculate numeric budget
     let numericBudget = 0;
-    if (data.budget) {
+    if (data.budgetAmount && !isNaN(Number(data.budgetAmount))) {
+      numericBudget = Number(data.budgetAmount);
+    } else if (data.budget) {
       const bStr = String(data.budget).toLowerCase();
       if (bStr.includes('5k_10k')) numericBudget = 10000;
-      else if (bStr.includes('10k_20k')) numericBudget = 20000;
-      else if (bStr.includes('20k_35k')) numericBudget = 35000;
-      else if (bStr.includes('35k_50k')) numericBudget = 50000;
-      else if (bStr.includes('50k_80k')) numericBudget = 80000;
-      else if (bStr.includes('80k_1.2l')) numericBudget = 120000;
+      else if (bStr.includes('10k_20k') || bStr.includes('10,000 - 20,000') || bStr.includes('10,000 - ₹20,000')) numericBudget = 20000;
+      else if (bStr.includes('20k_35k') || bStr.includes('20,000 - 35,000') || bStr.includes('20,000 - ₹35,000')) numericBudget = 35000;
+      else if (bStr.includes('35k_50k') || bStr.includes('35,000 - 50,000') || bStr.includes('35,000 - ₹50,000')) numericBudget = 50000;
+      else if (bStr.includes('50k_80k') || bStr.includes('50,000 - 80,000') || bStr.includes('50,000 - ₹80,000')) numericBudget = 80000;
+      else if (bStr.includes('80k_1.2l') || bStr.includes('80,000 - 1,20,000') || bStr.includes('80,000 - ₹1,20,000')) numericBudget = 120000;
       else if (bStr.includes('1.2l_1.5l')) numericBudget = 150000;
-      else if (bStr.includes('1.5l_2l')) numericBudget = 200000;
-      else if (bStr.includes('2l_3l')) numericBudget = 300000;
+      else if (bStr.includes('1.5l_2l') || bStr.includes('1,20,000 - 2,00,000') || bStr.includes('1,20,000 - ₹2,00,000')) numericBudget = 20000;
+      else if (bStr.includes('2l_3l') || bStr.includes('2,00,000+')) numericBudget = 200000;
       else if (bStr.includes('3l_5l')) numericBudget = 500000;
       else if (bStr.includes('5l_plus')) numericBudget = 500000;
       else {
-        const num = parseFloat(bStr.replace(/[^0-9.]/g, ''));
-        if (!isNaN(num)) numericBudget = num;
+        const matches = bStr.match(/\d[\d,]*/g);
+        if (matches && matches.length > 0) {
+          const firstVal = parseFloat(matches[0].replace(/,/g, ''));
+          if (!isNaN(firstVal)) numericBudget = firstVal;
+        } else {
+          const num = parseFloat(bStr.replace(/[^0-9.]/g, ''));
+          if (!isNaN(num)) numericBudget = num;
+        }
       }
     } else if (data.price) {
       const num = parseFloat(String(data.price).replace(/[^0-9.]/g, ''));
@@ -97,6 +105,10 @@ export async function POST(req) {
     if (data.keywords) notesArray.push(`Keywords: ${data.keywords}`);
     if (data.formName || data.formType) notesArray.push(`Source Form: ${data.formName || data.formType}`);
     if (data.formVariant || data.form_variant) notesArray.push(`Form Variant: ${data.formVariant || data.form_variant}`);
+    const fullSelectedBudget = data.budgetRange || data.selectedBudgetRange || data.budget || '';
+    if (fullSelectedBudget) {
+      notesArray.push(`Selected Budget: ${fullSelectedBudget}`);
+    }
 
     let extraNotes = notesArray.join('\n') || 'No additional notes.';
 
@@ -142,6 +154,9 @@ export async function POST(req) {
     data.isp = isp;
     data.ipAddress = clientIp || 'unknown';
     data.device = deviceStr;
+    if (fullSelectedBudget) {
+      data.budget = fullSelectedBudget;
+    }
 
     const bookingData = {
       client_name: clientName,

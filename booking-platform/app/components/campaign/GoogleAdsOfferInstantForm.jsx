@@ -16,6 +16,17 @@ import { validateName, validatePhone } from '@helpers/validation';
 import { getSilentLocationIfGranted } from '@/app/utils/geolocation';
 import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
+
+export const BUDGET_OPTIONS_MAP = {
+  10000: '₹10,000 - ₹20,000 (10% Extra OFF)',
+  25000: '₹20,000 - ₹35,000 (Eligible for 16% Extra OFF)',
+  35000: '₹35,000 - ₹50,000 (Eligible for 18% Extra OFF)',
+  50000: '₹50,000 - ₹80,000 (Eligible for 20% Extra OFF)',
+  80000: '₹80,000 - ₹1,20,000 (Eligible for 22% Extra OFF)',
+  120000: '₹1,20,000 - ₹2,00,000 (Eligible for 24% Extra OFF)',
+  200000: '₹2,00,000+ (Eligible for 28% Extra OFF)'
+};
+
 export default function GoogleAdsOfferInstantForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -28,7 +39,8 @@ export default function GoogleAdsOfferInstantForm() {
     eventType: 'Wedding Ceremony',
     location: '',
     date: '',
-    budgetAmount: 25000 // Default ₹20,000 - ₹35,000
+    budgetAmount: 25000,
+    budgetRange: BUDGET_OPTIONS_MAP[25000]
   });
 
   const [errors, setErrors] = useState({});
@@ -331,7 +343,10 @@ export default function GoogleAdsOfferInstantForm() {
         eventType: formData.eventType || 'Wedding Ceremony',
         location: formData.location?.trim() || 'Flexible / Pan India',
         date: formData.date || 'Flexible / To be decided',
-        budget: `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
+        budget: formData.budgetRange || BUDGET_OPTIONS_MAP[formData.budgetAmount] || `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
+        budgetRange: formData.budgetRange || BUDGET_OPTIONS_MAP[formData.budgetAmount],
+        budgetAmount: formData.budgetAmount,
+        selectedBudgetRange: formData.budgetRange || BUDGET_OPTIONS_MAP[formData.budgetAmount],
         type: isPaidAd ? 'google_ads_lead' : 'instant_lead',
         formName: 'GoogleAdsOfferInstantForm',
         referenceCode: generatedRef,
@@ -389,7 +404,8 @@ export default function GoogleAdsOfferInstantForm() {
 
   const createWhatsAppUrl = () => {
     const adminPhone = process.env.NEXT_PUBLIC_ADMIN_PHONE || '918076515257';
-    const text = `Hi Magnevents, I claimed my Diwali Offer & Date Lock (₹2,499) with Coupon DIW100 for ${formData.eventType}. Budget: ₹${formData.budgetAmount.toLocaleString('en-IN')}, Ref Code: ${referenceCode}. Please share verified artist quotes and lock date!`;
+    const chosenBudget = formData.budgetRange || BUDGET_OPTIONS_MAP[formData.budgetAmount] || `₹${formData.budgetAmount.toLocaleString('en-IN')}`;
+    const text = `Hi Magnevents, I claimed my Diwali Offer & Date Lock (₹2,499) with Coupon DIW100 for ${formData.eventType}. Budget: ${chosenBudget}, Ref Code: ${referenceCode}. Please share verified artist quotes and lock date!`;
     return `https://wa.me/${adminPhone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
   };
 
@@ -540,7 +556,12 @@ export default function GoogleAdsOfferInstantForm() {
                     <select
                       id="gao-budget"
                       value={formData.budgetAmount}
-                      onChange={(e) => handleInputChange('budgetAmount', Number(e.target.value))}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        const label = BUDGET_OPTIONS_MAP[val] || e.target.options[e.target.selectedIndex]?.text || '';
+                        handleInputChange('budgetAmount', val);
+                        handleInputChange('budgetRange', label);
+                      }}
                     >
                       <option value={10000}>₹10,000 - ₹20,000 (10% Extra OFF)</option>
                       <option value={25000}>₹20,000 - ₹35,000 (Eligible for 16% Extra OFF)</option>

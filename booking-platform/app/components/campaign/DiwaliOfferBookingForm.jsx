@@ -8,6 +8,17 @@ import { bookingService } from '@/app/services/bookingService';
 import { validateName, validatePhone } from '@helpers/validation';
 import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
+
+export const DIWALI_BUDGET_OPTIONS_MAP = {
+  10000: '₹10,000 - ₹20,000 (10% Extra OFF)',
+  25000: '₹20,000 - ₹35,000 (16% Extra OFF)',
+  35000: '₹35,000 - ₹50,000 (18% Extra OFF)',
+  50000: '₹50,000 - ₹80,000 (20% Extra OFF)',
+  80000: '₹80,000 - ₹1,20,000 (22% Extra OFF)',
+  120000: '₹1,20,000 - ₹2,00,000 (24% Extra OFF)',
+  200000: '₹2,00,000+ (28% Extra OFF)'
+};
+
 export default function DiwaliOfferBookingForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -34,7 +45,8 @@ export default function DiwaliOfferBookingForm() {
     eventType: 'Wedding',
     location: '',
     date: '',
-    budgetAmount: 15000 // Numeric representation for live discount calculation
+    budgetAmount: 15000,
+    budgetRange: DIWALI_BUDGET_OPTIONS_MAP[10000]
   });
 
   const [errors, setErrors] = useState({});
@@ -240,7 +252,10 @@ export default function DiwaliOfferBookingForm() {
         eventType: formData.eventType || 'Event Booking',
         location: formData.location.trim(),
         date: formData.date || 'Flexible / To be decided',
-        budget: `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
+        budget: formData.budgetRange || DIWALI_BUDGET_OPTIONS_MAP[formData.budgetAmount] || `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
+        budgetRange: formData.budgetRange || DIWALI_BUDGET_OPTIONS_MAP[formData.budgetAmount],
+        budgetAmount: formData.budgetAmount,
+        selectedBudgetRange: formData.budgetRange || DIWALI_BUDGET_OPTIONS_MAP[formData.budgetAmount],
         type: 'diwali_offer_lead',
         formName: 'DiwaliOfferBookingForm',
         referenceCode: generatedRef,
@@ -293,7 +308,8 @@ export default function DiwaliOfferBookingForm() {
 
   const createWhatsAppUrl = () => {
     const adminPhone = process.env.NEXT_PUBLIC_ADMIN_PHONE || '918076515257';
-    const text = `Hi Magnevents, I claimed my Diwali 10% Extra OFF Gift with Coupon DIW100 for ${formData.eventType} on ${formData.date} in ${formData.location}. Budget: ₹${formData.budgetAmount.toLocaleString('en-IN')}, Ref Code: ${referenceCode}. Please share verified artist quotes!`;
+    const chosenBudget = formData.budgetRange || DIWALI_BUDGET_OPTIONS_MAP[formData.budgetAmount] || `₹${formData.budgetAmount.toLocaleString('en-IN')}`;
+    const text = `Hi Magnevents, I claimed my Diwali 10% Extra OFF Gift with Coupon DIW100 for ${formData.eventType} on ${formData.date} in ${formData.location}. Budget: ${chosenBudget}, Ref Code: ${referenceCode}. Please share verified artist quotes!`;
     return `https://wa.me/${adminPhone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
   };
 
@@ -432,7 +448,12 @@ export default function DiwaliOfferBookingForm() {
                     <select
                       id="diw-budget"
                       value={formData.budgetAmount}
-                      onChange={(e) => handleInputChange('budgetAmount', Number(e.target.value))}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        const label = DIWALI_BUDGET_OPTIONS_MAP[val] || e.target.options[e.target.selectedIndex]?.text || '';
+                        handleInputChange('budgetAmount', val);
+                        handleInputChange('budgetRange', label);
+                      }}
                     >
                       <option value={10000}>₹10,000 - ₹20,000 (10% Extra OFF)</option>
                       <option value={25000}>₹20,000 - ₹35,000 (16% Extra OFF)</option>
