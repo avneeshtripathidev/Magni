@@ -409,13 +409,13 @@ export default function GoogleAdsOfferInstantForm() {
           transition={{ type: 'spring', damping: 28, stiffness: 380 }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* 1. WINE RED PROMOTIONAL HERO BANNER (MATCHING media_1793554544528_d984c3a0.jpg) */}
-          <div className="diw-promo-header">
+          {/* 1. WINE RED PROMOTIONAL HERO BANNER */}
+          <div className={`diw-promo-header ${isSuccess ? 'is-success-header' : ''}`}>
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
                 <span>🪔</span>
-                <span>VALID ONLY UNTIL DIWALI!</span>
+                <span>{isSuccess ? 'OFFICIAL PASS' : 'VALID ONLY UNTIL DIWALI!'}</span>
               </div>
 
               <button
@@ -428,21 +428,23 @@ export default function GoogleAdsOfferInstantForm() {
               </button>
             </div>
 
-            {/* Headline */}
-            <h2 className="diw-title">Your Dream Event Starts Here!</h2>
-
-            {/* Spotlight Date-Lock Box */}
-            <div className="diw-date-lock-card">
-              <div className="diw-lock-info-col">
-                <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
-                <span className="diw-lock-headline">Lock Your Event Booking at Just ₹2,499</span>
-              </div>
-              <div className="diw-lock-price-badge">
-                <span className="diw-lock-original-price">₹10,000</span>
-                <span className="diw-lock-current-price">₹2,499</span>
-                <span className="diw-lock-price-lbl">DATE LOCK</span>
-              </div>
-            </div>
+            {/* Headline & Spotlight Date-Lock Box: only show before submission */}
+            {!isSuccess && (
+              <>
+                <h2 className="diw-title">Your Dream Event Starts Here!</h2>
+                <div className="diw-date-lock-card">
+                  <div className="diw-lock-info-col">
+                    <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
+                    <span className="diw-lock-headline">Lock Your Event Booking at Just ₹2,499</span>
+                  </div>
+                  <div className="diw-lock-price-badge">
+                    <span className="diw-lock-original-price">₹10,000</span>
+                    <span className="diw-lock-current-price">₹2,499</span>
+                    <span className="diw-lock-price-lbl">DATE LOCK</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {!isSuccess ? (
@@ -572,7 +574,7 @@ export default function GoogleAdsOfferInstantForm() {
               </form>
             </div>
           ) : (
-            /* SUCCESS STATE */
+            /* SUCCESS STATE: CLEAN, STREAMLINED ACTIONABLE PASS ONLY */
             <div className="diw-success-card">
               <div className="diw-success-icon-wrap">
                 <div className="diw-success-icon">✓</div>
@@ -581,10 +583,6 @@ export default function GoogleAdsOfferInstantForm() {
               <h2 className="diw-success-title">
                 Diwali Offer &amp; Date Lock Claimed! 🎁
               </h2>
-
-              <p className="diw-success-desc">
-                Your <strong>{savings.pct}% EXTRA DISCOUNT</strong> with Coupon <strong>DIW100</strong> and <strong>₹2,499 Date Lock Pass</strong> have been secured for your <strong>{formData.eventType}</strong>{formData.location ? ` in ${formData.location}` : ''}!
-              </p>
 
               <div className="diw-success-pass">
                 <div className="diw-pass-header">
@@ -607,33 +605,17 @@ export default function GoogleAdsOfferInstantForm() {
 
                 <div className="diw-success-grid">
                   <div>
-                    <span className="lbl">Applied Coupon</span>
-                    <span className="val val-coupon">DIW100 ({savings.pct}% OFF)</span>
-                  </div>
-                  <div>
-                    <span className="lbl">Date Lock Pass</span>
-                    <span className="val val-savings">₹2,499 Priority Lock</span>
+                    <span className="lbl">Estimated Savings</span>
+                    <span className="val val-savings">
+                      {savings.isEligible ? `₹${savings.discountAmt.toLocaleString('en-IN')} (${savings.pct}% OFF)` : `${savings.pct}% OFF`}
+                    </span>
                   </div>
                   <div>
                     <span className="lbl">Event Category</span>
                     <span className="val">{formData.eventType || 'Live Artists'}</span>
                   </div>
-                  <div>
-                    <span className="lbl">Booking Budget</span>
-                    <span className="val">₹{formData.budgetAmount.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-
-                <div className="diw-pass-guarantee">
-                  <span>✓ 100% Date Lock Priority</span>
-                  <span>•</span>
-                  <span>Direct Artist Pricing</span>
                 </div>
               </div>
-
-              <p className="diw-concierge-note">
-                ⚡ A Magnevents booking concierge is preparing verified artist availability with your Diwali discounts unlocked and Date Lock reserved.
-              </p>
 
               <a
                 href={createWhatsAppUrl()}

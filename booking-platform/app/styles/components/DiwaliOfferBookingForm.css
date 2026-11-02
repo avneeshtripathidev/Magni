@@ -60,6 +60,15 @@
   border-bottom: 2px solid #E8B943;
 }
 
+.diw-promo-header.is-success-header {
+  padding: 12px 18px;
+  border-bottom: 1.5px solid rgba(232, 185, 67, 0.45);
+}
+
+.diw-promo-header.is-success-header .diw-header-top {
+  margin-bottom: 0;
+}
+
 .diw-header-top {
   display: flex;
   align-items: center;

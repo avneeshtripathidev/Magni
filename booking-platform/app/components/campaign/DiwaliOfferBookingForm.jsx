@@ -324,12 +324,12 @@ export default function DiwaliOfferBookingForm() {
           onClick={(e) => e.stopPropagation()}
         >
           {/* 1. WINE RED PROMOTIONAL HERO BANNER MATCHING media_1793545767944_e6f822fb.jpg */}
-          <div className="diw-promo-header">
+          <div className={`diw-promo-header ${isSuccess ? 'is-success-header' : ''}`}>
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
                 <span>🎁</span>
-                <span>EXCLUSIVE DIWALI OFFER</span>
+                <span>{isSuccess ? 'OFFICIAL PASS' : (settings.offerBadge || 'EXCLUSIVE DIWALI OFFER')}</span>
               </div>
 
               <button
@@ -342,19 +342,21 @@ export default function DiwaliOfferBookingForm() {
               </button>
             </div>
 
-            {/* Discount Highlight Spotlight Card */}
-            <div className="diw-discount-highlight-card">
-              <div className="diw-discount-badge-col">
-                <span className="diw-discount-big">10% EXTRA OFF</span>
-                <span className="diw-discount-tagline">YOUR EVENT BOOKING!</span>
-              </div>
-              <div className="diw-discount-info-col">
-                <span className="diw-discount-min">On bookings worth <strong>₹10,000 or more.</strong></span>
-                <div className="diw-coupon-pill-wrap">
-                  <span className="diw-coupon-pill">{settings.couponCode || 'DIW100'}</span>
+            {/* Discount Highlight Spotlight Card: only show before submission */}
+            {!isSuccess && (
+              <div className="diw-discount-highlight-card">
+                <div className="diw-discount-badge-col">
+                  <span className="diw-discount-big">10% EXTRA OFF</span>
+                  <span className="diw-discount-tagline">YOUR EVENT BOOKING!</span>
+                </div>
+                <div className="diw-discount-info-col">
+                  <span className="diw-discount-min">On bookings worth <strong>₹10,000 or more.</strong></span>
+                  <div className="diw-coupon-pill-wrap">
+                    <span className="diw-coupon-pill">{settings.couponCode || 'DIW100'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {!isSuccess ? (
@@ -466,10 +468,6 @@ export default function DiwaliOfferBookingForm() {
                 Diwali Gift Claimed! 🎁
               </h2>
 
-              <p className="diw-success-desc">
-                Your <strong>{savings.pct}% EXTRA DISCOUNT</strong> with Coupon <strong>{settings.couponCode}</strong> has been secured for your <strong>{formData.eventType}</strong>{formData.location ? ` in ${formData.location}` : ''}!
-              </p>
-
               <div className="diw-success-pass">
                 <div className="diw-pass-header">
                   <div>
@@ -491,35 +489,17 @@ export default function DiwaliOfferBookingForm() {
 
                 <div className="diw-success-grid">
                   <div>
-                    <span className="lbl">Applied Coupon</span>
-                    <span className="val val-coupon">{settings.couponCode} ({savings.pct}% OFF)</span>
-                  </div>
-                  <div>
                     <span className="lbl">Estimated Savings</span>
                     <span className="val val-savings">
-                      {savings.isEligible ? `₹${savings.discountAmt.toLocaleString('en-IN')}` : 'Applicable on ₹10k+'}
+                      {savings.isEligible ? `₹${savings.discountAmt.toLocaleString('en-IN')} (${savings.pct}% OFF)` : `${savings.pct}% OFF`}
                     </span>
                   </div>
                   <div>
                     <span className="lbl">Event Category</span>
                     <span className="val">{formData.eventType || 'Live Artists'}</span>
                   </div>
-                  <div>
-                    <span className="lbl">Booking Budget</span>
-                    <span className="val">₹{formData.budgetAmount.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-
-                <div className="diw-pass-guarantee">
-                  <span>✓ Verified Artists Priority</span>
-                  <span>•</span>
-                  <span>0% Middleman Commission</span>
                 </div>
               </div>
-
-              <p className="diw-concierge-note">
-                ⚡ A Magnevents booking concierge is preparing verified artist availability with your {savings.pct}% Diwali discount applied.
-              </p>
 
               <a
                 href={createWhatsAppUrl()}
