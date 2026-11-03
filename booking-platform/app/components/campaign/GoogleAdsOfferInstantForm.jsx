@@ -342,7 +342,7 @@ export default function GoogleAdsOfferInstantForm() {
         phone: formData.phone.trim(),
         eventType: formData.eventType || 'Wedding Ceremony',
         location: formData.location?.trim() || 'Flexible / Pan India',
-        date: formData.date || 'Flexible / To be decided',
+        date: formData.date || '',
         budget: formData.budgetRange || BUDGET_OPTIONS_MAP[formData.budgetAmount] || `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
         budgetRange: formData.budgetRange || BUDGET_OPTIONS_MAP[formData.budgetAmount],
         budgetAmount: formData.budgetAmount,
@@ -460,9 +460,8 @@ export default function GoogleAdsOfferInstantForm() {
                 <h2 className="diw-title">Your Dream Event Starts Here!</h2>
                 <div className="diw-date-lock-card">
                   <div className="diw-lock-info-col">
-                    <span className="diw-lock-badge">LIMITED-TIME DIWALI OFFER</span>
+                    <span className="diw-lock-badge">✨ LIMITED-TIME OFFER</span>
                     <span className="diw-lock-headline">Premium Singers at Best Price</span>
-                    <span className="diw-lock-sub">Verified Live Performers Starting from ₹5,999 · 0% Agency Fee</span>
                   </div>
                   <div className="diw-lock-price-badge">
                     <span className="diw-lock-original-price">₹10,000</span>

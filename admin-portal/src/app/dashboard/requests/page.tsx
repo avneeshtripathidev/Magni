@@ -87,7 +87,7 @@ function ClientRequestsContent() {
         .from('bookings') as any)
         .select('*, artists(id, name, alias, category, city, price_min, price_max, is_trending, is_artist_of_month, artist_images!fk_artist_id(image_url))')
         .or('booking_source.eq.client,booking_source.is.null,booking_source.neq.manual')
-        .not('event_type', 'eq', 'Artist Registration')
+        .or('event_type.neq.Artist Registration,event_type.is.null')
         .not('status', 'in', '("confirmed","completed")');
 
       if (searchQuery) {
@@ -96,7 +96,9 @@ function ClientRequestsContent() {
         );
       }
 
-      if (statusFilter) {
+      if (statusFilter === 'pending') {
+        query = query.or('status.eq.pending,status.eq.new,status.eq.lead,status.is.null');
+      } else if (statusFilter) {
         query = query.eq('status', statusFilter);
       }
 

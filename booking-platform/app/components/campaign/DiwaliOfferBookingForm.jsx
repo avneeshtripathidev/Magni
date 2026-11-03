@@ -251,7 +251,7 @@ export default function DiwaliOfferBookingForm() {
         phone: formData.phone.trim(),
         eventType: formData.eventType || 'Event Booking',
         location: formData.location.trim(),
-        date: formData.date || 'Flexible / To be decided',
+        date: formData.date || '',
         budget: formData.budgetRange || DIWALI_BUDGET_OPTIONS_MAP[formData.budgetAmount] || `₹${formData.budgetAmount.toLocaleString('en-IN')}`,
         budgetRange: formData.budgetRange || DIWALI_BUDGET_OPTIONS_MAP[formData.budgetAmount],
         budgetAmount: formData.budgetAmount,

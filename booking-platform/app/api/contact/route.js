@@ -109,6 +109,32 @@ export async function POST(req) {
     if (fullSelectedBudget) {
       notesArray.push(`Selected Budget: ${fullSelectedBudget}`);
     }
+    if (data.pageUrl || data.pagePath) notesArray.push(`Page URL: ${data.pageUrl || data.pagePath}`);
+    if (data.referrer || req.headers.get('referer')) notesArray.push(`Referrer: ${data.referrer || req.headers.get('referer')}`);
+    if (data.gclid) notesArray.push(`GCLID: ${data.gclid}`);
+    if (data.gbraid) notesArray.push(`GBRAID: ${data.gbraid}`);
+    if (data.wbraid) notesArray.push(`WBRAID: ${data.wbraid}`);
+    if (data.utm_content) notesArray.push(`UTM Content: ${data.utm_content}`);
+    if (data.utm_term) notesArray.push(`UTM Term: ${data.utm_term}`);
+    if (data.campaignId || data.campaign_id) notesArray.push(`Campaign ID: ${data.campaignId || data.campaign_id}`);
+    if (data.campaignName || data.campaign_name) notesArray.push(`Campaign Name: ${data.campaignName || data.campaign_name}`);
+    if (data.advanceAmount) notesArray.push(`Advance Token: ₹${data.advanceAmount}`);
+
+    // Parse and sanitize date strictly for SQL date column
+    let validEventDate = null;
+    if (data.date) {
+      const dStr = String(data.date).trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dStr)) {
+        validEventDate = dStr;
+      } else {
+        const parsed = new Date(dStr);
+        if (!isNaN(parsed.getTime()) && !/flexible|tbd|decide/i.test(dStr)) {
+          validEventDate = parsed.toISOString().split('T')[0];
+        } else {
+          notesArray.push(`Preferred Date: ${dStr}`);
+        }
+      }
+    }
 
     let extraNotes = notesArray.join('\n') || 'No additional notes.';
 
@@ -163,8 +189,10 @@ export async function POST(req) {
       client_email: clientEmail,
       client_phone: rawPhone,
       event_type: evType,
-      event_date: data.date || null,
+      event_date: validEventDate,
       venue: data.location || data.city || detectedLocation || 'Delhi NCR / TBD',
+      city: city || null,
+      state: region || null,
       budget: numericBudget,
       notes: extraNotes,
       status: 'pending',
@@ -173,24 +201,13 @@ export async function POST(req) {
       longitude: longitude,
       detected_location: detectedLocation || null,
       ip_address: clientIp || 'unknown',
-      page_url: data.pageUrl || data.pagePath || null,
-      keywords: data.keywords || null,
-      referrer: data.referrer || req.headers.get('referer') || null,
       source_form: data.formName || data.formType || 'Website Form',
       utm_source: data.utm_source || null,
       utm_medium: data.utm_medium || null,
       utm_campaign: data.utm_campaign || null,
       reference_code: data.referenceCode || null,
-      gclid: data.gclid || null,
-      gbraid: data.gbraid || null,
-      wbraid: data.wbraid || null,
-      utm_content: data.utm_content || null,
-      utm_term: data.utm_term || null,
-      campaign_id: data.campaignId || data.campaign_id || null,
-      campaign_name: data.campaignName || data.campaign_name || null,
-      advance_amount: data.advanceAmount ? Number(data.advanceAmount) : null,
-      payment_status: data.paymentStatus || 'unpaid',
-      form_variant: data.formVariant || data.form_variant || null
+      idempotency_key: data.idempotencyKey || null,
+      custom_artist_name: artistName || null
     };
 
     if (data.selectedArtist && data.selectedArtist.id) {
@@ -222,13 +239,13 @@ export async function POST(req) {
         .single();
 
       if (insertError) {
-        console.warn('[ContactAPI] Full insert fallback, saving core columns:', insertError.message);
+        console.warn('[ContactAPI] Insert warning, attempting fallback:', insertError.message);
         const fallbackBooking = {
           client_name: bookingData.client_name,
           client_email: bookingData.client_email,
           client_phone: bookingData.client_phone,
           event_type: bookingData.event_type,
-          event_date: bookingData.event_date,
+          event_date: validEventDate,
           venue: bookingData.venue,
           budget: bookingData.budget,
           notes: bookingData.notes,
@@ -244,6 +261,18 @@ export async function POST(req) {
 
         if (!retryError && retryData) {
           bookingId = retryData.id;
+        } else {
+          // Zero-failure fallback: retry with event_date as null
+          console.warn('[ContactAPI] Retrying with null event_date:', retryError ? retryError.message : 'Unknown');
+          const minimalBooking = { ...fallbackBooking, event_date: null };
+          const { data: minData, error: minError } = await supabase
+            .from('bookings')
+            .insert([minimalBooking])
+            .select()
+            .single();
+          if (!minError && minData) {
+            bookingId = minData.id;
+          }
         }
       } else if (insertedData) {
         bookingId = insertedData.id;

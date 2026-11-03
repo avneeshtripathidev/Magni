@@ -159,7 +159,7 @@ export function Sidebar({ onClose, userRole = 'admin' }: { onClose?: () => void;
           .from('bookings') as any)
           .select('event_type')
           .or('booking_source.eq.client,booking_source.is.null,booking_source.neq.manual')
-          .eq('status', 'pending');
+          .or('status.eq.pending,status.eq.new,status.eq.lead,status.is.null');
           
         if (!error && data) {
           let clientCount = 0;
