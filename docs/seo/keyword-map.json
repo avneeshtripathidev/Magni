@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "lastUpdated": "2026-11-03",
+  "domain": "https://www.magnevents.in",
+  "pillars": {
+    "commercial_core": [
+      { "keyword": "singer booking near me", "url": "/singers-near-me", "intent": "transactional", "priority": "P0" },
+      { "keyword": "book singer for wedding", "url": "/wedding-singer-booking", "intent": "transactional", "priority": "P0" },
+      { "keyword": "live singer for party", "url": "/live-singer-for-party", "intent": "transactional", "priority": "P0" },
+      { "keyword": "singer for house party", "url": "/singer-for-house-party", "intent": "transactional", "priority": "P0" },
+      { "keyword": "wedding dj booking", "url": "/wedding-dj-booking", "intent": "transactional", "priority": "P0" },
+      { "keyword": "live band booking", "url": "/live-band-booking", "intent": "transactional", "priority": "P0" },
+      { "keyword": "corporate event singer", "url": "/corporate-event-singer", "intent": "commercial", "priority": "P1" },
+      { "keyword": "standup comedian booking", "url": "/standup-comedian-booking", "intent": "commercial", "priority": "P1" },
+      { "keyword": "wedding anchor booking", "url": "/wedding-anchor-booking", "intent": "commercial", "priority": "P1" },
+      { "keyword": "singer booking price", "url": "/pricing", "intent": "investigational", "priority": "P0" }
+    ],
+    "categories": [
+      { "id": "singers", "name": "Live Singers", "url": "/artists?category=Singer", "subcategories": ["Bollywood", "Sufi", "Ghazal", "Acoustic", "Punjabi", "Retro"] },
+      { "id": "bands", "name": "Live Bands", "url": "/artists?category=Live+band", "subcategories": ["Rock", "Pop", "Sufi", "Fusion", "Wedding"] },
+      { "id": "djs", "name": "DJs", "url": "/artists?category=Dj", "subcategories": ["Wedding DJ", "Club DJ", "House Party DJ"] },
+      { "id": "musicians", "name": "Instrumentalists", "url": "/artists?category=Musician", "subcategories": ["Guitarist", "Violinist", "Saxophonist", "Flutist", "Dhol"] },
+      { "id": "anchors", "name": "Anchors & Emcees", "url": "/artists?category=Anchor", "subcategories": ["Wedding Emcee", "Corporate Host"] },
+      { "id": "comedians", "name": "Stand-up Comedians", "url": "/artists?category=Comedian", "subcategories": ["Corporate Comedy", "Private Events"] }
+    ],
+    "top_metros": [
+      { "city": "Delhi NCR", "slug": "delhi", "hubUrl": "/city/delhi", "subCities": ["noida", "gurgaon", "gurugram", "ghaziabad", "faridabad"] },
+      { "city": "Mumbai MMR", "slug": "mumbai", "hubUrl": "/city/mumbai", "subCities": ["navi-mumbai", "thane"] },
+      { "city": "Pune", "slug": "pune", "hubUrl": "/city/pune", "subCities": ["pimpri-chinchwad"] },
+      { "city": "Bangalore", "slug": "bangalore", "hubUrl": "/city/bangalore", "subCities": [] },
+      { "city": "Hyderabad", "slug": "hyderabad", "hubUrl": "/city/hyderabad", "subCities": ["secunderabad"] },
+      { "city": "Jaipur", "slug": "jaipur", "hubUrl": "/city/jaipur", "subCities": [] },
+      { "city": "Chandigarh", "slug": "chandigarh", "hubUrl": "/city/chandigarh", "subCities": ["mohali", "panchkula"] },
+      { "city": "Lucknow", "slug": "lucknow", "hubUrl": "/city/lucknow", "subCities": [] },
+      { "city": "Goa", "slug": "goa", "hubUrl": "/city/goa", "subCities": ["north-goa", "south-goa"] },
+      { "city": "Kolkata", "slug": "kolkata", "hubUrl": "/city/kolkata", "subCities": [] }
+    ]
+  }
+}
+

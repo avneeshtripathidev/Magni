@@ -1,0 +1,30 @@
+{
+  "rules": {
+    "title_length": {
+      "min": 30,
+      "max": 65,
+      "brand_suffix": " | Magnevents"
+    },
+    "meta_description_length": {
+      "min": 110,
+      "max": 165
+    },
+    "canonical_enforcement": {
+      "trailing_slash": false,
+      "force_https": true,
+      "force_subdomain": "www",
+      "host": "https://www.magnevents.in"
+    },
+    "anti_thin_content": {
+      "require_artist_inventory_or_structured_content": true,
+      "reject_unknown_keywords_with_404": true,
+      "exclude_unpopulated_tier3_permutations_from_sitemap": true
+    },
+    "schema_validation": {
+      "require_https_context": true,
+      "prohibit_invented_aggregate_ratings": true,
+      "require_breadcrumb_hierarchy": true
+    }
+  }
+}
+

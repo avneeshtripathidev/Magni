@@ -2,124 +2,100 @@ import { notFound, redirect } from 'next/navigation';
 import SEOLandingPage from '@/app/components/common/SEOLandingPage';
 import { generateOverview, generateServices, generateFAQs, generateRelatedLinks } from '@/app/utils/seoTemplates';
 import { getTopArtistsForSEO } from '@/app/utils/fetchTopArtists';
+import { parseLocationSlug, MAJOR_CITIES } from '@/app/utils/seoUrlParser';
 
 export const revalidate = 86400; // Cache at Edge CDN for 24 hours - instant 5ms loading
 
 export async function generateMetadata({ params }) {
-  // Await params in Next.js 15 before using properties
   const awaitedParams = await params;
-  const rawSlug = decodeURIComponent(awaitedParams.location_slug || '').trim();
-  const location_slug = rawSlug.toLowerCase().replace(/[\s_]+/g, '-').replace(/\/+$/, '');
-  
-  const formattedTitle = location_slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const parsed = parseLocationSlug(awaitedParams.location_slug);
+
+  if (!parsed.isValidKeyword) {
+    return {
+      title: 'Performer Booking | Magnevents',
+      robots: { index: false, follow: true }
+    };
+  }
+
+  const citySuffix = parsed.parsedCity !== 'All Cities' ? ` in ${parsed.parsedCity}` : ' in India';
+  const displayTitle = `Book ${parsed.formattedTitle}${citySuffix.includes(parsed.parsedCity) ? '' : citySuffix} | Magnevents`;
+  const metaDescription = `Book verified ${parsed.formattedTitle.toLowerCase()} starting from ₹5,999. Direct artist booking with 0% agency fees and 100% Artist Arrival Guarantee across ${parsed.parsedCity === 'All Cities' ? 'India' : parsed.parsedCity}.`;
 
   return {
-    title: `${formattedTitle} | Verified Artists | Magnevents`,
-    description: `Looking for the best ${formattedTitle}? Book verified artists, musicians, and performers for your house party, wedding, or corporate event via Magnevents.`,
+    title: displayTitle.length > 65 ? `${parsed.formattedTitle} | Magnevents` : displayTitle,
+    description: metaDescription,
     alternates: {
-      canonical: `/${location_slug}`,
+      canonical: `/${parsed.slug}`,
+    },
+    openGraph: {
+      title: displayTitle,
+      description: metaDescription,
+      url: `/${parsed.slug}`,
+      type: 'website'
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: displayTitle,
+      description: metaDescription
     }
   };
 }
 
 export default async function LocationServicePage({ params }) {
   const awaitedParams = await params;
-  const rawSlug = decodeURIComponent(awaitedParams.location_slug || '').trim();
-  const location_slug = rawSlug.toLowerCase().replace(/[\s_]+/g, '-').replace(/\/+$/, '');
-  
-  const validKeywords = [
-    'singer', 'band', 'dj', 'comedian', 'anchor', 'dancer', 'magician', 
-    'guitarist', 'violinist', 'saxophonist', 'flutist', 'pianist', 'dhol',
-    'emcee', 'standup', 'qawwali', 'bhajan', 'music', 'musician', 'artist', 
-    'ghazal', 'gazal', 'sufi', 'gig', 'entertainment', 'packages', 'sangeet', 
-    'mehndi', 'haldi', 'acoustic', 'corporate', 'wedding', 'party', 'function', 
-    'reception', 'engagement', 'anniversary', 'birthday', 'house-party', 'chowki',
-    'bollywood', 'punjabi', 'retro', 'classical'
-  ];
-  const isValidKeyword = validKeywords.some(kw => location_slug.includes(kw));
+  const rawSlug = awaitedParams.location_slug || '';
+  const parsed = parseLocationSlug(rawSlug);
 
-  const majorCities = [
-    'delhi', 'new-delhi', 'noida', 'gurgaon', 'gurugram', 'faridabad', 'ghaziabad',
-    'mumbai', 'bangalore', 'bengaluru', 'pune', 'hyderabad', 'chennai', 'kolkata', 'ahmedabad',
-    'chandigarh', 'jaipur', 'lucknow', 'surat', 'indore', 'patna', 'bhopal', 'agra',
-    'kanpur', 'nagpur', 'thane', 'visakhapatnam', 'vadodara', 'ludhiana', 'nashik',
-    'meerut', 'rajkot', 'varanasi', 'srinagar', 'aurangabad', 'dhanbad', 'amritsar',
-    'allahabad', 'ranchi', 'howrah', 'coimbatore', 'jabalpur', 'gwalior', 'vijayawada',
-    'jodhpur', 'madurai', 'raipur', 'kota', 'guwahati', 'thiruvananthapuram', 'kochi'
-  ];
-
-  if (majorCities.includes(location_slug)) {
-    redirect(`/city/${location_slug}`);
+  if (MAJOR_CITIES.includes(parsed.slug)) {
+    redirect(`/city/${parsed.slug}`);
   }
 
-  // If the raw URL slug contained spaces or non-canonical characters, redirect to the normalized URL
-  if (awaitedParams.location_slug !== location_slug) {
-    redirect(`/${location_slug}`);
+  if (rawSlug !== parsed.slug) {
+    redirect(`/${parsed.slug}`);
   }
 
-  if (!isValidKeyword) {
+  if (!parsed.isValidKeyword) {
     notFound();
-  }
-
-  const formattedTitle = location_slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-
-  let parsedCategory = 'Singer';
-  let parsedSubCategory = '';
-  let parsedCity = 'All Cities';
-  const slugLower = location_slug;
-  
-  if (slugLower.includes('band') || slugLower.includes('qawwali')) parsedCategory = 'Live band';
-  else if (slugLower.includes('musician') || slugLower.includes('music') || slugLower.includes('guitarist') || slugLower.includes('violinist') || slugLower.includes('saxophonist') || slugLower.includes('flutist') || slugLower.includes('pianist') || slugLower.includes('dhol')) parsedCategory = 'Musician';
-  else if (slugLower.includes('dj')) parsedCategory = 'Dj';
-  else if (slugLower.includes('comedian') || slugLower.includes('standup')) parsedCategory = 'Comedian';
-  else if (slugLower.includes('magician')) parsedCategory = 'Magician';
-  else if (slugLower.includes('dancer')) parsedCategory = 'Dancer';
-  else if (slugLower.includes('anchor') || slugLower.includes('emcee')) parsedCategory = 'Anchor';
-  else if (slugLower.includes('singer') || slugLower.includes('artist') || slugLower.includes('ghazal') || slugLower.includes('gazal') || slugLower.includes('sufi') || slugLower.includes('bhajan') || slugLower.includes('gig')) parsedCategory = 'Singer';
-
-  if (slugLower.includes('ghazal') || slugLower.includes('gazal')) parsedSubCategory = 'Gazals';
-  else if (slugLower.includes('sufi') || slugLower.includes('qawwali')) parsedSubCategory = 'Sufi';
-  else if (slugLower.includes('sangeet')) parsedSubCategory = 'Sangeet';
-  else if (slugLower.includes('mehndi') || slugLower.includes('haldi')) parsedSubCategory = 'Mehndi';
-  else if (slugLower.includes('corporate') || slugLower.includes('office') || slugLower.includes('gala') || slugLower.includes('function')) parsedSubCategory = 'Corporate';
-  else if (slugLower.includes('acoustic')) parsedSubCategory = 'Acoustic';
-  else if (slugLower.includes('wedding') || slugLower.includes('reception') || slugLower.includes('engagement') || slugLower.includes('shaadi')) parsedSubCategory = 'Wedding';
-  else if (slugLower.includes('retro')) parsedSubCategory = 'Retro';
-  else if (slugLower.includes('punjabi')) parsedSubCategory = 'Punjabi';
-  else if (slugLower.includes('bollywood')) parsedSubCategory = 'Bollywood';
-  else if (slugLower.includes('rock')) parsedSubCategory = 'Rock';
-  else if (slugLower.includes('classical') || slugLower.includes('bhajan')) parsedSubCategory = 'Classical';
-
-  const parts = slugLower.split('-in-');
-  if (parts.length > 1) {
-    const cityStr = parts[1].replace(/-/g, ' ').trim();
-    if (cityStr.toLowerCase() === 'delhi ncr') {
-      parsedCity = 'Delhi NCR';
-    } else {
-      parsedCity = cityStr.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    }
   }
 
   // Fetch top 5 curated artists from the database for this category & city
   const topArtists = await getTopArtistsForSEO({
-    category: parsedCategory,
-    subCategory: parsedSubCategory,
-    city: parsedCity,
+    category: parsed.parsedCategory,
+    subCategory: parsed.parsedSubCategory,
+    city: parsed.parsedCity,
     limit: 5
   });
 
-  const overviewHtml = generateOverview(parsedCategory, parsedCity);
-  const services = generateServices(parsedCategory, parsedCity);
-  const faqs = generateFAQs(parsedCategory, parsedCity);
-  const relatedLinks = generateRelatedLinks(parsedCategory, parsedCity);
+  const overviewHtml = generateOverview(parsed.parsedCategory, parsed.parsedCity);
+  const services = generateServices(parsed.parsedCategory, parsed.parsedCity);
+  const faqs = generateFAQs(parsed.parsedCategory, parsed.parsedCity);
+  const relatedLinks = generateRelatedLinks(parsed.parsedCategory, parsed.parsedCity);
 
   const schema = [
     {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      "name": `Best ${formattedTitle}`,
-      "description": `Book verified ${formattedTitle} for your next event.`,
-      "url": `https://www.magnevents.in/${location_slug}`
+      "name": `Best ${parsed.formattedTitle}`,
+      "description": `Book verified ${parsed.formattedTitle} for your next event.`,
+      "url": `https://www.magnevents.in/${parsed.slug}`
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": parsed.formattedTitle,
+      "serviceType": parsed.parsedCategory,
+      "provider": {
+        "@type": "EntertainmentBusiness",
+        "name": "Magnevents",
+        "url": "https://www.magnevents.in"
+      },
+      "areaServed": parsed.parsedCity === 'All Cities' ? 'India' : parsed.parsedCity,
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "INR",
+        "price": "5999",
+        "availability": "https://schema.org/InStock"
+      }
     },
     {
       "@context": "https://schema.org",
@@ -146,13 +122,16 @@ export default async function LocationServicePage({ params }) {
         {
           "@type": "ListItem",
           "position": 2,
-          "name": parsedCity,
-          "item": `https://www.magnevents.in/city/${parsedCity.toLowerCase().replace(/ /g, '-')}`
+          "name": parsed.parsedCity === 'All Cities' ? 'Artists' : parsed.parsedCity,
+          "item": parsed.parsedCity === 'All Cities' 
+            ? "https://www.magnevents.in/artists"
+            : `https://www.magnevents.in/city/${parsed.parsedCity.toLowerCase().replace(/ /g, '-')}`
         },
         {
           "@type": "ListItem",
           "position": 3,
-          "name": `Book ${parsedCategory} in ${parsedCity}`
+          "name": `Book ${parsed.parsedCategory} in ${parsed.parsedCity}`,
+          "item": `https://www.magnevents.in/${parsed.slug}`
         }
       ]
     }
@@ -160,13 +139,13 @@ export default async function LocationServicePage({ params }) {
 
   return (
     <SEOLandingPage 
-      locationSlug={location_slug}
-      heroTitle={`Top ${formattedTitle}`}
+      locationSlug={parsed.slug}
+      heroTitle={`Top ${parsed.formattedTitle}`}
       heroSubtitle={`Book verified performers directly for your next grand event.`}
       schema={schema}
-      category={parsedCategory}
-      city={parsedCity}
-      subCategory={parsedSubCategory}
+      category={parsed.parsedCategory}
+      city={parsed.parsedCity}
+      subCategory={parsed.parsedSubCategory}
       topArtists={topArtists}
       overviewHtml={overviewHtml}
       services={services}

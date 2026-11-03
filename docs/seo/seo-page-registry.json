@@ -1,0 +1,36 @@
+{
+  "site": "https://www.magnevents.in",
+  "routes": {
+    "static": [
+      { "path": "/", "changefreq": "daily", "priority": 1.0, "type": "homepage" },
+      { "path": "/artists", "changefreq": "daily", "priority": 0.95, "type": "directory" },
+      { "path": "/ai-search", "changefreq": "daily", "priority": 0.95, "type": "feature" },
+      { "path": "/pricing", "changefreq": "weekly", "priority": 0.90, "type": "commercial" },
+      { "path": "/services", "changefreq": "weekly", "priority": 0.90, "type": "service_hub" },
+      { "path": "/how-to-book", "changefreq": "weekly", "priority": 0.85, "type": "guide" },
+      { "path": "/why-choose", "changefreq": "weekly", "priority": 0.85, "type": "trust" },
+      { "path": "/gallery", "changefreq": "weekly", "priority": 0.80, "type": "portfolio" },
+      { "path": "/testimonials", "changefreq": "weekly", "priority": 0.80, "type": "social_proof" },
+      { "path": "/blog-post", "changefreq": "weekly", "priority": 0.85, "type": "content_hub" },
+      { "path": "/register", "changefreq": "monthly", "priority": 0.75, "type": "conversion" },
+      { "path": "/register/artist", "changefreq": "monthly", "priority": 0.75, "type": "conversion" },
+      { "path": "/register/event", "changefreq": "monthly", "priority": 0.75, "type": "conversion" }
+    ],
+    "dynamic_rules": {
+      "programmatic_landing": "/[service]-in-[city]",
+      "city_hub": "/city/[city_slug]",
+      "city_blog": "/city/[city_slug]/blog/[blog_slug]",
+      "artist_profile": "/artist/[id_or_slug]",
+      "general_blog": "/blog-post/[id_or_slug]"
+    },
+    "noindex_rules": [
+      "/api/*",
+      "/admin/*",
+      "/dashboard/*",
+      "/private/*",
+      "/preview/*",
+      "/thank-you"
+    ]
+  }
+}
+

@@ -99,7 +99,80 @@ export const pricingKeywords = [
   "wedding entertainment packages cost"
 ];
 
-// Master curated array for Footer Links & Internal PageRank Distribution
+// Master structured semantic pillars for Footer Links & Topical PageRank Distribution
+export const footerSeoCategories = [
+  {
+    title: "Popular Artist Categories",
+    links: [
+      { label: "Live Singers", href: "/singers-near-me" },
+      { label: "Wedding DJs", href: "/wedding-dj-booking" },
+      { label: "Live Bands", href: "/live-band-booking" },
+      { label: "Acoustic Performers", href: "/acoustic-singer-booking" },
+      { label: "Sufi & Ghazal Singers", href: "/sufi-singer-booking" },
+      { label: "Stand-Up Comedians", href: "/standup-comedian-booking" },
+      { label: "Event Anchors & Emcees", href: "/wedding-anchor-booking" }
+    ]
+  },
+  {
+    title: "Wedding Entertainment",
+    links: [
+      { label: "Wedding Singers", href: "/wedding-singer-booking" },
+      { label: "Live Band for Wedding", href: "/live-band-for-wedding" },
+      { label: "Wedding DJ Booking", href: "/wedding-dj-booking" },
+      { label: "Sangeet Singer Booking", href: "/sangeet-singer-booking" },
+      { label: "Mehndi & Haldi Singers", href: "/mehndi-singer-booking" },
+      { label: "Wedding Entertainment Packages", href: "/wedding-entertainment-packages" }
+    ]
+  },
+  {
+    title: "Private Parties & House Gigs",
+    links: [
+      { label: "Singer for House Party", href: "/singer-for-house-party" },
+      { label: "Live Singer for Party", href: "/live-singer-for-party" },
+      { label: "House Gig Living Room Concerts", href: "/house-gig" },
+      { label: "Guitarist for Private Party", href: "/guitarist-for-private-party" },
+      { label: "Singer for Birthday Party", href: "/singer-for-birthday-party" },
+      { label: "House Party DJ Booking", href: "/house-party-dj-booking" }
+    ]
+  },
+  {
+    title: "Corporate Entertainment",
+    links: [
+      { label: "Corporate Event Singers", href: "/corporate-event-singer" },
+      { label: "Live Band for Corporate Event", href: "/live-band-for-corporate-event" },
+      { label: "Office Party Entertainment", href: "/office-party-entertainment" },
+      { label: "Corporate Gala Live Music", href: "/corporate-gala-live-music" },
+      { label: "Annual Function Performers", href: "/annual-function-singer" },
+      { label: "Product Launch Live Music", href: "/product-launch-entertainment" }
+    ]
+  },
+  {
+    title: "Popular Cities",
+    links: [
+      { label: "Live Singers in Delhi NCR", href: "/city/delhi" },
+      { label: "Wedding Singers in Mumbai", href: "/city/mumbai" },
+      { label: "Live Bands in Bangalore", href: "/city/bangalore" },
+      { label: "Singers & Bands in Pune", href: "/city/pune" },
+      { label: "Live Music in Jaipur", href: "/city/jaipur" },
+      { label: "Sufi Singers in Lucknow", href: "/city/lucknow" },
+      { label: "Live Bands in Chandigarh", href: "/city/chandigarh" },
+      { label: "Live Artists in Hyderabad", href: "/city/hyderabad" }
+    ]
+  },
+  {
+    title: "Pricing & Direct Booking",
+    links: [
+      { label: "Live Singer Booking Price", href: "/pricing" },
+      { label: "Wedding Singer Cost Guide", href: "/wedding-singer-cost" },
+      { label: "Live Band Booking Price", href: "/live-band-booking-price" },
+      { label: "Affordable Live Music Packages", href: "/affordable-live-music-packages" },
+      { label: "Singer for Party Under ₹10,000", href: "/singer-for-party-under-10000" },
+      { label: "Browse All Verified Artists", href: "/artists" }
+    ]
+  }
+];
+
+// Flat fallback array for legacy consumers
 export const footerSeoKeywords = [
   "singer booking near me",
   "book singer for wedding",
