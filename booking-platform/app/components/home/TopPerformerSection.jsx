@@ -1,28 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import FadeSection from '@/app/components/common/FadeSection'
-import Stars from '@/app/components/common/Stars'
-import { formatINR } from '@helpers/formatters'
-import { supabase } from '@database/connection/supabase'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import FadeSection from '@/app/components/common/FadeSection';
+import Stars from '@/app/components/common/Stars';
+import { formatINR } from '@helpers/formatters';
+import { supabase } from '@database/connection/supabase';
+
+// Module-level in-memory cache for instant re-render across navigations
+let cachedArtistOfMonth = null;
 
 function TopPerformerSection() {
-  const router = useRouter();
-  const [artist, setArtist] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showDetails, setShowDetails] = useState(false);
-  const [isMobile, setIsMobile] = useState(null); // null = not yet determined (avoids SSR mismatch)
+  const [artist, setArtist] = useState(cachedArtistOfMonth);
+  const [loading, setLoading] = useState(!cachedArtistOfMonth);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
+    if (cachedArtistOfMonth) {
+      setArtist(cachedArtistOfMonth);
+      setLoading(false);
+      return;
+    }
 
     const fetchArtistOfMonth = async () => {
       try {
@@ -37,7 +34,6 @@ function TopPerformerSection() {
         let topArtist = data;
 
         if (error || !data) {
-          // Fallback to any artist in the DB if none is marked as artist of the month
           const { data: fallbackData } = await supabase
             .from('artists')
             .select('*, artist_images(image_url)')
@@ -48,7 +44,6 @@ function TopPerformerSection() {
           if (fallbackData) {
             topArtist = fallbackData;
           } else {
-            console.warn('No artists found in DB');
             setArtist(null);
             return;
           }
@@ -64,6 +59,7 @@ function TopPerformerSection() {
 
           const parsedArtist = {
             name: topArtist.alias || topArtist.name,
+            alias: topArtist.alias,
             image: topArtist.artist_images?.[0]?.image_url || '/placeholder.png',
             genres: genres,
             originalPrice: topArtist.original_price || topArtist.price_max || 0,
@@ -72,6 +68,7 @@ function TopPerformerSection() {
             bookings: topArtist.successful_bookings || 0,
           };
 
+          cachedArtistOfMonth = parsedArtist;
           setArtist(parsedArtist);
         }
       } catch (err) {
@@ -100,20 +97,14 @@ function TopPerformerSection() {
           <>
             <div className="hp-aom-img-wrap skeleton-pulse" style={{ background: 'rgba(255,255,255,0.05)', minHeight: '100%' }} suppressHydrationWarning></div>
             <div className="hp-aom-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-               {/* Genres */}
                <div className="skeleton-pulse" style={{ height: '12px', width: '30%', background: 'rgba(255,255,255,0.05)', marginBottom: '12px', borderRadius: '4px' }}></div>
-               {/* Name */}
                <div className="skeleton-pulse" style={{ height: '32px', width: '50%', background: 'rgba(255,255,255,0.05)', marginBottom: '20px', borderRadius: '6px' }}></div>
-               
-               {/* Stats Grid */}
                <div className="hp-aom-stats-grid">
                  <div className="skeleton-pulse" style={{ height: '40px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}></div>
                  <div className="skeleton-pulse" style={{ height: '40px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}></div>
                  <div className="skeleton-pulse" style={{ height: '40px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}></div>
                  <div className="skeleton-pulse" style={{ height: '40px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}></div>
                </div>
-               
-               {/* Buttons */}
                <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
                  <div className="skeleton-pulse" style={{ height: '42px', flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}></div>
                  <div className="skeleton-pulse" style={{ height: '42px', flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}></div>
@@ -123,15 +114,13 @@ function TopPerformerSection() {
         ) : (
           <>
             <div className="hp-aom-img-wrap">
-              {/* Blurred background layer to fill empty spaces */}
-              <div 
-                className="hp-aom-img-bg-blur" 
-                style={{ backgroundImage: `url(${artist.image})` }}
-              />
-              {/* Actual image contained so it's fully visible */}
               <img
                 src={typeof artist.image === "object" ? artist.image?.src : artist.image}
-                alt={artist.name} style={{ objectFit: 'cover', objectPosition: 'center', width: '100%', height: '100%', zIndex: 2 }}  />
+                alt={artist.name}
+                loading="lazy"
+                decoding="async"
+                style={{ objectFit: 'cover', objectPosition: 'center', width: '100%', height: '100%', zIndex: 2 }}  
+              />
               <div className="hp-aom-badge" style={{ zIndex: 10 }}>
                 <span className="hp-aom-badge-icon">🏆</span>
                 Artist of the Month
@@ -180,8 +169,8 @@ function TopPerformerSection() {
                     className="hp-btn hp-aom-profile-btn"
                     style={{ 
                       flex: 1, 
-                      whiteSpace: 'nowrap',
-                      padding: '12px 14px'
+                      whiteSpace: 'nowrap', 
+                      padding: '12px 14px' 
                     }}
                   >
                     View Profile
@@ -193,8 +182,7 @@ function TopPerformerSection() {
         )}
       </div>
     </FadeSection>
-  )
+  );
 }
 
-// 🧠 Memoize in Main Memory to prevent rediffing and CPU lag on mobile
 export default React.memo(TopPerformerSection);

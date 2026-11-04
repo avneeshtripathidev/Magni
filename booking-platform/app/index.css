@@ -61,7 +61,7 @@ body {
   width: 100%;
   max-width: 100%;
   font-family: var(--font-body);
-  background-color: var(--bg-main);
+  background-color: #211B1D;
   color: var(--text-main);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;

@@ -5,7 +5,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import { useScrollDirection } from '@/app/hooks/useScrollDirection';
 import BrandMark from '@/app/components/common/BrandMark';
 import { AIIcon } from '@/app/components/icons/NavigationIcons';
 import { NAV_LINKS } from '@/app/constants';
@@ -16,13 +15,23 @@ const MobilePanel = dynamic(() => import('./MobilePanel'), { ssr: false });
 
 function useScrolled(threshold = 20) {
   const [scrolled, setScrolled] = useState(false);
+
   useEffect(() => {
+    let ticking = false;
     const handler = () => {
-      setScrolled(window.scrollY > threshold);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const isPassed = window.scrollY > threshold;
+          setScrolled(prev => (prev !== isPassed ? isPassed : prev));
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, [threshold]);
+
   return scrolled;
 }
 
@@ -36,7 +45,6 @@ export default function Nav() {
 
   const searchRef = useRef(null);
   const scrolled = useScrolled(20);
-  const scrollDirection = useScrollDirection();
   const isLight = false;
   // Nav bar stays sticky and visible when scrolling down (only ad bar scrolls up out of view)
   const isHidden = false;
@@ -130,8 +138,7 @@ export default function Nav() {
                   window.dispatchEvent(new CustomEvent('open-register-modal', { detail: { view: 'artist' } }));
                 }
               }}
-              aria-label="Register as an Artist"
-             aria-label="Are you an Artist? Join Magnevents">
+              aria-label="Are you an Artist? Join Magnevents">
               <span className="cta-long-text">Are you an Artist?</span>
               <span className="cta-short-text">Are you an Artist?</span>
             </button>

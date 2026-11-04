@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import FadeSection from '@/app/components/common/FadeSection';
 import { HOW_TO_BOOK_STEPS } from '@/app/constants';
 import '@/app/styles/pages/HowToBook.css';
@@ -41,8 +40,6 @@ function HowToBookSection() {
 
   return (
     <FadeSection className="hp-shell hp-block how-section-wrapper">
-      <div className="how-ambient-glow" />
-
       <div className="hp-how-section">
         <div className="how-header-modern">
           <div className="how-badge">

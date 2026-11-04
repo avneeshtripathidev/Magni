@@ -15,7 +15,7 @@
   width: 100%;
   max-width: 1000px;
   height: 500px;
-  background: radial-gradient(circle at 50% 0%, var(--glow-red), transparent 70%);
+  display: none !important;
   pointer-events: none;
 }
 
@@ -161,7 +161,7 @@
   background: var(--glow-red);
   opacity: 0.1;
   border-radius: 100%;
-  filter: blur(120px);
+  display: none !important;
   pointer-events: none;
 }
 

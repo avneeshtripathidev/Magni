@@ -2,7 +2,7 @@
 @import './components/SeoKeywordFooter.css';
 
 .flow-unify-shell {
-  --bg-base: #1c1a1d;
+  --bg-base: #211B1D;
   --bg-raised: #29272A;
   --bg-overlay: #29272A;
   --bg-subtle: #242225;
@@ -45,7 +45,7 @@
   position: relative;
   min-height: 100vh;
   color: var(--text-primary);
-  background: #1c1a1d;
+  background: #211B1D;
 }
 
 .flow-unify-atmos {

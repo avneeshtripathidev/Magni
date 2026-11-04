@@ -3,9 +3,9 @@
 @import '../components/SeoKeywordFooter.css';
 
 :root {
-  --hp-bg: #0d0b09;
-  --bg-base: #0d0b09;
-  --hp-bg-soft: #110f0e;
+  --hp-bg: #211B1D;
+  --bg-base: #211B1D;
+  --hp-bg-soft: #211B1D;
   --hp-ink: #ffffff;
   --hp-ink-soft: #bfaea1;
   --hp-ink-faint: #8b7e74;
@@ -24,7 +24,7 @@
 }
 
 .hp {
-  background: transparent;
+  background: #211B1D;
   color: var(--hp-ink);
   overflow-x: hidden;
   position: relative;
@@ -108,10 +108,7 @@
   isolation: isolate;
   overflow: hidden;
   padding-top: 120px;
-  background:
-    radial-gradient(circle at 20% 0%, var(--glow-red) 0%, transparent 50%),
-    radial-gradient(circle at 80% 10%, rgba(232, 185, 67,  0.05) 0%, transparent 50%),
-    var(--bg-main);
+  background: #211B1D;
 }
 
 .hp-hero-bg {
@@ -1917,7 +1914,7 @@
 
 .hp-form-success-icon { font-size: 40px; display: block; margin-bottom: 16px; }
 
-.glow-orbs { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.glow-orbs { display: none !important; }
 .glow-orb { position: absolute; border-radius: 999px; filter: blur(2px); animation: drift 18s ease-in-out infinite alternate; }
 .glow-orb-1 { width: 280px; height: 280px; left: -100px; top: -60px; background: radial-gradient(circle, rgba(245, 158, 11, 0.35) 0, transparent 72%); }
 .glow-orb-2 { width: 340px; height: 340px; right: -80px; top: 160px; background: radial-gradient(circle, rgba(59, 130, 246, 0.22) 0, transparent 74%); animation-delay: -6s; }
@@ -3181,7 +3178,7 @@
   height: 120%;
   background-size: cover;
   background-position: center;
-  filter: blur(25px) brightness(0.35);
+  display: none !important;
   opacity: 0.8;
   z-index: 1;
 }
@@ -6811,7 +6808,7 @@
     padding-top: 5% !important;
     padding-bottom: 24px !important;
     box-sizing: border-box !important;
-    background: #1C1A1E !important;
+    background: #211B1D !important;
   }
 
   .hp-hero-wrapper .hp-hero-bg {
@@ -6824,15 +6821,7 @@
     inset: 0 !important;
     z-index: 2 !important;
     pointer-events: none !important;
-    background: 
-      /* Subtle luxury cyber dot texture */
-      radial-gradient(rgba(216, 196, 183, 0.08) 1px, transparent 1px),
-      /* Wine Red concert stage lighting */
-      radial-gradient(ellipse 65% 55% at 20% 30%, rgba(126, 48, 68, 0.55) 0%, rgba(28, 26, 30, 0) 70%),
-      /* Soft warm marigold backlight */
-      radial-gradient(ellipse 50% 45% at 85% 25%, rgba(232, 185, 67, 0.16) 0%, rgba(28, 26, 30, 0) 75%),
-      /* Deep soft charcoal base */
-      linear-gradient(180deg, #18161A 0%, #1C1A1E 50%, #29272A 100%) !important;
+    background: #211B1D !important;
     background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100% !important;
   }
 
@@ -6847,7 +6836,7 @@
       radial-gradient(circle 380px at 78% 45%, rgba(228, 95, 96, 0.14) 0%, transparent 70%),
       radial-gradient(circle 320px at 35% 85%, rgba(126, 48, 68, 0.22) 0%, transparent 65%),
       linear-gradient(180deg, transparent 75%, #29272A 100%) !important;
-    animation: heroAtmosphereBreath 9s ease-in-out infinite alternate !important;
+    display: none !important;
   }
 
   @keyframes heroAtmosphereBreath {
@@ -9024,7 +9013,7 @@
 
 @media (max-width: 768px) {
   .hp-hero-wrapper {
-    background: #141216 !important;
+    background: #211B1D !important;
     position: relative !important;
     overflow: hidden !important;
     padding-bottom: 0 !important;
@@ -9046,12 +9035,7 @@
     display: block !important;
     position: absolute !important;
     inset: 0 !important;
-    background-color: #141216 !important;
-    background-image: 
-      /* Subtle luxury dot matrix grid in Rose Stone tint (#D8C4B7) */
-      radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
-      /* Seamless deep Soft Charcoal gradient */
-      linear-gradient(180deg, #161318 0%, #1A171D 35%, #151317 70%, #110F13 100%) !important;
+    background: #211B1D !important;
     background-size: 22px 22px, 100% 100% !important;
     z-index: 2 !important;
     pointer-events: none !important;
@@ -9476,3 +9460,79 @@
 
 
 
+
+/* ==========================================================================
+   HOMEPAGE UNIFIED BACKGROUND & PERFORMANCE OPTIMIZATION (#211B1D)
+   - One consistent base background across all content sections
+   - Zero visible section background jumps
+   - Elimination of expensive blur filters & background animations
+   ========================================================================== */
+.hp,
+.hp-shell,
+.hp-hero,
+.hp-hero-wrapper,
+.hp-hero-overlay,
+.hp-how-dark,
+.hp-how-section,
+.hero-videos-section,
+.hp-featured-section,
+.hp-cat-section,
+.hp-faqs,
+.hp-contact-form,
+.seo-cards-section {
+  background-color: #211B1D !important;
+}
+
+/* Remove decorative multi-layer radial glows and blurred pseudo-elements */
+.hp-hero-radial-glow,
+.hp-hero-radial-glow::before,
+.hp-hero-radial-glow::after,
+.glow-orbs,
+.glow-orb,
+.how-ambient-glow,
+.hp-aom-img-bg-blur,
+.hp-aom-card::after,
+.hp-faqs::before {
+  display: none !important;
+}
+
+/* Remove expensive backdrop-filters from cards to ensure 60fps scrolling */
+.hp-why-card,
+.hp-aom-card,
+.hp-feat-card-v2,
+.hp-stat-card,
+.hp-review-card,
+.hp-glass-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Clean, lightweight cards with refined borders */
+.hp-why-card {
+  background: #29272A !important;
+  border: 1px solid rgba(216, 196, 183, 0.15) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.hp-why-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(232, 185, 67, 0.4) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.hp-aom-card {
+  background: #29272A !important;
+  border: 1px solid rgba(216, 196, 183, 0.18) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45) !important;
+}
+
+.hp-feat-card-v2 {
+  background: #29272A !important;
+  border: 1px solid rgba(216, 196, 183, 0.15) !important;
+}
+
+.hp-review-card {
+  background: #29272A !important;
+  border: 1px solid rgba(216, 196, 183, 0.15) !important;
+}

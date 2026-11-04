@@ -1,20 +1,28 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import VideoCard from './VideoCard';
 import VideoModal from './VideoModal';
 import '@/app/styles/components/HeroVideos.css';
 
+// Module-level in-memory cache to prevent repeated network calls on route changes
+let cachedHeroVideos = null;
+
 export default function HeroVideosSection() {
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [videos, setVideos] = useState(cachedHeroVideos || []);
+  const [loading, setLoading] = useState(!cachedHeroVideos);
   const [error, setError] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const scrollRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const fetchVideos = async () => {
+    if (cachedHeroVideos) {
+      setVideos(cachedHeroVideos);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(false);
     try {
@@ -25,7 +33,9 @@ export default function HeroVideosSection() {
       }
       
       const data = await response.json();
-      setVideos(data.slice(0, 8));
+      const sliced = Array.isArray(data) ? data.slice(0, 8) : [];
+      cachedHeroVideos = sliced;
+      setVideos(sliced);
     } catch (err) {
       console.error(err);
       setError(true);

@@ -1,48 +1,64 @@
 "use client";
 
-import React, { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
-import FadeSection from '@/app/components/common/FadeSection'
-import { WHY_POINTS } from '@/app/constants'
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import FadeSection from '@/app/components/common/FadeSection';
+import { WHY_POINTS } from '@/app/constants';
 
 function WhyChooseSection() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const scrollRef = useRef(null)
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
+  const scrollRaf = useRef(null);
 
   const scrollToIndex = (idx) => {
-    setActiveIndex(idx)
+    setActiveIndex(idx);
     if (scrollRef.current) {
-      const container = scrollRef.current
-      const cards = container.querySelectorAll('.hp-why-card')
+      const container = scrollRef.current;
+      const cards = container.querySelectorAll('.hp-why-card');
       if (cards[idx]) {
-        const card = cards[idx]
-        const cardLeft = card.offsetLeft - container.offsetLeft
-        const targetScroll = cardLeft - (container.clientWidth - card.clientWidth) / 2
-        container.scrollTo({ left: targetScroll, behavior: 'smooth' })
+        const card = cards[idx];
+        const cardLeft = card.offsetLeft - container.offsetLeft;
+        const targetScroll = cardLeft - (container.clientWidth - card.clientWidth) / 2;
+        container.scrollTo({ left: targetScroll, behavior: 'smooth' });
       }
     }
-  }
+  };
 
-  const handleScroll = () => {
-    if (!scrollRef.current) return
-    const container = scrollRef.current
-    const cards = container.querySelectorAll('.hp-why-card')
-    if (!cards || cards.length === 0) return
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
 
-    const containerLeft = container.getBoundingClientRect().left
-    let closestIndex = 0
-    let minDiff = Infinity
+    if (scrollRaf.current) {
+      cancelAnimationFrame(scrollRaf.current);
+    }
 
-    cards.forEach((card, i) => {
-      const diff = Math.abs(card.getBoundingClientRect().left - containerLeft)
-      if (diff < minDiff) {
-        minDiff = diff
-        closestIndex = i
+    scrollRaf.current = requestAnimationFrame(() => {
+      const container = scrollRef.current;
+      if (!container) return;
+      const cards = container.querySelectorAll('.hp-why-card');
+      if (!cards || cards.length === 0) return;
+
+      const containerLeft = container.getBoundingClientRect().left;
+      let closestIndex = 0;
+      let minDiff = Infinity;
+
+      for (let i = 0; i < cards.length; i++) {
+        const diff = Math.abs(cards[i].getBoundingClientRect().left - containerLeft);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = i;
+        }
       }
-    })
 
-    setActiveIndex(closestIndex)
-  }
+      setActiveIndex(prev => (prev !== closestIndex ? closestIndex : prev));
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (scrollRaf.current) {
+        cancelAnimationFrame(scrollRaf.current);
+      }
+    };
+  }, []);
 
   return (
     <FadeSection className="hp-shell hp-block">
@@ -55,20 +71,15 @@ function WhyChooseSection() {
         onScroll={handleScroll}
       >
         {WHY_POINTS.map((item, i) => (
-          <motion.article
+          <article
             key={item.title}
             className={`hp-why-card ${activeIndex === i ? 'is-active-card' : ''}`}
-            whileHover={{ y: -6 }}
             onClick={() => setActiveIndex(i)}
-            style={{
-              borderColor: activeIndex === i ? 'rgba(232, 185, 67, 0.45)' : undefined,
-              boxShadow: activeIndex === i ? '0 24px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(232, 185, 67, 0.12)' : undefined
-            }}
           >
             <span className="hp-why-icon">{item.icon}</span>
             <h3>{item.title}</h3>
             <p>{item.desc}</p>
-          </motion.article>
+          </article>
         ))}
       </div>
 
@@ -193,7 +204,7 @@ function WhyChooseSection() {
         </button>
       </div>
     </FadeSection>
-  )
+  );
 }
 
 export default React.memo(WhyChooseSection);

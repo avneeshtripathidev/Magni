@@ -6,7 +6,6 @@ import Nav from '@/app/components/layout/Nav';
 import TopOfferAnnouncementStrip from '@/app/components/layout/TopOfferAnnouncementStrip';
 import BottomNav from '@/app/components/layout/BottomNav';
 import Footer from '@/app/components/common/Footer';
-import { useMouseGlow } from '@/app/hooks/useMouseGlow';
 
 const HIDE_CHROME_ON = ['/checkout', '/confirmed', '/login', '/signup', '/onboarding', '/chat', '/f/'];
 
@@ -17,8 +16,6 @@ export function AppShellWrapper({ children }) {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useMouseGlow();
 
   // Use pathname-based logic only after mount to avoid hydration mismatch
   const hideChrome = mounted && HIDE_CHROME_ON.some(p => pathname.startsWith(p));
@@ -32,9 +29,6 @@ export function AppShellWrapper({ children }) {
 
   return (
     <div className="flow-unify-shell">
-      <div className="flow-unify-atmos" aria-hidden="true" />
-      <div className="ambient-canvas" aria-hidden="true" />
-      
       {!hideChrome && (
         <div id="unified-header" className="unified-header-container">
           <TopOfferAnnouncementStrip />
