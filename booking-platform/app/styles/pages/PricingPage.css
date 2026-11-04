@@ -15,7 +15,7 @@
   min-height: 100vh;
   background: transparent;
   color: #fff;
-  padding: 24px 24px 80px;
+  padding: 60px 24px 80px;
   position: relative;
   overflow: hidden;
 }
@@ -66,7 +66,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
-  margin-bottom: 100px;
+  margin-top: 36px;
+  margin-bottom: 80px;
 }
 
 .pricing-card {
