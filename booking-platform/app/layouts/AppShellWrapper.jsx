@@ -6,6 +6,7 @@ import Nav from '@/app/components/layout/Nav';
 import TopOfferAnnouncementStrip from '@/app/components/layout/TopOfferAnnouncementStrip';
 import BottomNav from '@/app/components/layout/BottomNav';
 import Footer from '@/app/components/common/Footer';
+import SectionDivider from '@/app/components/common/SectionDivider';
 
 const HIDE_CHROME_ON = ['/checkout', '/confirmed', '/login', '/signup', '/onboarding', '/chat', '/f/'];
 
@@ -44,7 +45,12 @@ export function AppShellWrapper({ children }) {
         <div className="flow-unify-page-wrap">
           {children}
         </div>
-        {!hideChrome && <Footer />}
+        {!hideChrome && (
+          <>
+            <SectionDivider className="page-end-divider" />
+            <Footer />
+          </>
+        )}
       </div>
 
       {!hideChrome && (

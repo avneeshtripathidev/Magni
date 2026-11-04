@@ -109,3 +109,18 @@
   }
 }
 
+
+
+/* Universal Page-End Divider before footer */
+.page-end-divider {
+  width: 100%;
+  max-width: min(1360px, 94%);
+  margin: 28px auto 0 !important;
+}
+
+@media (max-width: 768px) {
+  .page-end-divider {
+    max-width: 92%;
+    margin: 16px auto 0 !important;
+  }
+}
