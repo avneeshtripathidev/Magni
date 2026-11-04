@@ -40,7 +40,7 @@ export default function SEOArtistsGrid({ category = 'All', city = 'All Cities', 
           <h2>Available {category !== 'All' ? (category.toLowerCase().includes('dj') ? 'DJs' : (category.endsWith('s') ? category : `${category}s`)) : 'Artists'} {isShowingFallback ? `for ${city} Events` : `in ${city}`}</h2>
         </div>
 
-        <div className="artists-grid">
+        <div className={`artists-grid ${!loading && displayArtists.length <= 2 ? 'artists-grid--few' : ''}`}>
           {loading ? (
             <>
               {Array.from({ length: 8 }).map((_, i) => (

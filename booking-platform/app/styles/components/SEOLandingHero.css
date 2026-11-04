@@ -7,23 +7,9 @@
   width: 100%;
   min-height: 90vh;
   padding: 24px 20px 60px;
-  background-color: #141216;
-  background-image: 
-    /* Subtle luxury cyber dot matrix grid in Rose Stone tint (#D8C4B7) */
-    radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
-    /* Top-Right Velvet Wine Glow (#7E3044) */
-    radial-gradient(circle at 82% 16%, rgba(126, 48, 68, 0.22) 0%, transparent 60%),
-    /* Wine Red concert stage lighting behind headline */
-    radial-gradient(ellipse 65% 55% at 20% 32%, rgba(126, 48, 68, 0.50) 0%, transparent 70%),
-    /* Center stage golden marigold radiance */
-    radial-gradient(ellipse 70% 48% at 50% 36%, rgba(232, 185, 67, 0.10) 0%, transparent 68%),
-    /* Top-Left Soft Rose Stone Warmth (#D8C4B7) */
-    radial-gradient(circle at 18% 28%, rgba(216, 196, 183, 0.12) 0%, transparent 55%),
-    /* Lower Ambient Wine Depth */
-    radial-gradient(circle at 50% 82%, rgba(126, 48, 68, 0.08) 0%, transparent 65%),
-    /* Seamless deep Soft Charcoal base gradient */
-    linear-gradient(180deg, #161318 0%, #1A171D 35%, #151317 70%, #110F13 100%);
-  background-size: 22px 22px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  background: #211B1D !important;
+  background-color: #211B1D !important;
+  background-image: none !important;
   color: #fff;
   overflow: hidden;
   isolation: isolate;
@@ -31,19 +17,7 @@
 
 /* Ambient glow & backdrop elements */
 .seo-hero-backdrop-glow {
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1200px, 100vw);
-  height: 560px;
-  background: 
-    radial-gradient(ellipse 60% 50% at 25% 35%, rgba(126, 48, 68, 0.35) 0%, transparent 70%),
-    radial-gradient(circle at 75% 30%, rgba(126, 48, 68, 0.18) 0%, transparent 65%),
-    radial-gradient(circle at 50% 20%, rgba(232, 185, 67, 0.06) 0%, transparent 60%);
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: 0;
+  display: none !important;
 }
 
 .seo-hero-container {
@@ -70,13 +44,13 @@
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(232, 185, 67,  0.35);
+  background: #30272A !important;
+  border: 1px solid rgba(232, 185, 67, 0.35) !important;
   border-radius: 999px;
   padding: 8px 22px 8px 10px;
-  box-shadow: 0 6px 30px rgba(232, 185, 67,  0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   transition: transform 0.2s ease;
 }
 
@@ -179,7 +153,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e5e5e5;
-  backdrop-filter: blur(12px);
+  backdrop-filter: none !important;
   transition: all 0.25s ease;
 }
 
@@ -423,18 +397,18 @@
 
 /* Individual Artist Card */
 .seo-artist-card {
-  background: rgba(41, 39, 42, 0.88);
-  border: 1px solid rgba(216, 196, 183, 0.20);
+  background: #30272A !important;
+  border: 1px solid rgba(216, 196, 183, 0.16) !important;
   border-radius: 20px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease;
   position: relative;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
   cursor: pointer;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .seo-artist-card:hover {
@@ -479,7 +453,7 @@
   left: 12px;
   z-index: 2;
   background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(8px);
+  backdrop-filter: none !important;
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   font-size: 11px;
@@ -509,7 +483,7 @@
   right: 12px;
   z-index: 2;
   background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  backdrop-filter: none !important;
   border: 1px solid rgba(232, 185, 67,  0.3);
   color: #E8B943;
   font-size: 11px;
@@ -529,7 +503,7 @@
   flex-grow: 1;
   justify-content: space-between;
   gap: 12px;
-  background: rgba(41, 39, 42, 0.95);
+  background: #30272A !important;
 }
 
 .seo-card-category-tag {
@@ -639,8 +613,8 @@
    ========================================================================== */
 .seo-interactive-booking-card {
   background: rgba(18, 18, 22, 0.92);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   border: 1px solid rgba(232, 185, 67,  0.3);
   border-radius: 24px;
   padding: 32px 36px;
@@ -972,19 +946,19 @@
 }
 
 .seo-tier-card {
-  background: rgba(41, 39, 42, 0.82);
-  border: 1px solid rgba(216, 196, 183, 0.20);
+  background: #30272A !important;
+  border: 1px solid rgba(216, 196, 183, 0.18) !important;
   border-radius: 20px;
   padding: 28px 24px 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 18px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   position: relative;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .seo-tier-card:hover {
@@ -994,9 +968,9 @@
 }
 
 .seo-tier-card.featured-tier {
-  border: 1.5px solid rgba(232, 185, 67, 0.65);
-  background: linear-gradient(145deg, rgba(41, 39, 42, 0.95) 0%, rgba(28, 26, 29, 0.98) 100%);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 35px rgba(232, 185, 67, 0.18);
+  border: 1.5px solid rgba(232, 185, 67, 0.65) !important;
+  background: #352B2F !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 25px rgba(232, 185, 67, 0.15) !important;
 }
 
 .seo-tier-badge {
@@ -1137,10 +1111,10 @@
   gap: 12px;
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(41, 39, 42, 0.65);
-  border: 1px solid rgba(216, 196, 183, 0.16);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #2A2326 !important;
+  border: 1px solid rgba(216, 196, 183, 0.14) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   transition: border-color 0.2s ease;
 }
 
@@ -1235,8 +1209,8 @@
   position: fixed;
   inset: 0;
   background: rgba(14, 13, 15, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   z-index: 10005;
   display: flex;
   align-items: center;
@@ -1559,8 +1533,8 @@
   border-radius: 12px;
   background: rgba(14, 14, 18, 0.85);
   border: 1px solid rgba(232, 185, 67,  0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1610,8 +1584,8 @@
   background: rgba(0, 0, 0, 0.7);
   color: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   z-index: 2;
@@ -2361,7 +2335,7 @@
   background: linear-gradient(145deg, rgba(41, 39, 42, 0.85) 0%, rgba(20, 18, 22, 0.95) 100%);
   border: 1px solid rgba(216, 196, 183, 0.16);
   border-radius: 16px;
-  backdrop-filter: blur(14px);
+  backdrop-filter: none !important;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
   transition: all 0.25s ease;
 }
@@ -2479,15 +2453,11 @@
 
 .hero-tok99-card {
   position: relative;
-  background: radial-gradient(130% 130% at 50% 0%, #29272A 0%, #1c1a1d 65%, #131215 100%);
-  border: 1.5px solid rgba(232, 185, 67, 0.35);
+  background: #30272A !important;
+  border: 1.5px solid rgba(232, 185, 67, 0.35) !important;
   border-radius: 24px;
   padding: 26px 24px 22px;
-  box-shadow: 
-    0 25px 70px rgba(0, 0, 0, 0.85),
-    0 0 35px rgba(232, 185, 67, 0.12),
-    0 0 20px rgba(126, 48, 68, 0.2),
-    inset 0 1px 0 rgba(245, 240, 233, 0.18);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(245, 240, 233, 0.1) !important;
   box-sizing: border-box;
   overflow: hidden;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -2505,15 +2475,7 @@
 }
 
 .hero-tok99-glow {
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, rgba(232, 185, 67, 0.25) 0%, rgba(126, 48, 68, 0.18) 50%, transparent 70%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 0;
+  display: none !important;
 }
 
 .hero-tok99-top-row {
@@ -2652,7 +2614,7 @@
   border-radius: 11px;
   overflow: hidden;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
+  backdrop-filter: none !important;
 }
 
 .hero-tok99-input-box:focus-within {
@@ -3140,7 +3102,7 @@
     background: rgba(41, 39, 42, 0.8) !important;
     border: 1px solid rgba(216, 196, 183, 0.22) !important;
     color: #D8C4B7 !important;
-    backdrop-filter: blur(8px) !important;
+    backdrop-filter: none !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
     box-sizing: border-box !important;
   }
@@ -3166,7 +3128,7 @@
     border-radius: 999px !important;
     background: rgba(41, 39, 42, 0.6) !important;
     border: 1px solid rgba(232, 185, 67, 0.25) !important;
-    backdrop-filter: blur(12px) !important;
+    backdrop-filter: none !important;
     gap: 8px !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
     box-sizing: border-box !important;
@@ -3562,8 +3524,8 @@
   position: fixed;
   inset: 0;
   background: rgba(14, 13, 15, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   z-index: 10006;
   display: flex;
   align-items: center;
