@@ -24,9 +24,10 @@
 }
 
 .hp {
-  background-color: #211B1D;
-  background-image: radial-gradient(rgba(216, 196, 183, 0.09) 1.1px, transparent 1.1px);
-  background-size: 24px 24px;
+  background-color: #211B1D !important;
+  background-image: radial-gradient(rgba(216, 196, 183, 0.13) 1.2px, transparent 1.2px) !important;
+  background-size: 24px 24px !important;
+  background-repeat: repeat !important;
   color: var(--hp-ink);
   overflow-x: hidden;
   position: relative;
@@ -6817,7 +6818,7 @@
     display: none !important;
   }
 
-  /* Luxury Concert Stage Scrim & Atmosphere Overlay with Cyber Dot Texture */
+  /* Luxury Concert Stage Scrim & Atmosphere Overlay with Full Cyber Dot Texture */
   .hp-hero-wrapper .hp-hero-overlay {
     position: absolute !important;
     inset: 0 !important;
@@ -6825,14 +6826,13 @@
     pointer-events: none !important;
     background: 
       /* Subtle luxury cyber dot texture in Rose Stone tint */
-      radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
+      radial-gradient(rgba(216, 196, 183, 0.13) 1.2px, transparent 1.2px),
       /* Wine Red concert stage lighting */
-      radial-gradient(ellipse 65% 55% at 20% 30%, rgba(126, 48, 68, 0.45) 0%, rgba(33, 27, 29, 0) 70%),
+      radial-gradient(ellipse 65% 55% at 20% 30%, rgba(126, 48, 68, 0.45) 0%, transparent 70%),
       /* Soft warm marigold backlight */
-      radial-gradient(ellipse 50% 45% at 85% 25%, rgba(232, 185, 67, 0.14) 0%, rgba(33, 27, 29, 0) 75%),
-      /* Deep soft base gradient matching #211B1D */
-      linear-gradient(180deg, #181517 0%, #211B1D 50%, #211B1D 100%) !important;
-    background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100% !important;
+      radial-gradient(ellipse 50% 45% at 85% 25%, rgba(232, 185, 67, 0.14) 0%, transparent 75%) !important;
+    background-size: 24px 24px, 100% 100%, 100% 100% !important;
+    background-repeat: repeat, no-repeat, no-repeat !important;
   }
 
   /* Dynamic breathing light rays */
@@ -6844,8 +6844,7 @@
     display: block !important;
     background: 
       radial-gradient(circle 380px at 78% 45%, rgba(228, 95, 96, 0.12) 0%, transparent 70%),
-      radial-gradient(circle 320px at 35% 85%, rgba(126, 48, 68, 0.18) 0%, transparent 65%),
-      linear-gradient(180deg, transparent 75%, #211B1D 100%) !important;
+      radial-gradient(circle 320px at 35% 85%, rgba(126, 48, 68, 0.18) 0%, transparent 65%) !important;
   }
 
   @keyframes heroAtmosphereBreath {
@@ -9044,17 +9043,16 @@
     display: block !important;
     position: absolute !important;
     inset: 0 !important;
-    background-color: #141216 !important;
+    background-color: transparent !important;
     background-image: 
       /* Subtle luxury dot matrix grid in Rose Stone tint (#D8C4B7) */
-      radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
+      radial-gradient(rgba(216, 196, 183, 0.13) 1.2px, transparent 1.2px),
       /* Wine Red concert stage lighting */
       radial-gradient(ellipse 70% 50% at 25% 25%, rgba(126, 48, 68, 0.40) 0%, transparent 65%),
       /* Center golden marigold radiance */
-      radial-gradient(ellipse 70% 48% at 50% 36%, rgba(232, 185, 67, 0.08) 0%, transparent 68%),
-      /* Seamless deep Soft Charcoal gradient */
-      linear-gradient(180deg, #181517 0%, #211B1D 40%, #211B1D 100%) !important;
-    background-size: 22px 22px, 100% 100%, 100% 100%, 100% 100% !important;
+      radial-gradient(ellipse 70% 48% at 50% 36%, rgba(232, 185, 67, 0.08) 0%, transparent 68%) !important;
+    background-size: 22px 22px, 100% 100%, 100% 100% !important;
+    background-repeat: repeat, no-repeat, no-repeat !important;
     z-index: 2 !important;
     pointer-events: none !important;
   }
@@ -9485,7 +9483,6 @@
    - Zero visible section background jumps
    - Elimination of expensive blur filters & background animations
    ========================================================================== */
-.hp,
 .hp-shell,
 .hp-hero,
 .hp-hero-wrapper,
@@ -9493,11 +9490,14 @@
 .hp-how-section,
 .hero-videos-section,
 .hp-featured-section,
+.hp-top-performer-section,
+.hp-why-section,
 .hp-cat-section,
 .hp-faqs,
 .hp-contact-form,
 .seo-cards-section {
-  background-color: #211B1D !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }
 
 /* Remove decorative multi-layer radial glows and blurred pseudo-elements */
