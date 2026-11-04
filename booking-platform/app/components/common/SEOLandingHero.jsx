@@ -6,6 +6,28 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { bookingService } from '@/app/services/bookingService';
 import '@/app/styles/components/SEOLandingHero.css';
+import '@/app/styles/components/DiwaliOfferBookingForm.css';
+
+const BUDGET_OPTIONS = [
+  { value: 10000, label: '₹10,000 - ₹20,000 (10% Extra OFF)' },
+  { value: 25000, label: '₹20,000 - ₹35,000 (Eligible for 16% Extra OFF)' },
+  { value: 35000, label: '₹35,000 - ₹50,000 (Eligible for 18% Extra OFF)' },
+  { value: 50000, label: '₹50,000 - ₹80,000 (Eligible for 20% Extra OFF)' },
+  { value: 80000, label: '₹80,000 - ₹1,20,000 (Eligible for 22% Extra OFF)' },
+  { value: 120000, label: '₹1,20,000 - ₹2,00,000 (Eligible for 24% Extra OFF)' },
+  { value: 200000, label: '₹2,00,000+ (Eligible for 28% Extra OFF)' },
+];
+
+const MODAL_EVENT_TYPES = [
+  'Wedding Ceremony',
+  'Wedding Sangeet & Reception',
+  'Private House Party',
+  'Cocktail & Bachelor Party',
+  'Birthday Celebration',
+  'Corporate Event & Annual Gala',
+  'College Fest / Concert',
+  'Anniversary Celebration',
+];
 
 const DEFAULT_FALLBACK_IMAGE = "https://pub-1802bb19214743ffa99aa227f25e7ede.r2.dev/assets/lux-singer-session.webp";
 
@@ -101,15 +123,18 @@ export default function SEOLandingHero({
   const [bookModalOpen, setBookModalOpen] = useState(false);
   const [modalArtist, setModalArtist] = useState(null);
   const [bookName, setBookName] = useState("");
+  const [bookNameError, setBookNameError] = useState("");
   const [bookPhone, setBookPhone] = useState("");
   const [bookPhoneError, setBookPhoneError] = useState("");
   const [bookEventDate, setBookEventDate] = useState(getNextWeekDate());
-  const [bookEventType, setBookEventType] = useState(isDJ ? "Wedding DJ & Sangeet" : "Wedding / Reception");
+  const [bookEventType, setBookEventType] = useState(isDJ ? "Wedding DJ & Sangeet" : "Wedding Ceremony");
+  const [bookBudgetAmount, setBookBudgetAmount] = useState(25000);
   const [bookSubmitting, setBookSubmitting] = useState(false);
   const [bookSubmitted, setBookSubmitted] = useState(false);
   const [bookRefCode, setBookRefCode] = useState("");
   const [bookTokenCopied, setBookTokenCopied] = useState(false);
   const bookPhoneInputRef = useRef(null);
+  const bookNameInputRef = useRef(null);
 
   const budgetTiers = useMemo(() => {
     if (isDJ) {
@@ -315,12 +340,18 @@ export default function SEOLandingHero({
     setBookPhone(phone || "");
     setBookName(name || "");
     setBookEventDate(eventDate || getNextWeekDate());
-    setBookEventType(selectedEventType || (isDJ ? "Wedding DJ & Sangeet" : "Wedding / Reception"));
+    setBookEventType(selectedEventType || (isDJ ? "Wedding DJ & Sangeet" : "Wedding Ceremony"));
+    setBookBudgetAmount(25000);
     setBookPhoneError("");
+    setBookNameError("");
     setBookSubmitted(false);
     setBookModalOpen(true);
     setTimeout(() => {
-      if (bookPhoneInputRef.current) bookPhoneInputRef.current.focus();
+      if (bookNameInputRef.current && !name) {
+        bookNameInputRef.current.focus();
+      } else if (bookPhoneInputRef.current) {
+        bookPhoneInputRef.current.focus();
+      }
     }, 150);
   };
 
@@ -329,10 +360,17 @@ export default function SEOLandingHero({
     handleOpenBookModal(artist);
   };
 
-  // Submit handler for the basic artist booking popup form
+  // Submit handler for the artist booking popup form
   const handleBookModalSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setBookPhoneError("");
+    setBookNameError("");
+
+    if (!bookName || !bookName.trim()) {
+      setBookNameError("Please enter your full name");
+      if (bookNameInputRef.current) bookNameInputRef.current.focus();
+      return;
+    }
 
     const cleanPhone = (bookPhone || '').replace(/\D/g, '').slice(0, 10);
     if (!cleanPhone || cleanPhone.length < 10) {
@@ -346,26 +384,24 @@ export default function SEOLandingHero({
 
     try {
       const targetArtistName = modalArtist ? modalArtist.name : (selectedArtist ? selectedArtist.name : category);
-      const targetPrice = modalArtist?.price_min
-        ? `₹${modalArtist.price_min.toLocaleString('en-IN')}`
-        : 'From ₹6,9xx';
+      const chosenBudget = BUDGET_OPTIONS.find(b => b.value === Number(bookBudgetAmount))?.label || `₹${Number(bookBudgetAmount).toLocaleString('en-IN')}`;
 
       const res = bookingService.submitInstantRequest({
-        name: bookName.trim() || 'Event Host',
+        name: bookName.trim(),
         phone: cleanPhone,
         eventType: bookEventType,
-        date: bookEventDate,
-        budget: targetPrice,
+        date: bookEventDate || getNextWeekDate(),
+        budget: chosenBudget,
         selectedArtist: targetArtistName,
         category: category,
         city: city,
         service: `${category} in ${city}`,
-        formName: `Book Button Pop Form - ${targetArtistName} in ${city}`,
-        formLink: typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}#book-modal` : '',
+        formName: `Offer Booking Form - ${targetArtistName} in ${city}`,
+        formLink: typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}#offer-modal` : '',
         formType: 'booking',
         referenceCode: randomRef,
-        message: `Booking Request for ${targetArtistName} in ${city}. Event: ${bookEventType} on ${bookEventDate}. Fee: ~${targetPrice}. Host: ${bookName.trim() || 'Event Host'}.`,
-        internalNotes: `Artist Popup Lead: ${targetArtistName} for ${city}. Phone: ${cleanPhone}.`
+        message: `Booking Request with Special Offer (DIW100) for ${targetArtistName} in ${city}. Event: ${bookEventType}. Budget: ${chosenBudget}. Host: ${bookName.trim()}.`,
+        internalNotes: `Offer Popup Lead: ${targetArtistName} for ${city}. Phone: ${cleanPhone}. Coupon: DIW100.`
       });
 
       setBookRefCode(res?.referenceCode || randomRef);
@@ -1778,149 +1814,221 @@ export default function SEOLandingHero({
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
-
-      {/* ==========================================================================
-         8. Basic Artist Booking Popup Form Modal (Opens when Book button is clicked)
+      </AnimatePresence>      {/* ==========================================================================
+         8. Booking & Date-Lock Offer Modal (Designed per Diwali Offer System)
          ========================================================================== */}
       <AnimatePresence>
         {bookModalOpen && (
-          <motion.div
-            className="seo-book-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setBookModalOpen(false)}
-            onWheel={(e) => {
-              if (e.target === e.currentTarget) e.preventDefault();
-            }}
-            onTouchMove={(e) => {
-              if (e.target === e.currentTarget) e.preventDefault();
+          <div
+            className="diw-modal-root"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setBookModalOpen(false);
             }}
           >
             <motion.div
-              className="seo-book-modal-card"
-              initial={{ scale: 0.92, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="diw-modal-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setBookModalOpen(false)}
+            />
+
+            <motion.div
+              className="diw-modal-card"
+              initial={{ opacity: 0, scale: 0.94, y: 18 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 18 }}
+              transition={{ type: "spring", damping: 28, stiffness: 380 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                type="button"
-                className="seo-book-modal-close"
-                onClick={() => setBookModalOpen(false)}
-                aria-label="Close booking form"
-              >
-                ✕
-              </button>
+              {/* 1. WINE RED PROMOTIONAL HERO BANNER */}
+              <div className={`diw-promo-header ${bookSubmitted ? 'is-success-header' : ''}`}>
+                <div className="diw-header-top">
+                  <div className="diw-badge-tag">
+                    <span>🪔</span>
+                    <span>{bookSubmitted ? 'OFFICIAL PASS' : 'VALID ONLY UNTIL DIWALI!'}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="diw-close-btn"
+                    onClick={() => setBookModalOpen(false)}
+                    aria-label="Close offer modal"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {!bookSubmitted && (
+                  <>
+                    <h2 className="diw-title">Your Dream Event Starts Here!</h2>
+                    <div className="diw-date-lock-card">
+                      <div className="diw-lock-info-col">
+                        <span className="diw-lock-badge">✨ LIMITED-TIME OFFER</span>
+                        <span className="diw-lock-headline">
+                          {modalArtist ? modalArtist.name : 'Premium Singers at Best Price'}
+                        </span>
+                      </div>
+                      <div className="diw-lock-price-badge">
+                        <span className="diw-lock-original-price">
+                          ₹{modalArtist?.price_max ? modalArtist.price_max.toLocaleString('en-IN') : '10,000'}
+                        </span>
+                        <span className="diw-lock-current-price">
+                          ₹{modalArtist?.price_min ? modalArtist.price_min.toLocaleString('en-IN') : '5,999'}
+                        </span>
+                        <span className="diw-lock-price-lbl">STARTING FROM</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
 
               {!bookSubmitted ? (
-                <form onSubmit={handleBookModalSubmit} className="seo-book-modal-form">
-                  <div className="seo-book-modal-badge">
-                    <span>⚡ INSTANT ARTIST BOOKING</span>
-                  </div>
-
-                  <h3 className="seo-book-modal-title">
-                    Check Live Availability
-                  </h3>
-                  <p className="seo-book-modal-sub">
-                    Direct artist pricing with 0% middleman fees. Enter your phone number to receive instant quote &amp; live availability in {city}.
-                  </p>
-
-                  {/* Artist Preview Box */}
-                  <div className="seo-book-artist-box">
-                    <div className="seo-book-artist-thumb-wrap">
-                      <img
-                        src={modalArtist?.img || DEFAULT_FALLBACK_IMAGE}
-                        alt={modalArtist?.name || category}
-                        className="seo-book-artist-thumb"
-                        onError={(e) => { e.currentTarget.src = DEFAULT_FALLBACK_IMAGE; }}
-                      />
+                /* 2. WARM IVORY FORM BODY */
+                <div className="diw-form-body">
+                  {/* Triple Discount Showcase Grid */}
+                  <div className="diw-triple-discount-wrap">
+                    <div className="diw-triple-discount-header">
+                      <span>SAVE UP TO 65%</span>
                     </div>
-                    <div className="seo-book-artist-meta">
-                      <h4>{modalArtist ? modalArtist.name : `Verified ${category}`}</h4>
-                      <span className="seo-book-artist-tag">
-                        📍 {modalArtist?.city || city} • ★ {Number(modalArtist?.rating || 5).toFixed(1)}
-                      </span>
-                    </div>
-                    <div className="seo-book-artist-fee">
-                      <span className="fee-lbl">Starting Fee</span>
-                      <span className="fee-val">
-                        ₹{modalArtist?.price_min ? modalArtist.price_min.toLocaleString('en-IN') : '4,000'}
-                      </span>
+                    <div className="diw-triple-cards-grid">
+                      {/* Card 1: Package Offer */}
+                      <div className="diw-triple-card">
+                        <span className="diw-triple-pill">PACKAGE OFFER</span>
+                        <span className="diw-triple-val">45%–50% OFF</span>
+                        <span className="diw-triple-lbl">Event Booking</span>
+                      </div>
+
+                      {/* Card 2: Diwali Special (Featured) */}
+                      <div className="diw-triple-card diw-triple-card-featured">
+                        <span className="diw-triple-pill diw-pill-gold">DIWALI SPECIAL 🪔</span>
+                        <span className="diw-triple-val diw-val-gold">+10% EXTRA</span>
+                        <span className="diw-triple-lbl diw-lbl-gold">Code: DIW100</span>
+                      </div>
+
+                      {/* Card 3: Welcome Gift */}
+                      <div className="diw-triple-card">
+                        <span className="diw-triple-pill">WELCOME GIFT 🎁</span>
+                        <span className="diw-triple-val">+5% FIRST OFF</span>
+                        <span className="diw-triple-lbl">1st Booking Bonus</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* WhatsApp / Phone Field */}
-                  <label className="seo-book-label" htmlFor="book-modal-phone">
-                    YOUR MOBILE NUMBER (FOR INSTANT WHATSAPP QUOTES) *
-                  </label>
-                  <div className={`seo-book-phone-wrap ${bookPhoneError ? 'error' : ''}`}>
-                    <div className="seo-book-phone-flag">
-                      <span>🇮🇳</span>
-                      <span>+91</span>
+                  {/* Form */}
+                  <form className="diw-form" onSubmit={handleBookModalSubmit}>
+                    <div className="diw-form-grid">
+                      {/* Full Name */}
+                      <div className="diw-form-group">
+                        <label htmlFor="seo-modal-name">
+                          Full Name <span className="req">*</span>
+                        </label>
+                        <input
+                          id="seo-modal-name"
+                          ref={bookNameInputRef}
+                          type="text"
+                          required
+                          placeholder="e.g. Avneesh Tripathi"
+                          autoComplete="off"
+                          value={bookName}
+                          onChange={(e) => {
+                            setBookName(e.target.value);
+                            if (bookNameError) setBookNameError("");
+                          }}
+                          className={bookNameError ? 'diw-input-err' : ''}
+                        />
+                        {bookNameError && <span className="diw-err-msg">{bookNameError}</span>}
+                      </div>
+
+                      {/* Mobile Number */}
+                      <div className="diw-form-group">
+                        <label htmlFor="seo-modal-phone">
+                          Mobile Number <span className="req">*</span>
+                        </label>
+                        <input
+                          id="seo-modal-phone"
+                          ref={bookPhoneInputRef}
+                          type="tel"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={10}
+                          required
+                          placeholder="+91 98765-43210"
+                          autoComplete="off"
+                          value={bookPhone}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                            setBookPhone(digits);
+                            if (bookPhoneError) setBookPhoneError("");
+                          }}
+                          className={bookPhoneError ? 'diw-input-err' : ''}
+                        />
+                        {bookPhoneError && <span className="diw-err-msg">{bookPhoneError}</span>}
+                      </div>
+
+                      {/* Event Type */}
+                      <div className="diw-form-group">
+                        <label htmlFor="seo-modal-event-type">
+                          Event Type <span className="req">*</span>
+                        </label>
+                        <select
+                          id="seo-modal-event-type"
+                          value={bookEventType}
+                          onChange={(e) => setBookEventType(e.target.value)}
+                        >
+                          {MODAL_EVENT_TYPES.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Estimated Event Budget */}
+                      <div className="diw-form-group">
+                        <label htmlFor="seo-modal-budget">
+                          Estimated Event Budget <span className="req">*</span>
+                        </label>
+                        <select
+                          id="seo-modal-budget"
+                          value={bookBudgetAmount}
+                          onChange={(e) => setBookBudgetAmount(Number(e.target.value))}
+                        >
+                          {BUDGET_OPTIONS.map((tier) => (
+                            <option key={tier.value} value={tier.value}>
+                              {tier.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                    <input
-                      ref={bookPhoneInputRef}
-                      id="book-modal-phone"
-                      type="tel"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={10}
-                      required
-                      value={bookPhone}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                        setBookPhone(digits);
-                        if (bookPhoneError) setBookPhoneError("");
-                      }}
-                      placeholder="e.g. 9876543210"
-                      className="seo-book-phone-input"
-                      autoFocus
-                    />
-                  </div>
-                  {bookPhoneError && (
-                    <span className="seo-book-error-text">{bookPhoneError}</span>
-                  )}
 
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={bookSubmitting}
-                    className="seo-book-submit-btn"
-                  >
-                    {bookSubmitting ? (
-                      <span>⏳ Checking Live Availability...</span>
-                    ) : (
-                      <>
-                        <span>Check Availability &amp; Send Quotes</span>
-                        <span>➔</span>
-                      </>
-                    )}
-                  </button>
-
-                  <div className="seo-book-guarantee-note">
-                    <span>🔒 100% Free Service</span>
-                    <span>•</span>
-                    <span>⚡ Reply in 5 Mins</span>
-                    <span>•</span>
-                    <span>🛡️ Direct Artist Fees</span>
-                  </div>
-                </form>
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={bookSubmitting}
+                      className="diw-submit-btn"
+                    >
+                      <span>{bookSubmitting ? 'Checking Availability...' : 'Unlock My Offer & Lock Date →'}</span>
+                    </button>
+                  </form>
+                </div>
               ) : (
-                <div className="seo-book-success-box">
-                  <div className="seo-book-success-icon">✓</div>
-                  <h3 className="seo-book-modal-title" style={{ color: '#22c55e', fontSize: '22px' }}>
-                    Booking Request Sent!
-                  </h3>
-                  <p className="seo-book-modal-sub" style={{ marginBottom: '16px' }}>
-                    We received your booking request for <strong>{modalArtist ? modalArtist.name : category}</strong> in <strong>{city}</strong> for <strong>{bookEventDate}</strong>.
+                /* 3. SUCCESS STATE */
+                <div className="diw-success-card">
+                  <div className="diw-success-icon-wrap">
+                    <div className="diw-success-icon">✓</div>
+                  </div>
+                  <h3 className="diw-success-title">Your Offer is Unlocked!</h3>
+                  <p className="diw-success-desc">
+                    Your special booking pass for <strong>{modalArtist ? modalArtist.name : category}</strong> in <strong>{city}</strong> has been registered with priority date locking.
                   </p>
 
-                  <div className="seo-book-ref-card">
-                    <span className="ref-label">Booking Reference ID</span>
-                    <strong className="ref-code">{bookRefCode}</strong>
+                  <div className="diw-success-pass">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '11px', color: '#E8D9CF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Official Reference Code</span>
+                      <strong className="diw-pass-ref-code" style={{ color: '#E8B943', fontFamily: 'monospace', fontSize: '18px' }}>{bookRefCode}</strong>
+                    </div>
                     <button
                       type="button"
                       onClick={() => {
@@ -1930,24 +2038,47 @@ export default function SEOLandingHero({
                           setTimeout(() => setBookTokenCopied(false), 2000);
                         }
                       }}
-                      className="seo-book-copy-btn"
+                      style={{
+                        width: '100%',
+                        padding: '7px 12px',
+                        background: 'rgba(232, 185, 67, 0.15)',
+                        border: '1px solid rgba(232, 185, 67, 0.4)',
+                        color: '#E8B943',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
                     >
-                      {bookTokenCopied ? '✓ Copied ID' : '📋 Copy ID'}
+                      {bookTokenCopied ? '✓ Copied Reference Code' : '📋 Copy Reference Code'}
                     </button>
                   </div>
 
-                  <p className="seo-book-note-text">
-                    Our artist coordinator will WhatsApp performance videos, technical rider details, and the finalized quote to <strong>+91 {bookPhone}</strong> within 5 minutes.
+                  <p style={{ fontSize: '12.5px', color: '#6A625D', margin: '0 0 16px 0', lineHeight: 1.45 }}>
+                    Our artist coordinator will WhatsApp performance videos and the locked quote to <strong>+91 {bookPhone}</strong> within 5 minutes.
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                     <a
                       href={`https://wa.me/918076515257?text=${encodeURIComponent(
-                        `Hi Magnevents, I just booked ${modalArtist ? modalArtist.name : category} in ${city} (Ref: ${bookRefCode}). Date: ${bookEventDate}, Event: ${bookEventType}, Host: ${bookName || 'Host'}. Please confirm artist availability!`
+                        `Hi Magnevents, I unlocked the Diwali Special Offer (DIW100) for ${modalArtist ? modalArtist.name : category} in ${city} (Ref: ${bookRefCode}). Event: ${bookEventType}, Host: ${bookName || 'Host'}. Please confirm artist availability!`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="seo-book-whatsapp-btn"
+                      className="diw-whatsapp-btn"
+                      style={{
+                        background: '#25D366',
+                        color: '#FFFFFF',
+                        padding: '12px 18px',
+                        borderRadius: '12px',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        textDecoration: 'none',
+                        boxShadow: '0 4px 16px rgba(37, 211, 102, 0.35)'
+                      }}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
@@ -1958,7 +2089,16 @@ export default function SEOLandingHero({
                     <button
                       type="button"
                       onClick={() => setBookModalOpen(false)}
-                      className="seo-book-close-btn"
+                      style={{
+                        padding: '10px 16px',
+                        background: 'rgba(0, 0, 0, 0.06)',
+                        border: '1px solid rgba(0, 0, 0, 0.12)',
+                        color: '#4A423D',
+                        borderRadius: '10px',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
                     >
                       Done / Close
                     </button>
@@ -1966,7 +2106,7 @@ export default function SEOLandingHero({
                 </div>
               )}
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </section>
