@@ -95,3 +95,4 @@ magni3/
 | `database/` | Houses the authoritative Supabase PostgreSQL connection clients and sequential SQL schema migrations for payments, outbox delivery, and campaign tracking. |
 | `helpers/` | Minimal, shared helper utilities (formatters and input sanitizers) imported by both the booking platform and tests. |
 | `docs/` | The centralized knowledge base containing codebase cleanup reports, SEO strategy, database dictionaries, and form routing specifications. |
+

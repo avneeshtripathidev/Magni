@@ -256,7 +256,38 @@ export default function RootLayout({ children }) {
                 "https://www.instagram.com/magnevents.in?igsh=MXY2NmtjMm82bTFnaA==",
                 "https://x.com/magnevents94",
                 "https://youtube.com/@magnevents?si=QsPkahKK-fjSUTe4"
-              ]
+              ],
+              "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Live Entertainment Booking Services",
+                "itemListElement": [
+                  {
+                    "@type": "OfferCatalog",
+                    "name": "Live Singers & Vocalists",
+                    "itemListElement": [
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Live Singer for House Party" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Bollywood & Sufi Singers for Weddings" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Acoustic Singers for Private Dinners" } }
+                    ]
+                  },
+                  {
+                    "@type": "OfferCatalog",
+                    "name": "Live Bands & Orchestras",
+                    "itemListElement": [
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding Live Bands & Sangeet Orchestras" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Corporate Event Live Bands" } }
+                    ]
+                  },
+                  {
+                    "@type": "OfferCatalog",
+                    "name": "DJs & Stage Artists",
+                    "itemListElement": [
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding DJs & Club DJs" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Event Anchors & Stand-up Comedians" } }
+                    ]
+                  }
+                ]
+              }
             })
           }}
         />

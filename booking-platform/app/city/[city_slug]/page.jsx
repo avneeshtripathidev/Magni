@@ -28,12 +28,36 @@ export async function generateMetadata({ params }) {
     .single();
 
   const cityName = city?.name || slugToName(city_slug);
+  const title = city?.seo_title || `Book Live Singers, DJs & Bands in ${cityName} | Magnevents`;
+  const description = city?.meta_description || `Book verified live singers, bands, and wedding DJs in ${cityName} starting from ₹5,999. Direct artist booking with 0% commission & 100% Artist Arrival Guarantee.`;
 
   return {
-    title: city?.seo_title || `Hire Best Singers in ${cityName} | Magnevents`,
-    description: city?.meta_description || `Find and book top-rated live singers, bands, and musicians for weddings, corporate events, and parties in ${cityName}.`,
+    title,
+    description,
     alternates: {
       canonical: `/city/${city_slug}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/city/${city_slug}`,
+      siteName: 'Magnevents',
+      images: [
+        {
+          url: '/og-image.jpg',
+          width: 1200,
+          height: 630,
+          alt: `Live Artist Booking in ${cityName} - Magnevents`
+        }
+      ],
+      locale: 'en_IN',
+      type: 'website'
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/og-image.jpg']
     }
   };
 }
@@ -83,6 +107,27 @@ export default async function CityLandingPage({ params }) {
       "name": city.seo_title || `Hire Singers in ${city.name}`,
       "description": city.meta_description || `Book live singers in ${city.name}`,
       "url": `https://www.magnevents.in/city/${city.slug}`,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": `Live Artist Booking in ${city.name}`,
+      "serviceType": "Live Entertainment Booking",
+      "provider": {
+        "@type": "EntertainmentBusiness",
+        "name": "Magnevents",
+        "url": "https://www.magnevents.in"
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": city.name
+      },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "INR",
+        "price": "5999",
+        "availability": "https://schema.org/InStock"
+      }
     },
     {
       "@context": "https://schema.org",
