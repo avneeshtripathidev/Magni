@@ -15,19 +15,6 @@ export default function Footer() {
     resources: false,
   });
 
-  const [isSeoExpanded, setIsSeoExpanded] = useState(false);
-
-  const FOOTER_SEO_KEYWORDS = [
-    'live singers in delhi', 'live singer for house party', 'book singer for house party',
-    'singer for house party', 'guitarist near me', 'book live singer', 'sufi singers in delhi',
-    'guitarist for house party', 'live bands for wedding in delhi', 'singer in delhi',
-    'guitarist at home', 'live singer for house party near me', 'live singer near me',
-    'live bands in delhi', 'singer for birthday party', 'live singer',
-    'guitarist for birthday party in delhi', 'live music at home', 'live music singers near me',
-    'singer for home party', 'live band for wedding', 'singer near me', 'singers for wedding',
-    'singer at home', 'singer for house party in gurgaon', 'local singers near me'
-  ];
-
   const toggleSection = (section) => {
     setOpenSections(prev => ({
       ...prev,
@@ -45,7 +32,6 @@ export default function Footer() {
       <div className="lux-footer-container">
         <div className="lux-footer-grid">
 
-
           <div className="lux-footer-brand">
             <div className="lux-footer-brand-wrap">
               <Link href="/">
@@ -53,21 +39,20 @@ export default function Footer() {
               </Link>
             </div>
             <p className="lux-footer-desc">
-              Curating elite live music experiences for weddings, corporate events, and private gatherings across the globe.
+              Curating elite live music experiences for weddings, corporate events, and private gatherings.
             </p>
             <div className="lux-footer-socials">
               <a href="https://www.instagram.com/magnevents.in?igsh=MXY2NmtjMm82bTFnaA==" target="_blank" rel="noreferrer" className="lux-footer-social-link" aria-label="Instagram">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
               </a>
               <a href="https://x.com/magnevents94" target="_blank" rel="noreferrer" className="lux-footer-social-link" aria-label="X (Twitter)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               </a>
               <a href="https://youtube.com/@magnevents?si=QsPkahKK-fjSUTe4" target="_blank" rel="noreferrer" className="lux-footer-social-link" aria-label="YouTube">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2C5.12 19.5 12 19.5 12 19.5s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2C5.12 19.5 12 19.5 12 19.5s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
               </a>
             </div>
           </div>
-
 
           <div className={`lux-footer-col ${openSections.platform ? 'is-open' : ''}`}>
             <h4 onClick={() => toggleSection('platform')} className="lux-footer-mobile-trigger">
@@ -115,56 +100,15 @@ export default function Footer() {
 
         </div>
 
-        <div className={`lux-footer-seo ${isSeoExpanded ? 'is-expanded' : 'is-collapsed'}`}>
-          <div className="lux-footer-seo-links">
-            {FOOTER_SEO_KEYWORDS.map((kw, i) => (
-              <Link
-                key={i}
-                href="/artists"
-                className="lux-footer-seo-link"
-              >
-                {kw}{i !== FOOTER_SEO_KEYWORDS.length - 1 ? ' |' : ''}
-              </Link>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsSeoExpanded(!isSeoExpanded)}
-            className="lux-footer-seo-toggle"
-            aria-expanded={isSeoExpanded}
-            aria-label={isSeoExpanded ? "Collapse popular searches" : "Expand all popular searches"}
-          >
-            <span>{isSeoExpanded ? "Show Less" : "Popular Searches"}</span>
-            <svg
-              className={`lux-footer-seo-arrow ${isSeoExpanded ? 'is-rotated' : ''}`}
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
-        </div>
-
-
         <div className="lux-footer-bottom">
           <div className="lux-footer-copyright">
-            © {currentYear} Magnevents. All rights reserved. Designed for Excellence. | Last updated: {currentMonthYear}
+            © {currentYear} Magnevents. All rights reserved. | {currentMonthYear}
           </div>
           <div className="lux-footer-legal">
             <span style={{ cursor: 'default', opacity: 0.5 }}>Terms</span>
             <span style={{ cursor: 'default', opacity: 0.5 }}>Privacy</span>
             <span style={{ cursor: 'default', opacity: 0.5 }}>Cookies</span>
             <span style={{ cursor: 'default', opacity: 0.5, fontWeight: 'bold' }}>v1.1.0</span>
-            <span style={{ cursor: 'default', opacity: 0.5, fontWeight: 'bold', color: '#D65050', marginLeft: '4px' }}>
-              [{process.env.NEXT_PUBLIC_SERVER_ID || 'S1'}]
-            </span>
           </div>
         </div>
       </div>

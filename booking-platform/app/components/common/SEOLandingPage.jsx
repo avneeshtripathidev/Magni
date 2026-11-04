@@ -1,11 +1,9 @@
 "use client";
 
-import CategoriesSection from '@/app/components/home/CategoriesSection';
 import SEODynamicContent from '@/app/components/common/SEODynamicContent';
 import SEOLandingHero from '@/app/components/common/SEOLandingHero';
 import VideoGridSection from '@/app/components/home/VideoGridSection';
 import PromotionalOfferSection from '@/app/components/home/PromotionalOfferSection';
-import SEOArtistsGrid from '@/app/components/common/SEOArtistsGrid';
 import ContactSection from '@/app/components/home/ContactSection';
 import SectionDivider from '@/app/components/common/SectionDivider';
 import '@/app/styles/pages/HomePage.css';
@@ -70,14 +68,6 @@ export default function SEOLandingPage({
         ) : null}
 
         <VideoGridSection />
-        <SectionDivider />
-        <CategoriesSection />
-        <SectionDivider />
-        <SEOArtistsGrid 
-          category={category} 
-          city={city} 
-          fallbackArtists={topArtists} 
-        />
         <SectionDivider />
         <ContactSection />
       </div>

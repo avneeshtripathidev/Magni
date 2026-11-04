@@ -1,7 +1,7 @@
 .lux-footer {
   background-color: #100D0E !important;
   color: #F5F0E9;
-  padding: 56px 0 32px;
+  padding: 32px 0 20px;
   position: relative;
   overflow: hidden;
   font-family: var(--font-body);
@@ -19,14 +19,14 @@
 .lux-footer-grid {
   display: grid;
   grid-template-columns: 1.5fr repeat(3, 1fr);
-  gap: var(--spacing-6);
-  margin-bottom: var(--spacing-6);
+  gap: 24px;
+  margin-bottom: 20px;
 }
 
 .lux-footer-brand {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
+  gap: 10px;
 }
 
 .lux-footer-brand-wrap {
@@ -36,22 +36,23 @@
 }
 
 .lux-footer-desc {
-  line-height: 1.7;
-  font-size: 0.95rem;
+  line-height: 1.5;
+  font-size: 0.86rem;
   color: rgba(245, 240, 233, 0.65);
-  max-width: 340px;
+  max-width: 320px;
   font-weight: 400;
+  margin: 0;
 }
 
 .lux-footer-socials {
   display: flex;
-  gap: var(--spacing-2);
-  margin-top: var(--spacing-2);
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .lux-footer-social-link {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.04);
@@ -66,16 +67,16 @@
   background: var(--color-coral, #E45F60);
   border-color: var(--color-coral, #E45F60);
   color: #ffffff;
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(228, 95, 96, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(228, 95, 96, 0.35);
 }
 
 .lux-footer-col h4 {
   color: #F5F0E9;
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  margin-bottom: var(--spacing-4);
-  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -85,13 +86,13 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
+  gap: 6px;
 }
 
 .lux-footer-link {
   text-decoration: none;
   color: rgba(245, 240, 233, 0.65);
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   font-weight: 500;
   transition: all 0.2s ease;
   width: fit-content;
@@ -103,7 +104,7 @@
 }
 
 .lux-footer-bottom {
-  padding-top: var(--spacing-5);
+  padding-top: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   justify-content: space-between;
@@ -111,21 +112,21 @@
 }
 
 .lux-footer-copyright {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: rgba(245, 240, 233, 0.45);
   font-weight: 500;
 }
 
 .lux-footer-legal {
   display: flex;
-  gap: var(--spacing-4);
+  gap: 14px;
 }
 
 .lux-footer-legal a,
 .lux-footer-legal span {
   text-decoration: none;
   color: rgba(245, 240, 233, 0.45);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 500;
   transition: color 0.2s ease;
 }
@@ -141,7 +142,7 @@
 @media (max-width: 1024px) {
   .lux-footer-grid {
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-5);
+    gap: 18px;
   }
 }
 
@@ -151,7 +152,7 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    padding: 12px 0;
+    padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     margin-bottom: 0 !important;
     user-select: none;
@@ -180,146 +181,39 @@
   .lux-footer-col.is-open .lux-footer-links {
     max-height: 250px;
     opacity: 1;
-    padding-top: var(--spacing-3);
-    padding-bottom: var(--spacing-3);
+    padding-top: var(--spacing-2);
+    padding-bottom: var(--spacing-2);
     pointer-events: auto;
   }
 }
 
 @media (max-width: 640px) {
   .lux-footer {
-    padding: var(--spacing-6) 0 var(--spacing-5);
+    padding: 20px 0 16px;
   }
   .lux-footer-grid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-4);
+    gap: 12px;
   }
   .lux-footer-brand {
     align-items: center;
     text-align: center;
-    margin-bottom: var(--spacing-4);
+    margin-bottom: 8px;
   }
   .lux-footer-desc {
     max-width: 100%;
   }
   .lux-footer-bottom {
     flex-direction: column-reverse;
-    gap: var(--spacing-4);
+    gap: 10px;
     text-align: center;
-    padding-top: var(--spacing-4);
+    padding-top: 12px;
   }
   .lux-footer-legal {
     justify-content: center;
   }
 }
 
-/* ==========================================================================
-   FOOTER SEO KEYWORDS - 1-LINE COLLAPSIBLE ON MOBILE
-   ========================================================================== */
 .lux-footer-seo {
-  margin-top: 36px;
-  padding: 24px 0 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  position: relative;
-  width: 100%;
+  display: none !important;
 }
-
-.lux-footer-seo-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-}
-
-.lux-footer-seo-link {
-  color: rgba(255, 255, 255, 0.24);
-  font-size: 11px;
-  text-decoration: none;
-  transition: color 0.2s ease;
-  line-height: 1.6;
-}
-
-.lux-footer-seo-link:hover {
-  color: var(--color-marigold, #E8B943);
-}
-
-.lux-footer-seo-toggle {
-  display: none;
-}
-
-/* Strict mobile 1-line minimization */
-@media (max-width: 768px) {
-  .lux-footer-seo {
-    margin-top: 20px;
-    padding: 14px 0 10px;
-  }
-
-  .lux-footer-seo.is-collapsed .lux-footer-seo-links {
-    max-height: 20px !important;
-    height: 20px !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    flex-wrap: nowrap !important;
-    display: flex !important;
-    justify-content: center !important;
-    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%) !important;
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%) !important;
-  }
-
-  .lux-footer-seo.is-expanded .lux-footer-seo-links {
-    max-height: 1000px !important;
-    height: auto !important;
-    overflow: visible !important;
-    white-space: normal !important;
-    flex-wrap: wrap !important;
-    display: flex !important;
-    padding-bottom: 8px;
-  }
-
-  .lux-footer-seo-link {
-    font-size: 10px;
-    flex-shrink: 0;
-  }
-
-  .lux-footer-seo-toggle {
-    margin-top: 10px;
-    display: inline-flex !important;
-    align-items: center;
-    gap: 6px;
-    background: rgba(41, 39, 42, 0.7);
-    border: 1px solid rgba(216, 196, 183, 0.24);
-    border-radius: 999px;
-    padding: 4px 14px;
-    color: rgba(245, 240, 233, 0.8);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    user-select: none;
-  }
-
-  .lux-footer-seo-toggle:hover {
-    background: rgba(41, 39, 42, 0.95);
-    border-color: rgba(232, 185, 67, 0.5);
-    color: var(--color-marigold, #E8B943);
-  }
-
-  .lux-footer-seo-arrow {
-    color: var(--color-marigold, #E8B943);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .lux-footer-seo-arrow.is-rotated {
-    transform: rotate(180deg);
-  }
-}
-
