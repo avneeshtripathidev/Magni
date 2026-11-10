@@ -205,11 +205,10 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(14, 10, 12, 0.75) 0%,
-    rgba(14, 10, 12, 0.08) 25%,
-    rgba(14, 10, 12, 0.25) 55%,
-    rgba(14, 10, 12, 0.95) 90%,
-    #0e0a0c 100%
+    rgba(14, 10, 12, 0.65) 0%,
+    rgba(14, 10, 12, 0.0) 22%,
+    rgba(14, 10, 12, 0.0) 65%,
+    rgba(14, 10, 12, 0.88) 100%
   );
   pointer-events: none;
   z-index: 1;
@@ -246,30 +245,6 @@
   padding: 4px 8px;
   border-radius: 6px;
   white-space: nowrap;
-}
-
-.vhs-badge-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: #7E3044;
-  color: #F5F0E9;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 999px;
-  box-shadow: 0 2px 10px rgba(126, 48, 68, 0.5);
-  white-space: nowrap;
-}
-
-.vhs-live-bullet {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #F5F0E9;
-  animation: vhsPulse 1.4s infinite;
 }
 
 .vhs-sound-btn {
@@ -331,53 +306,16 @@
   box-shadow: 0 0 24px rgba(126, 48, 68, 0.7);
 }
 
-/* Floating Bottom Content Overlaid on Video Frame */
+/* Floating Bottom Bar Overlaid on Video Frame */
 .vhs-card-overlay-bottom {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1.25rem 1.15rem 1.15rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  padding: 0.9rem 1.15rem 1.1rem;
   z-index: 2;
   pointer-events: auto;
   box-sizing: border-box;
-}
-
-.vhs-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.vhs-rating-tag {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #F5F0E9;
-  background: rgba(126, 48, 68, 0.75);
-  backdrop-filter: blur(6px);
-  padding: 2px 7px;
-  border-radius: 4px;
-  border: 1px solid rgba(216, 196, 183, 0.35);
-}
-
-.vhs-meta-tag {
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: #D8C4B7;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
-}
-
-.vhs-card-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #F5F0E9;
-  margin: 0;
-  line-height: 1.35;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
 /* Card Footer with Price and Quote Button */
@@ -386,9 +324,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(216, 196, 183, 0.18);
-  margin-top: 0.2rem;
 }
 
 .vhs-price-box {

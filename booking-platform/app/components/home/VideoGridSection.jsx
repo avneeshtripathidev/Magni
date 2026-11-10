@@ -200,10 +200,6 @@ function VibeVideoCard({ item, onPlayModal, onQuoteModal }) {
         <div className="vhs-media-top">
           <div className="vhs-top-badges-left">
             <span className="vhs-badge-tag">{item.badge}</span>
-            <span className="vhs-badge-live">
-              <span className="vhs-live-bullet" />
-              LIVE
-            </span>
           </div>
 
           <div className="vhs-top-controls-right">
@@ -239,15 +235,8 @@ function VibeVideoCard({ item, onPlayModal, onQuoteModal }) {
           </div>
         )}
 
-        {/* Sleek Floating Bottom Details Directly Over Video */}
+        {/* Sleek Floating Bottom Bar: Price and Get Quote */}
         <div className="vhs-card-overlay-bottom">
-          <div className="vhs-meta-row">
-            <span className="vhs-rating-tag">{item.rating}</span>
-            <span className="vhs-meta-tag">{item.tag}</span>
-          </div>
-
-          <h3 className="vhs-card-title">{item.title}</h3>
-
           <div className="vhs-card-footer">
             <div className="vhs-price-box">
               <span className="vhs-price-label">Starts from</span>
