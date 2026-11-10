@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -109,6 +110,11 @@ export default function SEOLandingHero({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [imageErrors, setImageErrors] = useState({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Quick 1-step phone modal for pricing tier check availability
   const [tierModalOpen, setTierModalOpen] = useState(false);
@@ -286,6 +292,75 @@ export default function SEOLandingHero({
     setIsSubmitting(false);
   };
 
+  // Universal Availability Modal Opener (This 1-step form is the main booking form for this page)
+  const handleOpenAvailabilityModal = (item = null) => {
+    let tierObj = null;
+
+    if (item && item.features && item.price) {
+      // It's a pricing tier object
+      tierObj = item;
+    } else if (item && item.name) {
+      // It's an artist object
+      setSelectedArtist(item);
+      const minFee = item.price_min ? `₹${item.price_min.toLocaleString('en-IN')}` : '₹10,000';
+      const maxFee = item.price_max ? `₹${item.price_max.toLocaleString('en-IN')}` : '';
+      const displayPrice = maxFee ? `${minFee} - ${maxFee}` : `${minFee}+`;
+
+      tierObj = {
+        id: `artist-${item.id || item.slug || 'selected'}`,
+        title: item.name,
+        price: displayPrice,
+        desc: `Verified ${category} in ${city}`,
+        features: [
+          `Verified ${category} Performer`,
+          `100% Artist Arrival Guarantee`,
+          `Direct 0% Middleman Pricing`,
+          `Complete Sound & Stage Coordination`
+        ],
+        artist: item,
+        isArtist: true
+      };
+    } else {
+      // General CTA / Main Form Button / Hero Click
+      const defaultTier = budgetTiers?.[0] || {
+        id: "solo",
+        title: "Solo Acoustic / Harmonium",
+        price: "₹10,000 - ₹20,000",
+        desc: "Solo Ghazal & Sufi vocalist with harmonium or guitar. Perfect for intimate mehfils & home gatherings.",
+        features: ["Vocalist + Instrument", "Up to 2.5 hrs live performance", "Ideal for 20-50 guests", "Direct sound guidance"]
+      };
+
+      if (selectedArtist) {
+        const minFee = selectedArtist.price_min ? `₹${selectedArtist.price_min.toLocaleString('en-IN')}` : '₹10,000';
+        const maxFee = selectedArtist.price_max ? `₹${selectedArtist.price_max.toLocaleString('en-IN')}` : '';
+        const displayPrice = maxFee ? `${minFee} - ${maxFee}` : defaultTier.price;
+
+        tierObj = {
+          id: `artist-${selectedArtist.id || 'selected'}`,
+          title: selectedArtist.name,
+          price: displayPrice,
+          desc: `Verified ${category} in ${city}`,
+          features: defaultTier.features,
+          artist: selectedArtist,
+          isArtist: true
+        };
+      } else {
+        tierObj = defaultTier;
+      }
+    }
+
+    setActiveTier(tierObj);
+    setSelectedBudget(`${tierObj.title} (${tierObj.price})`);
+    setQuickPhone(phone || "");
+    setQuickPhoneError("");
+    setQuickSubmitted(false);
+    setTierModalOpen(true);
+
+    setTimeout(() => {
+      if (quickPhoneRef.current) quickPhoneRef.current.focus();
+    }, 150);
+  };
+
   const handleToken99Submit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setPhoneError("");
@@ -293,11 +368,12 @@ export default function SEOLandingHero({
     const cleanPhone = (phone || '').replace(/\D/g, '').slice(0, 10);
     if (!cleanPhone || cleanPhone.length < 10) {
       setPhoneError("Please enter a valid 10-digit mobile number");
+      if (phoneInputRef.current) phoneInputRef.current.focus();
       return;
     }
 
     setIsSubmitting(true);
-    const randomRef = `MGN-69-${Math.floor(100000 + Math.random() * 900000)}`;
+    const randomRef = `MGN-${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
       const res = bookingService.submitInstantRequest({
@@ -305,59 +381,37 @@ export default function SEOLandingHero({
         phone: cleanPhone,
         eventType: selectedEventType,
         date: eventDate,
-        budget: 'From ₹6,9xx',
-        tokenNote: `[₹6,9XX ARTIST SLOT RESERVED] ${category} in ${city}${selectedArtist ? ` (Artist: ${selectedArtist.name})` : ''}`,
-        message: `BOOKING REQUEST from ₹6,9xx for ${category} in ${city}. Event: ${selectedEventType} on ${eventDate}.${selectedArtist ? ` Target Performer: ${selectedArtist.name}` : ''}`,
-        type: 'quick_booking',
-        formName: `Hero ₹6,9xx Booking - ${category} in ${city}`,
-        formLink: typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}#book-slot` : '',
-        referenceCode: randomRef,
+        budget: selectedBudget || 'From ₹6,9xx',
         selectedArtist: selectedArtist ? selectedArtist.name : null,
-        service: `${category} in ${city}`,
         category: category,
-        city: city
+        city: city,
+        service: `${category} in ${city}`,
+        formName: `Hero Booking Card - ${category} in ${city}`,
+        formLink: typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}#hero-book-99` : '',
+        formType: 'booking',
+        referenceCode: randomRef,
+        message: `Hero Booking Request for ${category} in ${city}. Event: ${selectedEventType} on ${eventDate}.${selectedArtist ? ` Target Performer: ${selectedArtist.name}` : ''}`,
+        internalNotes: `Direct Hero Lead for ${category} in ${city}. Event: ${selectedEventType} on ${eventDate}.${selectedArtist ? ` Preferred Performer: ${selectedArtist.name}.` : ''}`
       });
 
       setRefCode(res?.referenceCode || randomRef);
       setIsSubmitted(true);
     } catch (err) {
-      console.error('Error submitting ₹6,9xx booking request:', err);
-      setPhoneError("Could not submit booking. Please try again.");
+      console.error('Error submitting hero booking:', err);
+      setPhoneError("Could not submit booking. Please try WhatsApp.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Open the basic booking pop form when any "Book" button or card is clicked
+  // Open the availability pop form when any "Book" button or card is clicked
   const handleOpenBookModal = (artist) => {
-    const target = artist || selectedArtist || topArtists?.[0] || null;
-    if (target) {
-      setSelectedArtist(target);
-      setModalArtist(target);
-    } else {
-      setModalArtist(null);
-    }
-    setBookPhone(phone || "");
-    setBookName(name || "");
-    setBookEventDate(eventDate || getNextWeekDate());
-    setBookEventType(selectedEventType || (isDJ ? "Wedding DJ & Sangeet" : "Wedding Ceremony"));
-    setBookBudgetAmount(25000);
-    setBookPhoneError("");
-    setBookNameError("");
-    setBookSubmitted(false);
-    setBookModalOpen(true);
-    setTimeout(() => {
-      if (bookNameInputRef.current && !name) {
-        bookNameInputRef.current.focus();
-      } else if (bookPhoneInputRef.current) {
-        bookPhoneInputRef.current.focus();
-      }
-    }, 150);
+    handleOpenAvailabilityModal(artist);
   };
 
-  // Select an artist opens the basic popup form
+  // Select an artist opens the availability popup form
   const handleSelectArtist = (artist) => {
-    handleOpenBookModal(artist);
+    handleOpenAvailabilityModal(artist);
   };
 
   // Submit handler for the artist booking popup form
@@ -452,27 +506,23 @@ export default function SEOLandingHero({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [bookModalOpen, tierModalOpen]);
 
-  // Listen for custom event 'open-artist-booking'
+  // Listen for custom events 'open-artist-booking' and 'open-contact-modal'
   useEffect(() => {
     const handleOpenArtistBooking = (e) => {
       const art = e?.detail?.artist || null;
-      handleOpenBookModal(art);
+      handleOpenAvailabilityModal(art);
     };
     window.addEventListener('open-artist-booking', handleOpenArtistBooking);
-    return () => window.removeEventListener('open-artist-booking', handleOpenArtistBooking);
+    window.addEventListener('open-contact-modal', handleOpenArtistBooking);
+    return () => {
+      window.removeEventListener('open-artist-booking', handleOpenArtistBooking);
+      window.removeEventListener('open-contact-modal', handleOpenArtistBooking);
+    };
   }, []);
 
   // Select a tier and open 1-step quick phone modal
   const handleSelectTier = (tier) => {
-    setActiveTier(tier);
-    setSelectedBudget(`${tier.title} (${tier.price})`);
-    setQuickPhone(phone || "");
-    setQuickPhoneError("");
-    setQuickSubmitted(false);
-    setTierModalOpen(true);
-    setTimeout(() => {
-      if (quickPhoneRef.current) quickPhoneRef.current.focus();
-    }, 150);
+    handleOpenAvailabilityModal(tier);
   };
 
   const handleQuickTierSubmit = (e) => {
@@ -485,27 +535,37 @@ export default function SEOLandingHero({
       return;
     }
 
+    setQuickSubmitting(true);
+    const randomRef = `MGN-${Math.floor(100000 + Math.random() * 900000)}`;
+    const targetArtistName = activeTier?.artist?.name || selectedArtist?.name || null;
+    const planName = activeTier?.title || `${category} Booking`;
+    const planPrice = activeTier?.price || 'TBD';
+
     bookingService.submitInstantRequest({
       name: name.trim() || 'Event Host',
-      phone: quickPhone,
-      eventType: `${activeTier?.title || category} Booking`,
-      budget: activeTier?.price || 'TBD',
+      phone: clean,
+      eventType: selectedEventType || `${planName} in ${city}`,
+      date: eventDate,
+      budget: planPrice,
       selectedPlan: activeTier ? {
-        name: activeTier.title,
-        price: activeTier.price,
+        name: planName,
+        price: planPrice,
         tagline: activeTier.desc,
         features: activeTier.features
       } : null,
+      selectedArtist: targetArtistName,
       category: category,
       city: city,
-      keywords: `${category}, ${activeTier?.title || ''}, ${city}`,
-      formName: `Pricing Tier Quick Check - ${activeTier?.title || 'Package'} in ${city}`,
-      formLink: typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}#pricing` : '',
+      keywords: `${category}, ${planName}, ${city}`,
+      formName: `Live Availability Check - ${planName} in ${city}`,
+      formLink: typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : '',
       formType: 'booking',
-      message: '',
-      internalNotes: `Package Inquiry for ${activeTier?.title} (${activeTier?.price}) in ${city}. Features: ${activeTier?.features?.join(', ')}. Checking live artist availability.`
+      referenceCode: randomRef,
+      message: `Availability check for ${planName} (${planPrice}) in ${city}. Phone: +91 ${clean}. Date: ${eventDate}.${targetArtistName ? ` Artist: ${targetArtistName}` : ''}`,
+      internalNotes: `Live Availability Inquiry: ${planName} (${planPrice}) in ${city}. Features: ${activeTier?.features?.join(', ') || 'Standard'}. Checking live artist availability.`
     });
 
+    setRefCode(randomRef);
     setQuickSubmitted(true);
     setQuickSubmitting(false);
   };
@@ -657,7 +717,15 @@ export default function SEOLandingHero({
                           <span className="hero-tok99-label-icon">📱</span> Phone / WhatsApp *
                         </label>
                         <div className={`hero-tok99-input-box ${phoneError ? 'error' : ''}`}>
-                          <span className="hero-tok99-prefix">🇮🇳 +91</span>
+                          <span className="hero-tok99-prefix" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                            <svg className="seo-flag-svg" viewBox="0 0 30 20" width="18" height="12" aria-hidden="true">
+                              <rect width="30" height="6.67" fill="#FF9933" />
+                              <rect y="6.67" width="30" height="6.67" fill="#FFFFFF" />
+                              <rect y="13.34" width="30" height="6.67" fill="#138808" />
+                              <circle cx="15" cy="10" r="2.2" fill="#000080" />
+                            </svg>
+                            <span>+91</span>
+                          </span>
                           <input
                             ref={phoneInputRef}
                             id="h-tok-phone"
@@ -733,11 +801,7 @@ export default function SEOLandingHero({
                       disabled={isSubmitting}
                       className="hero-tok99-submit-btn"
                     >
-                      {isSubmitting ? (
-                        <span>Reserving Slot...</span>
-                      ) : (
-                        <span>🔒 Lock {category} from ₹6,9xx ➔</span>
-                      )}
+                      <span>{isSubmitting ? '⏳ Checking Availability...' : 'Check Availability & Send Quotes ➔'}</span>
                     </button>
                   </form>
                 ) : (
@@ -1257,7 +1321,7 @@ export default function SEOLandingHero({
                 <div
                   className="seo-dj-feat-card"
                   onClick={() => {
-                    if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth' });
+                    handleOpenAvailabilityModal(null);
                   }}
                 >
                   <div className="seo-dj-feat-img-wrap">
@@ -1286,7 +1350,7 @@ export default function SEOLandingHero({
                 <div
                   className="seo-dj-feat-card"
                   onClick={() => {
-                    if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth' });
+                    handleOpenAvailabilityModal(null);
                   }}
                 >
                   <div className="seo-dj-feat-img-wrap">
@@ -1315,7 +1379,7 @@ export default function SEOLandingHero({
                 <div
                   className="seo-dj-feat-card"
                   onClick={() => {
-                    if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth' });
+                    handleOpenAvailabilityModal(null);
                   }}
                 >
                   <div className="seo-dj-feat-img-wrap">
@@ -1344,7 +1408,7 @@ export default function SEOLandingHero({
                 <div
                   className="seo-dj-feat-card"
                   onClick={() => {
-                    if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth' });
+                    handleOpenAvailabilityModal(null);
                   }}
                 >
                   <div className="seo-dj-feat-img-wrap">
@@ -1382,13 +1446,18 @@ export default function SEOLandingHero({
             <form onSubmit={handleInlineSubmit}>
               <div className="seo-booking-header">
                 <div className="seo-booking-title-group">
-                  <h3>
-                    <span>⚡ Get Instant {category} Price List & Availability in {city}</span>
+                  <div className="seo-booking-eyebrow">
+                    <span className="seo-eyebrow-sparkle">✨</span>
+                    <span>DIRECT ARTIST BOOKING &amp; REAL-TIME QUOTES</span>
+                  </div>
+                  <h3 className="seo-booking-title">
+                    Get Instant <span className="lux-gold-gradient">{category} Price List</span> &amp; Availability in {city}
                   </h3>
-                  <p>Direct artist rates sent to your WhatsApp in 5 minutes · Zero spam</p>
+                  <p>Direct artist rates sent to your WhatsApp in 5 minutes • Zero spam guarantee</p>
                 </div>
                 <div className="seo-fast-response-tag">
-                  <span>⏱️ 5-Min WhatsApp Reply</span>
+                  <span className="seo-pulse-dot-green" />
+                  <span>Avg 5-Min WhatsApp Reply</span>
                 </div>
               </div>
 
@@ -1416,10 +1485,19 @@ export default function SEOLandingHero({
                 {/* Mobile / WhatsApp Number (PRIMARY HIGH-CONVERTING INPUT) */}
                 <div className="seo-input-group">
                   <label htmlFor="seo-phone">
-                    <span>WhatsApp / Mobile Number *</span>
+                    <span>WhatsApp / Mobile Number</span>
+                    <span className="seo-label-req">*</span>
                   </label>
                   <div className="seo-phone-input-wrap">
-                    <span className="seo-phone-prefix">🇮🇳 +91</span>
+                    <span className="seo-phone-prefix">
+                      <svg width="18" height="12" viewBox="0 0 18 12" fill="none" className="seo-flag-svg">
+                        <rect width="18" height="4" fill="#FF9933" />
+                        <rect y="4" width="18" height="4" fill="#FFFFFF" />
+                        <rect y="8" width="18" height="4" fill="#138808" />
+                        <circle cx="9" cy="6" r="1.5" stroke="#000088" strokeWidth="0.6" fill="none" />
+                      </svg>
+                      <span>+91</span>
+                    </span>
                     <input
                       ref={phoneInputRef}
                       id="seo-phone"
@@ -1446,16 +1524,18 @@ export default function SEOLandingHero({
                   <label htmlFor="seo-event-type">
                     <span>Event Type</span>
                   </label>
-                  <select
-                    id="seo-event-type"
-                    value={selectedEventType}
-                    onChange={(e) => setSelectedEventType(e.target.value)}
-                    className="seo-input-control"
-                  >
-                    {eventTypes.map(t => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
+                  <div className="seo-select-wrap">
+                    <select
+                      id="seo-event-type"
+                      value={selectedEventType}
+                      onChange={(e) => setSelectedEventType(e.target.value)}
+                      className="seo-input-control"
+                    >
+                      {eventTypes.map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {/* Event Date */}
@@ -1463,20 +1543,23 @@ export default function SEOLandingHero({
                   <label htmlFor="seo-event-date">
                     <span>Event Date</span>
                   </label>
-                  <input
-                    id="seo-event-date"
-                    type="date"
-                    min={getMinDate()}
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
-                    className="seo-input-control"
-                  />
+                  <div className="seo-date-wrap">
+                    <input
+                      id="seo-event-date"
+                      type="date"
+                      min={getMinDate()}
+                      value={eventDate}
+                      onChange={(e) => setEventDate(e.target.value)}
+                      className="seo-input-control"
+                      style={{ colorScheme: 'dark' }}
+                    />
+                  </div>
                 </div>
 
                 {/* Name (Optional for zero-friction) */}
                 <div className="seo-input-group">
                   <label htmlFor="seo-name">
-                    <span>Your Name (Optional)</span>
+                    <span>Your Name <span className="seo-label-opt">(Optional)</span></span>
                   </label>
                   <input
                     id="seo-name"
@@ -1499,7 +1582,10 @@ export default function SEOLandingHero({
                   {isSubmitting ? (
                     <span>⏳ Checking Availability...</span>
                   ) : (
-                    <span>⚡ Send Me Available Artists & Price List</span>
+                    <>
+                      <span>Send Me Available Artists &amp; Price List</span>
+                      <span className="seo-btn-arrow">→</span>
+                    </>
                   )}
                 </button>
 
@@ -1516,11 +1602,32 @@ export default function SEOLandingHero({
               </div>
 
               <div className="seo-form-guarantee-note">
-                <span>🔒 100% Free Service</span>
-                <span>•</span>
-                <span>🛡️ Direct Artist Pricing</span>
-                <span>•</span>
-                <span>⚡ Zero Spam Policy</span>
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <span>100% Free Service</span>
+                </span>
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                  <span>Direct Artist Pricing</span>
+                </span>
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <polyline points="9 12 11 14 15 10"/>
+                  </svg>
+                  <span>100% Arrival Guarantee</span>
+                </span>
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                  <span>Zero Spam Policy</span>
+                </span>
               </div>
             </form>
           ) : (
@@ -1577,25 +1684,44 @@ export default function SEOLandingHero({
         <div id="pricing" className="seo-pricing-guide-section">
           <div className="seo-section-head-v2" style={{ textAlign: 'center', justifyContent: 'center' }}>
             <div>
-              <span className="badge">TRANSPARENT PRICING</span>
-              <h2>{category} Pricing Packages in {city}</h2>
-              <p>Direct artist fees with no hidden charges. Select a package to check live availability.</p>
+              <span className="badge">✨ TRANSPARENT PRICING PACKAGES</span>
+              <h2><span className="lux-gold-gradient">{category} Pricing Packages</span> in {city}</h2>
+              <p>Direct artist fees with zero middleman charges. Select a package to lock your date &amp; check live availability.</p>
             </div>
           </div>
 
           <div className="seo-pricing-cards-grid">
             {budgetTiers.map((tier) => (
               <div key={tier.id} className={`seo-tier-card ${tier.isPopular ? 'featured-tier' : ''}`}>
-                {tier.isPopular && <span className="seo-tier-badge">★ Most Popular in {city}</span>}
                 <div className="seo-tier-header">
+                  <div className="seo-tier-tag-row">
+                    {tier.isPopular ? (
+                      <span className="seo-tier-badge">
+                        <span className="seo-star-icon">★</span>
+                        <span>MOST POPULAR IN {city.toUpperCase()}</span>
+                      </span>
+                    ) : (
+                      <span className="seo-tier-kicker">
+                        {tier.id.includes('band') || tier.id.includes('ensemble') || tier.id.includes('celebrity') || tier.id.includes('headliner')
+                          ? '👑 GRAND PRODUCTION'
+                          : '✦ INTIMATE GATHERINGS'}
+                      </span>
+                    )}
+                  </div>
                   <h4>{tier.title}</h4>
-                  <div className="seo-tier-price">{tier.price}</div>
+                  <div className={`seo-tier-price ${tier.isPopular ? 'featured-price' : ''}`}>
+                    {tier.price}
+                  </div>
                 </div>
 
                 <ul className="seo-tier-features">
                   {tier.features.map((feat, idx) => (
                     <li key={idx}>
-                      <span className="feat-check">✓</span>
+                      <span className="feat-check">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span>
                       <span>{feat}</span>
                     </li>
                   ))}
@@ -1607,7 +1733,7 @@ export default function SEOLandingHero({
                   className={`seo-tier-btn ${tier.isPopular ? 'seo-tier-btn-featured' : ''}`}
                 >
                   <span>Check Availability</span>
-                  <span className="btn-arrow">➔</span>
+                  <span className="btn-arrow">→</span>
                 </button>
               </div>
             ))}
@@ -1619,7 +1745,9 @@ export default function SEOLandingHero({
            ========================================================================== */}
         <div className="seo-guarantee-bar">
           <div className="seo-guarantee-item">
-            <span className="seo-guarantee-icon">🛡️</span>
+            <div className="seo-guarantee-icon-wrap">
+              <span className="seo-guarantee-icon">🛡️</span>
+            </div>
             <div className="seo-guarantee-text">
               <strong>100% Arrival Guarantee</strong>
               <span>Emergency verified backup</span>
@@ -1627,15 +1755,19 @@ export default function SEOLandingHero({
           </div>
 
           <div className="seo-guarantee-item">
-            <span className="seo-guarantee-icon">🎙️</span>
+            <div className="seo-guarantee-icon-wrap">
+              <span className="seo-guarantee-icon">🎙️</span>
+            </div>
             <div className="seo-guarantee-text">
-              <strong>Stage & Sound Assistance</strong>
-              <span>Pro audio & mics setup</span>
+              <strong>Stage &amp; Sound Assistance</strong>
+              <span>Pro audio &amp; mics setup</span>
             </div>
           </div>
 
           <div className="seo-guarantee-item">
-            <span className="seo-guarantee-icon">🔒</span>
+            <div className="seo-guarantee-icon-wrap">
+              <span className="seo-guarantee-icon">🔒</span>
+            </div>
             <div className="seo-guarantee-text">
               <strong>Secure Escrow Payments</strong>
               <span>Safe deposit protection</span>
@@ -1643,7 +1775,9 @@ export default function SEOLandingHero({
           </div>
 
           <div className="seo-guarantee-item">
-            <span className="seo-guarantee-icon">⚡</span>
+            <div className="seo-guarantee-icon-wrap">
+              <span className="seo-guarantee-icon">⚡</span>
+            </div>
             <div className="seo-guarantee-text">
               <strong>Dedicated Coordinator</strong>
               <span>Personal show manager</span>
@@ -1658,163 +1792,187 @@ export default function SEOLandingHero({
       {/* ==========================================================================
          7. Quick Tier Availability Modal (1-Step Phone Only Form)
          ========================================================================== */}
-      <AnimatePresence>
-        {tierModalOpen && activeTier && (
-          <motion.div
-            className="seo-tier-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setTierModalOpen(false)}
-            onWheel={(e) => {
-              if (e.target === e.currentTarget) e.preventDefault();
-            }}
-            onTouchMove={(e) => {
-              if (e.target === e.currentTarget) e.preventDefault();
-            }}
-          >
-            <motion.div
-              className="seo-tier-modal-card"
-              initial={{ scale: 0.92, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                className="seo-tier-modal-close"
+      {mounted && typeof document !== 'undefined' ? (
+        createPortal(
+          <AnimatePresence>
+            {tierModalOpen && activeTier && (
+              <motion.div
+                className="seo-tier-modal-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 onClick={() => setTierModalOpen(false)}
-                aria-label="Close dialog"
+                onWheel={(e) => {
+                  if (e.target === e.currentTarget) e.preventDefault();
+                }}
+                onTouchMove={(e) => {
+                  if (e.target === e.currentTarget) e.preventDefault();
+                }}
               >
-                ✕
-              </button>
-
-              {!quickSubmitted ? (
-                <form onSubmit={handleQuickTierSubmit}>
-                  <div className="seo-tier-modal-tag">
-                    <span>⚡ INSTANT AVAILABILITY CHECK</span>
-                  </div>
-
-                  <h3 className="seo-tier-modal-title">
-                    Check Live Availability
-                  </h3>
-                  <p className="seo-tier-modal-sub">
-                    Direct artist pricing with 0% middleman fees. Enter your phone number to receive instant quote & live availability in {city}.
-                  </p>
-
-                  <div className="seo-tier-selected-box">
-                    <div className="seo-tier-selected-left">
-                      <h5>{activeTier.title}</h5>
-                      <span>📍 {city} • {category}</span>
-                    </div>
-                    <div className="seo-tier-selected-price">
-                      {activeTier.price}
-                    </div>
-                  </div>
-
-                  <label className="seo-tier-phone-label" htmlFor="seo-quick-phone">
-                    Your Mobile Number (For Instant WhatsApp Quotes) *
-                  </label>
-
-                  <div className="seo-tier-phone-wrap">
-                    <div className="seo-tier-phone-flag">
-                      <span>🇮🇳</span>
-                      <span>+91</span>
-                    </div>
-                    <input
-                      ref={quickPhoneRef}
-                      id="seo-quick-phone"
-                      type="tel"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={quickPhone}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                        setQuickPhone(digits);
-                        if (quickPhoneError) setQuickPhoneError("");
-                      }}
-                      placeholder="e.g. 9876543210"
-                      className="seo-tier-phone-input"
-                      maxLength={10}
-                      autoFocus
-                    />
-                  </div>
-
-                  {quickPhoneError && (
-                    <span className="seo-tier-phone-err">{quickPhoneError}</span>
-                  )}
-
+                <motion.div
+                  className="seo-tier-modal-card"
+                  initial={{ scale: 0.94, opacity: 0, y: 16 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.94, opacity: 0, y: 16 }}
+                  transition={{ type: "spring", damping: 26, stiffness: 340 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
-                    type="submit"
-                    disabled={quickSubmitting}
-                    className="seo-tier-submit-btn"
+                    type="button"
+                    className="seo-tier-modal-close"
+                    onClick={() => setTierModalOpen(false)}
+                    aria-label="Close dialog"
                   >
-                    {quickSubmitting ? (
-                      <span>⏳ Checking Live Availability...</span>
-                    ) : (
-                      <>
-                        <span>Check Availability & Send Quotes</span>
-                        <span>→</span>
-                      </>
-                    )}
+                    ✕
                   </button>
 
-                  <div className="seo-tier-guarantee-note">
-                    <span>🔒 100% Free Service</span>
-                    <span>•</span>
-                    <span>⚡ Reply in 6 Mins</span>
-                    <span>•</span>
-                    <span>🛡️ Direct Artist Fees</span>
-                  </div>
-                </form>
-              ) : (
-                <div className="seo-tier-success-box">
-                  <div className="seo-tier-success-icon">✓</div>
-                  <h3 className="seo-tier-modal-title" style={{ color: '#10b981' }}>
-                    Availability Request Sent!
-                  </h3>
-                  <p className="seo-tier-modal-sub">
-                    We received your check for <strong>{activeTier.title}</strong> ({activeTier.price}) in <strong>{city}</strong>. Our artist coordinator will WhatsApp verified singer availability and video clips to <strong>{quickPhone}</strong> within 6 minutes.
-                  </p>
+                  {!quickSubmitted ? (
+                    <form onSubmit={handleQuickTierSubmit}>
+                      <div className="seo-tier-modal-tag">
+                        <span className="seo-tier-modal-dot" />
+                        <span>Live Availability Check</span>
+                      </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-                    <a
-                      href={`https://wa.me/918076515257?text=${encodeURIComponent(`Hi Magnevents, I just requested availability for ${activeTier.title} (${activeTier.price}) in ${city}. Please share available artists.`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="seo-btn-whatsapp"
-                      style={{ width: '100%', justifyContent: 'center' }}
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
-                      </svg>
-                      <span>Fast-Track on WhatsApp</span>
-                    </a>
+                      <h3 className="seo-tier-modal-title">
+                        Check <span className="seo-modal-title-accent">Live Availability</span>
+                      </h3>
 
-                    <button
-                      type="button"
-                      onClick={() => setTierModalOpen(false)}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        color: '#cbd5e1',
-                        padding: '12px 20px',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: 600
-                      }}
-                    >
-                      Done / Close
-                    </button>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>      {/* ==========================================================================
+                      <div className="seo-tier-selected-box">
+                        <div className="seo-tier-selected-left">
+                          <span className="seo-tier-selected-kicker">
+                            {activeTier.isArtist ? '✦ Direct Artist Booking' : '✦ Verified Artist Tier'}
+                          </span>
+                          <h5>{activeTier.title}</h5>
+                          <span className="seo-tier-selected-loc">📍 {city} • {category}</span>
+                        </div>
+                        <div className="seo-tier-selected-price-col">
+                          <span className="seo-tier-price-kicker">Estimated Range</span>
+                          <div className="seo-tier-selected-price">
+                            {activeTier.price}
+                          </div>
+                          <span className="seo-tier-price-guarantee">0% Middleman Fees</span>
+                        </div>
+                      </div>
+
+                      <div className="seo-tier-form-surface">
+                        <div className="seo-tier-assurance-strip">
+                          <div className="seo-tier-assurance-item">
+                            <span className="seo-assurance-pill">Direct Rates</span>
+                            <span className="seo-assurance-val">0% Middleman</span>
+                          </div>
+                          <div className="seo-tier-assurance-item featured">
+                            <span className="seo-assurance-pill">WhatsApp ⚡</span>
+                            <span className="seo-assurance-val">Reply in 5 Mins</span>
+                          </div>
+                          <div className="seo-tier-assurance-item">
+                            <span className="seo-assurance-pill">Guaranteed</span>
+                            <span className="seo-assurance-val">100% Protected</span>
+                          </div>
+                        </div>
+
+                        <label className="seo-tier-phone-label" htmlFor="seo-quick-phone">
+                          WhatsApp / Mobile Number
+                        </label>
+
+                        <div className="seo-tier-phone-wrap">
+                          <div className="seo-tier-phone-flag">
+                            <svg className="seo-flag-svg" viewBox="0 0 30 20" width="20" height="14" aria-hidden="true">
+                              <rect width="30" height="6.67" fill="#FF9933" />
+                              <rect y="6.67" width="30" height="6.67" fill="#FFFFFF" />
+                              <rect y="13.34" width="30" height="6.67" fill="#138808" />
+                              <circle cx="15" cy="10" r="2.2" fill="#000080" />
+                            </svg>
+                            <span>+91</span>
+                          </div>
+                          <input
+                            ref={quickPhoneRef}
+                            id="seo-quick-phone"
+                            type="tel"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            value={quickPhone}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                              setQuickPhone(digits);
+                              if (quickPhoneError) setQuickPhoneError("");
+                            }}
+                            placeholder="Enter 10-digit mobile number"
+                            className="seo-tier-phone-input"
+                            maxLength={10}
+                            autoFocus
+                          />
+                        </div>
+
+                        {quickPhoneError && (
+                          <span className="seo-tier-phone-err">{quickPhoneError}</span>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={quickSubmitting}
+                          className="seo-tier-submit-btn"
+                        >
+                          {quickSubmitting ? (
+                            <span>⏳ Checking Live Availability...</span>
+                          ) : (
+                            <>
+                              <span>Check Availability &amp; Send Quotes</span>
+                              <span>→</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="seo-tier-success-box">
+                      <div className="seo-tier-success-icon">✓</div>
+                      <h3 className="seo-tier-modal-title" style={{ color: '#10b981' }}>
+                        Availability Request Sent!
+                      </h3>
+                      <p className="seo-tier-success-desc">
+                        We received your check for <strong>{activeTier.title}</strong> ({activeTier.price}) in <strong>{city}</strong>. Our artist coordinator will WhatsApp verified singer availability and video clips to <strong>{quickPhone}</strong> within 6 minutes.
+                      </p>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
+                        <a
+                          href={`https://wa.me/918076515257?text=${encodeURIComponent(`Hi Magnevents, I just requested availability for ${activeTier.title} (${activeTier.price}) in ${city}. Please share available artists.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="seo-btn-whatsapp"
+                          style={{ width: '100%', justifyContent: 'center' }}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
+                          </svg>
+                          <span>Fast-Track on WhatsApp</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => setTierModalOpen(false)}
+                          style={{
+                            background: 'transparent',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            color: '#cbd5e1',
+                            padding: '12px 20px',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: 600
+                          }}
+                        >
+                          Done / Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )
+      ) : null}      {/* ==========================================================================
          8. Booking & Date-Lock Offer Modal (Designed per Diwali Offer System)
          ========================================================================== */}
       <AnimatePresence>
