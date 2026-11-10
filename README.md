@@ -3,6 +3,8 @@
 > **Single Source of Truth** for the Magnevents Live Musical Talent Booking Ecosystem
 > **Production Platform:** [https://magnevents.in](https://magnevents.in)
 > **Version:** 2.0.0 (Production-Ready)
+
+
 > **Target Production Branch:** `main`
 > **Active Campaign:** Diwali Special Offer (Coupon: `DIW100` • Progressive 10%–28% Savings • Min. Booking: ₹10,000)
 
