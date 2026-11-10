@@ -165,7 +165,7 @@ function VibeVideoCard({ item, onPlayModal, onQuoteModal }) {
 
   return (
     <article className="vhs-card">
-      {/* Media Wrap with Autoplaying Video Preview */}
+      {/* Dominant Video Frame with Autoplay Preview */}
       <div
         className="vhs-media-wrap"
         onClick={() => onPlayModal(item)}
@@ -193,16 +193,16 @@ function VibeVideoCard({ item, onPlayModal, onQuoteModal }) {
           onPause={() => setIsPlaying(false)}
         />
 
-        {/* Gradient Vignette Overlay */}
+        {/* Cinematic Vignette Overlay */}
         <div className="vhs-media-overlay" />
 
-        {/* Top Badges & Audio Control */}
+        {/* Top Floating Badges & Audio Control */}
         <div className="vhs-media-top">
           <div className="vhs-top-badges-left">
             <span className="vhs-badge-tag">{item.badge}</span>
             <span className="vhs-badge-live">
               <span className="vhs-live-bullet" />
-              LIVE CLIP
+              LIVE
             </span>
           </div>
 
@@ -239,48 +239,32 @@ function VibeVideoCard({ item, onPlayModal, onQuoteModal }) {
           </div>
         )}
 
-        {/* Bottom Meta on Media */}
-        <div className="vhs-media-bottom">
-          <span className="vhs-meta-tag">{item.tag}</span>
-          <span className="vhs-rating-tag">{item.rating}</span>
-        </div>
-      </div>
-
-      {/* Card Body */}
-      <div className="vhs-card-body">
-        <h3 className="vhs-card-title">{item.title}</h3>
-        <p className="vhs-card-meta">
-          <span>{item.duration}</span>
-          <span className="vhs-dot-sep">•</span>
-          <span>{item.setup}</span>
-        </p>
-
-        {/* Price and CTA Row */}
-        <div className="vhs-card-footer">
-          <div className="vhs-price-box">
-            <span className="vhs-price-label">Starts from</span>
-            <div className="vhs-price-vals">
-              <span className="vhs-price-val">{item.price}</span>
-              {item.regularPrice && (
-                <span className="vhs-price-strike">{item.regularPrice}</span>
-              )}
-            </div>
+        {/* Sleek Floating Bottom Details Directly Over Video */}
+        <div className="vhs-card-overlay-bottom">
+          <div className="vhs-meta-row">
+            <span className="vhs-rating-tag">{item.rating}</span>
+            <span className="vhs-meta-tag">{item.tag}</span>
           </div>
-          <div className="vhs-actions-group">
+
+          <h3 className="vhs-card-title">{item.title}</h3>
+
+          <div className="vhs-card-footer">
+            <div className="vhs-price-box">
+              <span className="vhs-price-label">Starts from</span>
+              <div className="vhs-price-vals">
+                <span className="vhs-price-val">{item.price}</span>
+                {item.regularPrice && (
+                  <span className="vhs-price-strike">{item.regularPrice}</span>
+                )}
+              </div>
+            </div>
+
             <button
               type="button"
-              onClick={() => onPlayModal(item)}
-              className="vhs-watch-btn"
-              aria-label={`Watch full clip of ${item.title}`}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5 3 19 12 5 21 5 3" />
-              </svg>
-              <span>Watch</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onQuoteModal(item)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onQuoteModal(item);
+              }}
               className="vhs-quote-btn"
             >
               <span>Get Quote</span>
