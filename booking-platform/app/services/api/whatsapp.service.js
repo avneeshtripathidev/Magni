@@ -37,8 +37,8 @@ export const formatWhatsAppNotification = ({
   };
   const rawBudget = data.budget || (data.price ? `₹${data.price}` : '');
   const budget = budgetMap[rawBudget] || rawBudget || 'Quote on Request';
-  const detectedLocation = data.detectedLocation || data.detected_location || '';
-  const location = data.location || data.city || detectedLocation || 'Not specified';
+  const detectedLocation = data.detectedLocation || data.detected_location || 'Unknown';
+  const location = data.location || data.city || (detectedLocation !== 'Unknown' ? detectedLocation : '') || 'Not specified';
   let rawMsg = data.message || data.bio || '';
   if (rawMsg.startsWith('[ARTIST BOOKING REQUEST]')) {
     const detailsMatch = rawMsg.match(/\|\s*Details:\s*([^.]+)/i);
@@ -87,7 +87,7 @@ export const formatWhatsAppNotification = ({
     `📧 *Email:* ${email}`,
     `🎭 *Requirement:* ${eventType}`,
     `📅 *Event Date:* ${eventDate}`,
-    `📍 *Location:* ${location}${detectedLocation && detectedLocation !== location ? ` (Detected: ${detectedLocation})` : ''}`,
+    `📍 *Location:* ${location}${detectedLocation && detectedLocation !== 'Unknown' && detectedLocation !== location ? ` (Detected: ${detectedLocation})` : ''}`,
     `💰 *Budget:* ${budget}`,
   ];
 

@@ -14,13 +14,24 @@ function getSupabaseAdmin() {
 
 export async function POST(req) {
   const startTime = Date.now();
+
+  let data;
   try {
-    const data = await req.json().catch(() => null);
+    data = await req.json();
     if (!data || typeof data !== 'object') {
       return NextResponse.json({
-        error: 'Invalid or missing JSON payload in request body.'
+        success: false,
+        error: 'Invalid JSON payload'
       }, { status: 400 });
     }
+  } catch (jsonErr) {
+    return NextResponse.json({
+      success: false,
+      error: 'Invalid JSON payload'
+    }, { status: 400 });
+  }
+
+  try {
 
     // 1. Honeypot check
     if (data._hp_check || data.honeypot || data.website_url_check) {
@@ -143,12 +154,19 @@ export async function POST(req) {
 
     let extraNotes = notesArray.join('\n') || 'No additional notes.';
 
+    // Extract Vercel geo headers directly (0ms)
+    const vercelCity = req.headers.get('x-vercel-ip-city') || '';
+    const vercelRegion = req.headers.get('x-vercel-ip-country-region') || '';
+    const vercelCountry = req.headers.get('x-vercel-ip-country') || '';
+    const vercelGeoParts = [vercelCity, vercelRegion, vercelCountry].filter(Boolean);
+    const vercelLocation = vercelGeoParts.length > 0 ? vercelGeoParts.join(', ') : '';
+
     let latitude = data.latitude ? parseFloat(data.latitude) : null;
     let longitude = data.longitude ? parseFloat(data.longitude) : null;
-    let detectedLocation = data.detectedLocation || data.detected_location || '';
-    let city = data.city || '';
-    let region = data.region || data.state || '';
-    let country = data.country || '';
+    let detectedLocation = data.detectedLocation || data.detected_location || vercelLocation || '';
+    let city = data.city || vercelCity || '';
+    let region = data.region || data.state || vercelRegion || '';
+    let country = data.country || vercelCountry || '';
     let isp = data.isp || '';
 
     // Server-side Geolocation fallback if client geolocation was blocked by ad-blocker or missed
@@ -174,12 +192,17 @@ export async function POST(req) {
 
     if (!detectedLocation && data.location) detectedLocation = data.location;
     if (!detectedLocation && city) detectedLocation = city;
+    if (!detectedLocation) detectedLocation = 'Unknown';
+
+    const evCity = city || data.city || data.location || (detectedLocation !== 'Unknown' ? detectedLocation : '') || 'Not specified';
+    const evDate = validEventDate || data.date || 'Flexible';
 
     // Mutate data object for email template
     data.latitude = latitude;
     data.longitude = longitude;
     data.detectedLocation = detectedLocation;
     data.city = city;
+    data.evCity = evCity;
     data.region = region;
     data.country = country;
     data.isp = isp;
