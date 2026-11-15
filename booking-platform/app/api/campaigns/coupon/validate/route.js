@@ -10,11 +10,18 @@ export async function POST(req) {
 
     // Currently active coupon definition
     const ACTIVE_COUPONS = {
+      'XMAS15': {
+        code: 'XMAS15',
+        discountPercent: 15,
+        minBookingValue: 10000,
+        campaign: 'Christmas & Wedding Pre-Booking Offer',
+        description: 'Extra 15% OFF on festive & wedding pre-bookings.'
+      },
       'DIW100': {
         code: 'DIW100',
         discountPercent: 10,
         minBookingValue: 10000,
-        campaign: 'Diwali Special',
+        campaign: 'Festive Special',
         description: 'Extra 10% OFF on event bookings of ₹10,000 or more.'
       }
     };

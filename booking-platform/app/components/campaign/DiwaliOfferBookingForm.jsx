@@ -10,13 +10,13 @@ import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
 
 export const DIWALI_BUDGET_OPTIONS_MAP = {
-  10000: '₹10,000 - ₹20,000 (10% Extra OFF)',
-  25000: '₹20,000 - ₹35,000 (16% Extra OFF)',
-  35000: '₹35,000 - ₹50,000 (18% Extra OFF)',
-  50000: '₹50,000 - ₹80,000 (20% Extra OFF)',
-  80000: '₹80,000 - ₹1,20,000 (22% Extra OFF)',
-  120000: '₹1,20,000 - ₹2,00,000 (24% Extra OFF)',
-  200000: '₹2,00,000+ (28% Extra OFF)'
+  10000: '₹10,000 - ₹20,000 (Eligible for 30% Off)',
+  25000: '₹20,000 - ₹35,000 (Eligible for 35% Off)',
+  35000: '₹35,000 - ₹50,000 (Eligible for 40% Off)',
+  50000: '₹50,000 - ₹80,000 (Eligible for 50% Off)',
+  80000: '₹80,000 - ₹1,20,000 (Eligible for 55% Off)',
+  120000: '₹1,20,000 - ₹2,00,000 (Eligible for 60% Off)',
+  200000: '₹2,00,000+ (Eligible for 70% Total Off)'
 };
 
 export default function DiwaliOfferBookingForm() {

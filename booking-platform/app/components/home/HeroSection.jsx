@@ -761,11 +761,11 @@ export default function HeroSection() {
                   window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'booking' } }));
                 }
               }}
-              aria-label="Book Verified Artists - Claim Diwali Offer 55%-65% OFF"
+              aria-label="Book Verified Artists - Claim Festive Offer 30%-70% OFF"
             >
               <div className="mob-btn-offer-content">
                 <div className="mob-btn-offer-text-group">
-                  <span className="mob-btn-offer-sub">🪔 DIWALI OFFER • 55%–65% OFF</span>
+                  <span className="mob-btn-offer-sub">🎄 FESTIVE DEAL • 30%–70% OFF</span>
                   <span className="mob-btn-offer-title">Book Verified Artists</span>
                 </div>
                 <div className="mob-btn-offer-pill">

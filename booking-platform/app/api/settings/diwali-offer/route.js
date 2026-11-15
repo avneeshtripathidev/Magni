@@ -12,18 +12,18 @@ function getSupabase() {
 
 const DEFAULT_SETTINGS = {
   isVisible: true,
-  leftText: "🎁 A Diwali Gift for You! Get 10% EXTRA OFF",
-  rightText: "Use Code: DIW100 →",
-  couponCode: "DIW100",
-  discountPercent: 10,
+  leftText: "🎄 Christmas & Wedding Special! Get 30%–70% OFF",
+  rightText: "Use Code: XMAS15 →",
+  couponCode: "XMAS15",
+  discountPercent: 15,
   minBookingValue: 10000,
-  campaignName: "Diwali Special",
-  formHeading: "Your Diwali Gift Is Waiting! 🎁",
+  campaignName: "Christmas & Wedding Special",
+  formHeading: "Your Festive Offer Is Waiting! 🎄💍",
   supportingMessage: "Make Your Celebration Special, Spend a Little Less!",
-  offerHighlight: "Enjoy an additional 10% discount on event bookings of ₹10,000 or more.",
-  ctaText: "CLAIM MY 10% DISCOUNT",
-  startDate: "2026-10-01",
-  expiryDate: "2026-11-30"
+  offerHighlight: "Enjoy up to 70% total savings on your live artist booking.",
+  ctaText: "CLAIM MY FESTIVE DISCOUNT",
+  startDate: "2026-11-01",
+  expiryDate: "2026-12-31"
 };
 
 export async function GET() {

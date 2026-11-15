@@ -10,13 +10,13 @@ import '@/app/styles/components/SEOLandingHero.css';
 import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
 const BUDGET_OPTIONS = [
-  { value: 10000, label: '₹10,000 - ₹20,000 (10% Extra OFF)' },
-  { value: 25000, label: '₹20,000 - ₹35,000 (Eligible for 16% Extra OFF)' },
-  { value: 35000, label: '₹35,000 - ₹50,000 (Eligible for 18% Extra OFF)' },
-  { value: 50000, label: '₹50,000 - ₹80,000 (Eligible for 20% Extra OFF)' },
-  { value: 80000, label: '₹80,000 - ₹1,20,000 (Eligible for 22% Extra OFF)' },
-  { value: 120000, label: '₹1,20,000 - ₹2,00,000 (Eligible for 24% Extra OFF)' },
-  { value: 200000, label: '₹2,00,000+ (Eligible for 28% Extra OFF)' },
+  { value: 10000, label: '₹10,000 - ₹20,000 (Eligible for 30% Off)' },
+  { value: 25000, label: '₹20,000 - ₹35,000 (Eligible for 35% Off)' },
+  { value: 35000, label: '₹35,000 - ₹50,000 (Eligible for 40% Off)' },
+  { value: 50000, label: '₹50,000 - ₹80,000 (Eligible for 50% Off)' },
+  { value: 80000, label: '₹80,000 - ₹1,20,000 (Eligible for 55% Off)' },
+  { value: 120000, label: '₹1,20,000 - ₹2,00,000 (Eligible for 60% Off)' },
+  { value: 200000, label: '₹2,00,000+ (Eligible for 70% Total Off)' },
 ];
 
 const MODAL_EVENT_TYPES = [
@@ -2003,8 +2003,8 @@ export default function SEOLandingHero({
               <div className={`diw-promo-header ${bookSubmitted ? 'is-success-header' : ''}`}>
                 <div className="diw-header-top">
                   <div className="diw-badge-tag">
-                    <span>🪔</span>
-                    <span>{bookSubmitted ? 'OFFICIAL PASS' : 'VALID ONLY UNTIL DIWALI!'}</span>
+                    <span>🎄</span>
+                    <span>{bookSubmitted ? 'OFFICIAL PASS' : 'CHRISTMAS & WEDDING PRE-BOOKING OFFER'}</span>
                   </div>
 
                   <button
@@ -2022,9 +2022,9 @@ export default function SEOLandingHero({
                     <h2 className="diw-title">Your Dream Event Starts Here!</h2>
                     <div className="diw-date-lock-card">
                       <div className="diw-lock-info-col">
-                        <span className="diw-lock-badge">✨ LIMITED-TIME OFFER</span>
+                        <span className="diw-lock-badge">✨ FESTIVE & PRE-BOOKING DEAL</span>
                         <span className="diw-lock-headline">
-                          {modalArtist ? modalArtist.name : 'Premium Singers at Best Price'}
+                          {modalArtist ? modalArtist.name : 'Live Singers Starting at 30%–70% Off'}
                         </span>
                       </div>
                       <div className="diw-lock-price-badge">
@@ -2047,28 +2047,28 @@ export default function SEOLandingHero({
                   {/* Triple Discount Showcase Grid */}
                   <div className="diw-triple-discount-wrap">
                     <div className="diw-triple-discount-header">
-                      <span>SAVE UP TO 65%</span>
+                      <span>GET 30% TO 70% OFF ON YOUR BOOKING</span>
                     </div>
                     <div className="diw-triple-cards-grid">
-                      {/* Card 1: Package Offer */}
+                      {/* Card 1: Base Offer */}
                       <div className="diw-triple-card">
-                        <span className="diw-triple-pill">PACKAGE OFFER</span>
-                        <span className="diw-triple-val">45%–50% OFF</span>
-                        <span className="diw-triple-lbl">Event Booking</span>
+                        <span className="diw-triple-pill">BASE OFFER</span>
+                        <span className="diw-triple-val">30%–50% OFF</span>
+                        <span className="diw-triple-lbl">Instant Event Discount</span>
                       </div>
 
-                      {/* Card 2: Diwali Special (Featured) */}
+                      {/* Card 2: Christmas Special (Featured) */}
                       <div className="diw-triple-card diw-triple-card-featured">
-                        <span className="diw-triple-pill diw-pill-gold">DIWALI SPECIAL 🪔</span>
-                        <span className="diw-triple-val diw-val-gold">+10% EXTRA</span>
-                        <span className="diw-triple-lbl diw-lbl-gold">Code: DIW100</span>
+                        <span className="diw-triple-pill diw-pill-gold">CHRISTMAS SPECIAL 🎄</span>
+                        <span className="diw-triple-val diw-val-gold">+15% EXTRA</span>
+                        <span className="diw-triple-lbl diw-lbl-gold">Code: XMAS15</span>
                       </div>
 
-                      {/* Card 3: Welcome Gift */}
+                      {/* Card 3: Pre-Booking Bonus */}
                       <div className="diw-triple-card">
-                        <span className="diw-triple-pill">WELCOME GIFT 🎁</span>
-                        <span className="diw-triple-val">+5% FIRST OFF</span>
-                        <span className="diw-triple-lbl">1st Booking Bonus</span>
+                        <span className="diw-triple-pill">PRE-BOOKING BONUS 💍</span>
+                        <span className="diw-triple-val">+5% EXTRA</span>
+                        <span className="diw-triple-lbl">Early Date Lock-In</span>
                       </div>
                     </div>
                   </div>
@@ -2169,6 +2169,9 @@ export default function SEOLandingHero({
                     >
                       <span>{bookSubmitting ? 'Checking Availability...' : 'Unlock My Offer & Lock Date →'}</span>
                     </button>
+                    <p className="diw-trust-line">
+                      Lock today&apos;s festive price for any 2026–2027 event date • Zero hidden charges
+                    </p>
                   </form>
                 </div>
               ) : (
@@ -2219,7 +2222,7 @@ export default function SEOLandingHero({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                     <a
                       href={`https://wa.me/918076515257?text=${encodeURIComponent(
-                        `Hi Magnevents, I unlocked the Diwali Special Offer (DIW100) for ${modalArtist ? modalArtist.name : category} in ${city} (Ref: ${bookRefCode}). Event: ${bookEventType}, Host: ${bookName || 'Host'}. Please confirm artist availability!`
+                        `Hi Magnevents, I unlocked the Christmas & Wedding Pre-Booking Offer (XMAS15) for ${modalArtist ? modalArtist.name : category} in ${city} (Ref: ${bookRefCode}). Event: ${bookEventType}, Host: ${bookName || 'Host'}. Please confirm artist availability!`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
