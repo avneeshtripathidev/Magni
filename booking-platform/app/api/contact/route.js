@@ -486,6 +486,8 @@ export async function POST(req) {
         // Customer confirmation email if valid email provided
         if (clientEmail && clientEmail !== 'N/A' && clientEmail.includes('@') && !clientEmail.includes('example.com')) {
           try {
+            const evCity = city || data.location || detectedLocation || '';
+            const evDate = validEventDate || data.date || '';
             const customerWaUrl = `https://api.whatsapp.com/send?phone=918076515257&text=${encodeURIComponent(`Hi Magnevents! I just submitted an inquiry (${clientName}) and want to fast-track artist availability and quotes.`)}`;
             await transporter.sendMail({
               from: `"Magnevents Concierge" <${adminEmail}>`,

@@ -37,7 +37,8 @@ export const formatWhatsAppNotification = ({
   };
   const rawBudget = data.budget || (data.price ? `₹${data.price}` : '');
   const budget = budgetMap[rawBudget] || rawBudget || 'Quote on Request';
-  const location = data.location || data.city || data.detectedLocation || 'Not specified';
+  const detectedLocation = data.detectedLocation || data.detected_location || '';
+  const location = data.location || data.city || detectedLocation || 'Not specified';
   let rawMsg = data.message || data.bio || '';
   if (rawMsg.startsWith('[ARTIST BOOKING REQUEST]')) {
     const detailsMatch = rawMsg.match(/\|\s*Details:\s*([^.]+)/i);
