@@ -15,7 +15,12 @@ function getSupabaseAdmin() {
 export async function POST(req) {
   const startTime = Date.now();
   try {
-    const data = await req.json();
+    const data = await req.json().catch(() => null);
+    if (!data || typeof data !== 'object') {
+      return NextResponse.json({
+        error: 'Invalid or missing JSON payload in request body.'
+      }, { status: 400 });
+    }
 
     // 1. Honeypot check
     if (data._hp_check || data.honeypot || data.website_url_check) {
