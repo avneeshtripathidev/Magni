@@ -2003,8 +2003,8 @@ export default function SEOLandingHero({
               <div className={`diw-promo-header ${bookSubmitted ? 'is-success-header' : ''}`}>
                 <div className="diw-header-top">
                   <div className="diw-badge-tag">
-                    <span>🪔</span>
-                    <span>{bookSubmitted ? 'OFFICIAL PASS' : 'SHAADI SEASON & WEDDING PRE-BOOKING OFFER'}</span>
+                    <span>🎁</span>
+                    <span>{bookSubmitted ? 'OFFICIAL PASS' : 'FIRST BOOKING WELCOME OFFER'}</span>
                   </div>
 
                   <button
@@ -2022,7 +2022,7 @@ export default function SEOLandingHero({
                     <h2 className="diw-title">Your Dream Event Starts Here!</h2>
                     <div className="diw-date-lock-card">
                       <div className="diw-lock-info-col">
-                        <span className="diw-lock-badge">✨ SHAADI & FESTIVE SEASON DEAL</span>
+                        <span className="diw-lock-badge">✨ NEW USER WELCOME DEAL</span>
                         <span className="diw-lock-headline">
                           {modalArtist ? modalArtist.name : 'Live Singers Starting at 30%–70% Off'}
                         </span>
@@ -2057,16 +2057,16 @@ export default function SEOLandingHero({
                         <span className="diw-triple-lbl">Instant Event Discount</span>
                       </div>
 
-                      {/* Card 2: Shaadi Special (Featured) */}
+                      {/* Card 2: Welcome Gift (Featured) */}
                       <div className="diw-triple-card diw-triple-card-featured">
-                        <span className="diw-triple-pill diw-pill-gold">SHAADI SPECIAL 🪔</span>
+                        <span className="diw-triple-pill diw-pill-gold">WELCOME GIFT 🎁</span>
                         <span className="diw-triple-val diw-val-gold">+15% EXTRA</span>
-                        <span className="diw-triple-lbl diw-lbl-gold">Code: SHAADI15</span>
+                        <span className="diw-triple-lbl diw-lbl-gold">Code: FIRST15</span>
                       </div>
 
-                      {/* Card 3: Pre-Booking Bonus */}
+                      {/* Card 3: Date Lock Bonus */}
                       <div className="diw-triple-card">
-                        <span className="diw-triple-pill">PRE-BOOKING BONUS 💍</span>
+                        <span className="diw-triple-pill">DATE LOCK BONUS ⚡</span>
                         <span className="diw-triple-val">+5% EXTRA</span>
                         <span className="diw-triple-lbl">Early Date Lock-In</span>
                       </div>
@@ -2170,7 +2170,7 @@ export default function SEOLandingHero({
                       <span>{bookSubmitting ? 'Checking Availability...' : 'Unlock My Offer & Lock Date →'}</span>
                     </button>
                     <p className="diw-trust-line">
-                      Lock today&apos;s Shaadi Season price for any 2026–2027 event date • Zero hidden charges
+                      Lock today&apos;s first-booking welcome price for any 2026–2027 event date • Zero hidden charges
                     </p>
                   </form>
                 </div>
@@ -2180,7 +2180,7 @@ export default function SEOLandingHero({
                   <div className="diw-success-icon-wrap">
                     <div className="diw-success-icon">✓</div>
                   </div>
-                  <h3 className="diw-success-title">Your Offer is Unlocked! 🪔💍</h3>
+                  <h3 className="diw-success-title">Your Welcome Offer is Unlocked! 🎁⚡</h3>
                   <p className="diw-success-desc">
                     Your special booking pass for <strong>{modalArtist ? modalArtist.name : category}</strong> in <strong>{city}</strong> has been registered with priority date locking.
                   </p>
@@ -2222,7 +2222,7 @@ export default function SEOLandingHero({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                     <a
                       href={`https://wa.me/918076515257?text=${encodeURIComponent(
-                        `Hi Magnevents, I unlocked the Shaadi Season & Wedding Pre-Booking Offer (SHAADI15) for ${modalArtist ? modalArtist.name : category} in ${city} (Ref: ${bookRefCode}). Event: ${bookEventType}, Host: ${bookName || 'Host'}. Please confirm artist availability!`
+                        `Hi Magnevents, I unlocked the First Booking Welcome Offer (FIRST15) for ${modalArtist ? modalArtist.name : category} in ${city} (Ref: ${bookRefCode}). Event: ${bookEventType}, Host: ${bookName || 'Host'}. Please confirm artist availability!`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"

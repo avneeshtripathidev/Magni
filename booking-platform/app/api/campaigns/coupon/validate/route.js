@@ -10,12 +10,26 @@ export async function POST(req) {
 
     // Currently active coupon definition
     const ACTIVE_COUPONS = {
+      'FIRST15': {
+        code: 'FIRST15',
+        discountPercent: 15,
+        minBookingValue: 10000,
+        campaign: 'First Booking Welcome Offer',
+        description: 'Extra 15% OFF on your first event booking.'
+      },
+      'WELCOME15': {
+        code: 'WELCOME15',
+        discountPercent: 15,
+        minBookingValue: 10000,
+        campaign: 'First Booking Welcome Offer',
+        description: 'Extra 15% OFF on your first event booking.'
+      },
       'SHAADI15': {
         code: 'SHAADI15',
         discountPercent: 15,
         minBookingValue: 10000,
-        campaign: 'Shaadi Season & Wedding Pre-Booking Offer',
-        description: 'Extra 15% OFF on Shaadi season & wedding pre-bookings.'
+        campaign: 'First Booking Welcome Offer',
+        description: 'Extra 15% OFF on your event booking.'
       },
       'UTSAV15': {
         code: 'UTSAV15',
@@ -53,7 +67,7 @@ export async function POST(req) {
       return NextResponse.json({
         valid: false,
         couponCode: rawCoupon,
-        error: 'Invalid or expired coupon code. Use SHAADI15 for 15% Extra OFF.'
+        error: 'Invalid or expired coupon code. Use FIRST15 for 15% Extra OFF on your first booking.'
       }, { status: 200 });
     }
 

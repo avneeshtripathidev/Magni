@@ -14,16 +14,16 @@ function getSupabase() {
 const DEFAULT_CAMPAIGNS = [
   {
     id: 'diwali-special-2026',
-    campaign_name: 'Shaadi Season & Wedding Pre-Booking Offer',
-    campaign_slug: 'shaadi-prebooking',
+    campaign_name: 'First Booking Welcome Offer',
+    campaign_slug: 'first-user-welcome',
     headline: 'Your Dream Event Starts Here!',
-    subheading: 'Book your event now and unlock 30% to 70% off with exclusive seasonal benefits.',
-    offer_badge: 'SHAADI SEASON & WEDDING PRE-BOOKING OFFER',
+    subheading: 'Book your event now and unlock 30% to 70% off with exclusive first-time booking benefits.',
+    offer_badge: 'FIRST BOOKING WELCOME OFFER',
     offer_title: 'Lock Your Event Booking at Just ₹2,499',
-    offer_description: 'Special Shaadi Season Booking Benefits: 100% Artist Arrival Guarantee, Complimentary Soundcheck Pass & Zero Broker Commission.',
+    offer_description: 'Special First Booking Benefits: 100% Artist Arrival Guarantee, Complimentary Soundcheck Pass & Zero Broker Commission.',
     advance_amount: 2499.00,
     original_price: 10000.00,
-    discount_text: 'SHAADI & FESTIVE SEASON DEAL',
+    discount_text: 'EXCLUSIVE FIRST-TIME BOOKING DEAL',
     cta_text: 'Unlock My Offer & Lock Date',
     secondary_cta_text: 'Explore Event Packages',
     terms: [
