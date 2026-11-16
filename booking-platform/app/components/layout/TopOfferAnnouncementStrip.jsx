@@ -186,19 +186,19 @@ export default function TopOfferAnnouncementStrip() {
       <div className="top-offer-strip-inner">
         {/* Left Side: Festive Icon & Offer Highlight */}
         <div className="top-offer-left">
-          <span className="gift-icon">🎄</span>
+          <span className="gift-icon">🪔</span>
           <span className="top-offer-desktop-msg">
-            Christmas &amp; Wedding Pre-Booking: <span className="highlight-gold">Get 30%–70% OFF</span> on Live Artists!
+            Shaadi Season &amp; Wedding Pre-Booking: <span className="highlight-gold">Get 30%–70% OFF</span> on Live Artists!
           </span>
           <span className="top-offer-mobile-msg">
-            Festive Offer: <span className="highlight-gold">30%–70% OFF</span>
+            Shaadi Season: <span className="highlight-gold">30%–70% OFF</span>
           </span>
         </div>
 
         {/* Right Side: High-Visibility Coupon Ticket & CTA */}
         <div className="top-offer-right">
           <span className="top-offer-label">Use Code:</span>
-          <span className="top-offer-coupon-tag">{config.couponCode || 'XMAS15'}</span>
+          <span className="top-offer-coupon-tag">{config.couponCode || 'SHAADI15'}</span>
           <span className="top-offer-arrow">→</span>
         </div>
       </div>

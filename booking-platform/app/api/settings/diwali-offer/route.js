@@ -12,18 +12,18 @@ function getSupabase() {
 
 const DEFAULT_SETTINGS = {
   isVisible: true,
-  leftText: "🎄 Christmas & Wedding Special! Get 30%–70% OFF",
-  rightText: "Use Code: XMAS15 →",
-  couponCode: "XMAS15",
+  leftText: "🪔 Shaadi Season Special! Get 30%–70% OFF",
+  rightText: "Use Code: SHAADI15 →",
+  couponCode: "SHAADI15",
   discountPercent: 15,
   minBookingValue: 10000,
-  campaignName: "Christmas & Wedding Special",
-  formHeading: "Your Festive Offer Is Waiting! 🎄💍",
-  supportingMessage: "Make Your Celebration Special, Spend a Little Less!",
+  campaignName: "Shaadi Season & Wedding Special",
+  formHeading: "Your Shaadi Season Offer Is Waiting! 🪔💍",
+  supportingMessage: "Make Your Celebration Grand & Unforgettable, Spend a Little Less!",
   offerHighlight: "Enjoy up to 70% total savings on your live artist booking.",
-  ctaText: "CLAIM MY FESTIVE DISCOUNT",
+  ctaText: "CLAIM MY SHAADI SEASON DISCOUNT",
   startDate: "2026-11-01",
-  expiryDate: "2026-12-31"
+  expiryDate: "2027-03-31"
 };
 
 export async function GET() {

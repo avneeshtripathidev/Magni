@@ -350,9 +350,9 @@ export default function GoogleAdsOfferInstantForm() {
         type: isPaidAd ? 'google_ads_lead' : 'instant_lead',
         formName: 'GoogleAdsOfferInstantForm',
         referenceCode: generatedRef,
-        campaignId: 'xmas-wedding-prebooking',
-        campaignName: 'Christmas & Wedding Pre-Booking Offer (XMAS15)',
-        appliedCoupon: 'XMAS15',
+        campaignId: 'shaadi-wedding-prebooking',
+        campaignName: 'Shaadi Season & Wedding Pre-Booking Offer (SHAADI15)',
+        appliedCoupon: 'SHAADI15',
         dateLockAmount: 2499,
         discountPercent: savings.pct,
         discountAmount: savings.discountAmt,
@@ -405,7 +405,7 @@ export default function GoogleAdsOfferInstantForm() {
   const createWhatsAppUrl = () => {
     const adminPhone = process.env.NEXT_PUBLIC_ADMIN_PHONE || '918076515257';
     const chosenBudget = formData.budgetRange || BUDGET_OPTIONS_MAP[formData.budgetAmount] || `₹${formData.budgetAmount.toLocaleString('en-IN')}`;
-    const text = `Hi Magnevents, I unlocked the Christmas & Wedding Pre-Booking Offer (XMAS15) for ${formData.eventType}. Budget: ${chosenBudget}, Ref Code: ${referenceCode}. Please share verified artist quotes and lock date!`;
+    const text = `Hi Magnevents, I unlocked the Shaadi Season & Wedding Pre-Booking Offer (SHAADI15) for ${formData.eventType}. Budget: ${chosenBudget}, Ref Code: ${referenceCode}. Please share verified artist quotes and lock date!`;
     return `https://wa.me/${adminPhone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
   };
 
@@ -440,8 +440,8 @@ export default function GoogleAdsOfferInstantForm() {
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
-                <span>🎄</span>
-                <span>{isSuccess ? 'OFFICIAL PASS' : 'CHRISTMAS & WEDDING PRE-BOOKING OFFER'}</span>
+                <span>🪔</span>
+                <span>{isSuccess ? 'OFFICIAL PASS' : 'SHAADI SEASON & WEDDING PRE-BOOKING OFFER'}</span>
               </div>
 
               <button
@@ -460,7 +460,7 @@ export default function GoogleAdsOfferInstantForm() {
                 <h2 className="diw-title">Your Dream Event Starts Here!</h2>
                 <div className="diw-date-lock-card">
                   <div className="diw-lock-info-col">
-                    <span className="diw-lock-badge">✨ FESTIVE & PRE-BOOKING DEAL</span>
+                    <span className="diw-lock-badge">✨ SHAADI & FESTIVE SEASON DEAL</span>
                     <span className="diw-lock-headline">Live Singers Starting at 30%–70% Off</span>
                   </div>
                   <div className="diw-lock-price-badge">
@@ -489,11 +489,11 @@ export default function GoogleAdsOfferInstantForm() {
                     <span className="diw-triple-lbl">Instant Event Discount</span>
                   </div>
 
-                  {/* Card 2: Christmas Special (Highlighted) */}
+                  {/* Card 2: Shaadi Special (Highlighted) */}
                   <div className="diw-triple-card diw-triple-card-featured">
-                    <span className="diw-triple-pill diw-pill-gold">CHRISTMAS SPECIAL 🎄</span>
+                    <span className="diw-triple-pill diw-pill-gold">SHAADI SPECIAL 🪔</span>
                     <span className="diw-triple-val diw-val-gold">+15% EXTRA</span>
-                    <span className="diw-triple-lbl diw-lbl-gold">Code: XMAS15</span>
+                    <span className="diw-triple-lbl diw-lbl-gold">Code: SHAADI15</span>
                   </div>
 
                   {/* Card 3: Pre-Booking Bonus */}
@@ -603,7 +603,7 @@ export default function GoogleAdsOfferInstantForm() {
                   <span>{isSubmitting ? 'Securing Your Offer & Date...' : 'Unlock My Offer & Lock Date →'}</span>
                 </button>
                 <p className="diw-trust-line">
-                  Lock today&apos;s festive price for any 2026–2027 event date • Zero hidden charges
+                  Lock today&apos;s Shaadi Season price for any 2026–2027 event date • Zero hidden charges
                 </p>
               </form>
             </div>
@@ -615,7 +615,7 @@ export default function GoogleAdsOfferInstantForm() {
               </div>
 
               <h2 className="diw-success-title">
-                Festive Offer &amp; Date Lock Claimed! 🎄💍
+                Shaadi Season Offer &amp; Date Lock Claimed! 🪔💍
               </h2>
 
               <div className="diw-success-pass">

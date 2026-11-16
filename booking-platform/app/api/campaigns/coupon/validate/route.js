@@ -10,12 +10,26 @@ export async function POST(req) {
 
     // Currently active coupon definition
     const ACTIVE_COUPONS = {
+      'SHAADI15': {
+        code: 'SHAADI15',
+        discountPercent: 15,
+        minBookingValue: 10000,
+        campaign: 'Shaadi Season & Wedding Pre-Booking Offer',
+        description: 'Extra 15% OFF on Shaadi season & wedding pre-bookings.'
+      },
+      'UTSAV15': {
+        code: 'UTSAV15',
+        discountPercent: 15,
+        minBookingValue: 10000,
+        campaign: 'Shaadi Season & Wedding Pre-Booking Offer',
+        description: 'Extra 15% OFF on Shaadi season & wedding pre-bookings.'
+      },
       'XMAS15': {
         code: 'XMAS15',
         discountPercent: 15,
         minBookingValue: 10000,
-        campaign: 'Christmas & Wedding Pre-Booking Offer',
-        description: 'Extra 15% OFF on festive & wedding pre-bookings.'
+        campaign: 'Shaadi Season & Wedding Pre-Booking Offer',
+        description: 'Extra 15% OFF on Shaadi season & wedding pre-bookings.'
       },
       'DIW100': {
         code: 'DIW100',
@@ -39,7 +53,7 @@ export async function POST(req) {
       return NextResponse.json({
         valid: false,
         couponCode: rawCoupon,
-        error: 'Invalid or expired coupon code. Use DIW100 for Diwali 10% OFF.'
+        error: 'Invalid or expired coupon code. Use SHAADI15 for 15% Extra OFF.'
       }, { status: 200 });
     }
 
