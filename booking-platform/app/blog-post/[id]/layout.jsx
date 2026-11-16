@@ -1,70 +1,128 @@
 import { supabase } from '@database/connection/supabase';
 import { defaultBlogs } from '../data';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const { id } = awaitedParams;
-  const staticBlog = defaultBlogs.find(b => b.slug === id || b.id === id);
+  const normalizedId = (id || '').trim();
+  const staticBlog = defaultBlogs.find(b => b.slug === normalizedId || b.id === normalizedId);
   
-  let title = 'Blog | Magnevents';
-  let description = 'Read the latest insights and artist news from Magnevents.';
-  let image = '/icon-512.png';
-
   if (staticBlog) {
-    title = `${staticBlog.title} | Magnevents`;
-    description = staticBlog.subtitle || description;
-    image = staticBlog.img || image;
-  } else {
-    const { data } = await supabase.from('hero_slides').select('title, subtitle, image_url').eq('id', id).single();
-    if (data) {
-      title = `${data.title} | Magnevents`;
-      description = data.subtitle || description;
-      image = data.image_url || image;
-    }
+    return {
+      title: `${staticBlog.title} | Magnevents`,
+      description: staticBlog.subtitle || 'Read the latest insights and artist news from Magnevents.',
+      alternates: {
+        canonical: `/blog-post/${staticBlog.slug || normalizedId}`,
+      },
+      openGraph: {
+        title: `${staticBlog.title} | Magnevents`,
+        description: staticBlog.subtitle,
+        images: [staticBlog.img || '/icon-512.png'],
+        url: `/blog-post/${staticBlog.slug || normalizedId}`,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${staticBlog.title} | Magnevents`,
+        description: staticBlog.subtitle,
+        images: [staticBlog.img || '/icon-512.png'],
+      }
+    };
   }
 
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `/blog-post/${id}`,
-    },
-    openGraph: {
-      title,
-      description,
-      images: [image],
-      url: `/blog-post/${id}`,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [image],
+  try {
+    let blogData = null;
+    const { data } = await supabase.from('blogs').select('*').eq('slug', normalizedId).single();
+    if (data) {
+      blogData = data;
+    } else {
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(normalizedId)) {
+        const { data: dataById } = await supabase.from('blogs').select('*').eq('id', normalizedId).single();
+        if (dataById) blogData = dataById;
+      }
     }
-  };
+
+    if (!blogData) {
+      return {
+        title: 'Article Not Found | Magnevents',
+        robots: {
+          index: false,
+          follow: false,
+          googleBot: {
+            index: false,
+            follow: false,
+          },
+        },
+      };
+    }
+
+    const title = `${blogData.title} | Magnevents`;
+    const description = blogData.subtitle || 'Read the latest insights and artist news from Magnevents.';
+    const image = blogData.image_url || '/icon-512.png';
+    const canonicalSlug = blogData.slug || normalizedId;
+
+    return {
+      title,
+      description,
+      alternates: {
+        canonical: `/blog-post/${canonicalSlug}`,
+      },
+      openGraph: {
+        title,
+        description,
+        images: [image],
+        url: `/blog-post/${canonicalSlug}`,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [image],
+      }
+    };
+  } catch (err) {
+    console.error('Error in blog generateMetadata:', err);
+    return {
+      title: 'Article Not Found | Magnevents',
+      robots: { index: false, follow: false }
+    };
+  }
 }
 
 export default async function BlogLayout({ children, params }) {
   const awaitedParams = await params;
   const { id } = awaitedParams;
-  const staticBlog = defaultBlogs.find(b => b.slug === id || b.id === id);
+  const normalizedId = (id || '').trim();
+  const staticBlog = defaultBlogs.find(b => b.slug === normalizedId || b.id === normalizedId);
   
-  let title = 'Blog Post';
-  let description = 'Blog post by Magnevents';
-  let image = '/icon-512.png';
+  let blogData = staticBlog || null;
 
-  if (staticBlog) {
-    title = staticBlog.title;
-    description = staticBlog.subtitle || description;
-    image = staticBlog.img || image;
-  } else {
-    const { data } = await supabase.from('hero_slides').select('title, subtitle, image_url').eq('id', id).single();
-    if (data) {
-      title = data.title;
-      description = data.subtitle || description;
-      image = data.image_url || image;
+  if (!blogData) {
+    try {
+      const { data } = await supabase.from('blogs').select('*').eq('slug', normalizedId).single();
+      if (data) {
+        blogData = data;
+      } else {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (uuidRegex.test(normalizedId)) {
+          const { data: dataById } = await supabase.from('blogs').select('*').eq('id', normalizedId).single();
+          if (dataById) blogData = dataById;
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching blog in layout:', err);
     }
   }
+
+  if (!blogData) {
+    notFound();
+  }
+
+  const title = blogData.title;
+  const description = blogData.subtitle || 'Blog post by Magnevents';
+  const image = blogData.img || blogData.image_url || '/icon-512.png';
+  const canonicalSlug = blogData.slug || normalizedId;
 
   const schema = {
     "@context": "https://schema.org",
@@ -86,7 +144,7 @@ export default async function BlogLayout({ children, params }) {
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://www.magnevents.in/blog-post/${id}`
+      "@id": `https://www.magnevents.in/blog-post/${canonicalSlug}`
     }
   };
 

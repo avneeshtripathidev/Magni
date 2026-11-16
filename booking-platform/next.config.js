@@ -173,6 +173,11 @@ const nextConfig = {
         destination: '/artists',
         permanent: true,
       },
+      {
+        source: '/mobile-home',
+        destination: '/',
+        permanent: true,
+      },
     ]
   }
 }

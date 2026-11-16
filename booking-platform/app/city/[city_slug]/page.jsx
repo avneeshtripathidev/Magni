@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { supabase } from '@database/connection/supabase';
 import Link from 'next/link';
 import { Mic2 } from 'lucide-react';
@@ -6,6 +6,7 @@ import SEOArtistsGrid from '@/app/components/common/SEOArtistsGrid';
 import AISingerBookingCard from '@/app/components/home/AISingerBookingCard';
 import AllCitiesSection from '@/app/components/common/AllCitiesSection';
 import CityAISearchBox from '@/app/components/common/CityAISearchBox';
+import { MAJOR_CITIES } from '@/app/utils/seoUrlParser';
 import '../../seo-pages.css';
 import '@/app/styles/pages/AISearch.css';
 
@@ -19,15 +20,30 @@ export const revalidate = 86400; // Cache at Edge CDN for 24 hours
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const { city_slug } = awaitedParams;
+  const normalizedCitySlug = (city_slug || '').toLowerCase().trim();
   
-  const { data: city } = await supabase
-    .from('seo_cities')
-    .select('*')
-    .eq('slug', city_slug)
-    .eq('is_active', true)
-    .single();
+  let city = null;
+  try {
+    const { data } = await supabase
+      .from('seo_cities')
+      .select('*')
+      .eq('slug', normalizedCitySlug)
+      .eq('is_active', true)
+      .single();
+    city = data;
+  } catch (err) {
+    console.error('Error in city generateMetadata:', err);
+  }
 
-  const cityName = city?.name || slugToName(city_slug);
+  const isKnownCity = Boolean(city || MAJOR_CITIES.includes(normalizedCitySlug));
+  if (!isKnownCity) {
+    return {
+      title: 'City Not Found | Magnevents',
+      robots: { index: false, follow: false, googleBot: { index: false, follow: false } }
+    };
+  }
+
+  const cityName = city?.name || slugToName(normalizedCitySlug);
   const title = city?.seo_title || `Book Live Singers, DJs & Bands in ${cityName} | Magnevents`;
   const description = city?.meta_description || `Book verified live singers, bands, and wedding DJs in ${cityName} starting from ₹5,999. Direct artist booking with 0% commission & 100% Artist Arrival Guarantee.`;
 
@@ -35,12 +51,12 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: {
-      canonical: `/city/${city_slug}`,
+      canonical: `/city/${normalizedCitySlug}`,
     },
     openGraph: {
       title,
       description,
-      url: `/city/${city_slug}`,
+      url: `/city/${normalizedCitySlug}`,
       siteName: 'Magnevents',
       images: [
         {
@@ -65,21 +81,37 @@ export async function generateMetadata({ params }) {
 export default async function CityLandingPage({ params }) {
   const awaitedParams = await params;
   const { city_slug } = awaitedParams;
+  const normalizedCitySlug = (city_slug || '').toLowerCase().trim();
+
+  if (city_slug !== normalizedCitySlug) {
+    redirect(`/city/${normalizedCitySlug}`);
+  }
 
   // 1. Fetch City
-  let { data: city } = await supabase
-    .from('seo_cities')
-    .select('*')
-    .eq('slug', city_slug)
-    .eq('is_active', true)
-    .single();
+  let city = null;
+  try {
+    const { data } = await supabase
+      .from('seo_cities')
+      .select('*')
+      .eq('slug', normalizedCitySlug)
+      .eq('is_active', true)
+      .single();
+    city = data;
+  } catch (err) {
+    console.error('Error fetching city landing page data:', err);
+  }
+
+  const isKnownCity = Boolean(city || MAJOR_CITIES.includes(normalizedCitySlug));
+  if (!isKnownCity) {
+    notFound();
+  }
 
   // 1b. Fallback if city not in database
   if (!city) {
     city = {
       id: null,
-      name: slugToName(city_slug),
-      slug: city_slug,
+      name: slugToName(normalizedCitySlug),
+      slug: normalizedCitySlug,
       seo_title: '',
       meta_description: '',
       h1: '',

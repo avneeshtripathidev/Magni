@@ -18,7 +18,7 @@ export const metadata = {
     "smart live band booking Delhi Mumbai Bangalore"
   ],
   alternates: {
-    canonical: "https://www.magnevents.in/ai-search"
+    canonical: "/ai-search"
   },
   openGraph: {
     title: "Magnevents AI Event & Artist Search — Instant Musician Matching",

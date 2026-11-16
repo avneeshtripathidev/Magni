@@ -12,6 +12,17 @@ function getSupabaseAdmin() {
   return createClient(supabaseUrl, supabaseKey);
 }
 
+export async function GET() {
+  return NextResponse.json({
+    status: 'ok',
+    service: 'Magnevents Contact API'
+  }, { status: 200 });
+}
+
+export async function HEAD() {
+  return new Response(null, { status: 200 });
+}
+
 export async function POST(req) {
   const startTime = Date.now();
 

@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
+import { notFound } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { supabase } from '@database/connection/supabase';
 import Image from 'next/image';
@@ -290,11 +291,8 @@ export default function ArtistProfilePage({ params }) {
   }
 
   if (!artist) {
-    return (
-      <div className="artist-profile-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <h1 style={{ color: 'white' }}>Artist not found</h1>
-      </div>
-    );
+    notFound();
+    return null;
   }
 
   const name = artist.alias || artist.name;

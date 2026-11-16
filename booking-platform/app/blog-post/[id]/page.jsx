@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { supabase } from '@database/connection/supabase'
@@ -94,13 +94,8 @@ export default function BlogDetailPage() {
   }
 
   if (!blog) {
-    return (
-      <div className="blog-error-page">
-        <h1>Article Not Found</h1>
-        <p className="error-sub" style={{ color: '#94a3b8', fontSize: '0.875rem', marginTop: '0.5rem', marginBottom: '1.5rem' }}>The article you are looking for does not exist or has been removed.</p>
-        <Link href="/blog-post" className="back-btn">Back to Blog</Link>
-      </div>
-    );
+    notFound();
+    return null;
   }
 
   const renderContent = (content) => {

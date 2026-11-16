@@ -12,8 +12,8 @@ export async function generateMetadata({ params }) {
 
   if (!parsed.isValidKeyword) {
     return {
-      title: 'Performer Booking | Magnevents',
-      robots: { index: false, follow: true }
+      title: 'Page Not Found | Magnevents',
+      robots: { index: false, follow: false, googleBot: { index: false, follow: false } }
     };
   }
 

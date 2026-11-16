@@ -1,19 +1,40 @@
 export default function robots() {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.magnevents.in').replace(/\/+$/, '');
   
+  const disallowList = [
+    '/api',
+    '/api/',
+    '/api/*',
+    '/admin',
+    '/admin/',
+    '/admin/*',
+    '/dashboard',
+    '/dashboard/',
+    '/dashboard/*',
+    '/private',
+    '/private/',
+    '/private/*',
+    '/preview',
+    '/preview/',
+    '/preview/*',
+    '/thank-you',
+    '/thank-you/',
+    '/thank-you/*',
+    '/f/*',
+    '/_next/static/chunks/*',
+  ];
+
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/api/', 
-          '/admin/', 
-          '/dashboard/',
-          '/private/', 
-          '/preview/',
-          '/thank-you',
-        ],
+        disallow: disallowList,
+      },
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: disallowList,
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

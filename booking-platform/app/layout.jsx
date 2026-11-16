@@ -70,9 +70,6 @@ export const metadata = {
     'singer for house party in gurgaon',
     'local singers near me'
   ],
-  alternates: {
-    canonical: '/',
-  },
   manifest: '/site.webmanifest',
   icons: {
     icon: [

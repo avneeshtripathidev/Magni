@@ -49,33 +49,54 @@ export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const { city_slug, blog_slug } = awaitedParams;
   
-  const decodedCitySlug = decodeURIComponent(city_slug || '').trim();
-  const normalizedCitySlug = decodedCitySlug.toLowerCase().replace(/\s+/g, '-');
-  const decodedBlogSlug = decodeURIComponent(blog_slug || '').trim();
-  const normalizedBlogSlug = decodedBlogSlug.toLowerCase().replace(/\s+/g, '-');
-
-  let { data: blog } = await supabase
-    .from('seo_blogs')
-    .select('*, seo_cities(slug, name)')
-    .or(`slug.eq."${decodedBlogSlug}",slug.eq."${normalizedBlogSlug}"`)
-    .single();
-
-  if (!blog) {
-    return { title: 'Blog Not Found - Magnevents' };
+  let decodedCitySlug = '';
+  let decodedBlogSlug = '';
+  try {
+    decodedCitySlug = decodeURIComponent(city_slug || '').trim();
+    decodedBlogSlug = decodeURIComponent(blog_slug || '').trim();
+  } catch (e) {
+    return {
+      title: 'Blog Not Found | Magnevents',
+      robots: { index: false, follow: false, googleBot: { index: false, follow: false } }
+    };
   }
 
-  const cityName = blog.seo_cities?.name || slugToName(city_slug);
+  const normalizedCitySlug = decodedCitySlug.toLowerCase().replace(/\s+/g, '-');
+  const normalizedBlogSlug = decodedBlogSlug.toLowerCase().replace(/\s+/g, '-');
+
+  let blog = null;
+  try {
+    const { data } = await supabase
+      .from('seo_blogs')
+      .select('*, seo_cities(slug, name)')
+      .or(`slug.eq."${decodedBlogSlug}",slug.eq."${normalizedBlogSlug}"`)
+      .single();
+    blog = data;
+  } catch (err) {
+    console.error('Error fetching blog metadata:', err);
+  }
+
+  if (!blog) {
+    return {
+      title: 'Blog Not Found | Magnevents',
+      robots: { index: false, follow: false, googleBot: { index: false, follow: false } }
+    };
+  }
+
+  const cityName = blog.seo_cities?.name || slugToName(normalizedCitySlug);
+  const canonicalPath = `/city/${normalizedCitySlug}/blog/${blog.slug || normalizedBlogSlug}`;
 
   return {
     title: blog.seo_title || `${blog.title} | Magnevents ${cityName}`,
     description: blog.meta_description || `Guide and tips for ${blog.title}. Hire verified live singers & performers in ${cityName} directly with 0% commission.`,
     alternates: {
-      canonical: `/city/${city_slug}/blog/${blog.slug}`,
+      canonical: canonicalPath,
     },
     openGraph: {
       title: blog.seo_title || blog.title,
       description: blog.meta_description,
       images: blog.featured_image_url ? [{ url: blog.featured_image_url }] : [],
+      url: canonicalPath,
     }
   };
 }
@@ -84,16 +105,29 @@ export default async function CityBlogPage({ params }) {
   const awaitedParams = await params;
   const { city_slug, blog_slug } = awaitedParams;
 
-  const decodedCitySlug = decodeURIComponent(city_slug || '').trim();
+  let decodedCitySlug = '';
+  let decodedBlogSlug = '';
+  try {
+    decodedCitySlug = decodeURIComponent(city_slug || '').trim();
+    decodedBlogSlug = decodeURIComponent(blog_slug || '').trim();
+  } catch (e) {
+    notFound();
+  }
+
   const normalizedCitySlug = decodedCitySlug.toLowerCase().replace(/\s+/g, '-');
-  const decodedBlogSlug = decodeURIComponent(blog_slug || '').trim();
   const normalizedBlogSlug = decodedBlogSlug.toLowerCase().replace(/\s+/g, '-');
 
-  let { data: blog } = await supabase
-    .from('seo_blogs')
-    .select('*, seo_cities(id, slug, name)')
-    .or(`slug.eq."${decodedBlogSlug}",slug.eq."${normalizedBlogSlug}"`)
-    .single();
+  let blog = null;
+  try {
+    const { data } = await supabase
+      .from('seo_blogs')
+      .select('*, seo_cities(id, slug, name)')
+      .or(`slug.eq."${decodedBlogSlug}",slug.eq."${normalizedBlogSlug}"`)
+      .single();
+    blog = data;
+  } catch (err) {
+    console.error('Error in CityBlogPage query:', err);
+  }
 
   if (!blog) {
     notFound();
