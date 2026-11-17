@@ -42,8 +42,8 @@ export async function POST(req) {
         code: 'XMAS15',
         discountPercent: 15,
         minBookingValue: 10000,
-        campaign: 'Shaadi Season & Wedding Pre-Booking Offer',
-        description: 'Extra 15% OFF on Shaadi season & wedding pre-bookings.'
+        campaign: 'Christmas & Wedding Pre-Booking Offer',
+        description: 'Extra 15% OFF on Christmas & Wedding pre-bookings.'
       },
       'DIW100': {
         code: 'DIW100',

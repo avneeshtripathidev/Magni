@@ -12,16 +12,16 @@ function getSupabase() {
 
 const DEFAULT_SETTINGS = {
   isVisible: true,
-  leftText: "🎁 First Booking Welcome Offer! Get 30%–70% OFF",
-  rightText: "Use Code: FIRST15 →",
-  couponCode: "FIRST15",
+  leftText: "🎄 Christmas & Wedding Pre-Booking Offer: Get 30%–70% OFF on Live Artists!",
+  rightText: "Use Code: XMAS15 →",
+  couponCode: "XMAS15",
   discountPercent: 15,
   minBookingValue: 10000,
-  campaignName: "First Booking Welcome Offer",
-  formHeading: "Your First Booking Welcome Offer Is Waiting! 🎁⚡",
-  supportingMessage: "Make Your Celebration Grand & Unforgettable, Spend a Little Less!",
-  offerHighlight: "Enjoy up to 70% total savings on your live artist booking.",
-  ctaText: "CLAIM MY WELCOME DISCOUNT",
+  campaignName: "Christmas & Wedding Pre-Booking Offer",
+  formHeading: "Christmas & Wedding Pre-Booking Offer 🎄💍",
+  supportingMessage: "Lock Your 2026–2027 Wedding or Festive Date at Best Price!",
+  offerHighlight: "Enjoy 30% to 70% total savings on your live artist booking.",
+  ctaText: "UNLOCK MY OFFER & LOCK DATE",
   startDate: "2026-11-01",
   expiryDate: "2027-12-31"
 };
@@ -49,6 +49,17 @@ export async function GET() {
         parsedConfig = JSON.parse(data.text_desktop);
       }
     } catch (e) {}
+
+    // Sanitize any legacy DIW100 or outdated strings from old database records
+    if (parsedConfig.couponCode === 'DIW100' || !parsedConfig.couponCode) {
+      parsedConfig.couponCode = 'XMAS15';
+    }
+    if (parsedConfig.rightText && parsedConfig.rightText.includes('DIW100')) {
+      parsedConfig.rightText = 'Use Code: XMAS15 →';
+    }
+    if (parsedConfig.leftText && (parsedConfig.leftText.includes('Diwali') || parsedConfig.leftText.includes('First Booking'))) {
+      parsedConfig.leftText = '🎄 Christmas & Wedding Pre-Booking Offer: Get 30%–70% OFF on Live Artists!';
+    }
 
     return NextResponse.json({
       ...DEFAULT_SETTINGS,

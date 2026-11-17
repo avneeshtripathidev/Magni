@@ -7,25 +7,27 @@ import '@/app/styles/components/TopOfferAnnouncementStrip.css';
 export default function TopOfferAnnouncementStrip() {
   const [isVisible, setIsVisible] = useState(true);
   const [config, setConfig] = useState({
-    leftText: "🎁 A Diwali Gift for You! Get 10% EXTRA OFF",
-    rightText: "Use Code: DIW100 →",
-    couponCode: "DIW100",
-    discountPercent: 10,
+    leftText: "🎄 Christmas & Wedding Pre-Booking Offer: Get 30%–70% OFF on Live Artists!",
+    rightText: "Use Code: XMAS15 →",
+    couponCode: "XMAS15",
+    discountPercent: 15,
     minBookingValue: 10000
   });
 
   const hasFiredViewRef = useRef(false);
 
-  // 1. Fetch live admin configuration
+  // 1. Fetch live admin configuration with sanitize fallback
   useEffect(() => {
     fetch('/api/settings/diwali-offer', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         if (data) {
           if (typeof data.isVisible === 'boolean') setIsVisible(data.isVisible);
+          const couponCode = (data.couponCode && data.couponCode !== 'DIW100') ? data.couponCode : 'XMAS15';
           setConfig(prev => ({
             ...prev,
-            ...data
+            ...data,
+            couponCode
           }));
         }
       })
@@ -133,7 +135,9 @@ export default function TopOfferAnnouncementStrip() {
     }
   }, [isVisible, config.couponCode, config.discountPercent]);
 
-  // Click handler: opens dedicated DiwaliOfferBookingForm
+  const effectiveCoupon = (config.couponCode && config.couponCode !== 'DIW100') ? config.couponCode : 'XMAS15';
+
+  // Click handler: opens dedicated DiwaliOfferBookingForm / offer modal
   const handleClick = () => {
     try {
       const attribution = getGoogleAdsAttribution();
@@ -142,12 +146,12 @@ export default function TopOfferAnnouncementStrip() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           eventName: 'offer_strip_click',
-          campaignId: 'diwali-special',
-          campaignName: 'Diwali Special Gift (DIW100)',
+          campaignId: 'christmas-wedding-prebooking',
+          campaignName: 'Christmas & Wedding Pre-Booking Offer (XMAS15)',
           sessionId: attribution.session_id,
           metadata: {
-            couponCode: config.couponCode,
-            discountPercent: config.discountPercent
+            couponCode: effectiveCoupon,
+            discountPercent: config.discountPercent || 15
           },
           attribution
         }),
@@ -156,8 +160,8 @@ export default function TopOfferAnnouncementStrip() {
 
       if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
         window.gtag('event', 'offer_strip_click', {
-          event_category: 'diwali_campaign',
-          event_label: config.couponCode
+          event_category: 'festive_campaign',
+          event_label: effectiveCoupon
         });
       }
     } catch (e) {}
@@ -166,8 +170,8 @@ export default function TopOfferAnnouncementStrip() {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('open-diwali-offer', {
         detail: {
-          couponCode: config.couponCode || 'DIW100',
-          discountPercent: config.discountPercent || 10,
+          couponCode: effectiveCoupon,
+          discountPercent: config.discountPercent || 15,
           minBookingValue: config.minBookingValue || 10000
         }
       }));
@@ -181,24 +185,24 @@ export default function TopOfferAnnouncementStrip() {
       className="top-offer-strip-root"
       onClick={handleClick}
       role="banner"
-      aria-label="Diwali Special Offer Announcement"
+      aria-label="Christmas & Wedding Pre-Booking Offer Announcement"
     >
       <div className="top-offer-strip-inner">
         {/* Left Side: Festive Icon & Offer Highlight */}
         <div className="top-offer-left">
-          <span className="gift-icon">🎁</span>
+          <span className="gift-icon">🎄</span>
           <span className="top-offer-desktop-msg">
-            First Booking Welcome Offer: <span className="highlight-gold">Get 30%–70% OFF</span> on Live Artists!
+            Christmas & Wedding Pre-Booking Offer: <span className="highlight-gold">Get 30%–70% OFF</span> on Live Artists!
           </span>
           <span className="top-offer-mobile-msg">
-            Welcome Offer: <span className="highlight-gold">30%–70% OFF</span>
+            Christmas & Wedding Offer: <span className="highlight-gold">30%–70% OFF</span>
           </span>
         </div>
 
         {/* Right Side: High-Visibility Coupon Ticket & CTA */}
         <div className="top-offer-right">
           <span className="top-offer-label">Use Code:</span>
-          <span className="top-offer-coupon-tag">{config.couponCode || 'FIRST15'}</span>
+          <span className="top-offer-coupon-tag">{effectiveCoupon}</span>
           <span className="top-offer-arrow">→</span>
         </div>
       </div>
