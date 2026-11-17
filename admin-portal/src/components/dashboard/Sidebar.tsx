@@ -54,7 +54,7 @@ export const navSections = [
   {
     title: 'Content Management',
     items: [
-      { name: 'Diwali Offer', href: '/dashboard/diwali-offer', icon: Sparkles },
+      { name: 'Campaign Offer', href: '/dashboard/diwali-offer', icon: Sparkles },
       { name: 'Custom Forms', href: '/dashboard/forms', icon: ClipboardList },
       {
         name: 'Edit',
@@ -66,8 +66,8 @@ export const navSections = [
           { name: 'Slider (Hero)', href: '/dashboard/slider' },
           { name: 'Blogs', href: '/dashboard/blogs' },
           { name: 'Service Videos', href: '/dashboard/service-videos' },
-          { name: 'Ad', href: '/dashboard/top-ad' },
-          { name: 'Diwali Offer', href: '/dashboard/diwali-offer' },
+          { name: 'Services Hero', href: '/dashboard/services-settings' },
+          { name: 'Announcement Ad', href: '/dashboard/top-ad' },
         ]
       },
       { name: 'Browse', href: '/dashboard/browse', icon: Eye },
@@ -117,10 +117,11 @@ export function Sidebar({ onClose, userRole = 'admin' }: { onClose?: () => void;
               pathname.startsWith('/dashboard/slider') ||
               pathname.startsWith('/dashboard/blogs') ||
               pathname.startsWith('/dashboard/service-videos') ||
+              pathname.startsWith('/dashboard/services-settings') ||
               pathname.startsWith('/dashboard/top-ad'),
       'Requests': pathname.startsWith('/dashboard/requests') ||
-                  pathname.startsWith('/dashboard/team-requests') ||
-                  pathname.startsWith('/dashboard/artist-requests'),
+              pathname.startsWith('/dashboard/team-requests') ||
+              pathname.startsWith('/dashboard/artist-requests'),
       'Developer Options': pathname.startsWith('/dashboard/api') ||
                            pathname.startsWith('/dashboard/health')
     }));

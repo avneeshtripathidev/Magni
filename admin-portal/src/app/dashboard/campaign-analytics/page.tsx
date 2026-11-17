@@ -190,6 +190,7 @@ export default function CampaignAnalyticsPage() {
     fetchData();
 
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       fetchData(false, true);
     }, 10000);
 

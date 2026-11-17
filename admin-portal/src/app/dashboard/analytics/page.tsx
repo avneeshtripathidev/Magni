@@ -256,10 +256,11 @@ export default function AnalyticsPage() {
     fetchRecords();
   }, []);
 
-  // Auto refresh interval (15s)
+  // Auto refresh interval (15s) with background CPU throttling
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       fetchRecords(false);
     }, 15000);
     return () => clearInterval(interval);

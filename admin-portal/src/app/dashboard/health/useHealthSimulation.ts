@@ -82,6 +82,9 @@ export function useHealthSimulation(refreshIntervalMs: number) {
     let isMounted = true;
 
     const tick = async () => {
+      // Pause polling and chart computation when tab is hidden to save CPU
+      if (typeof document !== 'undefined' && document.hidden) return;
+
       let currentDbLatency = prevDbLatency.current;
       let currentStorageLatency = prevStorageLatency.current;
       let realDbStatus = 'healthy';

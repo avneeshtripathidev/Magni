@@ -171,12 +171,54 @@ export default function DashboardOverview() {
 
       const shouldFilter = !canViewAll && currentUserId;
 
+      // Parallelize queries to eliminate sequential roundtrips
       let countQuery = supabase.from('artists').select('*', { count: 'exact', head: true });
       if (shouldFilter) countQuery = countQuery.eq('created_by', currentUserId);
-      const { count: artistCount } = await countQuery;
-      
-      const { count: bookingCount } = await supabase.from('bookings').select('*', { count: 'exact', head: true });
-      const { count: adminCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'admin');
+
+      let recentQuery = supabase
+        .from('artists')
+        .select('*, artist_images!fk_artist_id(image_url)')
+        .order('created_at', { ascending: true })
+        .limit(20);
+      if (shouldFilter) recentQuery = recentQuery.eq('created_by', currentUserId);
+
+      let aomQuery = supabase
+        .from('artists')
+        .select('*, artist_images!fk_artist_id(image_url)')
+        .eq('is_artist_of_month', true)
+        .order('created_at', { ascending: true })
+        .limit(5);
+      if (shouldFilter) aomQuery = aomQuery.eq('created_by', currentUserId);
+
+      let popularQuery = supabase
+        .from('artists')
+        .select('*, artist_images!fk_artist_id(image_url)')
+        .eq('is_trending', true)
+        .order('created_at', { ascending: true })
+        .limit(5);
+      if (shouldFilter) popularQuery = popularQuery.eq('created_by', currentUserId);
+
+      const [
+        { count: artistCount },
+        { count: bookingCount },
+        { count: adminCount },
+        { data: recent },
+        { data: aomData },
+        { data: popularData },
+        { data: bookings },
+        analyticsResult
+      ] = await Promise.all([
+        countQuery,
+        supabase.from('bookings').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'admin'),
+        recentQuery,
+        aomQuery,
+        popularQuery,
+        supabase.from('bookings').select('*, artists(name, category)').order('created_at', { ascending: false }).limit(5),
+        supabase.from('analytics').select('created_at, ip_address, city').order('created_at', { ascending: false }).limit(300).catch(() => ({ data: [] }))
+      ]);
+
+      const analyticsRows = (analyticsResult as any)?.data || [];
 
       const newStats: any[] = [
         { label: 'Total Artists', value: artistCount?.toString() || '0', icon: Mic2, color: 'sky', trend: 'Verified' },
@@ -188,33 +230,6 @@ export default function DashboardOverview() {
       }
 
       setStats(newStats);
-
-      // Fetch Recent Artists - Sorted by "First Come" (ASC)
-      let recentQuery = supabase
-        .from('artists')
-        .select('*, artist_images!fk_artist_id(image_url)')
-        .order('created_at', { ascending: true }) // Oldest first as requested
-        .limit(20);
-      if (shouldFilter) recentQuery = recentQuery.eq('created_by', currentUserId);
-      const { data: recent } = await recentQuery;
-
-      let aomQuery = supabase
-        .from('artists')
-        .select('*, artist_images!fk_artist_id(image_url)')
-        .eq('is_artist_of_month', true)
-        .order('created_at', { ascending: true })
-        .limit(5);
-      if (shouldFilter) aomQuery = aomQuery.eq('created_by', currentUserId);
-      const { data: aomData } = await aomQuery;
-
-      let popularQuery = supabase
-        .from('artists')
-        .select('*, artist_images!fk_artist_id(image_url)')
-        .eq('is_trending', true)
-        .order('created_at', { ascending: true })
-        .limit(5);
-      if (shouldFilter) popularQuery = popularQuery.eq('created_by', currentUserId);
-      const { data: popularData } = await popularQuery;
 
       // Build the dynamic pool strictly from DB results
       const dbAll: any[] = [...(aomData || []), ...(popularData || []), ...(recent || [])];
@@ -238,23 +253,11 @@ export default function DashboardOverview() {
       setSpotlightArtists(spotlightItems.slice(0, 1));
       setRecentArtists(top20);
 
-      const { data: bookings } = await supabase
-        .from('bookings')
-        .select('*, artists(name, category)')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
       const recentBookingsList = bookings || [];
       setRecentBookings(recentBookingsList);
 
-      // Fetch Recent Analytics for Day-wise visitor intelligence
+      // Day-wise visitor intelligence from parallel query
       try {
-        const { data: analyticsRows } = await supabase
-          .from('analytics')
-          .select('created_at, details, ip_address, city')
-          .order('created_at', { ascending: false })
-          .limit(1000);
-
         if (analyticsRows && analyticsRows.length > 0) {
           const dayMap: Record<string, { hits: number; uniqueIps: Set<string>; cities: Record<string, number> }> = {};
           const todayKey = new Date().toISOString().split('T')[0];
@@ -265,9 +268,9 @@ export default function DashboardOverview() {
               dayMap[dKey] = { hits: 0, uniqueIps: new Set(), cities: {} };
             }
             dayMap[dKey].hits++;
-            const ip = r.ip_address || r.details?.ip || r.ip_hash || 'unknown';
+            const ip = r.ip_address || 'unknown';
             dayMap[dKey].uniqueIps.add(ip);
-            const city = r.city || r.details?.locality?.city;
+            const city = r.city;
             if (city && city !== 'Unknown City' && city !== 'Local Development') {
               dayMap[dKey].cities[city] = (dayMap[dKey].cities[city] || 0) + 1;
             }

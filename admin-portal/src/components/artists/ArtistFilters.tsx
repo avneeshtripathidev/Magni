@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { State, City } from 'country-state-city';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -45,7 +45,7 @@ export const INITIAL_FILTER_STATE: ArtistFilterState = {
 interface ArtistFiltersProps {
   onFilterChange: (filters: ArtistFilterState) => void;
 }
-export function ArtistFilters({ onFilterChange }: ArtistFiltersProps) {
+export const ArtistFilters = memo(function ArtistFilters({ onFilterChange }: ArtistFiltersProps) {
   const [expanded, setExpanded] = useState(false);
   const [filters, setFilters] = useState<ArtistFilterState>(INITIAL_FILTER_STATE);
 
@@ -468,4 +468,4 @@ export function ArtistFilters({ onFilterChange }: ArtistFiltersProps) {
       )}
     </div>
   );
-}
+});
