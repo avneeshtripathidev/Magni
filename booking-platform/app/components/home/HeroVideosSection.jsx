@@ -49,11 +49,11 @@ export default function HeroVideosSection() {
   }, []);
 
   useEffect(() => {
-    if (videos.length === 0 || isHovered) return;
+    if (typeof window === 'undefined' || window.innerWidth >= 640 || videos.length === 0 || isHovered) return;
 
     let intervalId;
     const checkAndScroll = () => {
-      if (typeof window !== 'undefined' && window.innerWidth < 640 && scrollRef.current) {
+      if (scrollRef.current) {
         const container = scrollRef.current;
         const maxScroll = container.scrollWidth - container.clientWidth;
         
@@ -67,7 +67,7 @@ export default function HeroVideosSection() {
 
     intervalId = setInterval(checkAndScroll, 3500);
     return () => clearInterval(intervalId);
-  }, [videos, isHovered]);
+  }, [videos.length, isHovered]);
 
   return (
     <section className="hero-videos-section" aria-label="Trending Videos">

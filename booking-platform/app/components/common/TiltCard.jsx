@@ -1,37 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react'
+import React, { useRef, memo } from 'react'
 
-export default function TiltCard({ children, className = '', ...props }) {
+function TiltCard({ children, className = '', ...props }) {
   const ref = useRef(null)
   const rafRef = useRef(null)
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768)
-    const handleResize = () => setIsMobile(window.innerWidth < 768)
-    window.addEventListener('resize', handleResize, { passive: true })
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    }
-  }, [])
-
-  if (isMobile) {
-    return (
-      <article className={className} {...props}>
-        {children}
-      </article>
-    )
-  }
-
-  const canAnimateTilt =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
-    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   function handleMouseMove(e) {
-    if (!canAnimateTilt) return
+    // Only animate on devices with fine pointer (mouse/trackpad), not touch/mobile
+    if (typeof window === 'undefined') return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const el = ref.current
     if (!el) return
     const { left, top, width, height } = el.getBoundingClientRect()
@@ -50,8 +30,16 @@ export default function TiltCard({ children, className = '', ...props }) {
   }
 
   return (
-    <article ref={ref} className={className} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} {...props}>
+    <article
+      ref={ref}
+      className={className}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
       {children}
     </article>
   )
 }
+
+export default memo(TiltCard);

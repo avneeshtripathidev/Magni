@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, forwardRef } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, forwardRef, memo } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import TiltCard from '@/app/components/common/TiltCard'
@@ -9,49 +8,29 @@ import Stars from '@/app/components/common/Stars'
 import ImageWithLoader from '@/app/components/common/ImageWithLoader'
 import '@/app/styles/pages/Artists.css'
 
-const ArtistCard = forwardRef(({ artist, onBook }, ref) => {
-  const router = useRouter()
+function parseJsonArray(val, fallbackStr) {
+  if (Array.isArray(val)) return val.filter(Boolean);
+  try {
+    if (typeof val === 'string') {
+      const parsed = JSON.parse(val);
+      if (Array.isArray(parsed)) return parsed.filter(Boolean);
+    }
+  } catch (e) {
+    // ignore
+  }
+  if (typeof fallbackStr === 'string' && fallbackStr.trim() !== '') {
+    return fallbackStr.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+const ArtistCard = forwardRef(({ artist }, ref) => {
   const [imageError, setImageError] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const [bookings, setBookings] = useState(0)
 
-  useEffect(() => {
-    setMounted(true)
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768)
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    
-    if (artist.successful_bookings && artist.successful_bookings > 0) {
-      setBookings(artist.successful_bookings)
-    } else {
-      setBookings(0)
-    }
-    
-    return () => window.removeEventListener('resize', handleResize)
-  }, [artist.successful_bookings])
-
-  const parseJsonArray = (val, fallbackStr) => {
-    if (Array.isArray(val)) return val.filter(Boolean);
-    try {
-      if (typeof val === 'string') {
-        const parsed = JSON.parse(val);
-        if (Array.isArray(parsed)) return parsed.filter(Boolean);
-      }
-    } catch (e) {
-      // ignore
-    }
-    if (typeof fallbackStr === 'string' && fallbackStr.trim() !== '') {
-      return fallbackStr.split(',').map(s => s.trim()).filter(Boolean);
-    }
-    return [];
-  };
-
-  let subCats = parseJsonArray(artist.subCategory, artist.subCategory);
-  let langs = parseJsonArray(artist.languages, artist.languages);
-  let mainCat = artist.category ? artist.category.split(',').map(s => s.trim()) : [];
+  const bookings = Number(artist.successful_bookings) || 0;
+  const subCats = parseJsonArray(artist.subCategory, artist.subCategory);
+  const langs = parseJsonArray(artist.languages, artist.languages);
+  const mainCat = artist.category ? artist.category.split(',').map(s => s.trim()) : [];
   
   let allTags = [...new Set([...mainCat, ...subCats, ...langs])].filter(Boolean);
   if (allTags.length === 0) allTags = ['Performer'];
@@ -63,6 +42,8 @@ const ArtistCard = forwardRef(({ artist, onBook }, ref) => {
     ? 'https://pub-1802bb19214743ffa99aa227f25e7ede.r2.dev/assets/lux-singer-session.webp'
     : artist.img
 
+  const artistSlug = encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
+
   return (
     <motion.div
       ref={ref}
@@ -73,52 +54,52 @@ const ArtistCard = forwardRef(({ artist, onBook }, ref) => {
       transition={{ duration: 0.3 }}
       style={{ display: 'flex', width: '100%', height: '100%' }}
     >
-      <Link href={`/artist/${encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''))}`} target={isMobile ? '_self' : '_blank'} style={{ textDecoration: 'none', display: 'flex', width: '100%', height: '100%' }}>
-        <TiltCard 
-          className="modern-artist-card"
-        >
-        <div className="modern-img-wrap relative">
-          <ImageWithLoader
-            src={typeof imgSrc === "object" ? imgSrc?.src : imgSrc}
-            alt={artist.name} style={{ objectFit: "cover", width: "100%", height: "100%", position: "absolute", inset: 0 }} onError={() => setImageError(true)}
-          />
-          <div className="modern-overlay-gradient"></div>
-        </div>
-        <div className="modern-info-overlay">
-          <h3 className="modern-artist-name">{artist.name}</h3>
-
-          <div className="modern-badges-container">
-            {allTags.slice(0, 3).map((tag, idx) => (
-              <span key={`tag-${idx}`} className="modern-tag-pill">{tag}</span>
-            ))}
-            {allTags.length > 3 && <span className="modern-tag-pill">+{allTags.length - 3}</span>}
+      <Link href={`/artist/${artistSlug}`} style={{ textDecoration: 'none', display: 'flex', width: '100%', height: '100%' }}>
+        <TiltCard className="modern-artist-card">
+          <div className="modern-img-wrap relative">
+            <ImageWithLoader
+              src={typeof imgSrc === "object" ? imgSrc?.src : imgSrc}
+              alt={artist.name}
+              style={{ objectFit: "cover", width: "100%", height: "100%", position: "absolute", inset: 0 }}
+              onError={() => setImageError(true)}
+            />
+            <div className="modern-overlay-gradient"></div>
           </div>
-          
-          <div className="modern-location-row">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="modern-location-icon">
-              <path fillRule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clipRule="evenodd" />
-            </svg>
-            <span className="modern-location-text">{location}</span>
-          </div>
+          <div className="modern-info-overlay">
+            <h3 className="modern-artist-name">{artist.name}</h3>
 
-          <div className="modern-footer-row">
-            <div className="modern-rating-box">
-              <Stars count={Math.round(Number(rating))} />
-              <span className="modern-rating-val">{rating}</span>
+            <div className="modern-badges-container">
+              {allTags.slice(0, 3).map((tag, idx) => (
+                <span key={`tag-${idx}`} className="modern-tag-pill">{tag}</span>
+              ))}
+              {allTags.length > 3 && <span className="modern-tag-pill">+{allTags.length - 3}</span>}
             </div>
-            {mounted && bookings > 0 && (
-              <div className="modern-booking-badge">
-                <div className="modern-booking-icon-wrap">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span>{bookings} Successful Bookings</span>
+            
+            <div className="modern-location-row">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="modern-location-icon">
+                <path fillRule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clipRule="evenodd" />
+              </svg>
+              <span className="modern-location-text">{location}</span>
+            </div>
+
+            <div className="modern-footer-row">
+              <div className="modern-rating-box">
+                <Stars count={Math.round(Number(rating))} />
+                <span className="modern-rating-val">{rating}</span>
               </div>
-            )}
+              {bookings > 0 && (
+                <div className="modern-booking-badge">
+                  <div className="modern-booking-icon-wrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span>{bookings} Successful Bookings</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </TiltCard>
+        </TiltCard>
       </Link>
     </motion.div>
   )
@@ -126,4 +107,4 @@ const ArtistCard = forwardRef(({ artist, onBook }, ref) => {
 
 ArtistCard.displayName = 'ArtistCard';
 
-export default ArtistCard;
+export default memo(ArtistCard);

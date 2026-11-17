@@ -44,7 +44,7 @@ export default function TopOfferAnnouncementStrip() {
     };
     updateHeight();
     if (typeof window !== 'undefined') {
-      window.addEventListener('resize', updateHeight);
+      window.addEventListener('resize', updateHeight, { passive: true });
     }
     return () => {
       if (typeof window !== 'undefined') {

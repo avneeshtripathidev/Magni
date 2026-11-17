@@ -284,7 +284,7 @@ export default function VideoGridSection() {
     if (!el) return;
     checkScroll();
     el.addEventListener('scroll', checkScroll, { passive: true });
-    window.addEventListener('resize', checkScroll);
+    window.addEventListener('resize', checkScroll, { passive: true });
     return () => {
       el.removeEventListener('scroll', checkScroll);
       window.removeEventListener('resize', checkScroll);

@@ -150,74 +150,33 @@ export default function GoogleAdsOfferInstantForm() {
       window.location.hostname === '127.0.0.1'
     );
 
-    // If explicit query param / hash: open immediately (200ms)
-    if (isExplicit) {
-      const explicitTimer = setTimeout(() => {
-        setIsOpen(true);
-      }, 200);
-
-      const onHashChange = () => {
-        if (checkHashAndParams()) setIsOpen(true);
-      };
-      window.addEventListener('hashchange', onHashChange);
-      window.addEventListener('popstate', onHashChange);
-
-      return () => {
-        clearTimeout(explicitTimer);
-        window.removeEventListener('open-google-ads-offer', handleExplicitOpen);
-        window.removeEventListener('open-instant-form', handleExplicitOpen);
-        window.removeEventListener('open-instant-booking', handleExplicitOpen);
-        window.removeEventListener('open-offer-form', handleExplicitOpen);
-        window.removeEventListener('open-lock-booking', handleExplicitOpen);
-        window.removeEventListener('open-date-lock', handleExplicitOpen);
-        window.removeEventListener('hashchange', onHashChange);
-        window.removeEventListener('popstate', onHashChange);
-      };
-    }
-
-    // Delay: exactly 6 seconds on home page ('/'), and 4 seconds on other pages
-    const isHomePage = pathname === '/' || pathname === '' || pathname === '/index';
-    const autoOpenDelay = isHomePage ? 6000 : 4000;
-
-    // Auto-open logic:
-    // - Auto-open after 6s on homepage or 4s on other pages for all visitors (with or without Google Ads)
-    // - In local dev, auto-open so developers & testers can reliably verify
-    // - In production, auto-open on first arrival unless dismissed or submitted in the current session
-    const isDismissed = hasDismissedGoogleAdsOffer();
-    const isSubmitted = hasSubmittedGoogleAdsOffer();
-    const canAutoOpen = isLocalDev || (!isDismissed && !isSubmitted);
-
-    if (canAutoOpen) {
-      const autoTimer = setTimeout(() => {
-        setIsOpen(true);
-      }, autoOpenDelay);
-
-      const onHashChange = () => {
-        if (checkHashAndParams()) setIsOpen(true);
-      };
-      window.addEventListener('hashchange', onHashChange);
-      window.addEventListener('popstate', onHashChange);
-
-      return () => {
-        clearTimeout(autoTimer);
-        window.removeEventListener('open-google-ads-offer', handleExplicitOpen);
-        window.removeEventListener('open-instant-form', handleExplicitOpen);
-        window.removeEventListener('open-instant-booking', handleExplicitOpen);
-        window.removeEventListener('open-offer-form', handleExplicitOpen);
-        window.removeEventListener('open-lock-booking', handleExplicitOpen);
-        window.removeEventListener('open-date-lock', handleExplicitOpen);
-        window.removeEventListener('hashchange', onHashChange);
-        window.removeEventListener('popstate', onHashChange);
-      };
-    }
-
     const onHashChange = () => {
       if (checkHashAndParams()) setIsOpen(true);
     };
     window.addEventListener('hashchange', onHashChange);
     window.addEventListener('popstate', onHashChange);
 
+    let timerId = null;
+    if (isExplicit) {
+      timerId = setTimeout(() => {
+        setIsOpen(true);
+      }, 200);
+    } else {
+      const isHomePage = pathname === '/' || pathname === '' || pathname === '/index';
+      const autoOpenDelay = isHomePage ? 6000 : 4000;
+      const isDismissed = hasDismissedGoogleAdsOffer();
+      const isSubmitted = hasSubmittedGoogleAdsOffer();
+      const canAutoOpen = isLocalDev || (!isDismissed && !isSubmitted);
+
+      if (canAutoOpen) {
+        timerId = setTimeout(() => {
+          setIsOpen(true);
+        }, autoOpenDelay);
+      }
+    }
+
     return () => {
+      if (timerId) clearTimeout(timerId);
       window.removeEventListener('open-google-ads-offer', handleExplicitOpen);
       window.removeEventListener('open-instant-form', handleExplicitOpen);
       window.removeEventListener('open-instant-booking', handleExplicitOpen);

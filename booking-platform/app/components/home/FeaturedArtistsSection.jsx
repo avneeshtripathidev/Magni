@@ -126,7 +126,7 @@ function FeaturedArtistsSection() {
 
           const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
     checkDesktop();
-    window.addEventListener("resize", checkDesktop);
+    window.addEventListener("resize", checkDesktop, { passive: true });
 
     if (
       window.innerWidth < 768 ||

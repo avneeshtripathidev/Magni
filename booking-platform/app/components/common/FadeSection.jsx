@@ -1,5 +1,3 @@
-"use client";
-
 export default function FadeSection({ children, className = '', ...props }) {
   return (
     <section

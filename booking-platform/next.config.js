@@ -178,6 +178,31 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/about',
+        destination: '/blog-post',
+        permanent: true,
+      },
+      {
+        source: '/city',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/city/:city_slug/blog',
+        destination: '/city/:city_slug',
+        permanent: true,
+      },
+      {
+        source: '/dashboard',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/:path*',
+        destination: '/',
+        permanent: true,
+      },
     ]
   }
 }

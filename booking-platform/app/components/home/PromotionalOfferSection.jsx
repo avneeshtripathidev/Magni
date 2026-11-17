@@ -39,6 +39,7 @@ export default function PromotionalOfferSection({
     };
 
     const updateTimer = () => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       const now = new Date().getTime();
       const diff = getNextMidnight() - now;
       if (diff > 0) {

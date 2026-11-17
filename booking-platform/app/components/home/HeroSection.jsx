@@ -175,6 +175,7 @@ export default function HeroSection() {
       return undefined
     }
     const id = window.setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       setHeroSlide(prev => (prev + 1) % HERO_SPOTLIGHT_SLIDES.length)
     }, 8000)
     return () => window.clearInterval(id)
