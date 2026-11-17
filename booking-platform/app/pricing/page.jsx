@@ -1,8 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { AppShellWrapper } from '@/app/layouts/AppShellWrapper'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import PricingCard from '@/app/components/pricing/PricingCard'
 import FaqSection from '@/app/components/home/FaqSection'
 import SectionDivider from '@/app/components/common/SectionDivider'
@@ -13,6 +11,8 @@ import '@/app/styles/pages/PricingPage.css'
 export default function PricingPage() {
   const [plans, setPlans] = useState(PRICING_PLANS);
   const [loading, setLoading] = useState(true);
+  const [activePlanIndex, setActivePlanIndex] = useState(0);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     async function fetchPlans() {
@@ -25,8 +25,8 @@ export default function PricingPage() {
 
         if (error) {
           console.error('Error fetching plans:', error);
-        } else {
-          const formattedPlans = (data || []).map(p => ({
+        } else if (data && data.length > 0) {
+          const formattedPlans = data.map(p => ({
             name: p.name,
             tagline: p.copy,
             price: `₹${p.price}`,
@@ -46,31 +46,86 @@ export default function PricingPage() {
     fetchPlans();
   }, []);
 
+  const scrollToCard = useCallback((index) => {
+    setActivePlanIndex(index);
+    if (!scrollRef.current) return;
+    const cards = scrollRef.current.querySelectorAll('.pricing-card');
+    if (cards[index]) {
+      cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const container = scrollRef.current;
+    const cards = container.querySelectorAll('.pricing-card');
+    if (!cards || cards.length === 0) return;
+    
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    cards.forEach((card, idx) => {
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const distance = Math.abs(containerCenter - cardCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = idx;
+      }
+    });
+
+    setActivePlanIndex(closestIndex);
+  }, []);
+
   return (
     <main className="pricing-pg">
       <div className="pricing-shell">
         <h1 className="sr-only">Live Artist Pricing & Packages</h1>
 
-        <div className="pricing-grid">
+        {/* Mobile Quick Selector Tabs */}
+        {!loading && plans.length > 1 && (
+          <div className="pricing-mobile-tabs" role="tablist" aria-label="Pricing Packages">
+            {plans.map((p, idx) => (
+              <button
+                key={`tab-${p.name}`}
+                type="button"
+                role="tab"
+                aria-selected={activePlanIndex === idx}
+                className={`pricing-mobile-tab ${activePlanIndex === idx ? 'is-active' : ''} ${p.popular ? 'is-popular-tab' : ''}`}
+                onClick={() => scrollToCard(idx)}
+              >
+                <span>{p.name}</span>
+                {p.popular && <span className="tab-popular-star">★</span>}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Pricing Cards Track */}
+        <div 
+          className="pricing-grid" 
+          ref={scrollRef} 
+          onScroll={handleScroll}
+        >
           {loading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <div 
                 key={`skeleton-${i}`} 
                 className="pricing-card" 
-                style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,0.05)', padding: '40px 30px', display: 'flex', flexDirection: 'column', height: '100%' }}
+                style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,0.05)', padding: '28px 20px', display: 'flex', flexDirection: 'column', height: '100%' }}
               >
-                <div className="skeleton-pulse" style={{ height: '28px', width: '60%', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', marginBottom: '8px' }}></div>
-                <div className="skeleton-pulse" style={{ height: '14px', width: '80%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', marginBottom: '40px' }}></div>
+                <div className="skeleton-pulse" style={{ height: '24px', width: '60%', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', marginBottom: '8px' }}></div>
+                <div className="skeleton-pulse" style={{ height: '12px', width: '80%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', marginBottom: '24px' }}></div>
                 
-                <div className="skeleton-pulse" style={{ height: '120px', width: '100%', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', marginBottom: '30px' }}></div>
+                <div className="skeleton-pulse" style={{ height: '80px', width: '100%', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', marginBottom: '20px' }}></div>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '40px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
                   {Array.from({ length: 5 }).map((_, j) => (
-                    <div key={`li-${j}`} className="skeleton-pulse" style={{ height: '16px', width: `${60 + (j * 7) % 30}%`, background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}></div>
+                    <div key={`li-${j}`} className="skeleton-pulse" style={{ height: '14px', width: `${60 + (j * 7) % 30}%`, background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}></div>
                   ))}
                 </div>
                 
-                <div className="skeleton-pulse" style={{ height: '52px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', marginTop: 'auto' }}></div>
+                <div className="skeleton-pulse" style={{ height: '46px', width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', marginTop: 'auto' }}></div>
               </div>
             ))
           ) : (
@@ -83,6 +138,24 @@ export default function PricingPage() {
             ))
           )}
         </div>
+
+        {/* Mobile Swipe Cue & Indicator Dots */}
+        {!loading && plans.length > 1 && (
+          <div className="pricing-mobile-indicator">
+            <span className="pricing-swipe-hint">← Swipe to compare packages →</span>
+            <div className="pricing-dots">
+              {plans.map((p, idx) => (
+                <button
+                  key={`dot-${p.name}`}
+                  type="button"
+                  aria-label={`Go to ${p.name}`}
+                  className={`pricing-dot ${activePlanIndex === idx ? 'is-active' : ''}`}
+                  onClick={() => scrollToCard(idx)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         <SectionDivider style={{ margin: '48px auto' }} />
 
