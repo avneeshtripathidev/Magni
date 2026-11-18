@@ -1,24 +1,42 @@
 
 /* ==========================================================================
-   City Landing Page — Clean, Restrained, Mobile-First Editorial Design
+   City Landing Page — Modern Editorial Luxury UI (Brand-Aligned & Mobile-First)
    ========================================================================== */
 
 .city-landing-page {
+  --city-bg: #211B1D;
+  --city-surface: #282326;
+  --city-surface-raised: #2F292D;
+  --city-input-bg: #1B1719;
+  --city-border: rgba(216, 196, 183, 0.14);
+  --city-border-strong: rgba(216, 196, 183, 0.28);
+  --city-ink: #F5F0E9;
+  --city-ink-secondary: rgba(245, 240, 233, 0.72);
+  --city-ink-muted: rgba(245, 240, 233, 0.48);
+  --city-gold: #E8B943;
+  --city-gold-hover: #F2C95D;
+  --city-gold-ink: #1C1719;
+  --city-coral: #E45F60;
+  --city-shadow-card: 0 18px 42px -12px rgba(0, 0, 0, 0.36);
+
   min-height: 100vh;
-  background: #0b0c10;
-  color: #f4f4f5;
+  background-color: var(--city-bg);
+  color: var(--city-ink);
+  font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
   padding-top: 0;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ── 1. Hero Section ── */
 .city-hero {
-  background: #0f1117;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 28px 16px 36px;
+  background: linear-gradient(180deg, #292226 0%, #241E21 55%, #211B1D 100%);
+  border-bottom: 1px solid var(--city-border);
+  padding: 28px 18px 36px;
 }
 
 .city-hero-inner {
-  max-width: 1200px;
+  max-width: 1220px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
@@ -29,68 +47,80 @@
 .city-hero-left {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
 }
 
+/* Breadcrumb */
 .city-breadcrumb {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  color: #71717a;
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  color: var(--city-ink-muted);
   flex-wrap: wrap;
 }
 
 .city-breadcrumb a {
-  color: #a1a1aa;
+  color: var(--city-ink-secondary);
   text-decoration: none;
+  transition: color 0.18s ease;
 }
 
 .city-breadcrumb a:hover {
-  color: #f4f4f5;
-  text-decoration: underline;
+  color: var(--city-ink);
 }
 
 .city-breadcrumb-current {
-  color: #e4e4e7;
+  color: var(--city-gold);
   font-weight: 500;
 }
 
+/* Editorial Display Title */
 .city-hero h1 {
-  font-size: clamp(26px, 4.2vw, 42px);
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(30px, 4.4vw, 48px);
   font-weight: 700;
   margin: 0;
-  color: #fafafa;
-  line-height: 1.18;
-  letter-spacing: -0.025em;
-  max-width: 680px;
+  color: var(--city-ink);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  max-width: 660px;
 }
 
 .city-subtitle {
-  font-size: 15px;
-  color: #a1a1aa;
-  max-width: 580px;
-  line-height: 1.6;
+  font-size: clamp(14.5px, 1.4vw, 16px);
+  color: var(--city-ink-secondary);
+  max-width: 560px;
+  line-height: 1.65;
   margin: 0;
+  font-weight: 400;
 }
 
-/* Inline Search Form (Mobile-First) */
+/* ── 2. Inline Search Bar (Mobile-First, Crisp Focus States) ── */
 .city-search-block {
   margin-top: 6px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .city-search-form {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: #161821;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: var(--city-input-bg);
+  border: 1px solid var(--city-border-strong);
+  border-radius: 14px;
   padding: 8px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.city-search-form:focus-within {
+  border-color: rgba(232, 185, 67, 0.6);
+  box-shadow: 0 0 0 3px rgba(232, 185, 67, 0.12), 0 12px 32px -10px rgba(0, 0, 0, 0.4);
 }
 
 .city-search-field {
@@ -98,13 +128,13 @@
   align-items: center;
   gap: 10px;
   padding: 0 12px;
-  min-height: 44px;
+  min-height: 46px;
   flex: 1;
   min-width: 0;
 }
 
 .city-search-icon {
-  color: #71717a;
+  color: var(--city-ink-muted);
   flex-shrink: 0;
 }
 
@@ -112,33 +142,46 @@
   width: 100%;
   background: transparent;
   border: none;
-  color: #fafafa;
-  font-size: 14px;
+  color: var(--city-ink);
+  font-size: 14.5px;
   outline: none;
   font-family: inherit;
   min-width: 0;
 }
 
 .city-search-input::placeholder {
-  color: #71717a;
+  color: var(--city-ink-muted);
 }
 
 .city-search-select {
-  min-height: 44px;
-  padding: 0 12px;
-  background: #0f1117;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  color: #e4e4e7;
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 46px;
+  padding: 0 36px 0 14px;
+  background-color: var(--city-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23D8C4B7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  border: 1px solid var(--city-border);
+  border-radius: 10px;
+  color: var(--city-ink);
   font-size: 13.5px;
+  font-weight: 500;
   font-family: inherit;
   outline: none;
   cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.city-search-select:hover,
+.city-search-select:focus {
+  border-color: var(--city-border-strong);
+  background-color: var(--city-surface-raised);
 }
 
 .city-search-select option {
-  background: #13151b;
-  color: #fafafa;
+  background: #211B1D;
+  color: #F5F0E9;
 }
 
 .city-search-submit {
@@ -146,24 +189,30 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 20px;
+  min-height: 46px;
+  padding: 0 22px;
   border: none;
-  border-radius: 8px;
-  background: #eab308;
-  color: #09090b;
+  border-radius: 10px;
+  background: var(--city-gold);
+  color: var(--city-gold-ink);
   font-size: 14px;
   font-weight: 600;
+  letter-spacing: -0.005em;
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.18s ease, transform 0.15s ease;
 }
 
 .city-search-submit:hover {
-  background: #facc15;
+  background: var(--city-gold-hover);
 }
 
+.city-search-submit:active {
+  transform: scale(0.99);
+}
+
+/* Popular Category Shortcuts */
 .city-quick-categories {
   display: flex;
   align-items: center;
@@ -173,48 +222,56 @@
 
 .city-quick-label {
   font-size: 12.5px;
-  color: #71717a;
+  font-weight: 500;
+  color: var(--city-ink-muted);
+  margin-right: 2px;
 }
 
 .city-quick-link {
   font-size: 12.5px;
-  color: #d4d4d8;
+  font-weight: 500;
+  color: var(--city-ink-secondary);
   text-decoration: none;
-  padding: 5px 11px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: border-color 0.15s ease, color 0.15s ease;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(245, 240, 233, 0.04);
+  border: 1px solid var(--city-border);
+  transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
 }
 
 .city-quick-link:hover {
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
+  border-color: rgba(232, 185, 67, 0.45);
+  background: rgba(232, 185, 67, 0.08);
+  color: var(--city-ink);
 }
 
-/* Right Summary Panel */
+/* ── 3. Direct Booking Summary Card ── */
 .city-summary-panel {
-  background: #14161e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 20px;
+  background: var(--city-surface);
+  border: 1px solid var(--city-border);
+  border-top: 2px solid rgba(232, 185, 67, 0.65);
+  border-radius: 16px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+  box-shadow: var(--city-shadow-card);
 }
 
 .city-summary-head h2 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #fafafa;
-  margin: 0 0 4px;
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--city-ink);
+  margin: 0 0 6px;
+  letter-spacing: -0.015em;
 }
 
 .city-summary-head p {
-  font-size: 13px;
-  color: #a1a1aa;
+  font-size: 13.5px;
+  color: var(--city-ink-secondary);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .city-summary-list {
@@ -228,28 +285,29 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  font-size: 13px;
+  gap: 14px;
+  padding: 11px 0;
+  border-top: 1px solid var(--city-border);
+  font-size: 13.5px;
 }
 
 .city-summary-row dt {
-  color: #a1a1aa;
+  color: var(--city-ink-muted);
   font-weight: 400;
 }
 
 .city-summary-row dd {
   margin: 0;
-  color: #f4f4f5;
-  font-weight: 500;
+  color: var(--city-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
 .city-summary-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
   padding-top: 4px;
 }
 
@@ -257,61 +315,87 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 0 16px;
-  border-radius: 8px;
-  background: #fafafa;
-  color: #09090b;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: var(--city-ink);
+  color: var(--city-gold-ink);
   font-size: 13.5px;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.18s ease, transform 0.15s ease;
 }
 
 .city-summary-primary-btn:hover {
-  background: #e4e4e7;
+  background: #ffffff;
 }
 
 .city-summary-secondary-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 0 16px;
-  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #e4e4e7;
+  border: 1px solid var(--city-border-strong);
+  color: var(--city-ink);
   font-size: 13.5px;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
 }
 
 .city-summary-secondary-btn:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #ffffff;
+  border-color: rgba(232, 185, 67, 0.55);
+  background: rgba(245, 240, 233, 0.04);
 }
 
-/* Main Content Container */
+/* ── 4. Main Content Shell & Seamless Artists Grid Integration ── */
 .city-content-container {
-  max-width: 1200px;
+  max-width: 1220px;
   margin: 0 auto;
-  padding: 24px 16px 64px;
+  padding: 36px 18px 72px;
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 56px;
 }
 
 .city-artists-section {
   width: 100%;
 }
 
-/* Practical Guide Section */
+/* Remove inherited 100vh dead space and double padding from shared Artists.css */
+.city-artists-section .artists-page {
+  min-height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.city-artists-section .lux-container {
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+.city-artists-section .hp-section-head {
+  text-align: left !important;
+  margin-bottom: 24px !important;
+}
+
+.city-artists-section .hp-section-head h2 {
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif) !important;
+  font-size: clamp(22px, 2.8vw, 30px) !important;
+  font-weight: 700 !important;
+  color: var(--city-ink) !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 !important;
+}
+
+/* ── 5. Editorial Booking Guide Section ── */
 .city-guide-section {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 40px;
+  border-top: 1px solid var(--city-border);
+  padding-top: 44px;
 }
 
 .city-guide-grid {
@@ -321,33 +405,42 @@
 }
 
 .city-guide-narrative h2 {
-  font-size: 22px;
-  font-weight: 600;
-  color: #fafafa;
-  margin: 0 0 14px;
-  letter-spacing: -0.015em;
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(22px, 2.5vw, 28px);
+  font-weight: 700;
+  color: var(--city-ink);
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .city-guide-narrative p {
   font-size: 15px;
   line-height: 1.75;
-  color: #a1a1aa;
-  margin: 0 0 14px;
-  max-width: 64ch;
+  color: var(--city-ink-secondary);
+  margin: 0 0 16px;
+  max-width: 62ch;
+}
+
+.city-guide-narrative p:last-child {
+  margin-bottom: 0;
 }
 
 .city-formats-panel {
-  background: #14161e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 20px;
+  background: var(--city-surface);
+  border: 1px solid var(--city-border);
+  border-radius: 16px;
+  padding: 22px;
 }
 
 .city-formats-panel h3 {
-  font-size: 15px;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 13px;
   font-weight: 600;
-  color: #fafafa;
-  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--city-gold);
+  margin: 0 0 14px;
 }
 
 .city-formats-list {
@@ -359,115 +452,126 @@
 }
 
 .city-formats-list li {
-  padding: 12px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 14px 0;
+  border-top: 1px solid var(--city-border);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+}
+
+.city-formats-list li:last-child {
+  padding-bottom: 0;
 }
 
 .city-formats-list li strong {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 600;
-  color: #f4f4f5;
+  color: var(--city-ink);
 }
 
 .city-formats-list li span {
   font-size: 13.5px;
-  line-height: 1.55;
-  color: #a1a1aa;
+  line-height: 1.6;
+  color: var(--city-ink-secondary);
 }
 
 /* Database HTML SEO Content */
 .seo-content {
-  color: #a1a1aa;
-  line-height: 1.75;
-  font-size: 15px;
-  max-width: 74ch;
+  color: var(--city-ink-secondary);
+  line-height: 1.8;
+  font-size: 15.5px;
+  max-width: 72ch;
 }
 
 .seo-content h2 {
-  color: #fafafa;
-  margin-top: 28px;
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  color: var(--city-ink);
+  margin-top: 32px;
   margin-bottom: 12px;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .seo-content h3 {
-  color: #f4f4f5;
-  margin-top: 20px;
+  color: var(--city-ink);
+  margin-top: 24px;
   margin-bottom: 10px;
   font-size: 18px;
   font-weight: 600;
 }
 
-/* Shared Section Heading */
+/* ── 6. Shared Section Headings ── */
 .city-section-heading {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   flex-wrap: wrap;
 }
 
 .city-section-heading h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #fafafa;
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(22px, 2.4vw, 26px);
+  font-weight: 700;
+  color: var(--city-ink);
   margin: 0;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
 }
 
 .city-section-sub {
-  font-size: 13.5px;
-  color: #a1a1aa;
-  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--city-ink-secondary);
+  margin: 6px 0 0;
 }
 
 .city-section-link {
   font-size: 13.5px;
-  font-weight: 500;
-  color: #eab308;
+  font-weight: 600;
+  color: var(--city-gold);
   text-decoration: none;
   white-space: nowrap;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(232, 185, 67, 0.35);
+  transition: border-color 0.18s ease, color 0.18s ease;
 }
 
 .city-section-link:hover {
-  text-decoration: underline;
+  color: var(--city-gold-hover);
+  border-color: var(--city-gold-hover);
 }
 
-/* City Blogs Section */
+/* ── 7. City Guides / Articles ── */
 .blogs-section {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 40px;
+  border-top: 1px solid var(--city-border);
+  padding-top: 44px;
 }
 
 .blogs-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 18px;
 }
 
 .blog-card {
-  background: #14161e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  background: var(--city-surface);
+  border: 1px solid var(--city-border);
+  border-radius: 14px;
   overflow: hidden;
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .blog-card:hover {
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: var(--city-border-strong);
+  transform: translateY(-2px);
 }
 
 .blog-card-img {
-  height: 176px;
-  background: #1a1d27;
+  height: 184px;
+  background: var(--city-input-bg);
   overflow: hidden;
 }
 
@@ -478,36 +582,36 @@
 }
 
 .blog-card-content {
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .blog-card-content h3 {
-  color: #fafafa;
+  color: var(--city-ink);
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.45;
   margin: 0;
 }
 
 .read-more {
-  color: #eab308;
+  color: var(--city-gold);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* Other Cities Link Directory */
+/* ── 8. Other Cities Directory ── */
 .city-directory-section {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 40px;
+  border-top: 1px solid var(--city-border);
+  padding-top: 44px;
 }
 
 .city-directory-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
 .city-directory-link {
@@ -515,37 +619,49 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #14161e;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  color: #e4e4e7;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--city-surface);
+  border: 1px solid var(--city-border);
+  color: var(--city-ink);
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease;
 }
 
 .city-directory-link:hover {
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(232, 185, 67, 0.45);
+  background: var(--city-surface-raised);
   color: #ffffff;
 }
 
 .city-directory-arrow {
-  color: #71717a;
+  color: var(--city-ink-muted);
   flex-shrink: 0;
+  transition: transform 0.18s ease, color 0.18s ease;
 }
 
-/* Responsive Breakpoints (Tablet & Desktop) */
+.city-directory-link:hover .city-directory-arrow {
+  transform: translateX(2px);
+  color: var(--city-gold);
+}
+
+/* ── 9. Responsive Breakpoints (Tablet & Desktop) ── */
 @media (min-width: 640px) {
+  .city-hero {
+    padding: 36px 24px 44px;
+  }
+
   .city-search-form {
     flex-direction: row;
     align-items: center;
     padding: 6px;
+    gap: 6px;
   }
 
   .city-search-select {
-    width: 190px;
+    width: 196px;
     flex-shrink: 0;
   }
 
@@ -560,23 +676,23 @@
 
 @media (min-width: 960px) {
   .city-hero {
-    padding: 48px 24px 52px;
+    padding: 52px 28px 56px;
   }
 
   .city-hero-inner {
-    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
-    gap: 44px;
+    grid-template-columns: minmax(0, 1.32fr) minmax(320px, 0.68fr);
+    gap: 48px;
     align-items: center;
   }
 
   .city-content-container {
-    padding: 36px 24px 80px;
-    gap: 56px;
+    padding: 44px 28px 88px;
+    gap: 64px;
   }
 
   .city-guide-grid {
     grid-template-columns: 1.15fr 0.85fr;
-    gap: 40px;
+    gap: 48px;
     align-items: start;
   }
 
