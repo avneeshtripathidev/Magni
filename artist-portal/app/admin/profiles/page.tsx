@@ -55,7 +55,7 @@ export default function AdminProfileCardsPage() {
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const CARDS_PER_PAGE = 5;
+  const CARDS_PER_PAGE = 8;
 
   const categories = ['all', 'Singer', 'Live Band', 'DJ', 'Instrumentalist'];
   const statuses = [
@@ -236,7 +236,7 @@ export default function AdminProfileCardsPage() {
         </div>
       </div>
 
-      {/* 3. Static Compact 5-Cards-Per-Page Grid */}
+      {/* 3. Tall 4-Cards-Per-Row Grid */}
       {filteredArtists.length === 0 ? (
         <div className="luxe-card p-12 text-center flex flex-col items-center justify-center gap-2">
           <Users className="w-10 h-10 text-slate-200" />
@@ -250,15 +250,16 @@ export default function AdminProfileCardsPage() {
         const paginatedArtists = filteredArtists.slice(startIdx, startIdx + CARDS_PER_PAGE);
 
         return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
               {paginatedArtists.map((artist) => {
                 const isApproved = artist.verification_status === 'approved';
                 const isRejected = artist.verification_status === 'rejected';
                 const isUnderReview = artist.verification_status === 'under_review';
-                const startingFee = artist.submitted_pricing?.starting_price || artist.price_min || 15000;
+                const startingFee = Number(artist.submitted_pricing?.starting_price || artist.price_min || 0);
                 const rankInfo = rankMap[artist.id] || { rank: 1, totalCompleted: artist.successful_bookings || 0 };
                 const tierProg = getArtistTierProgress(rankInfo.totalCompleted);
+                const heroImg = artist.cover_image_url || artist.profile_image_url || '';
                 const TierIcon =
                   tierProg.tier.level === 5
                     ? Crown
@@ -288,111 +289,140 @@ export default function AdminProfileCardsPage() {
                     }}
                     tabIndex={0}
                     role="button"
-                    className="bg-white rounded-xl border border-slate-200 hover:border-slate-300 p-3 cursor-pointer flex flex-col justify-between gap-2.5 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    className="bg-white rounded-2xl border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all overflow-hidden cursor-pointer flex flex-col justify-between min-h-[380px] focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm"
                   >
-                    {/* Top Row: Rank + Status */}
-                    <div className="flex items-center justify-between gap-1.5">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-700">
-                        <span className="text-sky-600">#{rankInfo.rank}</span>
-                        <TierIcon className={`w-3 h-3 ${tierProg.tier.iconColor}`} />
-                        <span className="truncate max-w-[92px]">{tierProg.tier.name}</span>
-                      </span>
+                    {/* Top Tall Visual Cover + Overlay Badges */}
+                    <div className="relative h-40 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
+                      {heroImg ? (
+                        <img
+                          src={heroImg}
+                          alt={artist.name}
+                          className="w-full h-full object-cover object-top"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-white/80">
+                          <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-xl font-black text-white">
+                            {(artist.name || 'A')[0].toUpperCase()}
+                          </div>
+                          <span className="text-[10px] font-semibold text-white/60 mt-2 uppercase tracking-wider">
+                            {artist.category || 'Performer'}
+                          </span>
+                        </div>
+                      )}
 
-                      <span
-                        className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide border flex-shrink-0 ${
-                          isApproved
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      <div className="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 via-black/25 to-transparent">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 text-[10px] font-extrabold text-slate-800 shadow-xs">
+                          <span className="text-sky-600">#{rankInfo.rank}</span>
+                          <TierIcon className={`w-3 h-3 ${tierProg.tier.iconColor}`} />
+                          <span className="truncate max-w-[90px]">{tierProg.tier.name}</span>
+                        </span>
+
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
+                            isApproved
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : isRejected
+                              ? 'bg-rose-50 text-rose-700 border-rose-200'
+                              : isUnderReview
+                              ? 'bg-sky-50 text-sky-700 border-sky-200'
+                              : 'bg-amber-50 text-amber-700 border-amber-200'
+                          }`}
+                        >
+                          {isApproved
+                            ? 'Verified'
                             : isRejected
-                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            ? 'Rejected'
                             : isUnderReview
-                            ? 'bg-sky-50 text-sky-700 border-sky-200'
-                            : 'bg-amber-50 text-amber-700 border-amber-200'
-                        }`}
-                      >
-                        {isApproved
-                          ? 'Verified'
-                          : isRejected
-                          ? 'Rejected'
-                          : isUnderReview
-                          ? 'Review'
-                          : 'Pending'}
-                      </span>
+                            ? 'Review'
+                            : 'Pending'}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Identity Row: Small Square Avatar + Name */}
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <img
-                        src={artist.profile_image_url || artist.cover_image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200'}
-                        alt={artist.name}
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src =
-                            'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200&auto=format&fit=crop';
-                        }}
-                        className="w-11 h-11 rounded-lg object-cover object-top border border-slate-200 flex-shrink-0 bg-slate-100"
-                      />
-                      <div className="min-w-0">
-                        <h3 className="text-xs font-bold text-slate-900 leading-tight truncate">
-                          {artist.name}
-                        </h3>
-                        <p className="text-[10px] font-semibold text-sky-700 truncate mt-0.5">
-                          {artist.category}
-                        </p>
-                        <div className="flex items-center gap-0.5 text-[10px] text-slate-500 truncate">
-                          <MapPin className="w-2.5 h-2.5 text-slate-400 flex-shrink-0" />
-                          <span className="truncate">{artist.city || 'India'}</span>
+                    {/* Card Body */}
+                    <div className="p-4 flex-1 flex flex-col justify-between gap-3.5">
+                      <div className="space-y-3">
+                        {/* Name, Category & Location */}
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-extrabold text-slate-900 leading-snug truncate">
+                            {artist.name}
+                          </h3>
+                          <p className="text-xs font-semibold text-sky-700 truncate mt-0.5">
+                            {artist.stage_name || artist.category}
+                          </p>
+                          <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-1">
+                            <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                            <span className="truncate">{artist.city || 'Location not set'}</span>
+                          </div>
+                        </div>
+
+                        {/* Genres Pills */}
+                        {artist.genres && artist.genres.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {artist.genres.slice(0, 3).map((g) => (
+                              <span
+                                key={g}
+                                className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold"
+                              >
+                                {g}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Metrics Row */}
+                        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                          <span className="font-bold text-slate-800">{rankInfo.totalCompleted} Events</span>
+                          <span className="inline-flex items-center gap-1 font-bold text-slate-800">
+                            <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                            {artist.rating ? Number(artist.rating).toFixed(1) : 'New'}
+                          </span>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Compact Metrics Row */}
-                    <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-50 border border-slate-100 text-[10px]">
-                      <span className="font-bold text-slate-800">{rankInfo.totalCompleted} Events</span>
-                      <span className="inline-flex items-center gap-0.5 font-bold text-slate-800">
-                        <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
-                        {artist.rating || 4.9}
-                      </span>
-                    </div>
+                      {/* Footer: Price, Live Status & Actions */}
+                      <div className="space-y-3 pt-2 border-t border-slate-100">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-sm font-black text-slate-900">
+                              {startingFee > 0 ? `₹${startingFee.toLocaleString('en-IN')}` : 'Not set'}
+                            </span>
+                            {startingFee > 0 && <span className="text-[10px] text-slate-400">/event</span>}
+                          </div>
+                          <span
+                            className={`inline-flex items-center gap-1 text-[10px] font-bold ${
+                              artist.is_live ? 'text-emerald-600' : 'text-slate-400'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                artist.is_live ? 'bg-emerald-500' : 'bg-slate-300'
+                              }`}
+                            />
+                            {artist.is_live ? 'Live' : 'Offline'}
+                          </span>
+                        </div>
 
-                    {/* Price + Live Indicator */}
-                    <div className="flex items-center justify-between gap-1 pt-1 border-t border-slate-100">
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-xs font-extrabold text-slate-900">
-                          ₹{Number(startingFee).toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-[9px] text-slate-400">/evt</span>
+                        <div className="flex items-center justify-between gap-2">
+                          <WhatsAppShareActions
+                            artist={artist}
+                            rank={rankInfo.rank}
+                            completedEvents={rankInfo.totalCompleted}
+                            variant="compact"
+                          />
+                          <span className="h-8 px-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-[11px] font-bold inline-flex items-center gap-1">
+                            <span>View</span>
+                            <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                          </span>
+                        </div>
                       </div>
-                      <span
-                        className={`inline-flex items-center gap-1 text-[9px] font-bold ${
-                          artist.is_live ? 'text-emerald-600' : 'text-slate-400'
-                        }`}
-                      >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            artist.is_live ? 'bg-emerald-500' : 'bg-slate-300'
-                          }`}
-                        />
-                        {artist.is_live ? 'Live' : 'Offline'}
-                      </span>
-                    </div>
-
-                    {/* Compact Static Actions: Copy + WP + View */}
-                    <div className="flex items-center justify-between gap-1 pt-1">
-                      <WhatsAppShareActions
-                        artist={artist}
-                        rank={rankInfo.rank}
-                        completedEvents={rankInfo.totalCompleted}
-                        variant="compact"
-                      />
-                      <span className="h-7 px-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-[10px] font-semibold inline-flex items-center">
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                      </span>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Clean Pagination Bar (Strictly 5 Cards per Page) */}
+            {/* Clean Pagination Bar (4 Cards per Row, 8 per Page) */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between pt-2 border-t border-slate-200 text-xs">
                 <span className="text-slate-500 font-medium">

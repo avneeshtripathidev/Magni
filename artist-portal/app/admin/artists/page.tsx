@@ -127,28 +127,46 @@ export default function AdminArtistsDirectoryPage() {
         </div>
       </div>
 
-      {/* 3. Cards Grid (5 compact static cards in a single row on desktop) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+      {/* 3. Cards Grid (4 tall cards in a single row on desktop) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {filtered.map((artist) => {
           const isApproved = artist.verification_status === 'approved';
           const isRejected = artist.verification_status === 'rejected';
           const rankInfo = rankMap[artist.id] || { rank: 1, totalCompleted: artist.successful_bookings || 0 };
+          const heroImg = artist.cover_image_url || artist.profile_image_url || '';
 
           return (
             <div
               key={artist.id}
-              className="bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-3 flex flex-col justify-between gap-2.5"
+              className="bg-white border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all rounded-2xl overflow-hidden flex flex-col justify-between min-h-[380px] shadow-sm"
             >
-              <div className="space-y-2.5">
-                {/* Top Row: Rank Badge + Status */}
-                <div className="flex items-center justify-between gap-1">
+              {/* Top Tall Visual Cover + Status Overlay */}
+              <div className="relative h-40 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
+                {heroImg ? (
+                  <img
+                    src={heroImg}
+                    alt={artist.name}
+                    className="w-full h-full object-cover object-top"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-white/80">
+                    <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-xl font-black text-white">
+                      {(artist.name || 'A')[0].toUpperCase()}
+                    </div>
+                    <span className="text-[10px] font-semibold text-white/60 mt-2 uppercase tracking-wider">
+                      {artist.category || 'Performer'}
+                    </span>
+                  </div>
+                )}
+
+                <div className="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-1.5 bg-gradient-to-b from-black/60 via-black/25 to-transparent">
                   <ArtistTierBadge
                     completedEvents={rankInfo.totalCompleted}
                     rankPosition={rankInfo.rank}
                     size="xs"
                   />
                   <span
-                    className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide border flex-shrink-0 ${
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
                       isApproved
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         : isRejected
@@ -159,82 +177,80 @@ export default function AdminArtistsDirectoryPage() {
                     {isApproved ? 'Live' : isRejected ? 'Rejected' : 'Review'}
                   </span>
                 </div>
-
-                {/* Identity Row */}
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <img
-                    src={artist.profile_image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200'}
-                    alt={artist.name}
-                    className="w-10 h-10 rounded-lg object-cover object-top border border-slate-200 flex-shrink-0 bg-slate-100"
-                  />
-                  <div className="min-w-0">
-                    <h3 className="text-xs font-bold text-slate-900 leading-tight truncate">{artist.name}</h3>
-                    <p className="text-[10px] text-indigo-600 font-semibold truncate mt-0.5">
-                      {artist.stage_name || 'Solo Act'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Compact Metrics */}
-                <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-600 space-y-1">
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-slate-400">Events</span>
-                    <span className="font-bold text-slate-900">{rankInfo.totalCompleted} Done</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-slate-400">Category</span>
-                    <span className="font-semibold text-slate-800 truncate">{artist.category}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-slate-400">City</span>
-                    <span className="font-semibold text-slate-800 truncate">{artist.city || 'India'}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-slate-400">Status</span>
-                    <span className={artist.is_live ? 'text-emerald-600 font-bold' : 'text-slate-400 font-semibold'}>
-                      {artist.is_live ? 'Active' : 'Hidden'}
-                    </span>
-                  </div>
-                </div>
               </div>
 
-              {/* Compact Footer Actions */}
-              <div className="pt-2 border-t border-slate-100 space-y-2">
-                <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-semibold text-slate-400">Share</span>
-                  <WhatsAppShareActions
-                    artist={artist}
-                    rank={rankInfo.rank}
-                    completedEvents={rankInfo.totalCompleted}
-                    variant="compact"
-                  />
+              {/* Card Body */}
+              <div className="p-4 flex-1 flex flex-col justify-between gap-3.5">
+                <div className="space-y-3">
+                  {/* Identity */}
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-extrabold text-slate-900 leading-snug truncate">{artist.name}</h3>
+                    <p className="text-xs text-indigo-600 font-semibold truncate mt-0.5">
+                      {artist.stage_name || artist.category || 'Solo Act'}
+                    </p>
+                  </div>
+
+                  {/* Metrics */}
+                  <div className="pt-2.5 border-t border-slate-100 text-xs text-slate-600 space-y-1.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-slate-400">Events</span>
+                      <span className="font-bold text-slate-900">{rankInfo.totalCompleted} Done</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-slate-400">Category</span>
+                      <span className="font-semibold text-slate-800 truncate">{artist.category || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-slate-400">City</span>
+                      <span className="font-semibold text-slate-800 truncate">{artist.city || 'Not set'}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-slate-400">Status</span>
+                      <span className={artist.is_live ? 'text-emerald-600 font-bold' : 'text-slate-400 font-semibold'}>
+                        {artist.is_live ? 'Active' : 'Hidden'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <Link
-                    href={`/admin/verification?reviewId=${artist.id}`}
-                    className="h-7 px-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-[11px] font-semibold flex-1 flex items-center justify-center gap-1"
-                  >
-                    <Eye className="w-3 h-3 text-slate-500" />
-                    <span>Dossier</span>
-                  </Link>
+                {/* Footer Actions */}
+                <div className="pt-3 border-t border-slate-100 space-y-2.5">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[11px] font-semibold text-slate-400">Share</span>
+                    <WhatsAppShareActions
+                      artist={artist}
+                      rank={rankInfo.rank}
+                      completedEvents={rankInfo.totalCompleted}
+                      variant="compact"
+                    />
+                  </div>
 
-                  {artist.is_live ? (
-                    <button
-                      onClick={() => updateArtistStatus(artist.id, 'under_review')}
-                      className="h-7 px-2 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-[11px] font-semibold"
-                      title="Hide from public search"
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/verification?reviewId=${artist.id}`}
+                      className="h-9 px-3 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold flex-1 flex items-center justify-center gap-1.5"
                     >
-                      Hide
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => updateArtistStatus(artist.id, 'approved')}
-                      className="h-7 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold"
-                    >
-                      Publish
-                    </button>
-                  )}
+                      <Eye className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Dossier</span>
+                    </Link>
+
+                    {artist.is_live ? (
+                      <button
+                        onClick={() => updateArtistStatus(artist.id, 'under_review')}
+                        className="h-9 px-3 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-xs font-semibold"
+                        title="Hide from public search"
+                      >
+                        Hide
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => updateArtistStatus(artist.id, 'approved')}
+                        className="h-9 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
+                      >
+                        Publish
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
