@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useArtistAuth } from '../../../lib/auth/authContext';
+import { getMissingProfileSections } from '../../../lib/profileCompletion';
 import { CompletionMeter } from '../../../components/dashboard/CompletionMeter';
 import { StatusBadge } from '../../../components/dashboard/StatusBadge';
 import { ArtistTierCard } from '../../../components/shared/ArtistTierBadge';
@@ -35,6 +37,7 @@ import {
 
 export default function ArtistDashboardPage() {
   const { artist, refreshArtist } = useArtistAuth();
+  const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -123,8 +126,18 @@ export default function ArtistDashboardPage() {
     setActiveModalEvent(updated);
   };
 
+  const missingSections = getMissingProfileSections(artist);
+
   const handleSubmitForReview = async () => {
     if (!artist?.id) return;
+
+    // If required details are missing on Profile, Portfolio, or KYC, open the exact incomplete page directly
+    if (missingSections.length > 0) {
+      const firstIncomplete = missingSections[0];
+      router.push(`${firstIncomplete.href}?complete=1`);
+      return;
+    }
+
     setSubmitting(true);
     try {
       await artistService.submitForVerification(artist.id);
@@ -327,14 +340,24 @@ export default function ArtistDashboardPage() {
         <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-2.5">
             <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
-            <p className="text-xs text-amber-900">
-              <span className="font-bold">Pending Review:</span> Your profile is being reviewed by the Magnevents curation team.
-            </p>
+            {missingSections.length > 0 ? (
+              <p className="text-xs text-amber-900">
+                <span className="font-bold">Complete Your Details:</span> Missing{' '}
+                <span className="font-semibold">{missingSections[0].title}</span> (
+                {missingSections[0].missingFields.slice(0, 3).join(', ')}
+                {missingSections[0].missingFields.length > 3 ? ', ...' : ''}). Click{' '}
+                <span className="font-semibold">Submit for Review</span> to fill them.
+              </p>
+            ) : (
+              <p className="text-xs text-amber-900">
+                <span className="font-bold">Pending Review:</span> Your profile is ready for review by the Magnevents curation team.
+              </p>
+            )}
           </div>
           <button
             onClick={handleSubmitForReview}
             disabled={submitting}
-            className="btn-primary py-2 px-4 text-xs font-bold self-start sm:self-auto"
+            className="btn-primary py-2 px-4 text-xs font-bold self-start sm:self-auto flex-shrink-0"
           >
             {submitting ? 'Submitting...' : 'Submit for Review'}
           </button>

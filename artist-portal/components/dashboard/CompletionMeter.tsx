@@ -8,16 +8,17 @@ interface CompletionMeterProps {
 }
 
 export function CompletionMeter({ artist }: CompletionMeterProps) {
-  const completion = artist?.profile_completion || 25;
-
   const checklist = [
-    { label: 'Basic Info & Location', done: !!(artist?.name && artist?.phone_no && artist?.city), link: '/profile' },
-    { label: 'Bio & Experience', done: !!(artist?.bio && artist.bio.length > 20), link: '/profile' },
-    { label: 'Repertoire & Genres', done: !!(artist?.category && artist?.genres?.length), link: '/profile' },
-    { label: 'Stage Photos', done: !!(artist?.profile_image_url || artist?.cover_image_url), link: '/portfolio' },
-    { label: 'Live Showreels', done: !!(artist?.youtube_links?.length), link: '/portfolio' },
-    { label: 'KYC Document', done: !!(artist?.verification_documents?.id_document_url), link: '/verification' },
+    { label: 'Basic Info & Location', done: !!(artist?.name && (artist?.phone_no || '').replace(/\D/g, '').length >= 7 && artist?.city), link: '/profile?complete=1' },
+    { label: 'Bio & Experience', done: !!(artist?.bio && artist.bio.trim().length >= 20), link: '/profile?complete=1' },
+    { label: 'Repertoire & Genres', done: !!(artist?.category && artist?.genres?.length), link: '/profile?complete=1' },
+    { label: 'Stage Photos', done: !!(artist?.profile_image_url || artist?.cover_image_url), link: '/portfolio?complete=1' },
+    { label: 'Live Showreels', done: !!(artist?.video_url || artist?.cloudflare_video_url || artist?.youtube_links?.length), link: '/portfolio?complete=1' },
+    { label: 'KYC Document', done: !!(artist?.verification_documents?.id_document_url), link: '/verification?complete=1' },
   ];
+
+  const completedCount = checklist.filter((c) => c.done).length;
+  const completion = Math.round((completedCount / checklist.length) * 100);
 
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 font-sans">

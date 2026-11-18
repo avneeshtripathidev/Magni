@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
 import { StatusBadge } from '../../../components/dashboard/StatusBadge';
+import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
+import { getMissingProfileSections } from '../../../lib/profileCompletion';
 import { 
   ShieldCheck, 
   AlertTriangle, 
@@ -18,6 +21,7 @@ import {
 
 export default function VerificationPage() {
   const { artist, refreshArtist } = useArtistAuth();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [uploadingField, setUploadingField] = useState<'id_document_url' | 'address_proof_url' | null>(null);
@@ -109,9 +113,17 @@ export default function VerificationPage() {
     setMessage(null);
 
     try {
-      await artistService.updateProfile(artist.id, {
+      const updatedArtist = await artistService.updateProfile(artist.id, {
         verification_documents: formData,
       });
+      await refreshArtist();
+
+      const remainingMissing = getMissingProfileSections(updatedArtist);
+      if (remainingMissing.length > 0) {
+        router.push(`${remainingMissing[0].href}?complete=1`);
+        return;
+      }
+
       await artistService.submitForVerification(artist.id);
       await refreshArtist();
       setMessage({
@@ -152,6 +164,8 @@ export default function VerificationPage() {
           <span>Save Draft</span>
         </button>
       </div>
+
+      <MissingDetailsBanner artist={artist} currentPage="verification" />
 
       {message && (
         <div

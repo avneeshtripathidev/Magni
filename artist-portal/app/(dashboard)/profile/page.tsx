@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
 import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
+import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
 import {
   User,
   Mic2,
@@ -294,6 +295,8 @@ export default function ProfilePage() {
           </button>
         </div>
       </div>
+
+      <MissingDetailsBanner artist={artist} currentPage="profile" />
 
       {success && (
         <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 shadow-xs">

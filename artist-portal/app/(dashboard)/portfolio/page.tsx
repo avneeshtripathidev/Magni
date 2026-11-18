@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
 import { supabase } from '../../../lib/supabase/client';
+import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
 import {
   Film,
   Instagram,
@@ -493,6 +494,8 @@ export default function PortfolioPage() {
           )}
         </button>
       </div>
+
+      <MissingDetailsBanner artist={artist} currentPage="portfolio" />
 
       {/* Live Requirement Checklist Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
