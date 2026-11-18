@@ -1,6 +1,6 @@
 import { supabase } from '@database/connection/supabase';
 import { findArtistBySlugOrId } from '@/app/utils/artistLookup';
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
@@ -79,8 +79,9 @@ export default async function ArtistLayout({ children, params }) {
     console.error('Error in ArtistLayout findArtistBySlugOrId:', err);
   }
 
-  // If artist does not exist, check fallback service_videos; if still not found, return true HTTP 404
+  // If artist does not exist, check fallback service_videos; if still not found, redirect to /artists
   if (!data) {
+    let hasFallbackVideo = false;
     try {
       const decodedId = decodeURIComponent(id || '').trim();
       const { data: svData } = await supabase
@@ -89,11 +90,13 @@ export default async function ArtistLayout({ children, params }) {
         .or(`userName.ilike.%${decodedId}%,artistName.ilike.%${decodedId}%`)
         .limit(1);
 
-      if (!svData || svData.length === 0) {
-        notFound();
-      }
+      hasFallbackVideo = Boolean(svData && svData.length > 0);
     } catch (e) {
-      notFound();
+      hasFallbackVideo = false;
+    }
+
+    if (!hasFallbackVideo) {
+      redirect('/artists');
     }
   }
 

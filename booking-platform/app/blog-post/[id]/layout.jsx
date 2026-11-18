@@ -1,6 +1,6 @@
 import { supabase } from '@database/connection/supabase';
 import { defaultBlogs } from '../data';
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
@@ -116,7 +116,7 @@ export default async function BlogLayout({ children, params }) {
   }
 
   if (!blogData) {
-    notFound();
+    redirect('/artists');
   }
 
   const title = blogData.title;

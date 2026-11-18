@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { supabase } from '@database/connection/supabase';
 import Link from 'next/link';
 import { Mic2 } from 'lucide-react';
@@ -105,7 +105,7 @@ export default async function CityLandingPage({ params }) {
 
   const isKnownCity = Boolean(city || MAJOR_CITIES.includes(normalizedCitySlug));
   if (!isKnownCity) {
-    notFound();
+    redirect('/artists');
   }
 
   // 1b. Fallback if city not in database

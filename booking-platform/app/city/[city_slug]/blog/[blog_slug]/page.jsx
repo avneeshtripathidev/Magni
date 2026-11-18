@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { supabase } from '@database/connection/supabase';
 import Link from 'next/link';
 import SEOLandingHero from '@/app/components/common/SEOLandingHero';
@@ -111,7 +111,7 @@ export default async function CityBlogPage({ params }) {
     decodedCitySlug = decodeURIComponent(city_slug || '').trim();
     decodedBlogSlug = decodeURIComponent(blog_slug || '').trim();
   } catch (e) {
-    notFound();
+    redirect('/artists');
   }
 
   const normalizedCitySlug = decodedCitySlug.toLowerCase().replace(/\s+/g, '-');
@@ -130,7 +130,7 @@ export default async function CityBlogPage({ params }) {
   }
 
   if (!blog) {
-    notFound();
+    redirect('/artists');
   }
 
   const cityName = blog.seo_cities?.name || slugToName(city_slug);

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useParams, notFound } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { supabase } from '@database/connection/supabase'
@@ -15,6 +15,7 @@ import '@/app/styles/pages/BlogPost.css'
 
 export default function BlogDetailPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -83,6 +84,12 @@ export default function BlogDetailPage() {
     loadBlog();
   }, [id]);
 
+  useEffect(() => {
+    if (!loading && !blog) {
+      router.replace('/artists');
+    }
+  }, [loading, blog, router]);
+
   if (loading) {
     return (
       <div className="blog-error-page" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -94,7 +101,6 @@ export default function BlogDetailPage() {
   }
 
   if (!blog) {
-    notFound();
     return null;
   }
 

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { notFound } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { supabase } from '@database/connection/supabase';
 import Image from 'next/image';
@@ -148,6 +148,7 @@ const ExpandableBio = ({ bio }) => {
 };
 
 export default function ArtistProfilePage({ params }) {
+  const router = useRouter();
   const [artist, setArtist] = useState(null);
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -238,6 +239,12 @@ export default function ArtistProfilePage({ params }) {
     }
   }, [artist]);
 
+  useEffect(() => {
+    if (!loading && !artist) {
+      router.replace('/artists');
+    }
+  }, [loading, artist, router]);
+
   if (loading) {
     return (
       <main className="artist-profile-wrapper">
@@ -291,7 +298,6 @@ export default function ArtistProfilePage({ params }) {
   }
 
   if (!artist) {
-    notFound();
     return null;
   }
 

@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import SEOLandingPage from '@/app/components/common/SEOLandingPage';
 import { generateOverview, generateServices, generateFAQs, generateRelatedLinks } from '@/app/utils/seoTemplates';
 import { getTopArtistsForSEO } from '@/app/utils/fetchTopArtists';
@@ -55,7 +55,7 @@ export default async function LocationServicePage({ params }) {
   }
 
   if (!parsed.isValidKeyword) {
-    notFound();
+    redirect('/artists');
   }
 
   // Fetch top 5 curated artists from the database for this category & city
