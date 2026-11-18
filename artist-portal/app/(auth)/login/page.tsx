@@ -51,35 +51,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md my-auto relative py-6 font-sans">
-      {/* Brand Header */}
-      <div className="flex flex-col items-center mb-8 text-center">
-        <div className="w-16 h-16 flex items-center justify-center p-2 mb-3">
+    <div className="w-full max-w-md my-auto relative py-3 font-sans">
+      {/* Clean Compact Brand Header */}
+      <div className="flex items-center justify-center gap-2.5 mb-5">
+        <div className="w-9 h-9 flex items-center justify-center p-1 bg-white rounded-xl shadow-sm border border-slate-200 flex-shrink-0">
           <img
             src="/logo.webp"
             alt="Magnevents Logo"
-            width={64}
-            height={64}
+            width={32}
+            height={32}
             className="object-contain"
             onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }}
           />
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 leading-none">
+        <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-none">
           Magne<span className="bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">vents</span>
         </h1>
-        <p className="text-slate-400 font-bold mt-2 text-xs uppercase tracking-[0.2em]">
-          Artist Suite
-        </p>
       </div>
 
-      <div className="w-full p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl">
-        <div className="text-center mb-6">
-          <h2 className="text-lg font-bold text-slate-900">Sign In to Performer Portal</h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Access your verified portfolio, calendar bookings & payouts
-          </p>
+      <div className="w-full p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xl">
+        <div className="text-center mb-5">
+          <h2 className="text-lg font-bold text-slate-900">Performer Sign In</h2>
         </div>
 
         {error && (
@@ -122,12 +116,12 @@ export default function LoginPage() {
         </button>
 
         {/* Divider */}
-        <div className="relative my-5 text-center">
+        <div className="relative my-4 text-center">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-200" />
           </div>
           <span className="relative bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            or sign in with email
+            or
           </span>
         </div>
 

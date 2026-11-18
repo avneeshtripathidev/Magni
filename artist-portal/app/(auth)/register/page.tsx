@@ -125,38 +125,29 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="w-full max-w-md my-auto relative py-4 font-sans">
-      {/* Compact Brand Header */}
-      <div className="flex flex-col items-center mb-5 text-center">
-        <div className="w-12 h-12 flex items-center justify-center p-1.5 mb-2 bg-white rounded-2xl shadow-sm border border-slate-200">
+    <div className="w-full max-w-md my-auto relative py-2 font-sans">
+      {/* Clean Compact Brand Header */}
+      <div className="flex items-center justify-center gap-2.5 mb-4">
+        <div className="w-9 h-9 flex items-center justify-center p-1 bg-white rounded-xl shadow-sm border border-slate-200 flex-shrink-0">
           <img
             src="/logo.webp"
             alt="Magnevents Logo"
-            width={48}
-            height={48}
+            width={32}
+            height={32}
             className="object-contain"
             onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
             }}
           />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 leading-none">
+        <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-none">
           Magne<span className="bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">vents</span>
         </h1>
-        <p className="text-slate-400 font-bold mt-1.5 text-[10px] uppercase tracking-[0.2em]">
-          Artist Suite
-        </p>
       </div>
 
-      <div className="w-full p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xl">
-        <div className="text-center mb-5">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-[10px] font-black uppercase tracking-[0.15em] mb-2">
-            Step 1 of 2 • Account Setup
-          </span>
-          <h2 className="text-lg font-bold text-slate-900">Performer Onboarding</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Create your account first, then complete your full artist profile
-          </p>
+      <div className="w-full p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-xl">
+        <div className="text-center mb-4">
+          <h2 className="text-lg font-bold text-slate-900">Create Performer Account</h2>
         </div>
 
         {error && (
@@ -198,12 +189,12 @@ export default function RegisterPage() {
           <span>Continue with Google</span>
         </button>
 
-        <div className="relative my-5 text-center">
+        <div className="relative my-4 text-center">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-200" />
           </div>
           <span className="relative bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            or register with email
+            or
           </span>
         </div>
 
@@ -319,7 +310,7 @@ export default function RegisterPage() {
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 mt-0.5"
               />
-              <span>I agree to performer terms and arrival commitments.</span>
+              <span>I agree to the Performer Terms.</span>
             </label>
           </div>
 
@@ -332,7 +323,7 @@ export default function RegisterPage() {
               <Loader2 className="w-4 h-4 animate-spin text-white" />
             ) : (
               <>
-                <span>Continue to Artist Details</span>
+                <span>Create Account</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
