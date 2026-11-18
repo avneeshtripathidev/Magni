@@ -1,0 +1,37 @@
+{
+  "name": "Magnevents Artist Suite",
+  "short_name": "Artist Suite",
+  "description": "Official Performer Dashboard for Magnevents Live Artists",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#141214",
+  "theme_color": "#141214",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "entertainment", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Bookings",
+      "url": "/bookings",
+      "description": "View upcoming gigs and reservations"
+    },
+    {
+      "name": "Payouts",
+      "url": "/payments",
+      "description": "Check earnings and escrow balances"
+    }
+  ]
+}

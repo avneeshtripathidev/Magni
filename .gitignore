@@ -34,6 +34,8 @@ yarn-error.log*
 
 # Local config
 .gemini/
+.data/
+*.tsbuildinfo
 
 # Sensitive Personal, Client & Artist Data
 artist data/
