@@ -246,7 +246,14 @@ export default async function CityLandingPage({ params }) {
                 <span className="city-breadcrumb-current">{city.name}</span>
               </nav>
 
-              <h1>{city.h1 || `Book live singers, bands & DJs in ${city.name}`}</h1>
+              <h1>
+                {city.h1 || (
+                  <>
+                    Book live singers, bands &amp; DJs in{' '}
+                    <span className="city-title-accent">{city.name}</span>
+                  </>
+                )}
+              </h1>
 
               <p className="city-subtitle">
                 Browse vetted performers, compare direct artist pricing, and confirm bookings for weddings, corporate events, and private gatherings in {city.name}.
@@ -257,6 +264,7 @@ export default async function CityLandingPage({ params }) {
 
             <aside className="city-summary-panel" aria-label="Booking overview">
               <div className="city-summary-head">
+                <span className="city-summary-kicker">0% Commission · Verified Roster</span>
                 <h2>Direct booking in {city.name}</h2>
                 <p>No agency middlemen. Transparent quotes before you pay.</p>
               </div>
@@ -264,7 +272,7 @@ export default async function CityLandingPage({ params }) {
               <dl className="city-summary-list">
                 <div className="city-summary-row">
                   <dt>Starting fee</dt>
-                  <dd>₹5,999 onwards</dd>
+                  <dd className="city-summary-price">₹5,999 onwards</dd>
                 </div>
                 <div className="city-summary-row">
                   <dt>Booking fee</dt>
@@ -290,13 +298,17 @@ export default async function CityLandingPage({ params }) {
           </div>
         </header>
 
-        <div className="city-content-container">
-          {/* 2. Verified Live Artists */}
-          <section className="city-artists-section" aria-label={`Available artists in ${city.name}`}>
-            <SEOArtistsGrid category="All" city={city.name} fallbackArtists={topArtists} />
-          </section>
+        {/* 2. Dark Soft Charcoal Showcase Band: Verified Live Artists */}
+        <section className="city-artists-band" aria-label={`Available artists in ${city.name}`}>
+          <div className="city-band-inner">
+            <div className="city-artists-section">
+              <SEOArtistsGrid category="All" city={city.name} fallbackArtists={topArtists} />
+            </div>
+          </div>
+        </section>
 
-          {/* 3. Practical Booking Guide */}
+        <div className="city-content-container">
+          {/* 3. Practical Booking Guide on Warm Ivory */}
           <section className="city-guide-section">
             {city.content ? (
               <div

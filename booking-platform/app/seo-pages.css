@@ -1,38 +1,35 @@
 
 /* ==========================================================================
-   City Landing Page — Modern Editorial Luxury UI (Brand-Aligned & Mobile-First)
+   City Landing Page — Official Magnevents Brand Palette (COLOR_GUIDELINES.md)
+   Tokens reused strictly from tokens.css:
+   - Warm Ivory (#F5F0E9): Main page backgrounds & editorial surfaces
+   - Soft Charcoal (#29272A): Primary text, dark artists showcase & summary panel
+   - Coral (#E45F60): Primary CTAs & active highlights
+   - Marigold (#E8B943): Small luxury accents, pricing & focus outlines
+   - Wine Red (#7E3044): Secondary emphasis, headings accent & premium tags
+   - Rose Stone (#D8C4B7): Subtle backgrounds, borders & dividers
    ========================================================================== */
 
 .city-landing-page {
-  --city-bg: #211B1D;
-  --city-surface: #282326;
-  --city-surface-raised: #2F292D;
-  --city-input-bg: #1B1719;
-  --city-border: rgba(216, 196, 183, 0.14);
-  --city-border-strong: rgba(216, 196, 183, 0.28);
-  --city-ink: #F5F0E9;
-  --city-ink-secondary: rgba(245, 240, 233, 0.72);
-  --city-ink-muted: rgba(245, 240, 233, 0.48);
-  --city-gold: #E8B943;
-  --city-gold-hover: #F2C95D;
-  --city-gold-ink: #1C1719;
-  --city-coral: #E45F60;
-  --city-shadow-card: 0 18px 42px -12px rgba(0, 0, 0, 0.36);
-
   min-height: 100vh;
-  background-color: var(--city-bg);
-  color: var(--city-ink);
+  background-color: var(--color-ivory, #F5F0E9);
+  color: var(--color-charcoal, #29272A);
   font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
   padding-top: 0;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── 1. Hero Section ── */
+.city-landing-page :focus-visible {
+  outline: 2px solid var(--color-marigold, #E8B943);
+  outline-offset: 3px;
+}
+
+/* ── 1. Warm Ivory Editorial Hero ── */
 .city-hero {
-  background: linear-gradient(180deg, #292226 0%, #241E21 55%, #211B1D 100%);
-  border-bottom: 1px solid var(--city-border);
-  padding: 28px 18px 36px;
+  background-color: var(--color-ivory, #F5F0E9);
+  border-bottom: 1px solid var(--color-rose-stone, #D8C4B7);
+  padding: 28px 18px 40px;
 }
 
 .city-hero-inner {
@@ -56,49 +53,53 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 12.5px;
-  letter-spacing: 0.01em;
-  color: var(--city-ink-muted);
+  font-size: 13px;
+  color: rgba(41, 39, 42, 0.56);
   flex-wrap: wrap;
 }
 
 .city-breadcrumb a {
-  color: var(--city-ink-secondary);
+  color: rgba(41, 39, 42, 0.72);
   text-decoration: none;
   transition: color 0.18s ease;
 }
 
 .city-breadcrumb a:hover {
-  color: var(--city-ink);
+  color: var(--color-wine, #7E3044);
+  text-decoration: underline;
 }
 
 .city-breadcrumb-current {
-  color: var(--city-gold);
-  font-weight: 500;
+  color: var(--color-wine, #7E3044);
+  font-weight: 600;
 }
 
-/* Editorial Display Title */
+/* Display Heading (13.04:1 AAA Soft Charcoal on Warm Ivory) */
 .city-hero h1 {
   font-family: var(--font-display, 'Playfair Display', Georgia, serif);
   font-size: clamp(30px, 4.4vw, 48px);
   font-weight: 700;
   margin: 0;
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
   line-height: 1.12;
   letter-spacing: -0.02em;
   max-width: 660px;
 }
 
+.city-title-accent {
+  color: var(--color-wine, #7E3044);
+}
+
 .city-subtitle {
   font-size: clamp(14.5px, 1.4vw, 16px);
-  color: var(--city-ink-secondary);
+  color: rgba(41, 39, 42, 0.78) !important;
   max-width: 560px;
-  line-height: 1.65;
+  line-height: 1.68;
   margin: 0;
   font-weight: 400;
 }
 
-/* ── 2. Inline Search Bar (Mobile-First, Crisp Focus States) ── */
+/* ── 2. Clean White Search Bar on Warm Ivory ── */
 .city-search-block {
   margin-top: 6px;
   display: flex;
@@ -110,17 +111,17 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: var(--city-input-bg);
-  border: 1px solid var(--city-border-strong);
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-rose-stone, #D8C4B7);
   border-radius: 14px;
   padding: 8px;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 30px -14px rgba(41, 39, 42, 0.14);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .city-search-form:focus-within {
-  border-color: rgba(232, 185, 67, 0.6);
-  box-shadow: 0 0 0 3px rgba(232, 185, 67, 0.12), 0 12px 32px -10px rgba(0, 0, 0, 0.4);
+  border-color: var(--color-coral, #E45F60);
+  box-shadow: 0 0 0 3px rgba(228, 95, 96, 0.14), 0 12px 30px -14px rgba(41, 39, 42, 0.16);
 }
 
 .city-search-field {
@@ -134,7 +135,7 @@
 }
 
 .city-search-icon {
-  color: var(--city-ink-muted);
+  color: var(--color-wine, #7E3044);
   flex-shrink: 0;
 }
 
@@ -142,7 +143,7 @@
   width: 100%;
   background: transparent;
   border: none;
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
   font-size: 14.5px;
   outline: none;
   font-family: inherit;
@@ -150,7 +151,7 @@
 }
 
 .city-search-input::placeholder {
-  color: var(--city-ink-muted);
+  color: rgba(41, 39, 42, 0.48);
 }
 
 .city-search-select {
@@ -158,13 +159,13 @@
   -webkit-appearance: none;
   min-height: 46px;
   padding: 0 36px 0 14px;
-  background-color: var(--city-surface);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23D8C4B7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-color: var(--color-ivory, #F5F0E9);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2329272A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
-  border: 1px solid var(--city-border);
+  border: 1px solid var(--color-rose-stone, #D8C4B7);
   border-radius: 10px;
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
   font-size: 13.5px;
   font-weight: 500;
   font-family: inherit;
@@ -175,15 +176,15 @@
 
 .city-search-select:hover,
 .city-search-select:focus {
-  border-color: var(--city-border-strong);
-  background-color: var(--city-surface-raised);
+  border-color: var(--color-wine, #7E3044);
 }
 
 .city-search-select option {
-  background: #211B1D;
-  color: #F5F0E9;
+  background: #FFFFFF;
+  color: var(--color-charcoal, #29272A);
 }
 
+/* Primary CTA Button: Official Coral (#E45F60) + Bold White (#FFFFFF) */
 .city-search-submit {
   display: inline-flex;
   align-items: center;
@@ -193,19 +194,19 @@
   padding: 0 22px;
   border: none;
   border-radius: 10px;
-  background: var(--city-gold);
-  color: var(--city-gold-ink);
+  background-color: var(--color-coral, #E45F60);
+  color: #FFFFFF;
   font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.18s ease, transform 0.15s ease;
+  box-shadow: 0 6px 20px rgba(228, 95, 96, 0.3);
+  transition: filter 0.18s ease, transform 0.15s ease;
 }
 
 .city-search-submit:hover {
-  background: var(--city-gold-hover);
+  filter: brightness(0.92);
 }
 
 .city-search-submit:active {
@@ -222,54 +223,68 @@
 
 .city-quick-label {
   font-size: 12.5px;
-  font-weight: 500;
-  color: var(--city-ink-muted);
+  font-weight: 600;
+  color: rgba(41, 39, 42, 0.62);
   margin-right: 2px;
 }
 
 .city-quick-link {
   font-size: 12.5px;
   font-weight: 500;
-  color: var(--city-ink-secondary);
+  color: var(--color-charcoal, #29272A);
   text-decoration: none;
   padding: 6px 12px;
   border-radius: 8px;
-  background: rgba(245, 240, 233, 0.04);
-  border: 1px solid var(--city-border);
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-rose-stone, #D8C4B7);
   transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
 }
 
 .city-quick-link:hover {
-  border-color: rgba(232, 185, 67, 0.45);
-  background: rgba(232, 185, 67, 0.08);
-  color: var(--city-ink);
+  border-color: var(--color-wine, #7E3044);
+  color: var(--color-wine, #7E3044);
+  background-color: rgba(126, 48, 68, 0.04);
 }
 
-/* ── 3. Direct Booking Summary Card ── */
+/* ── 3. Dark Soft Charcoal Summary Panel (Strong Visual Anchor) ── */
 .city-summary-panel {
-  background: var(--city-surface);
-  border: 1px solid var(--city-border);
-  border-top: 2px solid rgba(232, 185, 67, 0.65);
+  background-color: var(--color-charcoal, #29272A);
+  border: 1px solid rgba(216, 196, 183, 0.24);
+  border-top: 3px solid var(--color-marigold, #E8B943);
   border-radius: 16px;
-  padding: 22px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  box-shadow: var(--city-shadow-card);
+  color: var(--color-ivory, #F5F0E9);
+  box-shadow: 0 20px 44px -16px rgba(41, 39, 42, 0.34);
+}
+
+.city-summary-kicker {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background-color: var(--color-wine, #7E3044);
+  color: var(--color-ivory, #F5F0E9);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
 .city-summary-head h2 {
   font-family: var(--font-display, 'Playfair Display', Georgia, serif);
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
-  color: var(--city-ink);
+  color: var(--color-ivory, #F5F0E9);
   margin: 0 0 6px;
   letter-spacing: -0.015em;
 }
 
 .city-summary-head p {
   font-size: 13.5px;
-  color: var(--city-ink-secondary);
+  color: rgba(245, 240, 233, 0.72) !important;
   margin: 0;
   line-height: 1.55;
 }
@@ -287,27 +302,32 @@
   justify-content: space-between;
   gap: 14px;
   padding: 11px 0;
-  border-top: 1px solid var(--city-border);
+  border-top: 1px solid rgba(216, 196, 183, 0.18);
   font-size: 13.5px;
 }
 
 .city-summary-row dt {
-  color: var(--city-ink-muted);
+  color: var(--color-rose-stone, #D8C4B7);
   font-weight: 400;
 }
 
 .city-summary-row dd {
   margin: 0;
-  color: var(--city-ink);
+  color: var(--color-ivory, #F5F0E9);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
+.city-summary-row dd.city-summary-price {
+  color: var(--color-marigold, #E8B943);
+  font-weight: 700;
+}
+
 .city-summary-actions {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
   padding-top: 4px;
 }
 
@@ -318,16 +338,17 @@
   min-height: 44px;
   padding: 0 18px;
   border-radius: 10px;
-  background: var(--city-ink);
-  color: var(--city-gold-ink);
-  font-size: 13.5px;
-  font-weight: 600;
+  background-color: var(--color-coral, #E45F60);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 700;
   text-decoration: none;
-  transition: background-color 0.18s ease, transform 0.15s ease;
+  box-shadow: 0 6px 20px rgba(228, 95, 96, 0.28);
+  transition: filter 0.18s ease;
 }
 
 .city-summary-primary-btn:hover {
-  background: #ffffff;
+  filter: brightness(0.92);
 }
 
 .city-summary-secondary-btn {
@@ -338,8 +359,8 @@
   padding: 0 18px;
   border-radius: 10px;
   background: transparent;
-  border: 1px solid var(--city-border-strong);
-  color: var(--city-ink);
+  border: 1px solid rgba(216, 196, 183, 0.35);
+  color: var(--color-ivory, #F5F0E9);
   font-size: 13.5px;
   font-weight: 500;
   font-family: inherit;
@@ -348,25 +369,28 @@
 }
 
 .city-summary-secondary-btn:hover {
-  border-color: rgba(232, 185, 67, 0.55);
-  background: rgba(245, 240, 233, 0.04);
+  border-color: var(--color-marigold, #E8B943);
+  background-color: rgba(245, 240, 233, 0.06);
 }
 
-/* ── 4. Main Content Shell & Seamless Artists Grid Integration ── */
-.city-content-container {
+/* ── 4. Full-Bleed Soft Charcoal Band for Artists Showcase ── */
+.city-artists-band {
+  background-color: var(--color-charcoal, #29272A);
+  color: var(--color-ivory, #F5F0E9);
+  padding: 48px 18px 56px;
+  border-bottom: 1px solid rgba(216, 196, 183, 0.2);
+}
+
+.city-band-inner {
   max-width: 1220px;
   margin: 0 auto;
-  padding: 36px 18px 72px;
-  display: flex;
-  flex-direction: column;
-  gap: 56px;
 }
 
 .city-artists-section {
   width: 100%;
 }
 
-/* Remove inherited 100vh dead space and double padding from shared Artists.css */
+/* Cleanly normalize shared Artists.css inside the band */
 .city-artists-section .artists-page {
   min-height: auto !important;
   padding: 0 !important;
@@ -385,17 +409,26 @@
 
 .city-artists-section .hp-section-head h2 {
   font-family: var(--font-display, 'Playfair Display', Georgia, serif) !important;
-  font-size: clamp(22px, 2.8vw, 30px) !important;
+  font-size: clamp(24px, 2.8vw, 32px) !important;
   font-weight: 700 !important;
-  color: var(--city-ink) !important;
+  color: var(--color-ivory, #F5F0E9) !important;
   letter-spacing: -0.02em !important;
   margin: 0 !important;
 }
 
-/* ── 5. Editorial Booking Guide Section ── */
+/* ── 5. Warm Ivory Main Content Shell ── */
+.city-content-container {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 48px 18px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+/* ── 6. Editorial Booking Guide Section on Warm Ivory ── */
 .city-guide-section {
-  border-top: 1px solid var(--city-border);
-  padding-top: 44px;
+  padding-top: 0;
 }
 
 .city-guide-grid {
@@ -406,18 +439,18 @@
 
 .city-guide-narrative h2 {
   font-family: var(--font-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(22px, 2.5vw, 28px);
+  font-size: clamp(24px, 2.6vw, 30px);
   font-weight: 700;
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
   margin: 0 0 16px;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 1.22;
 }
 
 .city-guide-narrative p {
   font-size: 15px;
-  line-height: 1.75;
-  color: var(--city-ink-secondary);
+  line-height: 1.78;
+  color: rgba(41, 39, 42, 0.8) !important;
   margin: 0 0 16px;
   max-width: 62ch;
 }
@@ -427,19 +460,20 @@
 }
 
 .city-formats-panel {
-  background: var(--city-surface);
-  border: 1px solid var(--city-border);
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-rose-stone, #D8C4B7);
   border-radius: 16px;
-  padding: 22px;
+  padding: 24px;
+  box-shadow: 0 10px 28px -14px rgba(41, 39, 42, 0.1);
 }
 
 .city-formats-panel h3 {
   font-family: var(--font-sans, 'Inter', sans-serif);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--city-gold);
+  color: var(--color-wine, #7E3044);
   margin: 0 0 14px;
 }
 
@@ -453,7 +487,7 @@
 
 .city-formats-list li {
   padding: 14px 0;
-  border-top: 1px solid var(--city-border);
+  border-top: 1px solid rgba(216, 196, 183, 0.55);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -466,26 +500,30 @@
 .city-formats-list li strong {
   font-size: 14.5px;
   font-weight: 600;
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
 }
 
 .city-formats-list li span {
   font-size: 13.5px;
   line-height: 1.6;
-  color: var(--city-ink-secondary);
+  color: rgba(41, 39, 42, 0.74);
 }
 
 /* Database HTML SEO Content */
 .seo-content {
-  color: var(--city-ink-secondary);
+  color: rgba(41, 39, 42, 0.82);
   line-height: 1.8;
   font-size: 15.5px;
-  max-width: 72ch;
+  max-width: 74ch;
+}
+
+.seo-content p {
+  color: rgba(41, 39, 42, 0.82) !important;
 }
 
 .seo-content h2 {
   font-family: var(--font-display, 'Playfair Display', Georgia, serif);
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
   margin-top: 32px;
   margin-bottom: 12px;
   font-size: 24px;
@@ -493,14 +531,14 @@
 }
 
 .seo-content h3 {
-  color: var(--city-ink);
+  color: var(--color-wine, #7E3044);
   margin-top: 24px;
   margin-bottom: 10px;
   font-size: 18px;
   font-weight: 600;
 }
 
-/* ── 6. Shared Section Headings ── */
+/* ── 7. Shared Section Headings on Warm Ivory ── */
 .city-section-heading {
   display: flex;
   align-items: flex-end;
@@ -512,38 +550,38 @@
 
 .city-section-heading h2 {
   font-family: var(--font-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(22px, 2.4vw, 26px);
+  font-size: clamp(22px, 2.5vw, 28px);
   font-weight: 700;
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 .city-section-sub {
   font-size: 14px;
-  color: var(--city-ink-secondary);
+  color: rgba(41, 39, 42, 0.72) !important;
   margin: 6px 0 0;
 }
 
 .city-section-link {
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--city-gold);
+  color: var(--color-wine, #7E3044);
   text-decoration: none;
   white-space: nowrap;
   padding-bottom: 2px;
-  border-bottom: 1px solid rgba(232, 185, 67, 0.35);
+  border-bottom: 1px solid rgba(126, 48, 68, 0.35);
   transition: border-color 0.18s ease, color 0.18s ease;
 }
 
 .city-section-link:hover {
-  color: var(--city-gold-hover);
-  border-color: var(--city-gold-hover);
+  color: var(--color-coral, #E45F60);
+  border-color: var(--color-coral, #E45F60);
 }
 
-/* ── 7. City Guides / Articles ── */
+/* ── 8. City Guides / Articles on Warm Ivory ── */
 .blogs-section {
-  border-top: 1px solid var(--city-border);
+  border-top: 1px solid var(--color-rose-stone, #D8C4B7);
   padding-top: 44px;
 }
 
@@ -554,24 +592,25 @@
 }
 
 .blog-card {
-  background: var(--city-surface);
-  border: 1px solid var(--city-border);
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-rose-stone, #D8C4B7);
   border-radius: 14px;
   overflow: hidden;
   text-decoration: none;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 24px -14px rgba(41, 39, 42, 0.12);
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .blog-card:hover {
-  border-color: var(--city-border-strong);
+  border-color: var(--color-coral, #E45F60);
   transform: translateY(-2px);
 }
 
 .blog-card-img {
   height: 184px;
-  background: var(--city-input-bg);
+  background-color: rgba(216, 196, 183, 0.3);
   overflow: hidden;
 }
 
@@ -589,7 +628,7 @@
 }
 
 .blog-card-content h3 {
-  color: var(--city-ink);
+  color: var(--color-charcoal, #29272A);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.45;
@@ -597,14 +636,14 @@
 }
 
 .read-more {
-  color: var(--city-gold);
+  color: var(--color-wine, #7E3044);
   font-size: 13px;
   font-weight: 600;
 }
 
-/* ── 8. Other Cities Directory ── */
+/* ── 9. Other Cities Directory (Subtle Rose Stone & White Tiles) ── */
 .city-directory-section {
-  border-top: 1px solid var(--city-border);
+  border-top: 1px solid var(--color-rose-stone, #D8C4B7);
   padding-top: 44px;
 }
 
@@ -621,9 +660,9 @@
   gap: 8px;
   padding: 12px 14px;
   border-radius: 10px;
-  background: var(--city-surface);
-  border: 1px solid var(--city-border);
-  color: var(--city-ink);
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-rose-stone, #D8C4B7);
+  color: var(--color-charcoal, #29272A);
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
@@ -631,26 +670,30 @@
 }
 
 .city-directory-link:hover {
-  border-color: rgba(232, 185, 67, 0.45);
-  background: var(--city-surface-raised);
-  color: #ffffff;
+  border-color: var(--color-coral, #E45F60);
+  background-color: rgba(216, 196, 183, 0.18);
+  color: var(--color-wine, #7E3044);
 }
 
 .city-directory-arrow {
-  color: var(--city-ink-muted);
+  color: rgba(41, 39, 42, 0.45);
   flex-shrink: 0;
   transition: transform 0.18s ease, color 0.18s ease;
 }
 
 .city-directory-link:hover .city-directory-arrow {
   transform: translateX(2px);
-  color: var(--city-gold);
+  color: var(--color-coral, #E45F60);
 }
 
-/* ── 9. Responsive Breakpoints (Tablet & Desktop) ── */
+/* ── 10. Responsive Breakpoints (Mobile-First -> Tablet -> Desktop) ── */
 @media (min-width: 640px) {
   .city-hero {
-    padding: 36px 24px 44px;
+    padding: 36px 24px 48px;
+  }
+
+  .city-artists-band {
+    padding: 56px 24px 64px;
   }
 
   .city-search-form {
@@ -676,17 +719,21 @@
 
 @media (min-width: 960px) {
   .city-hero {
-    padding: 52px 28px 56px;
+    padding: 52px 28px 60px;
   }
 
   .city-hero-inner {
-    grid-template-columns: minmax(0, 1.32fr) minmax(320px, 0.68fr);
+    grid-template-columns: minmax(0, 1.32fr) minmax(330px, 0.68fr);
     gap: 48px;
     align-items: center;
   }
 
+  .city-artists-band {
+    padding: 64px 28px 72px;
+  }
+
   .city-content-container {
-    padding: 44px 28px 88px;
+    padding: 56px 28px 88px;
     gap: 64px;
   }
 
