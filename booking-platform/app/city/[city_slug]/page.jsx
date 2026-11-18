@@ -1,29 +1,61 @@
 import { redirect } from 'next/navigation';
 import { supabase } from '@database/connection/supabase';
 import Link from 'next/link';
-import { Mic2 } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import SEOArtistsGrid from '@/app/components/common/SEOArtistsGrid';
-import AISingerBookingCard from '@/app/components/home/AISingerBookingCard';
-import AllCitiesSection from '@/app/components/common/AllCitiesSection';
-import CityAISearchBox from '@/app/components/common/CityAISearchBox';
+import { CityQuickSearch, CitySpecialistButton } from '@/app/components/city/CityQuickSearch';
 import { MAJOR_CITIES } from '@/app/utils/seoUrlParser';
 import { getTopArtistsForSEO } from '@/app/utils/fetchTopArtists';
 import '../../seo-pages.css';
-import '@/app/styles/pages/AISearch.css';
+
+const DIRECTORY_CITIES = [
+  { name: 'Delhi NCR', slug: 'delhi' },
+  { name: 'Mumbai', slug: 'mumbai' },
+  { name: 'Bengaluru', slug: 'bangalore' },
+  { name: 'Hyderabad', slug: 'hyderabad' },
+  { name: 'Pune', slug: 'pune' },
+  { name: 'Kolkata', slug: 'kolkata' },
+  { name: 'Ahmedabad', slug: 'ahmedabad' },
+  { name: 'Gandhinagar', slug: 'gandhinagar' },
+  { name: 'Jaipur', slug: 'jaipur' },
+  { name: 'Udaipur', slug: 'udaipur' },
+  { name: 'Chandigarh', slug: 'chandigarh' },
+  { name: 'Lucknow', slug: 'lucknow' },
+  { name: 'Goa', slug: 'goa' },
+  { name: 'Indore', slug: 'indore' },
+  { name: 'Bhopal', slug: 'bhopal' },
+  { name: 'Surat', slug: 'surat' },
+  { name: 'Varanasi', slug: 'varanasi' },
+  { name: 'Bhubaneswar', slug: 'bhubaneswar' },
+  { name: 'Patna', slug: 'patna' },
+  { name: 'Agra', slug: 'agra' },
+  { name: 'Kanpur', slug: 'kanpur' },
+  { name: 'Dehradun', slug: 'dehradun' },
+  { name: 'Guwahati', slug: 'guwahati' },
+  { name: 'Ranchi', slug: 'ranchi' },
+  { name: 'Coimbatore', slug: 'coimbatore' },
+  { name: 'Kochi', slug: 'kochi' },
+  { name: 'Amritsar', slug: 'amritsar' },
+  { name: 'Raipur', slug: 'raipur' },
+  { name: 'Vadodara', slug: 'vadodara' },
+  { name: 'Nagpur', slug: 'nagpur' },
+];
 
 function slugToName(slug) {
   if (slug === 'delhi-ncr') return 'Delhi NCR';
-  return slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 export const revalidate = 86400; // Cache at Edge CDN for 24 hours
-
 
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const { city_slug } = awaitedParams;
   const normalizedCitySlug = (city_slug || '').toLowerCase().trim();
-  
+
   let city = null;
   try {
     const { data } = await supabase
@@ -40,14 +72,16 @@ export async function generateMetadata({ params }) {
   const isKnownCity = Boolean(city || MAJOR_CITIES.includes(normalizedCitySlug));
   if (!isKnownCity) {
     return {
-      title: 'City Not Found | Magnevents',
-      robots: { index: false, follow: false, googleBot: { index: false, follow: false } }
+      title: 'Browse Live Artists | Magnevents',
+      robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
     };
   }
 
   const cityName = city?.name || slugToName(normalizedCitySlug);
   const title = city?.seo_title || `Book Live Singers, DJs & Bands in ${cityName} | Magnevents`;
-  const description = city?.meta_description || `Book verified live singers, bands, and wedding DJs in ${cityName} starting from ₹5,999. Direct artist booking with 0% commission & 100% Artist Arrival Guarantee.`;
+  const description =
+    city?.meta_description ||
+    `Book verified live singers, bands, and wedding DJs in ${cityName} starting from ₹5,999. Direct artist booking with 0% commission & 100% Artist Arrival Guarantee.`;
 
   return {
     title,
@@ -65,18 +99,18 @@ export async function generateMetadata({ params }) {
           url: '/og-image.jpg',
           width: 1200,
           height: 630,
-          alt: `Live Artist Booking in ${cityName} - Magnevents`
-        }
+          alt: `Live Artist Booking in ${cityName} - Magnevents`,
+        },
       ],
       locale: 'en_IN',
-      type: 'website'
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/og-image.jpg']
-    }
+      images: ['/og-image.jpg'],
+    },
   };
 }
 
@@ -122,7 +156,6 @@ export default async function CityLandingPage({ params }) {
   }
 
   // 2. Fetch SEO Blogs & Fallback Top Artists for this city in parallel
-  let blogs = [];
   const [blogsResult, topArtists] = await Promise.all([
     city.id
       ? supabase
@@ -138,57 +171,61 @@ export default async function CityLandingPage({ params }) {
       limit: 8,
     }),
   ]);
-  blogs = blogsResult?.data || [];
+  const blogs = blogsResult?.data || [];
 
   // 3. Schema Markup
   const schema = [
     {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": city.seo_title || `Hire Singers in ${city.name}`,
-      "description": city.meta_description || `Book live singers in ${city.name}`,
-      "url": `https://www.magnevents.in/city/${city.slug}`,
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: city.seo_title || `Hire Singers in ${city.name}`,
+      description: city.meta_description || `Book live singers in ${city.name}`,
+      url: `https://www.magnevents.in/city/${city.slug}`,
     },
     {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      "name": `Live Artist Booking in ${city.name}`,
-      "serviceType": "Live Entertainment Booking",
-      "provider": {
-        "@type": "EntertainmentBusiness",
-        "name": "Magnevents",
-        "url": "https://www.magnevents.in"
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: `Live Artist Booking in ${city.name}`,
+      serviceType: 'Live Entertainment Booking',
+      provider: {
+        '@type': 'EntertainmentBusiness',
+        name: 'Magnevents',
+        url: 'https://www.magnevents.in',
       },
-      "areaServed": {
-        "@type": "City",
-        "name": city.name
+      areaServed: {
+        '@type': 'City',
+        name: city.name,
       },
-      "offers": {
-        "@type": "Offer",
-        "priceCurrency": "INR",
-        "price": "5999",
-        "availability": "https://schema.org/InStock"
-      }
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'INR',
+        price: '5999',
+        availability: 'https://schema.org/InStock',
+      },
     },
     {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
         {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://www.magnevents.in"
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://www.magnevents.in',
         },
         {
-          "@type": "ListItem",
-          "position": 2,
-          "name": city.name,
-          "item": `https://www.magnevents.in/city/${city.slug}`
-        }
-      ]
-    }
+          '@type': 'ListItem',
+          position: 2,
+          name: city.name,
+          item: `https://www.magnevents.in/city/${city.slug}`,
+        },
+      ],
+    },
   ];
+
+  const otherCities = DIRECTORY_CITIES.filter(
+    (c) => c.slug !== city.slug && c.name.toLowerCase() !== city.name.toLowerCase()
+  );
 
   return (
     <>
@@ -197,113 +234,159 @@ export default async function CityLandingPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <div className="city-landing-page">
-        <div className="city-hero">
+        {/* 1. Clean Editorial Hero */}
+        <header className="city-hero">
           <div className="city-hero-inner">
             <div className="city-hero-left">
-              <div className="city-ai-pill">
-                <span className="sparkle-icon">✨</span>
-                <span>AI-POWERED LIVE ARTIST SEARCH · {city.name.toUpperCase()}</span>
-              </div>
-              
-              <h1>{city.h1 || `Book the Best Singers in ${city.name}`}</h1>
-              
+              <nav className="city-breadcrumb" aria-label="Breadcrumb">
+                <Link href="/">Home</Link>
+                <span aria-hidden="true">/</span>
+                <Link href="/artists">Cities</Link>
+                <span aria-hidden="true">/</span>
+                <span className="city-breadcrumb-current">{city.name}</span>
+              </nav>
+
+              <h1>{city.h1 || `Book live singers, bands & DJs in ${city.name}`}</h1>
+
               <p className="city-subtitle">
-                Make your events in {city.name} unforgettable with verified live singers, bands &amp; musicians. Instant quotes &amp; 0% booking markup.
+                Browse vetted performers, compare direct artist pricing, and confirm bookings for weddings, corporate events, and private gatherings in {city.name}.
               </p>
 
-              <div className="city-hero-cta-row">
-                <Link href={`/ai-search?q=${encodeURIComponent(`Top singer in ${city.name} for event`)}`} className="city-hero-ai-btn">
-                  <span>✨ Try AI Search for {city.name}</span>
-                  <span className="arrow">➔</span>
-                </Link>
-                <Link href="/artists" className="city-hero-browse-btn">
-                  Browse All Artists
-                </Link>
-              </div>
-
-              <div className="city-hero-trust-badges">
-                <div className="city-trust-tag">🛡️ 100% Arrival Guarantee</div>
-                <div className="city-trust-tag">⚡ Direct 0% Commission</div>
-                <div className="city-trust-tag">⭐ 4.9★ Verified Reviews</div>
-              </div>
+              <CityQuickSearch cityName={city.name} citySlug={city.slug} />
             </div>
 
-            <div className="city-hero-right">
-              <AISingerBookingCard city={city.name} />
-            </div>
+            <aside className="city-summary-panel" aria-label="Booking overview">
+              <div className="city-summary-head">
+                <h2>Direct booking in {city.name}</h2>
+                <p>No agency middlemen. Transparent quotes before you pay.</p>
+              </div>
+
+              <dl className="city-summary-list">
+                <div className="city-summary-row">
+                  <dt>Starting fee</dt>
+                  <dd>₹5,999 onwards</dd>
+                </div>
+                <div className="city-summary-row">
+                  <dt>Booking fee</dt>
+                  <dd>0% agency markup</dd>
+                </div>
+                <div className="city-summary-row">
+                  <dt>Reliability</dt>
+                  <dd>100% arrival guarantee</dd>
+                </div>
+                <div className="city-summary-row">
+                  <dt>Coordination</dt>
+                  <dd>Sound &amp; rider support included</dd>
+                </div>
+              </dl>
+
+              <div className="city-summary-actions">
+                <Link href="/artists" className="city-summary-primary-btn">
+                  Browse all artists
+                </Link>
+                <CitySpecialistButton cityName={city.name} />
+              </div>
+            </aside>
           </div>
-        </div>
+        </header>
 
         <div className="city-content-container">
-          <div className="city-main-content">
-            {/* 0. AI Search Artist Matcher Section for this City */}
-            <CityAISearchBox city={city.name} />
+          {/* 2. Verified Live Artists */}
+          <section className="city-artists-section" aria-label={`Available artists in ${city.name}`}>
+            <SEOArtistsGrid category="All" city={city.name} fallbackArtists={topArtists} />
+          </section>
 
-            {/* 1. Verified Live Artists in this City */}
-            <div className="city-artists-section" style={{ marginBottom: '50px' }}>
-              <SEOArtistsGrid category="All" city={city.name} fallbackArtists={topArtists} />
-            </div>
-
-            {/* 2. SEO In-Depth Content */}
+          {/* 3. Practical Booking Guide */}
+          <section className="city-guide-section">
             {city.content ? (
-              <div 
+              <div
                 className="seo-content"
                 dangerouslySetInnerHTML={{ __html: city.content }}
               />
             ) : (
-              <div className="seo-content default-seo-content" style={{ color: 'rgba(255,255,255,0.8)', lineHeight: '1.8', fontSize: '1.05rem', marginBottom: '50px' }}>
-                <h2 style={{ fontSize: '1.8rem', color: '#fff', marginBottom: '20px' }}>Why Book a Live Singer in {city.name} with Magnevents?</h2>
-                <p style={{ marginBottom: '16px' }}>
-                  Elevate your upcoming event in {city.name} with mesmerizing live music. At <strong>Magnevents</strong>, we provide a premium roster of talented singers, bands, and musicians tailored for every occasion—from intimate house parties and grand weddings to large-scale corporate galas. 
-                </p>
-                <p style={{ marginBottom: '16px' }}>
-                  Finding the right artist can be overwhelming, but our streamlined platform makes booking live entertainment in {city.name} effortless. Browse through verified artist profiles, check their exclusive pricing, and secure your booking with transparent terms and zero hidden fees.
-                </p>
-                
-                <h3 style={{ fontSize: '1.4rem', color: '#fff', marginTop: '30px', marginBottom: '16px' }}>Popular Occasions for Live Music in {city.name}</h3>
-                <ul style={{ paddingLeft: '20px', marginBottom: '24px', listStyleType: 'disc' }}>
-                  <li style={{ marginBottom: '8px' }}><strong>Weddings & Sangeet:</strong> Soulful acoustic singers and high-energy Bollywood bands.</li>
-                  <li style={{ marginBottom: '8px' }}><strong>Corporate Events:</strong> Professional instrumentalists and sophisticated live performers to set the perfect mood.</li>
-                  <li style={{ marginBottom: '8px' }}><strong>Private House Parties:</strong> Versatile vocalists and guitarists to get your guests engaged and singing along.</li>
-                </ul>
-                
-                <p>
-                  Ready to make your event unforgettable? <Link href={`/ai-search?q=${encodeURIComponent(`Top singer in ${city.name} for event`)}`} style={{ color: 'var(--brand-primary, #FFE032)', textDecoration: 'underline', fontWeight: 'bold' }}>Run AI Matcher for {city.name}</Link> or explore verified artists above.
-                </p>
+              <div className="city-guide-grid">
+                <div className="city-guide-narrative">
+                  <h2>How live artist booking works in {city.name}</h2>
+                  <p>
+                    Booking live music for an event in {city.name} usually means dealing with unclear agency markups and last-minute cancellations. Magnevents connects you directly with verified solo singers, acoustic duos, full wedding bands, and DJs with upfront pricing.
+                  </p>
+                  <p>
+                    Once you shortlist performers, our team confirms date availability, coordinates sound and stage rider requirements with your venue, and secures your booking with milestone-based payment protection.
+                  </p>
+                </div>
+
+                <div className="city-formats-panel">
+                  <h3>Common event formats</h3>
+                  <ul className="city-formats-list">
+                    <li>
+                      <strong>Weddings &amp; Sangeet</strong>
+                      <span>Acoustic singers for mehendi, Sufi ensembles, or full Bollywood bands (90–180 mins).</span>
+                    </li>
+                    <li>
+                      <strong>Corporate dinners &amp; offsites</strong>
+                      <span>Instrumentalists, lounge vocalists, and club DJs suited for hotel ballrooms and venues.</span>
+                    </li>
+                    <li>
+                      <strong>Private parties &amp; house gatherings</strong>
+                      <span>Unplugged solo or duo setups with compact sound gear for intimate 25–100 guest events.</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             )}
+          </section>
 
-            {/* 3. Blogs & Entertainment Guides for this City */}
-            <div className="blogs-section" style={{ marginBottom: '50px' }}>
-              <h2>Top Music & Entertainment Guides in {city.name}</h2>
-              {blogs && blogs.length > 0 ? (
-                <div className="blogs-grid">
-                  {blogs.map((blog, idx) => (
-                    <Link href={`/city/${city.slug}/blog/${blog.slug}`} key={idx} className="blog-card">
+          {/* 4. City Guides (only when real published articles exist) */}
+          {blogs.length > 0 && (
+            <section className="blogs-section">
+              <div className="city-section-heading">
+                <h2>Event guides for {city.name}</h2>
+                <Link href="/blog-post" className="city-section-link">
+                  All articles
+                </Link>
+              </div>
+
+              <div className="blogs-grid">
+                {blogs.map((blog, idx) => (
+                  <Link href={`/city/${city.slug}/blog/${blog.slug}`} key={idx} className="blog-card">
+                    {blog.featured_image_url && (
                       <div className="blog-card-img">
-                         {blog.featured_image_url ? (
-                           <img src={blog.featured_image_url} alt={blog.title} />
-                         ) : (
-                           <div className="blog-img-placeholder">
-                             <Mic2 size={40} className="placeholder-icon" />
-                           </div>
-                         )}
+                        <img src={blog.featured_image_url} alt={blog.title} />
                       </div>
-                      <div className="blog-card-content">
-                        <h3>{blog.title}</h3>
-                        <span className="read-more">Read Article →</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="no-blogs">More exciting guides for {city.name} coming soon!</p>
-              )}
+                    )}
+                    <div className="blog-card-content">
+                      <h3>{blog.title}</h3>
+                      <span className="read-more">Read guide</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 5. Other Cities Directory (clean, understated link grid) */}
+          <section className="city-directory-section" aria-label="Other Indian cities">
+            <div className="city-section-heading">
+              <div>
+                <h2>Other cities we serve</h2>
+                <p className="city-section-sub">
+                  Verified performers and touring acts available across major Indian cities.
+                </p>
+              </div>
+              <Link href="/artists" className="city-section-link">
+                View full roster
+              </Link>
             </div>
 
-            {/* 4. Nationwide All Cities Directory Section */}
-            <AllCitiesSection currentCity={city.name} />
-          </div>
+            <div className="city-directory-grid">
+              {otherCities.map((item) => (
+                <Link key={item.slug} href={`/city/${item.slug}`} className="city-directory-link">
+                  <span>{item.name}</span>
+                  <ChevronRight size={14} className="city-directory-arrow" aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
     </>
