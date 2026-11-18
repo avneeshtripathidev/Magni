@@ -345,18 +345,6 @@ export default function RegisterPage() {
             Sign In
           </Link>
         </div>
-
-        {/* Demo Preview */}
-        <div className="mt-6 pt-4 border-t border-slate-100">
-          <button
-            type="button"
-            onClick={loginAsDemoArtist}
-            className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-xs"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Quick Demo Preview</span>
-          </button>
-        </div>
       </div>
 
       {/* Email & Phone Confirmation Popup before storing to DB */}

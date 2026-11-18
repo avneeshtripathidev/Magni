@@ -202,28 +202,15 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Quick Testing Bypass Buttons */}
-        <div className="mt-6 pt-4 border-t border-slate-100 space-y-2">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">
-            ⚡ Fast Access / Testing Bypasses
-          </div>
-          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={loginAsDemoArtist}
-              className="py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-xs"
-            >
-              <Mic2 className="w-3.5 h-3.5 text-sky-600" />
-              <span>Artist Bypass</span>
-            </button>
-            <Link
-              href="/admin/login"
-              className="py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-xs"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Admin Login</span>
-            </Link>
-          </div>
+        {/* Clean Admin Console Link (No Testing Bypasses) */}
+        <div className="mt-5 pt-4 border-t border-slate-100 text-center">
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-indigo-600 transition-colors"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Magnevents Admin Console</span>
+          </Link>
         </div>
       </div>
     </div>
