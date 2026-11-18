@@ -207,7 +207,7 @@ export default function LoginPage() {
           <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 text-center">
             ⚡ Fast Access / Testing Bypasses
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2">
             <button
               type="button"
               onClick={loginAsDemoArtist}

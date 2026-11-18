@@ -21,8 +21,8 @@ export function CompletionMeter({ artist }: CompletionMeterProps) {
 
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 font-sans">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="text-xs sm:text-sm font-bold text-slate-900">Profile Setup</span>
           <span className="text-[11px] text-slate-500">
             ({checklist.filter(c => c.done).length}/{checklist.length} steps complete)

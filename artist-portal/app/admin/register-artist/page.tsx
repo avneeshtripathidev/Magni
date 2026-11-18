@@ -1424,7 +1424,7 @@ export default function AdminArtistRegistrationPage() {
               </label>
 
               {galleryPhotos.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5 mt-4 text-left">
+                <div className="grid grid-cols-2 min-[380px]:grid-cols-3 sm:grid-cols-5 gap-2.5 mt-4 text-left">
                   {galleryPhotos.map((url, idx) => (
                     <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-200 bg-white aspect-square">
                       <img src={url} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover" />
@@ -1742,7 +1742,7 @@ export default function AdminArtistRegistrationPage() {
             Media saves automatically to Cloudflare R2 (<strong className="text-slate-700">artist-basic-details/</strong> &amp; <strong className="text-slate-700">artist-private-kyc/</strong>).
           </span>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
             <button
               type="button"
               onClick={resetForm}

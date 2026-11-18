@@ -117,7 +117,7 @@ export default function MediaPage() {
       )}
 
       {/* Primary Video Showreel */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
         <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
           <Video className="w-4 h-4 text-sky-600" />
           <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Spotlight Video Showreel</h2>
@@ -149,8 +149,8 @@ export default function MediaPage() {
       </div>
 
       {/* Audio Tracks */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <Music className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Audio Tracks & Demos</h2>
@@ -161,19 +161,19 @@ export default function MediaPage() {
         </div>
 
         {/* Add audio input */}
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="url"
             value={newAudioUrl}
             onChange={(e) => setNewAudioUrl(e.target.value)}
             placeholder="SoundCloud track, MP3 link, or drive audio URL..."
-            className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 shadow-sm flex-1"
+            className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 shadow-sm flex-1 min-w-0"
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddAudio())}
           />
           <button
             type="button"
             onClick={handleAddAudio}
-            className="btn-secondary py-2 px-3 text-xs flex items-center gap-1.5 whitespace-nowrap min-h-[38px]"
+            className="btn-secondary py-2 px-3 text-xs flex items-center justify-center gap-1.5 whitespace-nowrap min-h-[38px] w-full sm:w-auto"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Track</span>

@@ -375,7 +375,7 @@ export default function AdminBookingsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 self-start sm:self-center">
+        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-center">
           <button
             type="button"
             onClick={() => loadEvents()}
@@ -412,8 +412,8 @@ export default function AdminBookingsPage() {
       {/* 2. Search Bar, Location Filter & Filter Pills */}
       <div className="flex flex-col space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative group flex-1">
-            <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+          <div className="relative group flex-1 min-w-0">
+            <div className="absolute inset-y-0 left-4 sm:left-6 flex items-center pointer-events-none">
               <Search size={18} className="text-slate-400 group-focus-within:text-sky-600 transition-colors" strokeWidth={2.5} />
             </div>
             <input
@@ -421,7 +421,7 @@ export default function AdminBookingsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by booking ID, artist, client, city, or event..."
-              className="w-full pl-16 pr-6 h-14 rounded-[22px] border border-slate-200/80 bg-white shadow-sm text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-8 focus:ring-sky-600/5 focus:border-sky-300 transition-all"
+              className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 h-14 rounded-[22px] border border-slate-200/80 bg-white shadow-sm text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-8 focus:ring-sky-600/5 focus:border-sky-300 transition-all"
             />
           </div>
 
@@ -433,7 +433,7 @@ export default function AdminBookingsPage() {
           />
         </div>
 
-        <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center overflow-x-auto self-start shadow-xs">
+        <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center overflow-x-auto max-w-full self-start shadow-xs">
           {[
             { id: 'all', label: `All (${events.length})` },
             { id: 'live', label: `Live Active (${liveCount})` },

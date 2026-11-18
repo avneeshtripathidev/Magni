@@ -26,6 +26,21 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   }, [pathname]);
 
+  // Lock body scroll & close on Escape when mobile drawer is open
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
+
   if (isLoginPage) {
     return <>{children}</>;
   }
@@ -72,10 +87,10 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* 4. Main Body */}
-      <div className="flex flex-col min-h-screen lg:pl-[240px] w-full relative">
+      <div className="flex flex-col min-h-screen lg:pl-[240px] w-full min-w-0 overflow-x-hidden relative">
         <AdminTopbar onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <main className="flex-1 p-4 sm:p-5 lg:p-6 max-w-[1600px] mx-auto w-full">
+        <main className="flex-1 p-4 sm:p-5 lg:p-6 max-w-[1600px] mx-auto w-full min-w-0">
           {children}
         </main>
       </div>

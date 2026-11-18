@@ -624,7 +624,7 @@ export default function ArtistOnboardingPage() {
         </div>
 
         {/* Interactive 5-Step Pill Stepper (Admin Portal Pill Style) */}
-        <div className="flex p-1.5 bg-slate-200/60 backdrop-blur-md rounded-[22px] border border-white items-center overflow-x-auto gap-1 mb-6 shadow-xs">
+        <div className="flex p-1.5 bg-slate-200/60 backdrop-blur-md rounded-[22px] border border-white items-center overflow-x-auto max-w-full gap-1 mb-6 shadow-xs">
           {STEPS.map((s) => {
             const Icon = s.icon;
             const isActive = step === s.id;
@@ -673,7 +673,7 @@ export default function ArtistOnboardingPage() {
         )}
 
         {/* Main Form Luxe Card */}
-        <form onSubmit={handleFinalSubmit} className="luxe-card p-6 sm:p-8 space-y-6">
+        <form onSubmit={handleFinalSubmit} className="luxe-card p-4 sm:p-6 md:p-8 space-y-6">
           {/* ================= STEP 1: IDENTITY & ACT ================= */}
           {step === 1 && (
             <div className="space-y-5 animate-in fade-in">
@@ -1565,7 +1565,7 @@ export default function ArtistOnboardingPage() {
 
           {/* Bottom Navigation Bar */}
           <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-5 border-t border-slate-100">
-            <div>
+            <div className="w-full sm:w-auto">
               {step > 1 ? (
                 <button
                   type="button"

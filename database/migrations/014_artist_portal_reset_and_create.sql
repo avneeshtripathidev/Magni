@@ -302,7 +302,8 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, se
 -- 12. SEED AUTHORIZED ADMIN EMAILS (SLOTS 1-3)
 INSERT INTO public.admin_allowed_emails (slot_number, email, role) VALUES
   (1, 'magneventsdotin@gmail.com', 'super_admin'),
-  (2, 'avanishtripathiavanish79921170@gmail.com', 'super_admin');
+  (2, 'avanishtripathiavanish79921170@gmail.com', 'super_admin'),
+  (3, 'avneesh.tripathi.dev@gmail.com', 'super_admin');
 
 -- 13. SEED INITIAL PERFORMER & SAMPLE BOOKINGS
 INSERT INTO public.artists (

@@ -9,6 +9,7 @@ export const MAX_ADMIN_EMAILS = 3;
 export const DEFAULT_ALLOWED_ADMIN_EMAILS: string[] = [
   'magneventsdotin@gmail.com',
   'avanishtripathiavanish79921170@gmail.com',
+  'avneesh.tripathi.dev@gmail.com',
 ];
 
 const STORAGE_KEY = 'magnevents_allowed_admin_emails_v1';

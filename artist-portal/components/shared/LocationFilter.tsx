@@ -83,7 +83,7 @@ export function LocationFilter({
 
   return (
     <div
-      className={`relative inline-flex items-center bg-white border rounded-[18px] shadow-xs transition-all ${
+      className={`relative inline-flex items-center max-w-full min-w-0 bg-white border rounded-[18px] shadow-xs transition-all ${
         value !== 'all'
           ? 'border-sky-300 ring-2 ring-sky-500/10'
           : 'border-slate-200 hover:border-slate-300'
@@ -98,7 +98,7 @@ export function LocationFilter({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label="Filter by location"
-        className={`appearance-none bg-transparent border-none pr-6 font-bold focus:outline-none cursor-pointer ${
+        className={`appearance-none bg-transparent border-none pr-6 w-full min-w-0 truncate font-bold focus:outline-none cursor-pointer ${
           value !== 'all' ? 'text-sky-700' : 'text-slate-700'
         } ${compact ? 'text-[11px]' : 'text-xs'}`}
       >

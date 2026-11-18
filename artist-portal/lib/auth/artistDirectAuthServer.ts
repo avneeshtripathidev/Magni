@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { randomBytes, scryptSync, timingSafeEqual, randomUUID } from 'crypto';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 export interface StoredLocalArtistAccount {
@@ -11,7 +12,9 @@ export interface StoredLocalArtistAccount {
   created_at: string;
 }
 
-const DATA_DIR = path.join(process.cwd(), '.data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'magnevents-data')
+  : path.join(process.cwd(), '.data');
 const ACCOUNTS_FILE = path.join(DATA_DIR, 'artist-accounts.json');
 
 export function getServerSupabase() {

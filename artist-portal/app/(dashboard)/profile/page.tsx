@@ -251,7 +251,7 @@ export default function ProfilePage() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Section 1: Basic Information */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
             <User className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Identity & Contact</h2>
@@ -332,7 +332,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Section 2: Act & Genres */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
             <Mic2 className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Act & Musical Repertoire</h2>
@@ -405,7 +405,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Section 3: Biography */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
             <Music className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Artist Biography</h2>
@@ -424,7 +424,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Section 4: Performance Logistics & Technical Rider */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
             <Clock className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">Logistics & Stage Rider</h2>
@@ -493,7 +493,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Section 5: Standard Pricing */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <CreditCard className="w-4 h-4 text-sky-600" />
@@ -566,7 +566,7 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={saving}
-            className="btn-primary min-h-[40px] px-6 text-xs font-bold"
+            className="btn-primary w-full sm:w-auto min-h-[40px] px-6 text-xs font-bold"
           >
             {saving ? 'Saving Changes...' : 'Save Profile Changes'}
           </button>

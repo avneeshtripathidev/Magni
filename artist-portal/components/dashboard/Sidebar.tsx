@@ -68,7 +68,7 @@ export function Sidebar({ onClose }: SidebarProps) {
   const isVerified = artist?.verification_status === 'approved';
 
   return (
-    <div className="flex flex-col h-full sidebar-dark border-r border-white/5 overflow-y-auto select-none font-sans text-slate-200">
+    <div className="flex flex-col h-full sidebar-dark border-r border-white/5 overflow-y-auto overscroll-contain select-none font-sans text-slate-200">
       {/* 1. Brand Logo Header (matching admin.magnevents.in) */}
       <div className="px-6 py-7 flex-shrink-0 border-b border-white/5">
         <div className="flex items-center justify-between">

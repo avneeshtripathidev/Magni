@@ -89,7 +89,7 @@ export default function AdminArtistsDirectoryPage() {
 
       {/* 2. Controls */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1 sm:pb-0">
           {categories.map((cat) => {
             const isCatActive = categoryFilter === cat;
             return (
@@ -128,7 +128,7 @@ export default function AdminArtistsDirectoryPage() {
       </div>
 
       {/* 3. Cards Grid (5 compact static cards in a single row on desktop) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-3">
         {filtered.map((artist) => {
           const isApproved = artist.verification_status === 'approved';
           const isRejected = artist.verification_status === 'rejected';

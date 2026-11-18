@@ -189,7 +189,7 @@ export default function AdminProfileCardsPage() {
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
           {/* Status Pills */}
-          <div className="flex p-1 bg-slate-200/50 rounded-xl border border-slate-200/60 items-center overflow-x-auto">
+          <div className="flex p-1 bg-slate-200/50 rounded-xl border border-slate-200/60 items-center overflow-x-auto max-w-full">
             {statuses.map((st) => {
               const isSelected = statusFilter === st.id;
               return (
@@ -212,7 +212,7 @@ export default function AdminProfileCardsPage() {
           </div>
 
           {/* Category Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto max-w-full">
             {categories.map((cat) => {
               const isCatActive = categoryFilter === cat;
               return (
@@ -251,7 +251,7 @@ export default function AdminProfileCardsPage() {
 
         return (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-3">
               {paginatedArtists.map((artist) => {
                 const isApproved = artist.verification_status === 'approved';
                 const isRejected = artist.verification_status === 'rejected';
@@ -1047,7 +1047,7 @@ export default function AdminProfileCardsPage() {
               </div>
 
               {/* D. Clean Sticky Director Decision Footer */}
-              <div className="px-6 py-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+              <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
                 <div className="flex items-center gap-2 text-xs">
                   <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
                     Director Action:
@@ -1057,7 +1057,7 @@ export default function AdminProfileCardsPage() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => setRejectionModalOpen(true)}
                     className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs transition-all"

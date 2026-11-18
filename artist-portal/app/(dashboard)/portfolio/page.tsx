@@ -594,7 +594,7 @@ export default function PortfolioPage() {
 
       <form onSubmit={handleSavePortfolio} className="space-y-6">
         {/* SECTION 1: COVER PHOTO (MANDATORY) + PROFILE AVATAR (OPTIONAL) */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-5">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <Camera className="w-4 h-4 text-sky-600" />
@@ -763,7 +763,7 @@ export default function PortfolioPage() {
         </div>
 
         {/* SECTION 2: ARTIST PHOTOS (3-4+ IMAGES: 1 MANDATORY, EXTRA OPTIONAL) */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
               <div className="flex flex-wrap items-center gap-2">
@@ -905,19 +905,19 @@ export default function PortfolioPage() {
           </div>
 
           {/* Optional Paste URL Bar */}
-          <div className="flex gap-2 pt-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-1">
             <input
               type="url"
               value={newImageUrl}
               onChange={(e) => setNewImageUrl(e.target.value)}
               placeholder="Or paste an image URL (https://.../stage-photo.jpg)"
-              className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-sky-500 flex-1"
+              className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-sky-500 flex-1 min-w-0"
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGalleryImageByUrl())}
             />
             <button
               type="button"
               onClick={addGalleryImageByUrl}
-              className="btn-secondary whitespace-nowrap min-h-[38px] text-xs"
+              className="btn-secondary whitespace-nowrap min-h-[38px] text-xs w-full sm:w-auto"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add URL</span>
@@ -926,7 +926,7 @@ export default function PortfolioPage() {
         </div>
 
         {/* SECTION 3: PERFORMANCE VIDEOS (1 MANDATORY, MORE OPTIONAL) */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
               <div className="flex flex-wrap items-center gap-2">
@@ -970,19 +970,19 @@ export default function PortfolioPage() {
           </div>
 
           {/* Add YouTube / Cloudflare Video Link Bar */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="url"
               value={newVideoLink}
               onChange={(e) => setNewVideoLink(e.target.value)}
               placeholder="Or paste YouTube / Cloudflare video link (https://youtube.com/watch?v=...)"
-              className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-sky-500 flex-1"
+              className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-sky-500 flex-1 min-w-0"
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addVideoByLink())}
             />
             <button
               type="button"
               onClick={addVideoByLink}
-              className="btn-secondary whitespace-nowrap min-h-[38px] text-xs"
+              className="btn-secondary whitespace-nowrap min-h-[38px] text-xs w-full sm:w-auto"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Link</span>
@@ -1129,7 +1129,7 @@ export default function PortfolioPage() {
         </div>
 
         {/* SECTION 4: SOCIAL CHANNELS */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
             <Globe className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-900">

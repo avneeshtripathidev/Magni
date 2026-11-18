@@ -62,7 +62,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Account Info */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
         <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
           <Mail className="w-4 h-4 text-sky-600" />
           <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Account Details</h2>
@@ -94,7 +94,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Change Password Form */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
         <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
           <KeyRound className="w-4 h-4 text-sky-600" />
           <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Update Password</h2>
@@ -150,7 +150,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={passwordLoading || !newPassword}
-              className="btn-primary py-2 px-4 text-xs flex items-center gap-1.5 min-h-[38px]"
+              className="btn-primary w-full sm:w-auto py-2 px-4 text-xs flex items-center justify-center gap-1.5 min-h-[38px]"
             >
               {passwordLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>Update Password</span>

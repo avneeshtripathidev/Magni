@@ -91,16 +91,16 @@ export function ArtistTierCard({
   const ActiveIcon = getTierIcon(tier.level);
 
   return (
-    <div className="p-5 sm:p-6 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-4 font-sans">
+    <div className="p-4 sm:p-6 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-4 font-sans">
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3.5">
+        <div className="flex items-center gap-3.5 min-w-0">
           <div
             className={`w-12 h-12 rounded-2xl border flex items-center justify-center shadow-xs flex-shrink-0 ${tier.badgeBg} ${tier.badgeBorder}`}
           >
             <ActiveIcon className={`w-6 h-6 ${tier.iconColor}`} />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
                 Position Level {tier.level} of 5
@@ -114,14 +114,14 @@ export function ArtistTierCard({
             <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-tight mt-0.5">
               {tier.name}
             </h3>
-            <p className="text-xs font-medium text-slate-500">
+            <p className="text-xs font-medium text-slate-500 break-words">
               {artistName ? `${artistName} • ` : ''}
               {tier.tagline}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 bg-slate-50 border border-slate-200/80 rounded-2xl px-4 py-2.5 self-start sm:self-center">
+        <div className="flex items-center justify-between sm:justify-start gap-4 bg-slate-50 border border-slate-200/80 rounded-2xl px-4 py-2.5 w-full sm:w-auto self-start sm:self-center flex-shrink-0">
           <div>
             <div className="text-2xl font-black text-slate-900 leading-none">{count}</div>
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">
@@ -160,7 +160,7 @@ export function ArtistTierCard({
             style={{ width: `${progressPercent}%` }}
           />
         </div>
-        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] font-semibold text-slate-400">
           <span>{tier.name} ({tier.rangeLabel})</span>
           <span>
             {nextTier ? `Next: ${nextTier.name} (${nextTier.rangeLabel})` : 'Highest Performer Honor Achieved'}
@@ -169,7 +169,7 @@ export function ArtistTierCard({
       </div>
 
       {/* All 5 Positions / Milestone Ladder */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 pt-1">
         {ARTIST_TIERS.map((t) => {
           const Icon = getTierIcon(t.level);
           const unlocked = count >= t.minEvents;

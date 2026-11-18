@@ -267,7 +267,7 @@ export function EventVerificationPanel({
   };
 
   return (
-    <div className="luxe-card p-5 sm:p-6 space-y-5 border-2 border-sky-200/80 bg-white font-sans">
+    <div className="luxe-card p-4 sm:p-6 space-y-5 border-2 border-sky-200/80 bg-white font-sans">
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
         <div className="space-y-1">
@@ -309,8 +309,8 @@ export function EventVerificationPanel({
           )}
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-center">
-          <div className="text-right">
+        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto self-start sm:self-center">
+          <div className="text-left sm:text-right">
             <div className="text-sm font-black text-slate-900">
               {proof.completedCount} / {proof.totalRequired} Uploaded
             </div>
@@ -718,7 +718,7 @@ export function EventVerificationPanel({
                 />
               </label>
 
-              <div className="flex gap-1.5">
+              <div className="flex flex-col sm:flex-row gap-1.5">
                 <input
                   type="url"
                   value={videoLinkInput}

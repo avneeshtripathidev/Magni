@@ -47,12 +47,12 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 flex-shrink-0 font-sans shadow-xs">
+    <header className="h-16 bg-white border-b border-slate-200 px-3 sm:px-6 flex items-center justify-between gap-2 sticky top-0 z-30 flex-shrink-0 font-sans shadow-xs max-w-full">
       {/* Left: Mobile Drawer Trigger & Page Title */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={onMenuClick}
-          className="lg:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center border border-slate-200"
+          className="lg:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center border border-slate-200 flex-shrink-0"
           aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5" />
@@ -71,8 +71,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       </div>
 
       {/* Right: Status Badge, Notification Bell & Mini Avatar */}
-      <div className="flex items-center gap-2.5 flex-shrink-0">
-        <StatusBadge status={artist?.verification_status || 'pending'} size="sm" showIcon={false} />
+      <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+        <div className="hidden min-[360px]:block">
+          <StatusBadge status={artist?.verification_status || 'pending'} size="sm" showIcon={false} />
+        </div>
 
         {/* Notifications Dropdown */}
         <div className="relative">
@@ -88,7 +90,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border border-slate-200 rounded-2xl p-3 shadow-panel z-50 animate-in fade-in slide-in-from-top-2">
+            <div className="fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-[68px] sm:top-auto sm:mt-2 w-auto sm:w-80 max-w-[calc(100vw-24px)] bg-white border border-slate-200 rounded-2xl p-3 shadow-panel z-50 animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
                 <span className="text-xs font-bold text-slate-900">Notifications</span>
                 {unreadCount > 0 && (

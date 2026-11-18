@@ -146,7 +146,7 @@ export default function ArtistDashboardPage() {
       {/* 1. Header (matching admin.magnevents.in/dashboard/requests) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
             Client Inquiries & Overview
           </h1>
           <p className="text-sm font-medium text-slate-500 mt-2">
@@ -303,11 +303,11 @@ export default function ArtistDashboardPage() {
       />
 
       {/* 3. Metric Stats Grid (Admin Portal Luxe Style) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status</span>
-            <ShieldCheck className="w-4 h-4 text-slate-400" />
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 sm:p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Status</span>
+            <ShieldCheck className="w-4 h-4 text-slate-400 flex-shrink-0" />
           </div>
           <div className="pt-0.5">
             <StatusBadge status={status} size="sm" />
@@ -317,12 +317,12 @@ export default function ArtistDashboardPage() {
           </span>
         </div>
 
-        <div className="p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Starting Rate</span>
-            <DollarSign className="w-4 h-4 text-sky-600" />
+        <div className="p-4 sm:p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Starting Rate</span>
+            <DollarSign className="w-4 h-4 text-sky-600 flex-shrink-0" />
           </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight">
+          <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
             ₹{(artist?.submitted_pricing?.starting_price || artist?.price_min || 15000).toLocaleString('en-IN')}
           </div>
           <span className="text-[11px] text-slate-400 block pt-1.5 border-t border-slate-100 font-medium">
@@ -330,12 +330,12 @@ export default function ArtistDashboardPage() {
           </span>
         </div>
 
-        <div className="p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Inquiries</span>
-            <CalendarCheck className="w-4 h-4 text-amber-500" />
+        <div className="p-4 sm:p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Active Inquiries</span>
+            <CalendarCheck className="w-4 h-4 text-amber-500 flex-shrink-0" />
           </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight">
+          <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             3
           </div>
           <span className="text-[11px] text-slate-400 block pt-1.5 border-t border-slate-100 font-medium">
@@ -343,12 +343,12 @@ export default function ArtistDashboardPage() {
           </span>
         </div>
 
-        <div className="p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Performer Rating</span>
-            <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+        <div className="p-4 sm:p-5 rounded-[22px] bg-white border border-slate-200 shadow-sm space-y-1.5 hover:shadow-md transition-all min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Performer Rating</span>
+            <Star className="w-4 h-4 text-amber-400 fill-amber-400 flex-shrink-0" />
           </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+          <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
             <span>4.95</span>
             <span className="text-xs font-bold text-amber-500">★</span>
           </div>
@@ -362,8 +362,8 @@ export default function ArtistDashboardPage() {
       <div className="flex flex-col space-y-3">
         {/* Full-width Rounded Search Bar + Location Selector */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative group flex-1">
-            <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+          <div className="relative group flex-1 min-w-0">
+            <div className="absolute inset-y-0 left-4 sm:left-6 flex items-center pointer-events-none">
               <Search size={18} className="text-slate-400 group-focus-within:text-sky-600 transition-colors" strokeWidth={2.5} />
             </div>
             <input
@@ -371,7 +371,7 @@ export default function ArtistDashboardPage() {
               placeholder="Search by client name, email, or artist..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-16 pr-6 h-14 rounded-[22px] border border-slate-200/80 bg-white shadow-sm text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-8 focus:ring-sky-600/5 focus:border-sky-300 transition-all"
+              className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 h-14 rounded-[22px] border border-slate-200/80 bg-white shadow-sm text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-8 focus:ring-sky-600/5 focus:border-sky-300 transition-all"
             />
           </div>
 
@@ -385,7 +385,7 @@ export default function ArtistDashboardPage() {
 
         {/* Filter Pills and Sort Row */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center overflow-x-auto scrollbar-hide shadow-xs">
+          <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center overflow-x-auto max-w-full scrollbar-hide shadow-xs">
             {[
               { id: 'all', label: 'ALL INQUIRIES' },
               { id: 'confirmed', label: 'CONFIRMED' },
@@ -395,7 +395,7 @@ export default function ArtistDashboardPage() {
               <button
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id as any)}
-                className={`px-5 py-2 rounded-[16px] text-[10px] font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap ${
+                className={`px-4 sm:px-5 py-2 rounded-[16px] text-[10px] font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap ${
                   statusFilter === tab.id
                     ? 'bg-white text-sky-600 shadow-sm border border-slate-100'
                     : 'text-slate-500 hover:text-slate-900 hover:bg-white/40'
@@ -406,14 +406,14 @@ export default function ArtistDashboardPage() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4 bg-white/70 backdrop-blur-md p-1.5 rounded-[22px] border border-white shadow-sm ml-auto">
+          <div className="flex items-center gap-3 sm:gap-4 bg-white/70 backdrop-blur-md p-1.5 rounded-[22px] border border-white shadow-sm self-start sm:self-auto lg:ml-auto max-w-full">
             <div className="flex items-center gap-3 px-4 py-1.5 bg-slate-50/50 rounded-[18px]">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sort:</span>
               <span className="text-[12px] font-black text-slate-700 uppercase">SUBMISSION</span>
             </div>
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="w-10 h-10 rounded-[16px] flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-sky-600 hover:border-sky-100 transition-all shadow-sm active:scale-90"
+              className="w-10 h-10 rounded-[16px] flex items-center justify-center bg-white border border-slate-100 text-slate-400 hover:text-sky-600 hover:border-sky-100 transition-all shadow-sm active:scale-90 flex-shrink-0"
             >
               {sortOrder === 'asc' ? <SortAsc size={16} strokeWidth={2.5} /> : <SortDesc size={16} strokeWidth={2.5} />}
             </button>
@@ -422,7 +422,7 @@ export default function ArtistDashboardPage() {
       </div>
 
       {/* 5. Luxe Card: Inquiries List Container (matching admin.magnevents.in) */}
-      <div className="luxe-card p-6 sm:p-8 flex flex-col min-h-[300px]">
+      <div className="luxe-card p-4 sm:p-6 md:p-8 flex flex-col min-h-[300px]">
         {filteredGigs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3 opacity-60 my-auto text-center">
             <CalendarCheck size={48} className="text-slate-300" />
@@ -434,14 +434,14 @@ export default function ArtistDashboardPage() {
             {filteredGigs.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-4 rounded-[18px] border border-slate-200/80 bg-white hover:border-sky-300 hover:shadow-md transition-all duration-200 group"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-6 py-4 rounded-[18px] border border-slate-200/80 bg-white hover:border-sky-300 hover:shadow-md transition-all duration-200 group"
               >
-                <div className="flex items-center gap-4 min-w-0">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-sky-50 group-hover:text-sky-600 transition-colors flex-shrink-0">
                     <User size={18} />
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-sm font-bold text-slate-900 truncate">{item.client}</span>
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                         item.status === 'confirmed'
@@ -456,7 +456,7 @@ export default function ArtistDashboardPage() {
                     <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
                       {item.title} • {item.package}
                     </p>
-                    <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400 mt-1">
                       <span className="flex items-center gap-1">
                         <Calendar size={12} /> {item.date}
                       </span>

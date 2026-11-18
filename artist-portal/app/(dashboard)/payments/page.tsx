@@ -135,8 +135,8 @@ export default function PaymentsPage() {
       </div>
 
       {/* Bank Account Form */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <Building className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Settlement Bank Account</h2>
@@ -220,7 +220,7 @@ export default function PaymentsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="btn-primary py-2 px-4 text-xs flex items-center gap-1.5"
+              className="btn-primary w-full sm:w-auto py-2 px-4 text-xs flex items-center justify-center gap-1.5"
             >
               {saving ? (
                 <>

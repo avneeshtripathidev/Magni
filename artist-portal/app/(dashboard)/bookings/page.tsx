@@ -293,7 +293,7 @@ export default function BookingsPage() {
       {/* Header with View Switcher (matching admin.magnevents.in) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
             Bookings & Availability
           </h1>
           <p className="text-sm font-medium text-slate-500 mt-2">
@@ -302,10 +302,10 @@ export default function BookingsPage() {
         </div>
 
         {/* View Switcher Pills */}
-        <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center self-start sm:self-auto shadow-xs">
+        <div className="flex flex-wrap sm:flex-nowrap p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center self-start sm:self-auto max-w-full shadow-xs">
           <button
             onClick={() => setViewTab('inquiries')}
-            className={`px-5 py-2.5 rounded-[16px] text-[10px] font-black uppercase tracking-[0.15em] transition-all flex items-center gap-2 ${
+            className={`px-3.5 sm:px-5 py-2.5 rounded-[16px] text-[10px] font-black uppercase tracking-[0.15em] transition-all flex items-center gap-2 whitespace-nowrap ${
               viewTab === 'inquiries'
                 ? 'bg-white text-sky-600 shadow-sm border border-slate-100'
                 : 'text-slate-500 hover:text-slate-900 hover:bg-white/40'
@@ -317,7 +317,7 @@ export default function BookingsPage() {
 
           <button
             onClick={() => setViewTab('calendar')}
-            className={`px-5 py-2.5 rounded-[16px] text-[10px] font-black uppercase tracking-[0.15em] transition-all flex items-center gap-2 ${
+            className={`px-3.5 sm:px-5 py-2.5 rounded-[16px] text-[10px] font-black uppercase tracking-[0.15em] transition-all flex items-center gap-2 whitespace-nowrap ${
               viewTab === 'calendar'
                 ? 'bg-white text-sky-600 shadow-sm border border-slate-100'
                 : 'text-slate-500 hover:text-slate-900 hover:bg-white/40'
@@ -353,8 +353,8 @@ export default function BookingsPage() {
         <div className="space-y-4">
           {/* Full-width Rounded Search Bar + Location Selector */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative group flex-1">
-              <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+            <div className="relative group flex-1 min-w-0">
+              <div className="absolute inset-y-0 left-4 sm:left-6 flex items-center pointer-events-none">
                 <Search size={18} className="text-slate-400 group-focus-within:text-sky-600 transition-colors" strokeWidth={2.5} />
               </div>
               <input
@@ -362,7 +362,7 @@ export default function BookingsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by client name, city, or event type..."
-                className="w-full pl-16 pr-6 h-14 rounded-[22px] border border-slate-200/80 bg-white shadow-sm text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-8 focus:ring-sky-600/5 focus:border-sky-300 transition-all"
+                className="w-full pl-12 sm:pl-16 pr-4 sm:pr-6 h-14 rounded-[22px] border border-slate-200/80 bg-white shadow-sm text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-8 focus:ring-sky-600/5 focus:border-sky-300 transition-all"
               />
             </div>
 
@@ -376,7 +376,7 @@ export default function BookingsPage() {
 
           {/* Filter Pills Row */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center overflow-x-auto scrollbar-hide shadow-xs">
+            <div className="flex p-1 bg-slate-200/50 backdrop-blur-md rounded-[20px] border border-white items-center overflow-x-auto max-w-full scrollbar-hide shadow-xs">
               {(['all', 'confirmed', 'pending', 'completed'] as const).map((tab) => (
                 <button
                   key={tab}
@@ -610,51 +610,53 @@ export default function BookingsPage() {
           </p>
 
           {/* Responsive Calendar Grid */}
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center select-none">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-              <div key={day} className="text-[10px] sm:text-xs font-bold text-slate-400 py-1 uppercase tracking-wider">
-                {day}
-              </div>
-            ))}
+          <div className="overflow-x-auto -mx-1 px-1 pb-1">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 min-w-[290px] sm:min-w-0 text-center select-none">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                <div key={day} className="text-[10px] sm:text-xs font-bold text-slate-400 py-1 uppercase tracking-wider">
+                  {day}
+                </div>
+              ))}
 
-            {monthDates.map((item) => {
-              const isBooked = !!item.confirmedBooking;
-              const isBlocked = item.isBlocked;
+              {monthDates.map((item) => {
+                const isBooked = !!item.confirmedBooking;
+                const isBlocked = item.isBlocked;
 
-              return (
-                <button
-                  key={item.day}
-                  type="button"
-                  onClick={() => !isBooked && handleToggleDate(item.dateStr)}
-                  disabled={isBooked}
-                  className={`p-2 sm:p-3 rounded-xl border text-left transition-all relative flex flex-col justify-between min-h-[64px] sm:min-h-[76px] touch-manipulation ${
-                    isBooked
-                      ? 'bg-sky-50 border-sky-300 text-sky-900 cursor-default shadow-xs'
-                      : isBlocked
-                      ? 'bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-300 active:scale-95'
-                      : 'bg-white border-slate-200 text-slate-900 hover:border-sky-500 hover:shadow-xs active:scale-95'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-xs sm:text-sm font-bold">{item.day}</span>
-                    {isBooked ? (
-                      <CalendarCheck className="w-3.5 h-3.5 text-sky-600" />
-                    ) : isBlocked ? (
-                      <Lock className="w-2.5 h-2.5 text-slate-400" />
-                    ) : (
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    )}
-                  </div>
+                return (
+                  <button
+                    key={item.day}
+                    type="button"
+                    onClick={() => !isBooked && handleToggleDate(item.dateStr)}
+                    disabled={isBooked}
+                    className={`p-1.5 sm:p-3 rounded-xl border text-left transition-all relative flex flex-col justify-between min-h-[54px] sm:min-h-[76px] touch-manipulation ${
+                      isBooked
+                        ? 'bg-sky-50 border-sky-300 text-sky-900 cursor-default shadow-xs'
+                        : isBlocked
+                        ? 'bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-300 active:scale-95'
+                        : 'bg-white border-slate-200 text-slate-900 hover:border-sky-500 hover:shadow-xs active:scale-95'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-xs sm:text-sm font-bold">{item.day}</span>
+                      {isBooked ? (
+                        <CalendarCheck className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-sky-600 flex-shrink-0" />
+                      ) : isBlocked ? (
+                        <Lock className="w-2.5 h-2.5 text-slate-400 flex-shrink-0" />
+                      ) : (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                      )}
+                    </div>
 
-                  <span className="text-[9px] sm:text-[10px] font-semibold truncate block mt-1">
-                    {isBooked ? 'Gig Confirmed' : isBlocked ? 'Blocked' : 'Available'}
-                  </span>
-                </button>
-              );
-            })}
+                    <span className="text-[8px] sm:text-[10px] font-semibold truncate block mt-1">
+                      {isBooked ? 'Gig Confirmed' : isBlocked ? 'Blocked' : 'Available'}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <span>
               <strong className="text-slate-900 font-bold">{blockedDates.length}</strong> dates currently blocked
             </span>

@@ -111,11 +111,11 @@ export default function AdminDashboardPage() {
       )}
 
       {/* 2. Top Metric Cards (admin-portal clean style) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 transition-shadow hover:shadow-md">
-          <div className="flex items-center justify-between mb-3">
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-5 transition-shadow hover:shadow-md min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Total Performers</span>
-            <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700">
+            <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 flex-shrink-0">
               <Users className="w-4 h-4" />
             </div>
           </div>
@@ -123,10 +123,10 @@ export default function AdminDashboardPage() {
           <span className="text-xs text-slate-400 mt-1 block">Registered in ecosystem</span>
         </div>
 
-        <div className="bg-white border border-amber-200/80 shadow-sm rounded-2xl p-5 transition-shadow hover:shadow-md">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-white border border-amber-200/80 shadow-sm rounded-2xl p-4 sm:p-5 transition-shadow hover:shadow-md min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs text-amber-700 uppercase tracking-wider font-bold">Pending Review</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+            <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 flex-shrink-0">
               <Clock className="w-4 h-4" />
             </div>
           </div>
@@ -134,10 +134,10 @@ export default function AdminDashboardPage() {
           <span className="text-xs text-amber-600/80 mt-1 block">Action required by director</span>
         </div>
 
-        <div className="bg-white border border-emerald-200/80 shadow-sm rounded-2xl p-5 transition-shadow hover:shadow-md">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-white border border-emerald-200/80 shadow-sm rounded-2xl p-4 sm:p-5 transition-shadow hover:shadow-md min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs text-emerald-700 uppercase tracking-wider font-bold">Live & Verified</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
@@ -145,10 +145,10 @@ export default function AdminDashboardPage() {
           <span className="text-xs text-emerald-600/80 mt-1 block">Active on magnevents.in</span>
         </div>
 
-        <div className="bg-white border border-rose-200/80 shadow-sm rounded-2xl p-5 transition-shadow hover:shadow-md">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-white border border-rose-200/80 shadow-sm rounded-2xl p-4 sm:p-5 transition-shadow hover:shadow-md min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-3">
             <span className="text-xs text-rose-700 uppercase tracking-wider font-bold">Needs Updates</span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+            <div className="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 flex-shrink-0">
               <AlertCircle className="w-4 h-4" />
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* 3. Action Required: Pending Verification Queue */}
-      <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 space-y-5">
+      <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-6 space-y-5">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <div>
             <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
@@ -293,7 +293,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* 4. Ecosystem Category Overview */}
-      <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
+      <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-6">
         <h3 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
           <Mic2 className="w-4 h-4 text-indigo-600" />
           <span>Talent Distribution by Category</span>
@@ -328,7 +328,7 @@ export default function AdminDashboardPage() {
           <ModalPortal isOpen={true} onClose={() => setReviewingArtist(null)}>
             <div className="w-full max-w-4xl max-h-[90vh] bg-[#F8FAFC] rounded-[24px] border border-slate-200 shadow-2xl flex flex-col overflow-hidden font-sans overscroll-contain">
               {/* Header */}
-              <div className="sidebar-dark px-6 py-5 flex items-center justify-between gap-4 flex-shrink-0">
+              <div className="sidebar-dark px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between gap-3 sm:gap-4 flex-shrink-0">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <img
                     src={
@@ -587,12 +587,12 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Sticky Approval Decision Footer */}
-              <div className="px-6 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+              <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
                 <span className="text-xs text-slate-500 font-medium">
                   Verify KYC &amp; showreel above before approving <strong className="text-slate-900">{reviewingArtist.name}</strong>.
                 </span>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                   <button
                     type="button"
                     onClick={() => handleQuickReject(reviewingArtist.id, reviewingArtist.name)}

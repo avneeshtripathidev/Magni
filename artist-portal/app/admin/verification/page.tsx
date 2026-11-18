@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '../../../lib/auth/adminAuthContext';
 import { ArtistProfile } from '../../../types/artist';
@@ -32,7 +32,7 @@ import {
   Award
 } from 'lucide-react';
 
-export default function AdminVerificationQueuePage() {
+function AdminVerificationQueueContent() {
   const { artists, updateArtistStatus } = useAdminAuth();
   const searchParams = useSearchParams();
   const reviewIdParam = searchParams.get('reviewId');
@@ -136,7 +136,7 @@ export default function AdminVerificationQueuePage() {
       {/* 2. Filters & Search Bar (admin-portal theme) */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Tab Pills */}
-        <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs overflow-x-auto shadow-xs">
+        <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs overflow-x-auto max-w-full shadow-xs">
           {[
             { id: 'pending', label: 'Action Required', count: artists.filter(a => a.verification_status === 'pending' || a.verification_status === 'under_review').length },
             { id: 'approved', label: 'Verified & Live', count: artists.filter(a => a.verification_status === 'approved').length },
@@ -330,10 +330,10 @@ export default function AdminVerificationQueuePage() {
 
         return (
           <ModalPortal isOpen={true} onClose={() => setSelectedArtist(null)}>
-            <div className="w-[95vw] max-w-6xl max-h-[92vh] bg-[#F8FAFC] rounded-2xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden font-sans overscroll-contain">
+            <div className="w-full max-w-6xl max-h-[92vh] bg-[#F8FAFC] rounded-2xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden font-sans overscroll-contain">
               {/* Top Executive Header (Zero Awkward Wrapping) */}
-              <div className="sidebar-dark px-5 py-4 sm:px-6 sm:py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 flex-shrink-0">
-                <div className="flex items-center gap-4 min-w-0">
+              <div className="sidebar-dark px-4 py-4 sm:px-6 sm:py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 flex-shrink-0">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <img
                     src={selectedArtist.profile_image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200'}
                     alt={selectedArtist.name}
@@ -341,10 +341,10 @@ export default function AdminVerificationQueuePage() {
                   />
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg sm:text-xl font-extrabold text-white leading-tight whitespace-nowrap">
+                      <h2 className="text-lg sm:text-xl font-extrabold text-white leading-tight break-words">
                         {selectedArtist.name}
                       </h2>
-                      <span className="text-xs font-semibold text-sky-300 truncate max-w-[280px]">
+                      <span className="text-xs font-semibold text-sky-300 truncate max-w-full sm:max-w-[280px]">
                         {selectedArtist.stage_name || selectedArtist.name}
                       </span>
                       <span
@@ -361,8 +361,8 @@ export default function AdminVerificationQueuePage() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-300">
-                      <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                        <Mail className="w-3.5 h-3.5 text-sky-400" />
+                      <span className="inline-flex items-center gap-1 break-all sm:whitespace-nowrap">
+                        <Mail className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
                         {selectedArtist.email || 'No email'}
                       </span>
                       <span className="text-white/25 hidden sm:inline">•</span>
@@ -407,7 +407,7 @@ export default function AdminVerificationQueuePage() {
               </div>
 
               {/* Modal Body: Full-Width 2-Card Side-by-Side Layout */}
-              <div className="flex-1 overflow-y-auto p-5 sm:p-6">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                   {/* CARD 1 (Left — 7 cols): Artist Full Details & Portfolio */}
                   <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-5 text-xs text-slate-600">
@@ -692,8 +692,8 @@ export default function AdminVerificationQueuePage() {
               </div>
 
               {/* Sticky Modal Actions Footer */}
-              <div className="px-6 py-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
-                <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
+              <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-semibold">
                   <span>Director Decision:</span>
                   <span className="font-bold text-slate-900 capitalize">
                     {selectedArtist.verification_status.replace('_', ' ')}
@@ -703,7 +703,7 @@ export default function AdminVerificationQueuePage() {
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => setShowRejectInput(true)}
                     className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs min-h-[40px]"
@@ -732,5 +732,19 @@ export default function AdminVerificationQueuePage() {
         );
       })()}
     </div>
+  );
+}
+
+export default function AdminVerificationQueuePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-12 text-center text-xs font-bold text-slate-400">
+          Loading Verification Queue...
+        </div>
+      }
+    >
+      <AdminVerificationQueueContent />
+    </Suspense>
   );
 }

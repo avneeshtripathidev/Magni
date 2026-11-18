@@ -37,9 +37,9 @@ export default function HomePage() {
       <div className="absolute top-[20%] right-[10%] w-[25%] h-[25%] bg-cyan-100/20 rounded-full animate-pulse delay-1000 pointer-events-none" />
 
       {/* Top Header */}
-      <header className="px-6 py-5 max-w-6xl mx-auto w-full flex items-center justify-between relative z-10 border-b border-slate-200 bg-white/60 backdrop-blur-xs">
-        <div className="flex items-center gap-3">
-          <div className="h-9 flex items-center justify-center">
+      <header className="px-3.5 sm:px-6 py-4 sm:py-5 max-w-6xl mx-auto w-full flex items-center justify-between gap-2 relative z-10 border-b border-slate-200 bg-white/60 backdrop-blur-xs">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="h-9 flex items-center justify-center flex-shrink-0">
             <img
               src="/logo.webp"
               alt="Magnevents Logo"
@@ -51,22 +51,22 @@ export default function HomePage() {
               }}
             />
           </div>
-          <div>
-            <span className="text-base font-extrabold tracking-tight text-slate-900 block leading-none">Magnevents</span>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Performer Suite</span>
+          <div className="min-w-0">
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 block leading-none truncate">Magnevents</span>
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-sky-600 block truncate">Performer Suite</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
           <Link
             href="/login"
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors px-3 py-1.5"
+            className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors px-2 sm:px-3 py-1.5 whitespace-nowrap"
           >
             Sign In
           </Link>
           <Link
             href="/register"
-            className="btn-primary py-2 px-4 text-xs"
+            className="btn-primary py-2 px-3 sm:px-4 text-xs whitespace-nowrap"
           >
             Join as Performer
           </Link>
@@ -132,7 +132,7 @@ export default function HomePage() {
             <span>Fast Access / Testing Bypasses</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2.5">
             <button
               onClick={loginAsDemoArtist}
               className="p-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 min-h-[44px] shadow-sm"

@@ -70,15 +70,15 @@ export default function AdminAccessControlPage() {
         </div>
       )}
 
-      <form onSubmit={handleSave} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <form onSubmit={handleSave} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-sky-600" />
+            <ShieldCheck className="w-4 h-4 text-sky-600 flex-shrink-0" />
             <h2 className="text-sm font-extrabold text-slate-900">
               Whitelisted Admin Gmail Slots ({allowedAdminEmails.length} / {MAX_ADMIN_EMAILS})
             </h2>
           </div>
-          <span className="text-[11px] font-semibold text-slate-400">
+          <span className="text-[11px] font-semibold text-slate-400 break-all">
             Active: {admin?.email}
           </span>
         </div>

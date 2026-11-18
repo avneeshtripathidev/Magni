@@ -133,7 +133,7 @@ export default function VerificationPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Identity Verification</h1>
             <StatusBadge status={status} size="sm" />
           </div>
@@ -224,8 +224,8 @@ export default function VerificationPage() {
       </div>
 
       {/* Verification Form */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-sky-600" />
             <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Identity Details</h2>
@@ -291,7 +291,7 @@ export default function VerificationPage() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between gap-2 mb-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                 <label className="block text-xs font-bold text-slate-700">
                   Govt ID (Aadhaar / PAN / Passport) <span className="text-rose-500">*</span>
                 </label>
@@ -339,7 +339,7 @@ export default function VerificationPage() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between gap-2 mb-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                 <label className="block text-xs font-bold text-slate-700">Address Proof (Optional)</label>
                 <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-[11px] font-bold cursor-pointer">
                   {uploadingField === 'address_proof_url' ? (

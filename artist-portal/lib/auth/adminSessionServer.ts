@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 
@@ -16,7 +17,9 @@ export interface AdminSessionPayload {
   exp: number;
 }
 
-const DATA_DIR = path.join(process.cwd(), '.data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'magnevents-data')
+  : path.join(process.cwd(), '.data');
 const WHITELIST_FILE = path.join(DATA_DIR, 'admin-allowed-emails.json');
 
 function getSessionSecret(): string {
@@ -88,7 +91,7 @@ export function getEnvWhitelistEmails(): string[] {
   const raw =
     process.env.ADMIN_ALLOWED_EMAILS ||
     process.env.NEXT_PUBLIC_ADMIN_ALLOWED_EMAILS ||
-    'magneventsdotin@gmail.com,avanishtripathiavanish79921170@gmail.com';
+    'magneventsdotin@gmail.com,avanishtripathiavanish79921170@gmail.com,avneesh.tripathi.dev@gmail.com';
 
   return Array.from(
     new Set(

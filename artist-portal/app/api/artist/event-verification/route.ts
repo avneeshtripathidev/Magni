@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import {
@@ -8,7 +9,9 @@ import {
   computeProofStatus,
 } from '../../../../types/eventVerification';
 
-const DATA_DIR = path.join(process.cwd(), '.data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'magnevents-data')
+  : path.join(process.cwd(), '.data');
 const DATA_FILE = path.join(DATA_DIR, 'event-verifications.json');
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
