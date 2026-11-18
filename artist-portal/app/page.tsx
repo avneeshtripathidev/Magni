@@ -7,12 +7,9 @@ import Link from 'next/link';
 import {
   Sparkles,
   ArrowRight,
-  ShieldCheck,
   Mic2,
   CheckCircle2,
   Music,
-  IndianRupee,
-  CalendarCheck,
   MapPin,
   Star,
   Award,
@@ -21,56 +18,21 @@ import {
   Radio,
 } from 'lucide-react';
 
-const PERFORMER_CATEGORIES = [
-  'Solo Singers',
-  'Live Bands',
-  'DJs & Club Acts',
-  'Sufi & Qawwali',
-  'Instrumentalists',
-  'Acoustic Duos',
-  'Wedding Anchors',
-  'Classical & Fusion',
-];
-
-const VALUE_PILLARS = [
-  {
-    icon: IndianRupee,
-    accent: 'bg-sky-50 text-sky-600 border-sky-200/70',
-    title: '0% Broker Commission',
-    description:
-      'Set your own solo, duo, and full-band pricing. Connect directly with verified hosts and keep what you earn.',
-  },
-  {
-    icon: ShieldCheck,
-    accent: 'bg-emerald-50 text-emerald-600 border-emerald-200/70',
-    title: '100% Escrow Protection',
-    description:
-      'Booking advances are secured in escrow before your event date with fast, transparent IMPS & UPI settlements.',
-  },
-  {
-    icon: CalendarCheck,
-    accent: 'bg-indigo-50 text-indigo-600 border-indigo-200/70',
-    title: 'Smart Live Bookings & Tiers',
-    description:
-      'Control your availability calendar, verify live shows in seconds, and climb performer tiers for priority featured placement.',
-  },
-];
-
-const ONBOARDING_STEPS = [
+const STEPS = [
   {
     num: '01',
-    title: 'Create Your Account',
-    desc: 'Register with Email or Google in under 30 seconds — no long forms or agency paperwork.',
+    title: 'Create Your Profile',
+    desc: 'Sign up in 30 seconds and upload your cover photo, stage photos, live videos & pricing.',
   },
   {
     num: '02',
-    title: 'Build Your Stage Portfolio',
-    desc: 'Upload your cover banner, stage photos, live performance videos, pricing packages & KYC proof.',
+    title: 'Get Verified Fast',
+    desc: 'Quick Directorate check activates your verified listing across 230+ Indian cities.',
   },
   {
     num: '03',
-    title: 'Go Live & Get Booked',
-    desc: 'Get verified by the Magnevents Directorate and receive direct bookings across 230+ Indian cities.',
+    title: 'Perform & Get Paid',
+    desc: 'Accept direct wedding & corporate inquiries with 0% broker fee and escrow payouts.',
   },
 ];
 
@@ -90,10 +52,9 @@ export default function HomePage() {
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
         <div className="absolute -top-32 -left-24 w-[420px] h-[420px] rounded-full bg-sky-200/35 blur-3xl" />
         <div className="absolute top-1/4 -right-24 w-[380px] h-[380px] rounded-full bg-indigo-200/30 blur-3xl" />
-        <div className="absolute -bottom-32 left-1/3 w-[420px] h-[420px] rounded-full bg-cyan-100/40 blur-3xl" />
       </div>
 
-      {/* 1. Sticky Full-Width Glass Header */}
+      {/* Minimal Sticky Header */}
       <header className="sticky top-0 z-30 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2.5 min-w-0">
@@ -119,28 +80,16 @@ export default function HomePage() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-7 text-xs font-bold text-slate-500">
-            <a href="#benefits" className="hover:text-slate-900 transition-colors">
-              Why Magnevents
-            </a>
-            <a href="#categories" className="hover:text-slate-900 transition-colors">
-              Categories
-            </a>
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
-              How It Works
-            </a>
-          </nav>
-
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <Link
               href="/login"
-              className="text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors px-2.5 sm:px-3.5 py-2 rounded-xl hover:bg-slate-100 whitespace-nowrap"
+              className="text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors px-3 py-2 rounded-xl hover:bg-slate-100 whitespace-nowrap"
             >
               Sign In
             </Link>
             <Link
               href="/register"
-              className="px-3.5 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-sky-500/20 inline-flex items-center gap-1.5 transition-all active:scale-[0.98] whitespace-nowrap"
+              className="px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold text-xs shadow-md shadow-sky-500/20 inline-flex items-center gap-1.5 transition-all active:scale-[0.98] whitespace-nowrap"
             >
               <span>Join as Performer</span>
               <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
@@ -149,12 +98,11 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* 2. Main Content */}
       <main className="relative z-10 flex-1">
-        {/* HERO SECTION */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-14 sm:pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left: Editorial Copy & Primary Actions */}
+        {/* SECTION 1: HERO (Screen 1) */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 min-h-[calc(100vh-4rem)] py-10 sm:py-14 flex items-center">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            {/* Left Copy & Actions */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs text-[11px] font-bold text-slate-700">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -170,12 +118,12 @@ export default function HomePage() {
               </h1>
 
               <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                Receive direct client inquiries for luxury weddings, corporate galas, and private concerts across India — with{' '}
+                Direct client inquiries for weddings, corporate galas, and private concerts across India —{' '}
                 <strong className="text-slate-900">0% broker commission</strong> and{' '}
                 <strong className="text-slate-900">100% escrow payout protection</strong>.
               </p>
 
-              {/* Primary CTA Row (No Testing Bypasses) */}
+              {/* Primary CTA Row */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 pt-1">
                 <Link
                   href="/register"
@@ -214,13 +162,13 @@ export default function HomePage() {
               </div>
 
               <div className="text-xs text-slate-500 font-medium">
-                Already registered on Magnevents?{' '}
+                Already registered?{' '}
                 <Link href="/login" className="font-bold text-sky-600 hover:text-sky-700 hover:underline">
                   Sign in to your Dashboard →
                 </Link>
               </div>
 
-              {/* Key Trust Metrics */}
+              {/* 3 Compact Trust Numbers */}
               <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-200/80 max-w-lg mx-auto lg:mx-0">
                 <div className="text-center lg:text-left">
                   <div className="text-xl sm:text-2xl font-black text-slate-900">0%</div>
@@ -237,13 +185,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Executive Performer Suite Live Preview Card */}
+            {/* Right Executive Suite Preview Card */}
             <div className="lg:col-span-5">
               <div className="relative">
                 <div className="absolute -inset-2 bg-gradient-to-tr from-sky-500/20 via-indigo-500/15 to-emerald-400/20 rounded-[32px] blur-xl" />
 
                 <div className="relative sidebar-dark rounded-[28px] border border-white/10 shadow-2xl p-5 sm:p-6 text-white space-y-4">
-                  {/* Top Profile Row */}
                   <div className="flex items-center justify-between gap-3 pb-4 border-b border-white/10">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center font-black text-sm text-white shadow-lg flex-shrink-0">
@@ -268,7 +215,6 @@ export default function HomePage() {
                     </span>
                   </div>
 
-                  {/* Live Booking Card Preview */}
                   <div className="p-4 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-sm space-y-3">
                     <div className="flex items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider">
@@ -307,7 +253,6 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  {/* Bottom 2 Mini Capability Tiles */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1">
                       <div className="flex items-center gap-1.5 text-sky-300 text-[11px] font-extrabold">
@@ -315,7 +260,7 @@ export default function HomePage() {
                         <span>Performer Tiers</span>
                       </div>
                       <p className="text-[11px] text-slate-300 leading-snug">
-                        Unlock top-ranked catalog visibility as you complete verified gigs.
+                        Climb ranks and unlock featured catalog visibility.
                       </p>
                     </div>
 
@@ -325,7 +270,7 @@ export default function HomePage() {
                         <span>Fast Payouts</span>
                       </div>
                       <p className="text-[11px] text-slate-300 leading-snug">
-                        Direct IMPS &amp; UPI settlement right after live event check-in.
+                        Direct IMPS &amp; UPI settlement after live check-in.
                       </p>
                     </div>
                   </div>
@@ -335,82 +280,19 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 3. VALUE PILLARS */}
-        <section id="benefits" className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+        {/* SECTION 2: SIMPLE 3-STEP HOW IT WORKS + CTA (Screen 2) */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-16 space-y-8 border-t border-slate-200/70">
+          <div className="text-center max-w-xl mx-auto pt-6">
             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-sky-600">
-              Built for Serious Performers
+              How It Works
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1.5">
-              Everything You Need to Grow Your Live Career
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+              Go Live on Magnevents in 3 Simple Steps
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {VALUE_PILLARS.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.title}
-                  className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-sky-200 transition-all space-y-3"
-                >
-                  <div
-                    className={`w-11 h-11 rounded-2xl border flex items-center justify-center ${item.accent}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-base font-extrabold text-slate-900">{item.title}</h3>
-                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* 4. PERFORMER CATEGORIES STRIP */}
-        <section id="categories" className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="max-w-md">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600">
-                All Live Acts Welcome
-              </span>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
-                Who Can Join Magnevents?
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                From acoustic soloists to high-energy Bollywood bands and destination wedding DJs.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {PERFORMER_CATEGORIES.map((cat) => (
-                <Link
-                  key={cat}
-                  href="/register"
-                  className="px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-300 text-xs font-bold text-slate-700 hover:text-sky-700 transition-colors"
-                >
-                  {cat}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 5. HOW IT WORKS (3 STEPS) */}
-        <section id="how-it-works" className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <div className="text-center max-w-xl mx-auto mb-8">
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-sky-600">
-              Simple 3-Step Onboarding
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1.5">
-              Go Live on Magnevents in Minutes
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {ONBOARDING_STEPS.map((step) => (
+            {STEPS.map((step) => (
               <div
                 key={step.num}
                 className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3"
@@ -423,31 +305,28 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </section>
 
-        {/* 6. EXECUTIVE FINAL CTA BANNER */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-16">
-          <div className="sidebar-dark rounded-[28px] p-7 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/10">
-            <div className="text-center md:text-left max-w-xl space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
+          <div className="sidebar-dark rounded-[28px] p-7 sm:p-9 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/10">
+            <div className="text-center md:text-left max-w-xl space-y-1.5">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight">
                 Ready to Take the Main Stage?
               </h2>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Join India&apos;s verified performer roster today and start receiving high-value wedding, corporate, and private event bookings directly.
+              <p className="text-xs sm:text-sm text-slate-300">
+                Join India&apos;s verified performer roster today and start receiving direct bookings.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto flex-shrink-0">
               <Link
                 href="/register"
-                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 transition-all"
+                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 transition-all"
               >
                 <span>Join as Performer</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/login"
-                className="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center transition-all"
+                className="px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center transition-all"
               >
                 Performer Sign In
               </Link>
