@@ -316,13 +316,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/dashboard');
   };
 
-  // Google OAuth Login
+  // Google OAuth Login (routes via /auth/callback so session cookie is set before dashboard middleware)
   const signInWithGoogle = async (redirectPath = '/dashboard') => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9003';
+    const origin =
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : process.env.NEXT_PUBLIC_SITE_URL || 'https://artists.magnevents.in';
+    const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}${redirectPath}`,
+        redirectTo: callbackUrl,
       },
     });
     return { error };
@@ -421,7 +425,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Forgot password
   const resetPassword = async (email: string) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:9003';
+    const origin =
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : process.env.NEXT_PUBLIC_SITE_URL || 'https://artists.magnevents.in';
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/settings`,
     });
