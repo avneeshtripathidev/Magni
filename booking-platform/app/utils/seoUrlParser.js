@@ -14,13 +14,70 @@ export const VALID_KEYWORDS = [
 ];
 
 export const MAJOR_CITIES = [
-  'delhi', 'new-delhi', 'noida', 'gurgaon', 'gurugram', 'faridabad', 'ghaziabad',
-  'mumbai', 'bangalore', 'bengaluru', 'pune', 'hyderabad', 'chennai', 'kolkata', 'ahmedabad',
-  'chandigarh', 'jaipur', 'lucknow', 'surat', 'indore', 'patna', 'bhopal', 'agra',
-  'kanpur', 'nagpur', 'thane', 'visakhapatnam', 'vadodara', 'ludhiana', 'nashik',
-  'meerut', 'rajkot', 'varanasi', 'srinagar', 'aurangabad', 'dhanbad', 'amritsar',
-  'allahabad', 'ranchi', 'howrah', 'coimbatore', 'jabalpur', 'gwalior', 'vijayawada',
-  'jodhpur', 'madurai', 'raipur', 'kota', 'guwahati', 'thiruvananthapuram', 'kochi'
+  // Delhi NCR & Haryana / UP NCR
+  'delhi', 'new-delhi', 'delhi-ncr', 'noida', 'greater-noida', 'gurgaon', 'gurugram',
+  'faridabad', 'ghaziabad', 'meerut', 'hapur', 'bulandshahr', 'sonipat', 'panipat',
+  'rohtak', 'loni', 'khora', 'karawal-nagar', 'kirari-suleman-nagar', 'nangloi-jat',
+  'bhalswa-jahangir-pur', 'bahadurgarh',
+  // Mumbai MMR & Maharashtra
+  'mumbai', 'navi-mumbai', 'thane', 'pune', 'pimpri-chinchwad', 'kalyan-dombivli',
+  'vasai-virar', 'mira-bhayandar', 'ulhasnagar', 'bhiwandi', 'panvel', 'nagpur',
+  'nashik', 'aurangabad', 'chhatrapati-sambhajinagar', 'kolhapur', 'solapur',
+  'amravati', 'nanded', 'jalgaon', 'akola', 'latur', 'dhule', 'ahmednagar',
+  'chandrapur', 'parbhani', 'ichalkaranji', 'jalna', 'malegaon', 'sangli',
+  'satara', 'bhusawal', 'lonavala', 'alibaug', 'mahabaleshwar', 'lavasa',
+  // Key Metros & Capitals
+  'bangalore', 'bengaluru', 'hyderabad', 'secunderabad', 'chennai', 'kolkata',
+  'ahmedabad', 'chandigarh', 'mohali', 'panchkula', 'zirakpur', 'jaipur', 'lucknow',
+  'goa', 'north-goa', 'south-goa', 'panaji', 'margao', 'indore', 'bhopal', 'surat',
+  'patna', 'varanasi', 'agra', 'kanpur', 'vadodara', 'rajkot', 'ludhiana', 'amritsar',
+  'jalandhar', 'dehradun', 'ranchi', 'bhubaneswar', 'raipur', 'guwahati', 'kochi',
+  'thiruvananthapuram', 'coimbatore', 'visakhapatnam', 'vijayawada',
+  // Gujarat
+  'gandhinagar', 'bhavnagar', 'jamnagar', 'junagadh', 'anand', 'navsari', 'morbi',
+  'nadiad', 'bharuch', 'porbandar', 'gandhidham', 'vapi', 'bhuj', 'mehsana', 'valsad',
+  'daman', 'diu', 'silvassa',
+  // Uttar Pradesh
+  'prayagraj', 'allahabad', 'bareilly', 'aligarh', 'gorakhpur', 'jhansi', 'mathura',
+  'vrindavan', 'ayodhya', 'moradabad', 'saharanpur', 'firozabad', 'muzaffarnagar',
+  'rampur', 'shahjahanpur', 'farrukhabad', 'etawah', 'mirzapur', 'sambhal', 'amroha',
+  'fatehpur', 'raebareli', 'sitapur', 'bahraich', 'mau', 'orai',
+  // Punjab & Haryana
+  'patiala', 'bathinda', 'hoshiarpur', 'pathankot', 'moga', 'khanna', 'phagwara',
+  'ambala', 'karnal', 'hisar', 'yamunanagar', 'kurukshetra', 'bhiwani', 'sirsa', 'jind',
+  // Rajasthan
+  'udaipur', 'jodhpur', 'kota', 'bikaner', 'ajmer', 'pushkar', 'bhilwara', 'alwar',
+  'sikar', 'sri-ganganagar', 'pali', 'bharatpur', 'beawar', 'hanumangarh', 'jaisalmer',
+  'mount-abu',
+  // Uttarakhand, Himachal Pradesh, J&K & Ladakh
+  'haridwar', 'rishikesh', 'roorkee', 'haldwani', 'nainital', 'mussoorie', 'kashipur',
+  'rudrapur', 'jim-corbett', 'shimla', 'manali', 'dharamshala', 'kasauli', 'solan',
+  'mandi', 'srinagar', 'jammu', 'leh',
+  // Karnataka, Telangana, Andhra Pradesh, Tamil Nadu & Kerala
+  'mysore', 'mysuru', 'mangalore', 'hubli', 'dharwad', 'belgaum', 'gulbarga',
+  'davanagere', 'bellary', 'shimoga', 'tumkur', 'udupi', 'bidar', 'hospet', 'raichur',
+  'coorg', 'warangal', 'nizamabad', 'karimnagar', 'khammam', 'ramagundam',
+  'guntur', 'nellore', 'kurnool', 'rajahmundry', 'tirupati', 'kakinada', 'kadapa',
+  'anantapur', 'vizianagaram', 'eluru', 'ongole', 'nandyal', 'chittoor',
+  'madurai', 'tiruchirappalli', 'trichy', 'salem', 'tiruppur', 'erode', 'tirunelveli',
+  'vellore', 'thoothukudi', 'dindigul', 'thanjavur', 'nagercoil', 'kanchipuram',
+  'kumbakonam', 'ooty', 'kodaikanal', 'mahabalipuram',
+  'kozhikode', 'thrissur', 'kollam', 'palakkad', 'alappuzha', 'kannur', 'kottayam',
+  'munnar', 'kovalam',
+  // West Bengal, Bihar, Jharkhand, Odisha, Madhya Pradesh & Chhattisgarh
+  'howrah', 'durgapur', 'asansol', 'siliguri', 'kharagpur', 'bardhaman', 'malda',
+  'haldia', 'baharampur', 'habra', 'jalpaiguri', 'darjeeling',
+  'gaya', 'bhagalpur', 'muzaffarpur', 'purnia', 'darbhanga', 'bihar-sharif', 'arrah',
+  'begusarai', 'katihar', 'chapra', 'munger', 'saharsa', 'sasaram', 'hajipur',
+  'jamshedpur', 'dhanbad', 'bokaro', 'deoghar', 'hazaribagh', 'giridih',
+  'cuttack', 'rourkela', 'berhampur', 'sambalpur', 'puri', 'balasore',
+  'gwalior', 'jabalpur', 'ujjain', 'sagar', 'dewas', 'satna', 'ratlam', 'rewa',
+  'katni', 'singrauli', 'burhanpur', 'khandwa', 'chhindwara', 'morena', 'bhind',
+  'bhilai', 'bilaspur', 'korba', 'durg', 'rajnandgaon', 'jagdalpur', 'raigarh',
+  // North East & Union Territories
+  'silchar', 'dibrugarh', 'jorhat', 'tezpur', 'shillong', 'gangtok', 'agartala',
+  'aizawl', 'imphal', 'dimapur', 'kohima', 'itanagar', 'puducherry', 'pondicherry',
+  'port-blair'
 ];
 
 export function parseLocationSlug(rawSlug) {

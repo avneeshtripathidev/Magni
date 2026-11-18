@@ -7,10 +7,12 @@ import AISingerBookingCard from '@/app/components/home/AISingerBookingCard';
 import AllCitiesSection from '@/app/components/common/AllCitiesSection';
 import CityAISearchBox from '@/app/components/common/CityAISearchBox';
 import { MAJOR_CITIES } from '@/app/utils/seoUrlParser';
+import { getTopArtistsForSEO } from '@/app/utils/fetchTopArtists';
 import '../../seo-pages.css';
 import '@/app/styles/pages/AISearch.css';
 
 function slugToName(slug) {
+  if (slug === 'delhi-ncr') return 'Delhi NCR';
   return slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
@@ -119,17 +121,24 @@ export default async function CityLandingPage({ params }) {
     };
   }
 
-  // 2. Fetch SEO Blogs for this city (only if it has a real DB ID)
+  // 2. Fetch SEO Blogs & Fallback Top Artists for this city in parallel
   let blogs = [];
-  if (city.id) {
-    const { data } = await supabase
-      .from('seo_blogs')
-      .select('title, slug, created_at, featured_image_url')
-      .eq('city_id', city.id)
-      .eq('status', 'published')
-      .order('created_at', { ascending: false });
-    blogs = data || [];
-  }
+  const [blogsResult, topArtists] = await Promise.all([
+    city.id
+      ? supabase
+          .from('seo_blogs')
+          .select('title, slug, created_at, featured_image_url')
+          .eq('city_id', city.id)
+          .eq('status', 'published')
+          .order('created_at', { ascending: false })
+      : Promise.resolve({ data: [] }),
+    getTopArtistsForSEO({
+      category: 'All',
+      city: city.name,
+      limit: 8,
+    }),
+  ]);
+  blogs = blogsResult?.data || [];
 
   // 3. Schema Markup
   const schema = [
@@ -232,7 +241,7 @@ export default async function CityLandingPage({ params }) {
 
             {/* 1. Verified Live Artists in this City */}
             <div className="city-artists-section" style={{ marginBottom: '50px' }}>
-              <SEOArtistsGrid category="All" city={city.name} />
+              <SEOArtistsGrid category="All" city={city.name} fallbackArtists={topArtists} />
             </div>
 
             {/* 2. SEO In-Depth Content */}
