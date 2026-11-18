@@ -13,7 +13,12 @@ function AuthCallbackContent() {
 
   useEffect(() => {
     let active = true;
-    const rawNext = searchParams.get('next') || '/dashboard';
+    let storedNext = '';
+    try {
+      storedNext = sessionStorage.getItem('magnevents_oauth_next') || '';
+      sessionStorage.removeItem('magnevents_oauth_next');
+    } catch {}
+    const rawNext = searchParams.get('next') || storedNext || '/dashboard';
     const safeNext = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard';
 
     const finishLogin = () => {

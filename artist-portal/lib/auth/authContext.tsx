@@ -316,13 +316,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/dashboard');
   };
 
-  // Google OAuth Login (routes via /auth/callback so session cookie is set before dashboard middleware)
+  // Google OAuth Login (routes via clean /auth/callback without query params so Supabase Redirect URLs always match)
   const signInWithGoogle = async (redirectPath = '/dashboard') => {
     const origin =
       typeof window !== 'undefined'
         ? window.location.origin
         : process.env.NEXT_PUBLIC_SITE_URL || 'https://artists.magnevents.in';
-    const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`;
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('magnevents_oauth_next', redirectPath);
+      } catch {}
+    }
+    const callbackUrl = `${origin}/auth/callback`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
