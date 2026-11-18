@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
+  Plus,
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -58,6 +59,30 @@ const LANGUAGES = [
   'Spanish',
 ];
 
+const COVERAGE_LOCATIONS = [
+  'All India (Pan-India)',
+  'Delhi NCR',
+  'Mumbai',
+  'Bengaluru',
+  'Jaipur',
+  'Udaipur',
+  'Goa',
+  'Chandigarh',
+  'Lucknow',
+  'Hyderabad',
+  'Pune',
+  'Kolkata',
+  'Chennai',
+  'Ahmedabad',
+  'Gandhinagar',
+  'Indore',
+  'Dehradun',
+  'Agra',
+  'Varanasi',
+  'Jodhpur',
+  'Surat',
+];
+
 export default function ProfilePage() {
   const { artist, refreshArtist } = useArtistAuth();
 
@@ -74,6 +99,7 @@ export default function ProfilePage() {
     sub_category: 'Bollywood / Sufi',
     genres: ['Bollywood', 'Sufi'] as string[],
     languages: ['Hindi', 'English'] as string[],
+    serviceable_cities: ['Delhi NCR'] as string[],
     bio: '',
     starting_price: 15000,
     solo_price: 15000,
@@ -88,6 +114,7 @@ export default function ProfilePage() {
     travel_readiness: 'pan_india',
   });
 
+  const [customLocation, setCustomLocation] = useState('');
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -107,6 +134,9 @@ export default function ProfilePage() {
         sub_category: artist.sub_category || 'Bollywood / Sufi',
         genres: artist.genres?.length ? artist.genres : ['Bollywood', 'Sufi'],
         languages: artist.languages?.length ? artist.languages : ['Hindi', 'English'],
+        serviceable_cities: artist.performance_details?.serviceable_cities?.length
+          ? artist.performance_details.serviceable_cities
+          : [artist.city || 'Delhi NCR'],
         bio: artist.bio || '',
         starting_price: artist.submitted_pricing?.starting_price || artist.price_min || 15000,
         solo_price: artist.submitted_pricing?.solo_price || artist.price_min || 15000,
@@ -141,6 +171,33 @@ export default function ProfilePage() {
         languages: exists ? prev.languages.filter((l) => l !== lang) : [...prev.languages, lang],
       };
     });
+  };
+
+  const toggleCoverageLocation = (loc: string) => {
+    setFormData((prev) => {
+      const exists = prev.serviceable_cities.includes(loc);
+      return {
+        ...prev,
+        serviceable_cities: exists
+          ? prev.serviceable_cities.filter((c) => c !== loc)
+          : [...prev.serviceable_cities, loc],
+      };
+    });
+  };
+
+  const addCustomCoverageLocation = () => {
+    const trimmed = customLocation.trim();
+    if (!trimmed) return;
+    setFormData((prev) => {
+      if (prev.serviceable_cities.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+        return prev;
+      }
+      return {
+        ...prev,
+        serviceable_cities: [...prev.serviceable_cities, trimmed],
+      };
+    });
+    setCustomLocation('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -180,7 +237,10 @@ export default function ProfilePage() {
           sound_system_provided: formData.sound_system,
           technical_requirements: formData.tech_requirements,
           travel_readiness: formData.travel_readiness as any,
-          serviceable_cities: [formData.city, 'Delhi NCR', 'Mumbai', 'Bengaluru', 'Jaipur'],
+          serviceable_cities:
+            formData.serviceable_cities.length > 0
+              ? formData.serviceable_cities
+              : [formData.city].filter(Boolean),
         },
       };
 
@@ -399,6 +459,63 @@ export default function ProfilePage() {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Performance Coverage Area (Where You Can Easily Perform)</span>
+                  </label>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Select cities or regions you easily travel to for gigs.
+                  </p>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase">
+                  {formData.serviceable_cities.length} Selected
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {Array.from(new Set([...COVERAGE_LOCATIONS, ...formData.serviceable_cities])).map((loc) => {
+                  const selected = formData.serviceable_cities.includes(loc);
+                  return (
+                    <button
+                      type="button"
+                      key={loc}
+                      onClick={() => toggleCoverageLocation(loc)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                        selected
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-300 shadow-xs'
+                          : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                      }`}
+                    >
+                      {selected ? '✓ ' : '+ '}
+                      {loc}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={customLocation}
+                  onChange={(e) => setCustomLocation(e.target.value)}
+                  placeholder="Add another city or area (e.g. Noida, Manali, Shimla)..."
+                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 shadow-sm flex-1 min-w-0"
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomCoverageLocation())}
+                />
+                <button
+                  type="button"
+                  onClick={addCustomCoverageLocation}
+                  className="btn-secondary whitespace-nowrap w-full sm:w-auto text-xs py-2 px-3.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Location</span>
+                </button>
               </div>
             </div>
           </div>
