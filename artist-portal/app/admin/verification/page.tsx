@@ -608,22 +608,26 @@ function AdminVerificationQueueContent() {
                       <div className="space-y-2 text-xs">
                         <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-amber-200/60">
                           <span className="text-amber-900/70 font-medium">Legal Name on ID</span>
-                          <span className="font-bold text-slate-900">{docs?.legal_name || selectedArtist.name}</span>
+                          <span className={docs?.legal_name ? 'font-bold text-slate-900' : 'font-medium text-slate-400'}>
+                            {docs?.legal_name || 'Not filled'}
+                          </span>
                         </div>
                         <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-amber-200/60">
                           <span className="text-amber-900/70 font-medium">Govt ID Type</span>
-                          <span className="font-bold text-slate-900 uppercase">{docs?.id_type || 'Aadhaar'}</span>
+                          <span className={docs?.id_type ? 'font-bold text-slate-900 uppercase' : 'font-medium text-slate-400'}>
+                            {docs?.id_type || 'Not filled'}
+                          </span>
                         </div>
                         <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-amber-200/60">
-                          <span className="text-amber-900/70 font-medium">Masked ID Number</span>
-                          <span className="font-mono font-bold text-slate-900">
-                            {docs?.id_number_masked || 'XXXX-XXXX-8921'}
+                          <span className="text-amber-900/70 font-medium">Aadhaar / ID Number</span>
+                          <span className={docs?.id_number_masked ? 'font-mono font-bold text-slate-900' : 'font-medium text-slate-400'}>
+                            {docs?.id_number_masked || 'Not filled'}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-amber-900/70 font-medium">PAN / Tax ID</span>
-                          <span className="font-mono font-bold text-slate-900">
-                            {docs?.pan_or_tax_id || 'Not provided'}
+                          <span className={docs?.pan_or_tax_id ? 'font-mono font-bold text-slate-900' : 'font-medium text-slate-400'}>
+                            {docs?.pan_or_tax_id || 'Not filled'}
                           </span>
                         </div>
                       </div>

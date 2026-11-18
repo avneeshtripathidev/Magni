@@ -967,27 +967,33 @@ export default function AdminProfileCardsPage() {
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                         <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
                           <span className="text-[10px] uppercase font-bold text-slate-400 block">Legal Name on ID</span>
-                          <span className="text-sm font-black text-slate-900 block mt-1">
-                            {selectedUser.verification_documents?.legal_name || selectedUser.name}
+                          <span className={`text-sm block mt-1 ${selectedUser.verification_documents?.legal_name ? 'font-black text-slate-900' : 'font-medium text-slate-400'}`}>
+                            {selectedUser.verification_documents?.legal_name || 'Not filled'}
                           </span>
                         </div>
                         <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
-                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Govt ID & Number</span>
-                          <span className="text-sm font-black text-slate-900 uppercase block mt-1">
-                            {selectedUser.verification_documents?.id_type || 'Aadhaar'} •{' '}
-                            {selectedUser.verification_documents?.id_number_masked || 'XXXX-XXXX-8921'}
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Govt ID &amp; Aadhaar Number</span>
+                          <span className={`text-sm block mt-1 ${selectedUser.verification_documents?.id_type || selectedUser.verification_documents?.id_number_masked ? 'font-black text-slate-900 uppercase' : 'font-medium text-slate-400'}`}>
+                            {selectedUser.verification_documents?.id_type || selectedUser.verification_documents?.id_number_masked
+                              ? [
+                                  selectedUser.verification_documents?.id_type,
+                                  selectedUser.verification_documents?.id_number_masked,
+                                ]
+                                  .filter(Boolean)
+                                  .join(' • ')
+                              : 'Not filled'}
                           </span>
                         </div>
                         <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
                           <span className="text-[10px] uppercase font-bold text-slate-400 block">PAN / Tax ID</span>
-                          <span className="text-sm font-black font-mono text-slate-900 block mt-1">
-                            {selectedUser.verification_documents?.pan_or_tax_id || 'ABCDE1234F'}
+                          <span className={`text-sm font-mono block mt-1 ${selectedUser.verification_documents?.pan_or_tax_id ? 'font-black text-slate-900' : 'font-medium text-slate-400'}`}>
+                            {selectedUser.verification_documents?.pan_or_tax_id || 'Not filled'}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2.5 pt-2">
-                        {selectedUser.verification_documents?.id_document_url && (
+                        {selectedUser.verification_documents?.id_document_url ? (
                           <a
                             href={selectedUser.verification_documents.id_document_url}
                             target="_blank"
@@ -998,6 +1004,8 @@ export default function AdminProfileCardsPage() {
                             <span>Inspect Uploaded Govt ID</span>
                             <ExternalLink className="w-3.5 h-3.5" />
                           </a>
+                        ) : (
+                          <span className="text-rose-700 font-semibold text-xs">No Govt ID attached</span>
                         )}
                         {selectedUser.verification_documents?.address_proof_url && (
                           <a

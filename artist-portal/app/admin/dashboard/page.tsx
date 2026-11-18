@@ -241,10 +241,14 @@ export default function AdminDashboardPage() {
                     </td>
 
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[11px] border border-emerald-200/50">
-                        <FileText className="w-3 h-3 text-emerald-600" />
-                        <span>{artist.verification_documents?.id_type || 'ID Provided'}</span>
-                      </span>
+                      {artist.verification_documents?.id_document_url || artist.verification_documents?.id_type ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[11px] border border-emerald-200/50 uppercase">
+                          <FileText className="w-3 h-3 text-emerald-600" />
+                          <span>{artist.verification_documents?.id_type || 'ID Attached'}</span>
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 text-[11px]">Not filled</span>
+                      )}
                     </td>
 
                     <td className="py-3.5 px-4 text-right">
@@ -498,19 +502,29 @@ export default function AdminDashboardPage() {
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                       <span>KYC & Private Identity Proof</span>
                     </h3>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between gap-2">
                       <span className="text-slate-400">Legal Name</span>
-                      <span className="font-bold text-slate-900">{docs?.legal_name || reviewingArtist.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">ID Type & Number</span>
-                      <span className="font-bold text-slate-900 uppercase">
-                        {docs?.id_type || 'N/A'} {docs?.id_number_masked ? `(${docs.id_number_masked})` : ''}
+                      <span className={docs?.legal_name ? 'font-bold text-slate-900' : 'text-slate-400'}>
+                        {docs?.legal_name || 'Not filled'}
                       </span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-400">Govt ID Type</span>
+                      <span className={docs?.id_type ? 'font-bold text-slate-900 uppercase' : 'text-slate-400'}>
+                        {docs?.id_type || 'Not filled'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-400">Aadhaar / ID Number</span>
+                      <span className={docs?.id_number_masked ? 'font-mono font-bold text-slate-900' : 'text-slate-400'}>
+                        {docs?.id_number_masked || 'Not filled'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-2">
                       <span className="text-slate-400">PAN / Tax ID</span>
-                      <span className="font-mono font-bold text-slate-900">{docs?.pan_or_tax_id || 'Not provided'}</span>
+                      <span className={docs?.pan_or_tax_id ? 'font-mono font-bold text-slate-900' : 'text-slate-400'}>
+                        {docs?.pan_or_tax_id || 'Not filled'}
+                      </span>
                     </div>
                     <div className="flex flex-wrap gap-2 pt-2">
                       {docs?.id_document_url ? (

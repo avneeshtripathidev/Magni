@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           serviceable_cities: ["Delhi NCR", "Mumbai", "Bengaluru", "Jaipur", "Chandigarh"]
         },
         verification_documents: {
-          legal_name: rawName,
+          legal_name: "",
           id_type: "",
           id_number_masked: "",
           id_document_url: "",

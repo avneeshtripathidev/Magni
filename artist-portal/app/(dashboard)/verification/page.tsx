@@ -283,13 +283,13 @@ export default function VerificationPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">ID Number (Masked)</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Aadhaar / Govt ID Number</label>
               <input
                 type="text"
                 value={formData.id_number_masked}
                 onChange={(e) => setFormData({ ...formData, id_number_masked: e.target.value })}
-                placeholder="XXXX-XXXX-4589"
-                className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 shadow-sm"
+                placeholder="Enter your Aadhaar or Govt ID number"
+                className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 shadow-sm font-mono"
               />
             </div>
 
