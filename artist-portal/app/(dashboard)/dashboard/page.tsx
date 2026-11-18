@@ -41,18 +41,62 @@ export default function ArtistDashboardPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'confirmed' | 'pending' | 'completed'>('all');
   const [locationFilter, setLocationFilter] = useState('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
   const [activeLiveEvents, setActiveLiveEvents] = useState<EventVerificationRecord[]>([]);
   const [activeModalEvent, setActiveModalEvent] = useState<EventVerificationRecord | null>(null);
+
+  const isEventForArtist = useCallback(
+    (e: EventVerificationRecord) => {
+      if (!artist) return false;
+      const artistId = (artist.id || '').toLowerCase();
+      const artistName = (artist.name || '').toLowerCase();
+      const stageName = (artist.stage_name || '').toLowerCase();
+
+      if (Array.isArray(e.assigned_artists) && e.assigned_artists.length > 0) {
+        return e.assigned_artists.some(
+          (a) =>
+            (artistId && (a.artist_id || '').toLowerCase() === artistId) ||
+            (artistName && (a.name || '').toLowerCase() === artistName) ||
+            (stageName && (a.stage_name || '').toLowerCase() === stageName)
+        );
+      }
+
+      const evArtist = (e.artist_name || '').toLowerCase();
+      return Boolean(
+        (artistName && evArtist.includes(artistName)) ||
+          (stageName && evArtist.includes(stageName))
+      );
+    },
+    [artist]
+  );
+
+  const loadBookings = useCallback(async () => {
+    if (!artist?.id) {
+      setBookings([]);
+      setLoadingBookings(false);
+      return;
+    }
+    try {
+      const data = await artistService.getArtistBookings(artist.id);
+      setBookings(Array.isArray(data) ? data : []);
+    } catch {
+      setBookings([]);
+    } finally {
+      setLoadingBookings(false);
+    }
+  }, [artist?.id]);
 
   const loadActiveLiveEvents = useCallback(async () => {
     try {
       const res = await fetch('/api/artist/event-verification', { cache: 'no-store' });
       const data = await res.json();
       if (Array.isArray(data.events)) {
-        // Show any events started by admin (or recently verified) right on the dashboard
+        // Show only events assigned to this artist that are started or verified
         const startedOrVerified = data.events.filter(
           (e: EventVerificationRecord) =>
-            e.event_live_status === 'started' || e.event_live_status === 'verified'
+            isEventForArtist(e) &&
+            (e.event_live_status === 'started' || e.event_live_status === 'verified')
         );
         setActiveLiveEvents(startedOrVerified);
         setActiveModalEvent((prev) => {
@@ -63,13 +107,14 @@ export default function ArtistDashboardPage() {
     } catch {
       // Non-blocking
     }
-  }, []);
+  }, [isEventForArtist]);
 
   useEffect(() => {
+    loadBookings();
     loadActiveLiveEvents();
     const poll = setInterval(loadActiveLiveEvents, 8000);
     return () => clearInterval(poll);
-  }, [loadActiveLiveEvents]);
+  }, [loadBookings, loadActiveLiveEvents]);
 
   const handleDashboardEventUpdated = (updated: EventVerificationRecord) => {
     setActiveLiveEvents((prev) =>
@@ -98,48 +143,85 @@ export default function ArtistDashboardPage() {
   const isRejected = status === 'rejected';
   const isPending = status === 'pending';
 
-  const sampleGigs = [
-    {
-      id: 'MAG-8821',
-      title: 'Wedding Sangeet Night',
-      client: 'Kapur Family',
-      city: 'Gurgaon',
-      date: '14 Dec 2026',
-      package: 'Acoustic Band (3-Piece)',
-      budget: '₹55,000',
-      status: 'confirmed',
-    },
-    {
-      id: 'MAG-8794',
-      title: 'Corporate Gala Dinner',
-      client: 'Nexus Global Tech',
-      city: 'Delhi Aerocity',
-      date: '22 Dec 2026',
-      package: 'Solo Vocals + Tracks',
-      budget: '₹35,000',
-      status: 'pending',
-    },
-    {
-      id: 'MAG-8710',
-      title: 'Intimate House Concert',
-      client: 'Mehra Residence',
-      city: 'South Delhi',
-      date: '02 Dec 2026',
-      package: 'Acoustic Duo Set',
-      budget: '₹22,000',
-      status: 'completed',
-    },
-  ];
+  const normalizedGigs = (() => {
+    const map = new Map<string, {
+      id: string;
+      title: string;
+      client: string;
+      city: string;
+      date: string;
+      sortTime: number;
+      package: string;
+      budget: string;
+      status: string;
+    }>();
 
-  const filteredGigs = sampleGigs.filter((gig) => {
-    const matchesStatus = statusFilter === 'all' || gig.status === statusFilter;
-    const matchesLocation = matchesLocationFilter(locationFilter, gig.city);
-    const matchesSearch = !searchQuery ||
-      gig.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      gig.city.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesLocation && matchesSearch;
-  });
+    bookings.forEach((b) => {
+      const dateRaw = b.event_date || b.created_at;
+      const formattedDate = dateRaw
+        ? new Date(dateRaw).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          })
+        : 'TBD';
+      map.set(String(b.id), {
+        id: String(b.id),
+        title: b.event_type || 'Live Event',
+        client: b.customer_name || b.client_name || 'Client',
+        city: b.city || 'TBD',
+        date: formattedDate,
+        sortTime: dateRaw ? new Date(dateRaw).getTime() : 0,
+        package: b.package_title || 'Standard Performance',
+        budget: `₹${Number(b.total_amount || 0).toLocaleString('en-IN')}`,
+        status: (b.status || 'pending').toLowerCase(),
+      });
+    });
+
+    activeLiveEvents.forEach((ev) => {
+      if (!map.has(ev.booking_id)) {
+        const formattedDate = ev.event_date
+          ? new Date(ev.event_date).toLocaleDateString('en-IN', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })
+          : 'TBD';
+        map.set(ev.booking_id, {
+          id: ev.booking_id,
+          title: ev.event_title || 'Live Event',
+          client: ev.client_name || 'Client',
+          city: ev.city || 'TBD',
+          date: formattedDate,
+          sortTime: ev.event_date ? new Date(ev.event_date).getTime() : 0,
+          package: ev.package_title || 'Live Event Set',
+          budget: `₹${Number(ev.budget || 0).toLocaleString('en-IN')}`,
+          status: (ev.booking_status || 'confirmed').toLowerCase(),
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  })();
+
+  const filteredGigs = normalizedGigs
+    .filter((gig) => {
+      const matchesStatus = statusFilter === 'all' || gig.status === statusFilter;
+      const matchesLocation = matchesLocationFilter(locationFilter, gig.city);
+      const matchesSearch =
+        !searchQuery ||
+        gig.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        gig.city.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesStatus && matchesLocation && matchesSearch;
+    })
+    .sort((a, b) => (sortOrder === 'asc' ? a.sortTime - b.sortTime : b.sortTime - a.sortTime));
+
+  const completedEventsCount =
+    (artist?.successful_bookings || 0) +
+    activeLiveEvents.filter((e) => e.event_live_status === 'verified').length;
+  const startingRate = Number(artist?.submitted_pricing?.starting_price || artist?.price_min || 0);
+  const artistRating = Number(artist?.rating || 0);
 
   return (
     <div className="space-y-6 font-sans">
@@ -323,7 +405,7 @@ export default function ArtistDashboardPage() {
             <DollarSign className="w-4 h-4 text-sky-600 flex-shrink-0" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
-            ₹{(artist?.submitted_pricing?.starting_price || artist?.price_min || 15000).toLocaleString('en-IN')}
+            {startingRate > 0 ? `₹${startingRate.toLocaleString('en-IN')}` : 'Not set'}
           </div>
           <span className="text-[11px] text-slate-400 block pt-1.5 border-t border-slate-100 font-medium">
             Per live event
@@ -336,10 +418,10 @@ export default function ArtistDashboardPage() {
             <CalendarCheck className="w-4 h-4 text-amber-500 flex-shrink-0" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            3
+            {normalizedGigs.length}
           </div>
           <span className="text-[11px] text-slate-400 block pt-1.5 border-t border-slate-100 font-medium">
-            Avg. response &lt; 2h
+            {normalizedGigs.length > 0 ? 'Live host bookings' : 'No inquiries yet'}
           </span>
         </div>
 
@@ -349,11 +431,11 @@ export default function ArtistDashboardPage() {
             <Star className="w-4 h-4 text-amber-400 fill-amber-400 flex-shrink-0" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
-            <span>4.95</span>
-            <span className="text-xs font-bold text-amber-500">★</span>
+            <span>{artistRating > 0 ? artistRating.toFixed(1) : 'New'}</span>
+            {artistRating > 0 && <span className="text-xs font-bold text-amber-500">★</span>}
           </div>
           <span className="text-[11px] text-slate-400 block pt-1.5 border-t border-slate-100 font-medium">
-            42 verified host reviews
+            {completedEventsCount} completed {completedEventsCount === 1 ? 'event' : 'events'}
           </span>
         </div>
       </div>
@@ -378,7 +460,7 @@ export default function ArtistDashboardPage() {
           <LocationFilter
             value={locationFilter}
             onChange={setLocationFilter}
-            availableCities={sampleGigs.map((g) => g.city)}
+            availableCities={normalizedGigs.map((g) => g.city)}
             className="h-14 px-4 rounded-[22px] flex-shrink-0"
           />
         </div>
@@ -423,11 +505,23 @@ export default function ArtistDashboardPage() {
 
       {/* 5. Luxe Card: Inquiries List Container (matching admin.magnevents.in) */}
       <div className="luxe-card p-4 sm:p-6 md:p-8 flex flex-col min-h-[300px]">
-        {filteredGigs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3 opacity-60 my-auto text-center">
+        {loadingBookings ? (
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-20 rounded-[18px] bg-slate-50 border border-slate-100 animate-pulse" />
+            ))}
+          </div>
+        ) : filteredGigs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3 opacity-70 my-auto text-center">
             <CalendarCheck size={48} className="text-slate-300" />
-            <p className="text-base font-bold text-slate-400">No inquiries found</p>
-            <p className="text-xs text-slate-400">Try adjusting your search query or status filter.</p>
+            <p className="text-base font-bold text-slate-500">
+              {normalizedGigs.length === 0 ? 'No booking inquiries yet' : 'No inquiries match your filter'}
+            </p>
+            <p className="text-xs text-slate-400 max-w-sm">
+              {normalizedGigs.length === 0
+                ? 'Live client booking inquiries and admin-assigned events will appear here automatically.'
+                : 'Try adjusting your search query or status filter.'}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">

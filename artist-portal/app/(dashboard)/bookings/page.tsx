@@ -43,72 +43,59 @@ export default function BookingsPage() {
   const [locationFilter, setLocationFilter] = useState('all');
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Availability calendar state
-  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 11, 1)); // Dec 2026
+  // Availability calendar state (dynamic current month)
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
   const [blockedDates, setBlockedDates] = useState<string[]>(
-    artist?.performance_details?.blocked_dates || ['2026-12-25', '2026-12-31']
+    artist?.performance_details?.blocked_dates || []
   );
   const [savingAvailability, setSavingAvailability] = useState(false);
 
-  const defaultBookings = [
-    {
-      id: 'MAG-8821',
-      customer_name: 'Kapur Family',
-      event_type: 'Wedding Sangeet',
-      city: 'Gurgaon',
-      event_date: '2026-12-14',
-      guest_count: 250,
-      package_title: 'Acoustic Band (3-Piece)',
-      total_amount: 55000,
-      status: 'confirmed',
-      payout_status: 'Advance in Escrow',
-      coordinator_phone: '+91 80765 15257',
-    },
-    {
-      id: 'MAG-8794',
-      customer_name: 'Nexus Global Tech',
-      event_type: 'Corporate Gala Dinner',
-      city: 'Delhi Aerocity',
-      event_date: '2026-12-22',
-      guest_count: 120,
-      package_title: 'Solo Vocals + Backing Tracks',
-      total_amount: 35000,
-      status: 'pending',
-      payout_status: 'Proposal Review',
-      coordinator_phone: '+91 80765 15257',
-    },
-    {
-      id: 'MAG-8710',
-      customer_name: 'Mehra Residence',
-      event_type: 'Private House Concert',
-      city: 'South Delhi',
-      event_date: '2026-12-02',
-      guest_count: 40,
-      package_title: 'Acoustic Duo Set',
-      total_amount: 22000,
-      status: 'completed',
-      payout_status: 'Settled to Bank',
-      coordinator_phone: '+91 80765 15257',
-    },
-  ];
+  const isEventForArtist = useCallback(
+    (e: EventVerificationRecord) => {
+      if (!artist) return false;
+      const artistId = (artist.id || '').toLowerCase();
+      const artistName = (artist.name || '').toLowerCase();
+      const stageName = (artist.stage_name || '').toLowerCase();
 
-  // Load Live Event Verifications (started by Admin)
+      if (Array.isArray(e.assigned_artists) && e.assigned_artists.length > 0) {
+        return e.assigned_artists.some(
+          (a) =>
+            (artistId && (a.artist_id || '').toLowerCase() === artistId) ||
+            (artistName && (a.name || '').toLowerCase() === artistName) ||
+            (stageName && (a.stage_name || '').toLowerCase() === stageName)
+        );
+      }
+
+      const evArtist = (e.artist_name || '').toLowerCase();
+      return Boolean(
+        (artistName && evArtist.includes(artistName)) ||
+          (stageName && evArtist.includes(stageName))
+      );
+    },
+    [artist]
+  );
+
+  // Load Live Event Verifications assigned to this artist (started by Admin)
   const loadLiveEvents = useCallback(async () => {
     try {
       const res = await fetch('/api/artist/event-verification', { cache: 'no-store' });
       const data = await res.json();
       if (Array.isArray(data.events)) {
-        setLiveEvents(data.events);
+        const artistEvents = data.events.filter(isEventForArtist);
+        setLiveEvents(artistEvents);
         // Only refresh the popup data if the user already has a proof modal open
         setActiveVerifyEvent((prev) => {
           if (!prev) return null;
-          return data.events.find((e: EventVerificationRecord) => e.booking_id === prev.booking_id) || prev;
+          return artistEvents.find((e: EventVerificationRecord) => e.booking_id === prev.booking_id) || prev;
         });
       }
     } catch (err) {
       console.warn('Could not load live event verifications:', err);
     }
-  }, []);
+  }, [isEventForArtist]);
 
   // Load Bookings from centralized database + live admin events
   useEffect(() => {
@@ -116,17 +103,13 @@ export default function BookingsPage() {
       try {
         if (artist?.id) {
           const data = await artistService.getArtistBookings(artist.id);
-          if (data && data.length > 0) {
-            setBookings(data);
-          } else {
-            setBookings(defaultBookings);
-          }
+          setBookings(Array.isArray(data) ? data : []);
         } else {
-          setBookings(defaultBookings);
+          setBookings([]);
         }
       } catch (err) {
         console.error('Failed to load bookings:', err);
-        setBookings(defaultBookings);
+        setBookings([]);
       } finally {
         setLoading(false);
       }
@@ -270,12 +253,20 @@ export default function BookingsPage() {
     return statusMatch && locationMatch && searchMatch;
   });
 
-  // Calendar Helper: Build December 2026 dates (1 to 31)
-  const daysInMonth = 31;
+  // Calendar Helper: Build dynamic dates for the selected month
+  const calYear = currentMonth.getFullYear();
+  const calMonthIdx = currentMonth.getMonth();
+  const calMonthLabel = currentMonth.toLocaleDateString('en-IN', {
+    month: 'long',
+    year: 'numeric',
+  });
+  const daysInMonth = new Date(calYear, calMonthIdx + 1, 0).getDate();
   const monthDates = Array.from({ length: daysInMonth }, (_, i) => {
     const day = i + 1;
-    const dateStr = `2026-12-${day.toString().padStart(2, '0')}`;
-    const confirmedBooking = bookings.find(
+    const dateStr = `${calYear}-${(calMonthIdx + 1).toString().padStart(2, '0')}-${day
+      .toString()
+      .padStart(2, '0')}`;
+    const confirmedBooking = mergedBookings.find(
       (b) => b.event_date === dateStr && (b.status === 'confirmed' || b.status === 'completed')
     );
     const isBlocked = blockedDates.includes(dateStr);
@@ -584,8 +575,26 @@ export default function BookingsPage() {
             <div className="flex items-center gap-2.5">
               <Calendar className="w-4 h-4 text-indigo-600" />
               <h2 className="text-sm font-bold text-slate-900 tracking-tight">
-                December 2026 Calendar
+                {calMonthLabel} Calendar
               </h2>
+              <div className="flex items-center gap-1 ml-1">
+                <button
+                  type="button"
+                  onClick={() => setCurrentMonth(new Date(calYear, calMonthIdx - 1, 1))}
+                  className="p-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
+                  aria-label="Previous month"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentMonth(new Date(calYear, calMonthIdx + 1, 1))}
+                  className="p-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
+                  aria-label="Next month"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             {/* Legend */}

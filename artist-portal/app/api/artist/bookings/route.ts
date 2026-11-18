@@ -81,12 +81,10 @@ export async function PATCH(request: NextRequest) {
     const { data, error } = await query.select().single();
 
     if (error) {
-      // If demo booking not in live database, return successful mock acknowledgment
-      return NextResponse.json({
-        success: true,
-        message: `Booking ${bookingId} marked as ${status} (acknowledgment)`,
-        data: { id: bookingId, status, notes },
-      });
+      return NextResponse.json(
+        { success: false, error: error.message || 'Booking not found' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({

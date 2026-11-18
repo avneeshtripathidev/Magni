@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const startingPrice = Number(artist?.price_min || 15000);
+    const startingPrice = Number(artist?.price_min || 0);
 
     // 2. Fetch bookings to aggregate earnings
     const { data: bookings } = await supabase
@@ -65,38 +65,6 @@ export async function GET(request: NextRequest) {
         });
       }
     });
-
-    // Provide default fallback demo ledger if no completed gigs in database
-    if (totalSettled === 0 && escrowBalance === 0) {
-      totalSettled = 112000;
-      escrowBalance = 27500;
-      transactions.push(
-        {
-          id: 'TXN-994821',
-          event: 'Vasant Vihar Birthday House Concert',
-          date: '02 Dec 2026',
-          amount: '₹22,000',
-          status: 'Settled to Bank',
-          method: 'Direct IMPS Wire',
-        },
-        {
-          id: 'TXN-88310',
-          event: 'DLF Golf Club Acoustic Set',
-          date: '18 Nov 2026',
-          amount: '₹35,000',
-          status: 'Settled to Bank',
-          method: 'Bank Wire',
-        },
-        {
-          id: 'TXN-77192',
-          event: 'Oberoi Gurgaon Corporate Cocktail',
-          date: '04 Nov 2026',
-          amount: '₹55,000',
-          status: 'Settled to Bank',
-          method: 'Bank Wire',
-        }
-      );
-    }
 
     return NextResponse.json({
       success: true,

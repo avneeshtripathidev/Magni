@@ -22,98 +22,11 @@ const supabaseKey =
 
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-const DEFAULT_EVENTS: EventVerificationRecord[] = [
-  {
-    booking_id: 'MAG-8821',
-    event_title: 'Wedding Sangeet Night',
-    artist_name: 'Aarav Sharma',
-    stage_name: 'Aarav & The Acoustic Project',
-    client_name: 'Kapur Family',
-    client_phone: '+91 98201 54321',
-    client_email: 'kapur.family@gmail.com',
-    city: 'Gurgaon, DLF Phase 5',
-    venue: 'The Oberoi Courtyard',
-    event_date: '2026-12-14',
-    guest_count: 250,
-    package_title: 'Acoustic Band (3-Piece)',
-    budget: 55000,
-    booking_status: 'confirmed',
-    payout_status: 'Advance in Escrow',
-    event_live_status: 'not_started',
-    event_images: [],
-    artist_location: null,
-    updated_at: new Date().toISOString(),
-  },
-  {
-    booking_id: 'MAG-8794',
-    event_title: 'Corporate Gala Dinner',
-    artist_name: 'Aarav Sharma',
-    stage_name: 'Aarav & The Acoustic Project',
-    client_name: 'Nexus Global Tech',
-    client_phone: '+91 99100 23456',
-    client_email: 'events@nexusglobal.in',
-    city: 'Delhi Aerocity',
-    venue: 'JW Marriott Grand Ballroom',
-    event_date: '2026-12-22',
-    guest_count: 120,
-    package_title: 'Solo Vocals + Backing Tracks',
-    budget: 35000,
-    booking_status: 'pending',
-    payout_status: 'Proposal Review',
-    event_live_status: 'not_started',
-    event_images: [],
-    artist_location: null,
-    updated_at: new Date().toISOString(),
-  },
-  {
-    booking_id: 'MAG-8855',
-    event_title: 'Destination Sangeet & Afterparty',
-    artist_name: 'DJ Rohan K',
-    stage_name: 'DJ Rohan (Club & Sangeet Specialist)',
-    client_name: 'Pooja Agarwal',
-    client_phone: '+91 98450 78901',
-    client_email: 'pooja.weddings@outlook.com',
-    city: 'Udaipur',
-    venue: 'Taj Lake Palace Courtyard',
-    event_date: '2026-12-18',
-    guest_count: 300,
-    package_title: 'DJ + Percussionist Full Night',
-    budget: 75000,
-    booking_status: 'confirmed',
-    payout_status: 'Advance in Escrow',
-    event_live_status: 'not_started',
-    event_images: [],
-    artist_location: null,
-    updated_at: new Date().toISOString(),
-  },
-  {
-    booking_id: 'MAG-8710',
-    event_title: 'Private House Concert',
-    artist_name: 'Aarav Sharma',
-    stage_name: 'Aarav & The Acoustic Project',
-    client_name: 'Mehra Residence',
-    client_phone: '+91 98199 44332',
-    client_email: 'mehra.events@gmail.com',
-    city: 'South Delhi',
-    venue: 'Vasant Vihar Lawn',
-    event_date: '2026-12-02',
-    guest_count: 40,
-    package_title: 'Acoustic Duo Set',
-    budget: 22000,
-    booking_status: 'completed',
-    payout_status: 'Settled to Bank',
-    event_live_status: 'not_started',
-    event_images: [],
-    artist_location: null,
-    updated_at: new Date().toISOString(),
-  },
-];
-
 function normalizeEvent(r: EventVerificationRecord): EventVerificationRecord {
   const assigned: AssignedArtist[] =
     Array.isArray(r.assigned_artists) && r.assigned_artists.length > 0
       ? r.assigned_artists
-      : (r.artist_name || 'Aarav Sharma')
+      : (r.artist_name || '')
           .split(',')
           .map((n) => n.trim())
           .filter(Boolean)
@@ -130,24 +43,36 @@ function normalizeEvent(r: EventVerificationRecord): EventVerificationRecord {
   };
 }
 
-function readStore(): EventVerificationRecord[] {
+function readLocalStore(): EventVerificationRecord[] {
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
     if (!fs.existsSync(DATA_FILE)) {
-      const normalized = DEFAULT_EVENTS.map(normalizeEvent);
-      fs.writeFileSync(DATA_FILE, JSON.stringify(normalized, null, 2), 'utf-8');
-      return normalized;
+      return [];
     }
     const raw = fs.readFileSync(DATA_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
-    const list = Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_EVENTS;
-    return list.map(normalizeEvent);
+    return Array.isArray(parsed) ? parsed.map(normalizeEvent) : [];
   } catch (err) {
-    console.warn('Could not read local event store, using defaults:', err);
-    return DEFAULT_EVENTS.map(normalizeEvent);
+    console.warn('Could not read local event store:', err);
+    return [];
   }
+}
+
+async function readStore(): Promise<EventVerificationRecord[]> {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('event_verifications')
+        .select('*')
+        .order('updated_at', { ascending: false });
+
+      if (!error && Array.isArray(data)) {
+        return (data as EventVerificationRecord[]).map(normalizeEvent);
+      }
+    } catch {
+      // Fall through to local store if table is not reachable
+    }
+  }
+  return readLocalStore();
 }
 
 function writeStore(records: EventVerificationRecord[]) {
@@ -197,7 +122,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const bookingId = searchParams.get('booking_id');
 
-  const records = readStore();
+  const records = await readStore();
 
   if (bookingId) {
     const found = records.find((r) => r.booking_id === bookingId);
@@ -224,7 +149,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { action, booking_id } = body;
-    const records = readStore();
+    const records = await readStore();
     const now = new Date().toISOString();
 
     if (action === 'start_event') {
@@ -269,13 +194,15 @@ export async function POST(request: NextRequest) {
               city: a.city,
               profile_image_url: a.profile_image_url,
             }))
-          : [
+          : body.artist_name
+          ? [
               {
-                artist_id: 'artist-rev-001',
-                name: body.artist_name || 'Aarav Sharma',
-                stage_name: body.stage_name || body.artist_name || 'Aarav & The Acoustic Project',
+                artist_id: body.artist_id || `artist-${Date.now()}`,
+                name: body.artist_name,
+                stage_name: body.stage_name || body.artist_name,
               },
-            ];
+            ]
+          : [];
 
       const displayArtistNames = incomingAssigned.map((a) => a.name).join(', ');
 
@@ -285,18 +212,18 @@ export async function POST(request: NextRequest) {
         artist_name: displayArtistNames,
         stage_name: incomingAssigned[0]?.stage_name || displayArtistNames,
         assigned_artists: incomingAssigned,
-        client_name: body.client_name || 'VIP Client',
-        client_phone: body.client_phone || '+91 98765 43210',
-        city: body.city || 'Delhi NCR',
-        venue: body.venue || 'Main Event Venue',
+        client_name: body.client_name || 'Client',
+        client_phone: body.client_phone || '',
+        city: body.city || '',
+        venue: body.venue || '',
         event_date: body.event_date || now.slice(0, 10),
-        guest_count: Number(body.guest_count) || 150,
+        guest_count: Number(body.guest_count) || 0,
         package_title:
           body.package_title ||
           (incomingAssigned.length > 1
             ? `Multi-Artist Lineup (${incomingAssigned.length} Performers)`
             : 'Live Event Set'),
-        budget: Number(body.budget) || 40000,
+        budget: Number(body.budget) || 0,
         booking_status: 'confirmed',
         payout_status: 'Advance in Escrow',
         event_live_status: body.start_immediately === false ? 'not_started' : 'started',
@@ -395,7 +322,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'booking_id is required' }, { status: 400 });
     }
 
-    const records = readStore();
+    const records = await readStore();
     const idx = records.findIndex((r) => r.booking_id === booking_id);
 
     if (idx === -1) {

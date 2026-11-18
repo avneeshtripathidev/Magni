@@ -71,17 +71,17 @@ export default function SettingsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
             <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Registered Email</span>
-            <span className="font-semibold text-slate-900 break-all">{user?.email || 'artist@magnevents.in'}</span>
+            <span className="font-semibold text-slate-900 break-all">{user?.email || artist?.email || 'Not set'}</span>
           </div>
 
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
             <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Contact Phone</span>
-            <span className="font-semibold text-slate-900">{artist?.phone_no || '+91 98765 43210'}</span>
+            <span className="font-semibold text-slate-900">{artist?.phone_no || 'Not provided'}</span>
           </div>
 
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
             <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Artist ID</span>
-            <span className="font-mono text-slate-600 truncate block">{artist?.id || 'demo-performer'}</span>
+            <span className="font-mono text-slate-600 truncate block">{artist?.id || '—'}</span>
           </div>
 
           <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">

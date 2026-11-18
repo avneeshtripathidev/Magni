@@ -128,14 +128,18 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         {/* Quick Profile Avatar */}
         <Link
           href="/profile"
-          className="w-9 h-9 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 transition-colors flex-shrink-0 shadow-xs"
+          className="w-9 h-9 rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 transition-colors flex-shrink-0 shadow-xs bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold"
           title="Edit Profile"
         >
-          <img
-            src={artist?.profile_image_url || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=200'}
-            alt={artist?.name || 'Artist Avatar'}
-            className="w-full h-full object-cover"
-          />
+          {artist?.profile_image_url ? (
+            <img
+              src={artist.profile_image_url}
+              alt={artist?.name || 'Artist Avatar'}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span>{(artist?.stage_name || artist?.name || 'A')[0].toUpperCase()}</span>
+          )}
         </Link>
       </div>
     </header>

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 1. Fetch artist record (safe select)
-    let blockedDates: string[] = ['2026-12-25', '2026-12-31'];
+    let blockedDates: string[] = [];
 
     try {
       const { data: artist } = await supabase

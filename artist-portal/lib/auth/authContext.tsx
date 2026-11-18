@@ -22,79 +22,6 @@ interface AuthContextType {
   loginAsDemoArtist: () => void;
 }
 
-export const DEMO_ARTIST: ArtistProfile = {
-  id: 'demo-artist-001',
-  user_id: 'demo-user-001',
-  name: 'Aarav Sharma',
-  stage_name: 'Aarav & The Acoustic Project',
-  slug: 'aarav-sharma-live',
-  phone_no: '+91 98765 43210',
-  email: 'artist.demo@magnevents.in',
-  category: 'Singer',
-  sub_category: 'Bollywood & Sufi Rock',
-  genres: ['Bollywood', 'Sufi', 'Retro', 'Indie Pop'],
-  city: 'Delhi NCR',
-  state: 'Delhi',
-  country: 'India',
-  languages: ['Hindi', 'English', 'Punjabi'],
-  bio: 'Lead vocalist and acoustic performer with 8+ years of live experience across Delhi NCR, Mumbai, and destination weddings.',
-  experience_years: 8,
-  rating: 4.9,
-  successful_bookings: 42,
-  price_min: 15000,
-  price_max: 65000,
-  cover_image_url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop',
-  profile_image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
-  video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-  youtube_links: [
-    'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  ],
-  audio_samples: [
-    'https://soundcloud.com/demo/acoustic-sufi-live'
-  ],
-  instagram_url: 'https://instagram.com/magnevents',
-  spotify_url: 'https://open.spotify.com/artist/demo',
-  submitted_pricing: {
-    starting_price: 15000,
-    solo_price: 15000,
-    duo_price: 25000,
-    band_price: 55000,
-    hourly_price: 5000,
-    travel_charges_policy: 'Outstation flights/train and twin-sharing hotel room to be arranged by organizer.'
-  },
-  performance_details: {
-    min_duration_minutes: 60,
-    max_duration_minutes: 180,
-    sound_system_provided: false,
-    technical_requirements: 'Stage PA with 2 wireless mics and DI box for acoustic guitar',
-    travel_readiness: 'pan_india',
-    serviceable_cities: ['Delhi NCR', 'Jaipur', 'Chandigarh', 'Mumbai', 'Bengaluru']
-  },
-  verification_documents: {
-    legal_name: 'Aarav Sharma',
-    id_type: 'aadhaar',
-    id_number_masked: 'XXXX-XXXX-8921',
-    id_document_url: 'https://drive.google.com/file/d/demo-aadhaar-doc/view',
-    address_proof_url: 'https://drive.google.com/file/d/demo-electricity-bill/view',
-    pan_or_tax_id: 'ABCDE1234F'
-  },
-  verification_status: 'approved',
-  profile_completion: 95,
-  is_live: true,
-  is_featured: true,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
-};
-
-export const DEMO_USER: any = {
-  id: 'demo-user-001',
-  email: 'artist.demo@magnevents.in',
-  app_metadata: { provider: 'demo_bypass' },
-  user_metadata: { full_name: 'Aarav Sharma' },
-  aud: 'authenticated',
-  role: 'authenticated'
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -204,8 +131,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateLocalArtist = (updates: Partial<ArtistProfile>) => {
     setArtist((prev) => {
+      if (!prev) return prev;
       const merged = {
-        ...(prev || DEMO_ARTIST),
+        ...prev,
         ...updates,
         updated_at: new Date().toISOString(),
       } as ArtistProfile;
@@ -242,17 +170,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function initAuth() {
       try {
-        // Check for Demo Artist Bypass flag
+        // Clear any legacy demo bypass flags so only real accounts are loaded
         if (typeof window !== 'undefined') {
-          const isDemoBypass = localStorage.getItem('magnevents_demo_artist') === 'true' || 
-            document.cookie.includes('artist_bypass_session=true');
-          if (isDemoBypass) {
-            setUser(DEMO_USER);
-            const savedDemoArtist = localStorage.getItem('magnevents_registered_artist');
-            setArtist(savedDemoArtist ? JSON.parse(savedDemoArtist) : DEMO_ARTIST);
-            setLoading(false);
-            return;
-          }
+          localStorage.removeItem('magnevents_demo_artist');
+          document.cookie = 'artist_bypass_session=; path=/; max-age=0';
         }
 
         const { data: { session: initSession } } = await supabase.auth.getSession();
@@ -264,7 +185,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           await syncOrCreateArtist(initSession.user);
         } else if (typeof window !== 'undefined') {
-          // Restore newly registered artist session (e.g. if Supabase email confirmation is pending)
+          // Restore newly registered artist session (direct DB registration flow)
           const savedUser = localStorage.getItem('magnevents_registered_user');
           const savedArtist = localStorage.getItem('magnevents_registered_artist');
           if (savedUser) {
@@ -282,8 +203,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      // Do not override if in demo bypass mode or local newly registered flow
-      if (typeof window !== 'undefined' && (localStorage.getItem('magnevents_demo_artist') === 'true' || (!newSession && localStorage.getItem('magnevents_registered_user')))) {
+      // Do not override if using direct DB registered session
+      if (typeof window !== 'undefined' && !newSession && localStorage.getItem('magnevents_registered_user')) {
         return;
       }
       setSession(newSession);
@@ -304,16 +225,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Demo Artist Bypass function
+  // Legacy demo bypass disabled — route to sign-in
   const loginAsDemoArtist = () => {
-    if (typeof document !== 'undefined') {
-      document.cookie = "artist_bypass_session=true; path=/; max-age=604800";
-      localStorage.setItem('magnevents_demo_artist', 'true');
-    }
-    setUser(DEMO_USER);
-    setArtist(DEMO_ARTIST);
-    setLoading(false);
-    router.push('/dashboard');
+    router.push('/login');
   };
 
   // Google OAuth Login (routes via clean /auth/callback without query params so Supabase Redirect URLs always match)

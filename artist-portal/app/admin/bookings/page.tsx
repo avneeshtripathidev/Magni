@@ -53,12 +53,12 @@ export default function AdminBookingsPage() {
   const [customArtistName, setCustomArtistName] = useState('');
   const [selectedArtists, setSelectedArtists] = useState<AssignedArtist[]>([]);
   const [newEventForm, setNewEventForm] = useState({
-    event_title: 'Luxury Wedding Sangeet Live',
-    client_name: 'Malhotra Family',
-    city: 'Delhi NCR',
-    venue: 'The Leela Ambience Courtyard',
+    event_title: '',
+    client_name: '',
+    city: '',
+    venue: '',
     event_date: new Date().toISOString().slice(0, 10),
-    budget: 45000,
+    budget: 0,
     start_immediately: true,
   });
 

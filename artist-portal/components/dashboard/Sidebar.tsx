@@ -43,7 +43,7 @@ export function Sidebar({ onClose }: SidebarProps) {
       title: 'Main Menu',
       items: [
         { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-        { name: 'Live Bookings', href: '/bookings', icon: CalendarCheck, badge: 3 },
+        { name: 'Live Bookings', href: '/bookings', icon: CalendarCheck },
         { name: 'Payouts & Earnings', href: '/payments', icon: CreditCard },
       ],
     },
@@ -152,12 +152,6 @@ export function Sidebar({ onClose }: SidebarProps) {
                       />
                       <span className="truncate">{item.name}</span>
                     </div>
-
-                    {item.badge !== undefined && (
-                      <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg border border-rose-400 animate-pulse">
-                        {item.badge}
-                      </span>
-                    )}
                   </Link>
                 );
               })}
@@ -183,7 +177,7 @@ export function Sidebar({ onClose }: SidebarProps) {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[13px] font-bold text-white truncate leading-tight mb-1">
-                {artist?.stage_name || artist?.name || 'Aarav & Acoustic Project'}
+                {artist?.stage_name || artist?.name || 'Performer'}
               </span>
               <div className="flex items-center gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-full ${isVerified ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`} />
