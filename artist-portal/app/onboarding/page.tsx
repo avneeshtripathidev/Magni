@@ -1136,32 +1136,37 @@ export default function ArtistOnboardingPage() {
           {/* ================= STEP 4: PORTFOLIO, MEDIA & SOCIALS ================= */}
           {step === 4 && (
             <div className="space-y-5 animate-in fade-in">
-              <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
-                  <Film className="w-4 h-4" />
+              <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+                <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600 shadow-xs flex-shrink-0">
+                  <Film className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider">
-                    Photos, Live Showreels & Social Links
+                  <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+                    Photos, Videos &amp; Social Links
                   </h2>
-                  <p className="text-xs text-slate-500">Upload high-res photos directly or paste YouTube & audio links</p>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Upload your high-res stage photos, video showreels, and social profiles to showcase your talent
+                  </p>
                 </div>
               </div>
 
               {/* Cover Photo (Mandatory) & Profile Avatar (Optional) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-sky-200 space-y-2.5">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <label className="form-label mb-0">
-                      Cover Photo (16:9) <span className="text-rose-500">*</span>
-                    </label>
-                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-[11px] font-bold text-white shadow-xs transition-all">
+                    <div>
+                      <label className="form-label mb-0 text-slate-900 font-bold">
+                        Cover Banner (16:9) <span className="text-rose-500">*</span>
+                      </label>
+                      <p className="text-[11px] text-slate-400">Header photo on your booking page</p>
+                    </div>
+                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-xs font-bold text-white shadow-xs transition-all">
                       {uploadingField === 'cover_image_url' ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       ) : (
-                        <Upload className="w-3 h-3" />
+                        <Upload className="w-3.5 h-3.5" />
                       )}
-                      <span>Upload Cover</span>
+                      <span>Upload Banner</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -1170,32 +1175,46 @@ export default function ArtistOnboardingPage() {
                       />
                     </label>
                   </div>
-                  <input
-                    type="url"
-                    value={formData.cover_image_url}
-                    onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                    placeholder="Or paste cover photo URL (https://...)"
-                    className="form-input"
-                  />
+                  <div className="relative">
+                    <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="url"
+                      value={formData.cover_image_url}
+                      onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
+                      placeholder="Paste image link (e.g. https://...)"
+                      className="form-input pl-10 bg-white"
+                    />
+                  </div>
                   {formData.cover_image_url && (
-                    <div className="h-24 w-full rounded-xl overflow-hidden border border-slate-200 shadow-xs">
-                      <img src={formData.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
+                    <div className="relative h-28 w-full rounded-xl overflow-hidden border border-slate-200 shadow-xs group">
+                      <img src={formData.cover_image_url} alt="Cover Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, cover_image_url: '' })}
+                        className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-rose-600 text-white transition-colors"
+                        title="Remove cover"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   )}
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <label className="form-label mb-0">
-                      Profile Avatar <span className="text-slate-400 font-medium">(Optional)</span>
-                    </label>
-                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-sky-400 text-[11px] font-bold text-sky-600 shadow-xs transition-all">
+                    <div>
+                      <label className="form-label mb-0 text-slate-900 font-bold">
+                        Profile Avatar <span className="text-slate-400 font-normal">(Optional)</span>
+                      </label>
+                      <p className="text-[11px] text-slate-400">Headshot or stage avatar</p>
+                    </div>
+                    <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-sky-400 text-xs font-bold text-slate-700 shadow-xs transition-all">
                       {uploadingField === 'profile_image_url' ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-600" />
                       ) : (
-                        <Upload className="w-3 h-3" />
+                        <Upload className="w-3.5 h-3.5 text-slate-500" />
                       )}
-                      <span>Upload</span>
+                      <span>Upload Avatar</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -1204,16 +1223,27 @@ export default function ArtistOnboardingPage() {
                       />
                     </label>
                   </div>
-                  <input
-                    type="url"
-                    value={formData.profile_image_url}
-                    onChange={(e) => setFormData({ ...formData, profile_image_url: e.target.value })}
-                    placeholder="Or paste avatar URL (https://...)"
-                    className="form-input"
-                  />
+                  <div className="relative">
+                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="url"
+                      value={formData.profile_image_url}
+                      onChange={(e) => setFormData({ ...formData, profile_image_url: e.target.value })}
+                      placeholder="Paste avatar image link (e.g. https://...)"
+                      className="form-input pl-10 bg-white"
+                    />
+                  </div>
                   {formData.profile_image_url && (
-                    <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 shadow-xs">
-                      <img src={formData.profile_image_url} alt="Avatar" className="w-full h-full object-cover" />
+                    <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200 shadow-xs group">
+                      <img src={formData.profile_image_url} alt="Avatar Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, profile_image_url: '' })}
+                        className="absolute top-1 right-1 p-1 rounded-md bg-black/60 hover:bg-rose-600 text-white transition-colors"
+                        title="Remove avatar"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1222,13 +1252,10 @@ export default function ArtistOnboardingPage() {
               {/* Artist Stage Photos (3-4+ images: 1 Mandatory, Extra Optional) */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <label className="form-label mb-0">Artist Stage Photos (3–4+ Images)</label>
-                    <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black uppercase">
-                      1 Mandatory *
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[10px] font-bold uppercase">
-                      2nd, 3rd, 4th+ Optional
+                  <div className="flex items-center gap-2">
+                    <label className="form-label mb-0 text-slate-900 font-bold">Stage &amp; Live Photos</label>
+                    <span className="px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-[10px] font-black uppercase">
+                      1 Required &bull; Up to 15 Photos
                     </span>
                   </div>
                   <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition-all">
@@ -1256,16 +1283,17 @@ export default function ArtistOnboardingPage() {
                       return (
                         <div
                           key={`${idx}-${photoUrl}`}
-                          className="relative rounded-xl overflow-hidden aspect-[4/3] border border-slate-200 bg-white shadow-xs"
+                          className="relative rounded-2xl overflow-hidden aspect-[4/3] border border-slate-200 bg-white shadow-xs group"
                         >
                           <img src={photoUrl} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover" />
-                          <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-full bg-slate-900/75 text-white text-[9px] font-bold">
-                            {isFirst ? 'Photo 1 • Primary' : `Photo ${idx + 1}`}
+                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-xs text-white text-[9px] font-bold">
+                            {isFirst ? 'Primary Photo' : `Photo ${idx + 1}`}
                           </span>
                           <button
                             type="button"
                             onClick={() => removeGalleryPhoto(idx)}
-                            className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/65 hover:bg-rose-600 text-white"
+                            className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-rose-600 text-white transition-colors"
+                            title="Remove photo"
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
@@ -1275,20 +1303,26 @@ export default function ArtistOnboardingPage() {
                     return (
                       <label
                         key={`onb-slot-${idx}`}
-                        className={`cursor-pointer rounded-xl aspect-[4/3] border-2 border-dashed flex flex-col items-center justify-center gap-1 p-2 text-center transition-colors ${
+                        className={`cursor-pointer rounded-2xl aspect-[4/3] border-2 border-dashed flex flex-col items-center justify-center gap-1.5 p-3 text-center transition-all ${
                           isFirst
-                            ? 'border-sky-400 bg-sky-50/70 hover:bg-sky-50 text-sky-900'
-                            : 'border-slate-200 bg-white hover:border-sky-300 text-slate-500'
+                            ? 'border-sky-300 bg-sky-50/50 hover:bg-sky-50 text-sky-900'
+                            : 'border-slate-200 bg-white hover:border-sky-300 hover:bg-slate-50 text-slate-600'
                         }`}
                       >
-                        <Plus className={`w-4 h-4 ${isFirst ? 'text-sky-600' : 'text-slate-400'}`} />
-                        <span className="text-[11px] font-bold">Photo {idx + 1}</span>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          isFirst ? 'bg-sky-100 text-sky-600' : 'bg-slate-100 text-slate-400'
+                        }`}>
+                          <Plus className="w-4 h-4" />
+                        </div>
+                        <span className="text-xs font-bold text-slate-800">
+                          {isFirst ? 'Primary Photo' : `Photo ${idx + 1}`}
+                        </span>
                         <span
-                          className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ${
-                            isFirst ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-500'
+                          className={`text-[10px] font-bold ${
+                            isFirst ? 'text-sky-600' : 'text-slate-400'
                           }`}
                         >
-                          {isFirst ? 'Mandatory *' : 'Optional'}
+                          {isFirst ? 'Required *' : 'Optional'}
                         </span>
                         <input
                           type="file"
@@ -1303,16 +1337,13 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
-              {/* Performance Videos (1 Mandatory, More Optional — Direct Upload or YouTube Link) */}
+              {/* Performance Videos & Reels */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <label className="form-label mb-0">Performance Videos & Reels</label>
-                    <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black uppercase">
-                      1 Mandatory *
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[10px] font-bold uppercase">
-                      More Optional
+                  <div className="flex items-center gap-2">
+                    <label className="form-label mb-0 text-slate-900 font-bold">Performance Videos &amp; Reels</label>
+                    <span className="px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-[10px] font-black uppercase">
+                      1 Required
                     </span>
                   </div>
                   <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition-all">
@@ -1321,7 +1352,7 @@ export default function ArtistOnboardingPage() {
                     ) : (
                       <Video className="w-3.5 h-3.5" />
                     )}
-                    <span>{uploadingField === 'video_upload' ? 'Uploading...' : 'Upload Video (.mp4/.mov)'}</span>
+                    <span>{uploadingField === 'video_upload' ? 'Uploading...' : 'Upload Video (.mp4, .mov)'}</span>
                     <input
                       type="file"
                       accept="video/*"
@@ -1333,21 +1364,24 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={newYoutubeLink}
-                    onChange={(e) => setNewYoutubeLink(e.target.value)}
-                    placeholder="Or paste YouTube / video link (https://www.youtube.com/watch?v=...)"
-                    className="form-input flex-1 bg-white"
-                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addYoutubeLink())}
-                  />
+                  <div className="relative flex-1">
+                    <Youtube className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="url"
+                      value={newYoutubeLink}
+                      onChange={(e) => setNewYoutubeLink(e.target.value)}
+                      placeholder="Paste YouTube, Reel or Video URL (e.g. youtube.com/watch?v=... or youtu.be/...)"
+                      className="form-input pl-10 w-full bg-white"
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addYoutubeLink())}
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={addYoutubeLink}
-                    className="btn-secondary whitespace-nowrap"
+                    className="btn-secondary whitespace-nowrap px-4 font-bold"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Add Link</span>
+                    <span>Add Video</span>
                   </button>
                 </div>
 
@@ -1364,7 +1398,7 @@ export default function ArtistOnboardingPage() {
                               idx === 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
                             }`}
                           >
-                            {idx === 0 ? 'Video 1 • Mandatory' : `Video ${idx + 1} • Optional`}
+                            {idx === 0 ? 'Primary Video' : `Video ${idx + 1}`}
                           </span>
                           <span className="truncate font-medium text-slate-800">{link}</span>
                         </div>
@@ -1381,22 +1415,31 @@ export default function ArtistOnboardingPage() {
                 )}
               </div>
 
-              {/* Audio Demos */}
-              <div className="space-y-2">
-                <label className="form-label">Audio Tracks / SoundCloud / Demo Links</label>
+              {/* Audio Tracks & Demos */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <label className="form-label mb-0 text-slate-900 font-bold">Audio Tracks &amp; Voice Demos</label>
+                    <p className="text-[11px] text-slate-400">Share SoundCloud, Spotify or direct MP3 audio tracks</p>
+                  </div>
+                  <span className="text-[11px] text-slate-400 font-semibold">Optional</span>
+                </div>
                 <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={newAudioUrl}
-                    onChange={(e) => setNewAudioUrl(e.target.value)}
-                    placeholder="https://soundcloud.com/... or direct MP3 link"
-                    className="form-input flex-1"
-                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAudioTrack())}
-                  />
+                  <div className="relative flex-1">
+                    <Music className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="url"
+                      value={newAudioUrl}
+                      onChange={(e) => setNewAudioUrl(e.target.value)}
+                      placeholder="SoundCloud track, MP3 or audio link (e.g. soundcloud.com/...)"
+                      className="form-input pl-10 w-full bg-white"
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addAudioTrack())}
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={addAudioTrack}
-                    className="btn-secondary whitespace-nowrap"
+                    className="btn-secondary whitespace-nowrap px-4 font-bold"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Track</span>
@@ -1407,7 +1450,7 @@ export default function ArtistOnboardingPage() {
                     {formData.audio_samples.map((url, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                        className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 text-xs"
                       >
                         <span className="truncate font-mono text-slate-700">{url}</span>
                         <button
@@ -1423,59 +1466,71 @@ export default function ArtistOnboardingPage() {
                 )}
               </div>
 
-              {/* Social Links */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2 border-t border-slate-100">
-                <div>
-                  <label className="form-label flex items-center gap-1.5">
-                    <Instagram className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Instagram URL</span>
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.instagram_url}
-                    onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
-                    placeholder="https://instagram.com/yourhandle"
-                    className="form-input"
-                  />
+              {/* Social & Streaming Profiles */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <label className="form-label mb-0 text-slate-900 font-bold">Social &amp; Streaming Profiles</label>
+                    <p className="text-[11px] text-slate-400">Help event hosts explore your fan base and music releases</p>
+                  </div>
+                  <span className="text-[11px] text-slate-400 font-semibold">Optional</span>
                 </div>
-                <div>
-                  <label className="form-label flex items-center gap-1.5">
-                    <Youtube className="w-3.5 h-3.5 text-slate-400" />
-                    <span>YouTube Channel</span>
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.youtube_url}
-                    onChange={(e) => setFormData({ ...formData, youtube_url: e.target.value })}
-                    placeholder="https://youtube.com/@yourchannel"
-                    className="form-input"
-                  />
-                </div>
-                <div>
-                  <label className="form-label flex items-center gap-1.5">
-                    <Music2 className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Spotify / Apple Music</span>
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.spotify_url}
-                    onChange={(e) => setFormData({ ...formData, spotify_url: e.target.value })}
-                    placeholder="https://open.spotify.com/artist/..."
-                    className="form-input"
-                  />
-                </div>
-                <div>
-                  <label className="form-label flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Website / Linktree</span>
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.website_url}
-                    onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-                    placeholder="https://yourwebsite.com"
-                    className="form-input"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                      <Instagram className="w-3.5 h-3.5 text-rose-500" />
+                      <span>Instagram Profile</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">@</span>
+                      <input
+                        type="text"
+                        value={formData.instagram_url}
+                        onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
+                        placeholder="yourhandle or instagram.com/..."
+                        className="form-input pl-8 bg-white"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                      <Youtube className="w-3.5 h-3.5 text-red-500" />
+                      <span>YouTube Channel</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.youtube_url}
+                      onChange={(e) => setFormData({ ...formData, youtube_url: e.target.value })}
+                      placeholder="youtube.com/@yourchannel"
+                      className="form-input bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                      <Music2 className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>Spotify / Apple Music</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.spotify_url}
+                      onChange={(e) => setFormData({ ...formData, spotify_url: e.target.value })}
+                      placeholder="open.spotify.com/artist/..."
+                      className="form-input bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-sky-500" />
+                      <span>Website / Linktree</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.website_url}
+                      onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                      placeholder="yourwebsite.com or linktr.ee/..."
+                      className="form-input bg-white"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
