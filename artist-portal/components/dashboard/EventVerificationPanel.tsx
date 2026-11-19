@@ -23,6 +23,8 @@ import {
   EventVerificationRecord,
   computeProofStatus,
 } from '../../types/eventVerification';
+import { useArtistAuth } from '../../lib/auth/authContext';
+import { EventKYCModal } from './EventKYCModal';
 
 interface EventVerificationPanelProps {
   event: EventVerificationRecord;
@@ -35,12 +37,19 @@ export function EventVerificationPanel({
   onUpdated,
   onClose,
 }: EventVerificationPanelProps) {
+  const { artist } = useArtistAuth();
+  const [showKYCModal, setShowKYCModal] = useState(false);
   const [uploadingSlot, setUploadingSlot] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
   const [manualAddress, setManualAddress] = useState(event.venue ? `${event.venue}, ${event.city}` : event.city || '');
   const [showManualLocation, setShowManualLocation] = useState(false);
   const [videoLinkInput, setVideoLinkInput] = useState('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const isKYCCompleted = Boolean(
+    artist?.verification_documents?.legal_name &&
+    artist?.verification_documents?.id_number_masked
+  );
 
   const proof = computeProofStatus(event);
   const isVerified = event.event_live_status === 'verified';
@@ -330,6 +339,27 @@ export function EventVerificationPanel({
           )}
         </div>
       </div>
+
+      {/* Performer KYC Alert Banner if Incomplete */}
+      {!isKYCCompleted && (
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-sky-500/10 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="w-5 h-5 text-amber-600 flex-shrink-0" />
+            <div className="text-xs">
+              <span className="font-bold">Identity Verification (KYC) Required:</span>{' '}
+              Submit your Government ID & Bank Details to accept and receive event payouts.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowKYCModal(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5 flex-shrink-0"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Complete KYC Now</span>
+          </button>
+        </div>
+      )}
 
       {/* Progress Bar */}
       <div className="space-y-2">
@@ -739,6 +769,13 @@ export function EventVerificationPanel({
           )}
         </div>
       </div>
+
+      {/* Performer KYC Modal for Event */}
+      <EventKYCModal
+        isOpen={showKYCModal}
+        onClose={() => setShowKYCModal(false)}
+        event={event}
+      />
     </div>
   );
 }

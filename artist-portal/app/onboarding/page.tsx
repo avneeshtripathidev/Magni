@@ -103,7 +103,6 @@ const STEPS = [
   { id: 2, title: 'Repertoire & Bio', icon: Music },
   { id: 3, title: 'Pricing & Logistics', icon: CreditCard },
   { id: 4, title: 'Portfolio & Media', icon: Film },
-  { id: 5, title: 'KYC & Payouts', icon: ShieldCheck },
 ];
 
 export default function ArtistOnboardingPage() {
@@ -446,7 +445,7 @@ export default function ArtistOnboardingPage() {
     }
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = (e?: React.FormEvent) => {
     setError(null);
     if (step === 1) {
       if (!formData.name.trim() || !formData.stage_name.trim() || !formData.city.trim()) {
@@ -463,8 +462,11 @@ export default function ArtistOnboardingPage() {
         setError(`Required to continue: Please upload ${missing.join(', ')}. Additional photos and videos are optional.`);
         return;
       }
+      if (e) e.preventDefault();
+      handleFinalSubmit(e || ({} as any));
+      return;
     }
-    if (step < 5) {
+    if (step < 4) {
       setStep(step + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1536,198 +1538,6 @@ export default function ArtistOnboardingPage() {
             </div>
           )}
 
-          {/* ================= STEP 5: KYC & PAYOUTS ================= */}
-          {step === 5 && (
-            <div className="space-y-6 animate-in fade-in">
-              {/* KYC Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                  <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider">
-                      Identity Verification (KYC)
-                    </h2>
-                    <p className="text-xs text-slate-500">Encrypted & used strictly to verify your performer badge</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="form-label">Legal Name on ID</label>
-                    <input
-                      type="text"
-                      value={formData.legal_name}
-                      onChange={(e) => setFormData({ ...formData, legal_name: e.target.value })}
-                      placeholder="Exact name printed on ID"
-                      className="form-input"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="form-label">Government ID Type</label>
-                    <select
-                      value={formData.id_type}
-                      onChange={(e) => setFormData({ ...formData, id_type: e.target.value })}
-                      className="form-input"
-                    >
-                      <option value="aadhaar">Aadhaar Card</option>
-                      <option value="pan">PAN Card</option>
-                      <option value="passport">Passport</option>
-                      <option value="voter_id">Voter ID</option>
-                      <option value="driving_license">Driving License</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="form-label">Masked ID Number</label>
-                    <input
-                      type="text"
-                      value={formData.id_number_masked}
-                      onChange={(e) => setFormData({ ...formData, id_number_masked: e.target.value })}
-                      placeholder="XXXX-XXXX-4589"
-                      className="form-input"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="form-label">PAN / Tax ID</label>
-                    <input
-                      type="text"
-                      value={formData.pan_or_tax_id}
-                      onChange={(e) => setFormData({ ...formData, pan_or_tax_id: e.target.value.toUpperCase() })}
-                      placeholder="ABCDE1234F"
-                      className="form-input uppercase font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="form-label mb-0">Govt ID Document (Upload or Link)</label>
-                      <label className="cursor-pointer inline-flex items-center gap-1 text-[11px] font-bold text-sky-600 hover:underline">
-                        {uploadingField === 'id_document_url' ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          <Upload className="w-3 h-3" />
-                        )}
-                        <span>Upload File</span>
-                        <input
-                          type="file"
-                          accept="image/*,.pdf"
-                          className="hidden"
-                          onChange={(e) => handleFileUpload(e, 'id_document_url')}
-                        />
-                      </label>
-                    </div>
-                    <input
-                      type="url"
-                      value={formData.id_document_url}
-                      onChange={(e) => setFormData({ ...formData, id_document_url: e.target.value })}
-                      placeholder="https://drive.google.com/... or upload file"
-                      className="form-input"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="form-label mb-0">Address Proof (Optional)</label>
-                      <label className="cursor-pointer inline-flex items-center gap-1 text-[11px] font-bold text-sky-600 hover:underline">
-                        {uploadingField === 'address_proof_url' ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          <Upload className="w-3 h-3" />
-                        )}
-                        <span>Upload File</span>
-                        <input
-                          type="file"
-                          accept="image/*,.pdf"
-                          className="hidden"
-                          onChange={(e) => handleFileUpload(e, 'address_proof_url')}
-                        />
-                      </label>
-                    </div>
-                    <input
-                      type="url"
-                      value={formData.address_proof_url}
-                      onChange={(e) => setFormData({ ...formData, address_proof_url: e.target.value })}
-                      placeholder="https://drive.google.com/... or upload file"
-                      className="form-input"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Settlement Bank Section */}
-              <div className="space-y-4 pt-4 border-t border-slate-100">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-                    <Building className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-black text-slate-900 uppercase tracking-wider">
-                      Bank & UPI Payout Details
-                    </h2>
-                    <p className="text-xs text-slate-500">Where you want direct event payouts settled</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="form-label">Account Holder Name</label>
-                    <input
-                      type="text"
-                      value={formData.bank_holder}
-                      onChange={(e) => setFormData({ ...formData, bank_holder: e.target.value })}
-                      placeholder="Name on bank account"
-                      className="form-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">Bank Name</label>
-                    <input
-                      type="text"
-                      value={formData.bank_name}
-                      onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
-                      placeholder="e.g. HDFC Bank, ICICI Bank"
-                      className="form-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">Account Number</label>
-                    <input
-                      type="text"
-                      value={formData.account_number}
-                      onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
-                      placeholder="Bank account number"
-                      className="form-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">IFSC Code</label>
-                    <input
-                      type="text"
-                      value={formData.ifsc_code}
-                      onChange={(e) => setFormData({ ...formData, ifsc_code: e.target.value.toUpperCase() })}
-                      placeholder="e.g. HDFC0001024"
-                      className="form-input uppercase font-mono"
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="form-label">UPI ID (Optional — for instant payouts)</label>
-                    <input
-                      type="text"
-                      value={formData.upi_id}
-                      onChange={(e) => setFormData({ ...formData, upi_id: e.target.value })}
-                      placeholder="e.g. performer@okhdfcbank"
-                      className="form-input"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Bottom Navigation Bar */}
           <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-5 border-t border-slate-100">
             <div className="w-full sm:w-auto">
@@ -1752,13 +1562,13 @@ export default function ArtistOnboardingPage() {
             </div>
 
             <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              {step < 5 ? (
+              {step < 4 ? (
                 <button
                   type="button"
                   onClick={handleNextStep}
                   className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                 >
-                  <span>Next: {STEPS[step].title}</span>
+                  <span>Next: {STEPS[step]?.title}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               ) : (
@@ -1775,7 +1585,7 @@ export default function ArtistOnboardingPage() {
                   ) : (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      <span>Submit All Details & Enter Dashboard</span>
+                      <span>Submit Profile & Enter Dashboard</span>
                     </>
                   )}
                 </button>

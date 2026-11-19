@@ -10,6 +10,7 @@ import { StatusBadge } from '../../../components/dashboard/StatusBadge';
 import { ArtistTierCard } from '../../../components/shared/ArtistTierBadge';
 import { LocationFilter, matchesLocationFilter } from '../../../components/shared/LocationFilter';
 import { EventVerificationPanel } from '../../../components/dashboard/EventVerificationPanel';
+import { EventKYCModal } from '../../../components/dashboard/EventKYCModal';
 import { ModalPortal } from '../../../components/shared/ModalPortal';
 import { EventVerificationRecord, computeProofStatus } from '../../../types/eventVerification';
 import { artistService } from '../../../services/artistService';
@@ -47,6 +48,8 @@ export default function ArtistDashboardPage() {
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [activeLiveEvents, setActiveLiveEvents] = useState<EventVerificationRecord[]>([]);
   const [activeModalEvent, setActiveModalEvent] = useState<EventVerificationRecord | null>(null);
+  const [showKYCModal, setShowKYCModal] = useState(false);
+  const [kycEvent, setKycEvent] = useState<EventVerificationRecord | null>(null);
 
   const isEventForArtist = useCallback(
     (e: EventVerificationRecord) => {
@@ -125,7 +128,11 @@ export default function ArtistDashboardPage() {
     setActiveModalEvent(updated);
   };
 
-  const missingSections = getMissingProfileSections(artist);
+  const missingSections = getMissingProfileSections(artist, activeLiveEvents.length > 0);
+  const isKYCCompleted = Boolean(
+    artist?.verification_documents?.legal_name &&
+    artist?.verification_documents?.id_number_masked
+  );
 
   const handleSubmitForReview = async () => {
     if (!artist?.id) return;
@@ -237,6 +244,43 @@ export default function ArtistDashboardPage() {
 
   return (
     <div className="space-y-6 font-sans">
+      {/* 0. HIGH PRIORITY: Event Assigned by Admin - KYC & Payouts Required */}
+      {activeLiveEvents.length > 0 && !isKYCCompleted && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-sky-500/10 to-indigo-500/10 border-2 border-sky-400 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 animate-in fade-in">
+          <div className="flex items-start gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/25 flex-shrink-0">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-black uppercase tracking-wider">
+                  Action Required • Event Assigned
+                </span>
+                <span className="text-xs font-mono text-slate-500">#{activeLiveEvents[0].booking_id}</span>
+              </div>
+              <h3 className="text-sm sm:text-base font-black text-slate-900">
+                Admin assigned you to perform at &ldquo;{activeLiveEvents[0].event_title}&rdquo;
+              </h3>
+              <p className="text-xs text-slate-600">
+                Venue: <span className="font-semibold text-slate-800">{activeLiveEvents[0].venue ? `${activeLiveEvents[0].venue}, ` : ''}{activeLiveEvents[0].city}</span> • Date: <span className="font-semibold text-slate-800">{activeLiveEvents[0].event_date}</span>. Please complete your Identity Verification (KYC) & Bank Payouts to accept this booking.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setKycEvent(activeLiveEvents[0]);
+              setShowKYCModal(true);
+            }}
+            className="h-11 px-6 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 flex-shrink-0 active:scale-[0.98] transition-all"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>Complete KYC & Accept Event</span>
+          </button>
+        </div>
+      )}
+
       {/* Active Live Events Started by Admin (Compact Banner -> Opens Popup Modal) */}
       {activeLiveEvents.length > 0 && (
         <div className="space-y-3">
@@ -273,27 +317,44 @@ export default function ArtistDashboardPage() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setActiveModalEvent(ev)}
-                  className={
-                    isVerified
-                      ? 'py-2 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold text-xs flex items-center gap-1.5 self-start sm:self-center flex-shrink-0 transition-colors'
-                      : 'btn-primary py-2.5 px-4 text-xs flex items-center gap-1.5 self-start sm:self-center flex-shrink-0'
-                  }
-                >
-                  {isVerified ? (
-                    <>
+                <div className="flex items-center gap-2 self-start sm:self-center flex-shrink-0">
+                  {!isKYCCompleted && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setKycEvent(ev);
+                        setShowKYCModal(true);
+                      }}
+                      className="py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs active:scale-95 transition-all"
+                      title="Identity verification required for this assigned event"
+                    >
                       <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>View Verified Proofs</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Upload Proofs ({proof.completedCount}/{proof.totalRequired})</span>
-                    </>
+                      <span>Complete KYC</span>
+                    </button>
                   )}
-                </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveModalEvent(ev)}
+                    className={
+                      isVerified
+                        ? 'py-2 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold text-xs flex items-center gap-1.5 transition-colors'
+                        : 'btn-primary py-2.5 px-4 text-xs flex items-center gap-1.5'
+                    }
+                  >
+                    {isVerified ? (
+                      <>
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>View Verified Proofs</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Proofs ({proof.completedCount}/{proof.totalRequired})</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -606,6 +667,13 @@ export default function ArtistDashboardPage() {
           </div>
         )}
       </ModalPortal>
+
+      {/* KYC & Payout Details Modal for Assigned Event */}
+      <EventKYCModal
+        isOpen={showKYCModal}
+        onClose={() => setShowKYCModal(false)}
+        event={kycEvent || activeLiveEvents[0]}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
 import { EventVerificationPanel } from '../../../components/dashboard/EventVerificationPanel';
+import { EventKYCModal } from '../../../components/dashboard/EventKYCModal';
 import { LocationFilter, matchesLocationFilter } from '../../../components/shared/LocationFilter';
 import { ModalPortal } from '../../../components/shared/ModalPortal';
 import {
@@ -37,7 +38,14 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [liveEvents, setLiveEvents] = useState<EventVerificationRecord[]>([]);
   const [activeVerifyEvent, setActiveVerifyEvent] = useState<EventVerificationRecord | null>(null);
+  const [showKYCModal, setShowKYCModal] = useState(false);
+  const [kycEvent, setKycEvent] = useState<EventVerificationRecord | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const isKYCCompleted = Boolean(
+    artist?.verification_documents?.legal_name &&
+    artist?.verification_documents?.id_number_masked
+  );
   const [filter, setFilter] = useState<'all' | 'confirmed' | 'pending' | 'completed'>('all');
   const [search, setSearch] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
@@ -342,6 +350,37 @@ export default function BookingsPage() {
       {/* VIEW 1: INQUIRIES & BOOKINGS LIST */}
       {viewTab === 'inquiries' && (
         <div className="space-y-4">
+          {/* Action Required: KYC Banner when Event is Assigned */}
+          {liveEvents.length > 0 && !isKYCCompleted && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-sky-500/10 to-indigo-500/10 border-2 border-sky-400 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-md flex-shrink-0">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                    KYC Required for Assigned Event
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Admin assigned you to an active booking. Please submit your Government ID & Bank Payout details to accept.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setKycEvent(liveEvents[0]);
+                  setShowKYCModal(true);
+                }}
+                className="btn-primary py-2 px-4 text-xs font-bold self-start sm:self-auto flex-shrink-0 flex items-center gap-1.5"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Complete KYC</span>
+              </button>
+            </div>
+          )}
+
           {/* Full-width Rounded Search Bar + Location Selector */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative group flex-1 min-w-0">
@@ -692,6 +731,13 @@ export default function BookingsPage() {
           </div>
         )}
       </ModalPortal>
+
+      {/* KYC & Payout Details Modal for Assigned Event */}
+      <EventKYCModal
+        isOpen={showKYCModal}
+        onClose={() => setShowKYCModal(false)}
+        event={kycEvent || liveEvents[0]}
+      />
     </div>
   );
 }

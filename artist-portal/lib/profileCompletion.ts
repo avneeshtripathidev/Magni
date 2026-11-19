@@ -7,7 +7,10 @@ export interface MissingProfileSection {
   missingFields: string[];
 }
 
-export function getMissingProfileSections(artist: ArtistProfile | null): MissingProfileSection[] {
+export function getMissingProfileSections(
+  artist: ArtistProfile | null,
+  requireKYC: boolean = false
+): MissingProfileSection[] {
   if (!artist) {
     return [
       {
@@ -63,21 +66,23 @@ export function getMissingProfileSections(artist: ArtistProfile | null): Missing
     });
   }
 
-  // 3. ID Verification / KYC (/verification)
-  const verificationMissing: string[] = [];
-  const docs = artist.verification_documents;
-  if (!docs?.legal_name || docs.legal_name.trim().length < 2) verificationMissing.push('Legal Name');
-  if (!docs?.id_document_url || docs.id_document_url.trim().length < 4) {
-    verificationMissing.push('Government ID Document');
-  }
+  // 3. ID Verification / KYC (/verification) - only required when assigned to live events
+  if (requireKYC) {
+    const verificationMissing: string[] = [];
+    const docs = artist.verification_documents;
+    if (!docs?.legal_name || docs.legal_name.trim().length < 2) verificationMissing.push('Legal Name');
+    if (!docs?.id_number_masked || docs.id_number_masked.trim().length < 4) {
+      verificationMissing.push('Government ID Number');
+    }
 
-  if (verificationMissing.length > 0) {
-    sections.push({
-      id: 'verification',
-      title: 'ID Verification (KYC)',
-      href: '/verification',
-      missingFields: verificationMissing,
-    });
+    if (verificationMissing.length > 0) {
+      sections.push({
+        id: 'verification',
+        title: 'ID Verification (KYC)',
+        href: '/verification',
+        missingFields: verificationMissing,
+      });
+    }
   }
 
   return sections;
