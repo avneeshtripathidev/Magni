@@ -8,7 +8,6 @@ import { LocationFilter, matchesLocationFilter } from '../../../components/share
 import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
 import { getArtistRankMap } from '../../../lib/artistTiers';
 import { 
-  Users, 
   Search, 
   Filter, 
   ExternalLink, 
@@ -55,36 +54,21 @@ export default function AdminArtistsDirectoryPage() {
 
   return (
     <div className="space-y-6 font-sans">
-      {/* 1. Header (admin-portal theme) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200/80 text-sky-700 text-xs font-bold mb-2 shadow-xs">
-            <Users className="w-3.5 h-3.5 text-sky-600" />
-            <span>Artist Ecosystem Database</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Performer Directory
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Complete database of all registered performers, verification states, and booking availability.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <Link
-            href="/admin/register-artist"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs inline-flex items-center gap-1.5"
-          >
-            <span>+ Register Artist</span>
-          </Link>
-          <Link
-            href="/admin/verification"
-            className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-md shadow-sky-500/20 inline-flex items-center gap-2 transition-all"
-          >
-            <span>Pending Verifications</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+      {/* 1. Header Actions */}
+      <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-200">
+        <Link
+          href="/admin/register-artist"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs inline-flex items-center gap-1.5"
+        >
+          <span>+ Register Artist</span>
+        </Link>
+        <Link
+          href="/admin/verification"
+          className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-md shadow-sky-500/20 inline-flex items-center gap-2 transition-all"
+        >
+          <span>Pending Verifications</span>
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
 
       {/* 2. Controls */}
