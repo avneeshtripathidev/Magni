@@ -345,65 +345,50 @@ export default function RegisterPage() {
           if (!loading) setShowVerifyPopup(false);
         }}
       >
-        <div className="w-full max-w-md rounded-3xl bg-white border border-slate-200 shadow-2xl overflow-hidden font-sans">
-          <div className="p-6 space-y-5">
-            <div className="flex items-start gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 flex-shrink-0">
-                <ShieldCheck className="w-6 h-6" />
+        <div className="w-full max-w-sm rounded-3xl bg-white border border-slate-200 shadow-2xl overflow-hidden font-sans">
+          <div className="p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 flex-shrink-0">
+                <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <span className="inline-block px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-black uppercase tracking-wider mb-1">
-                  Verify Contact Details
-                </span>
-                <h3 className="text-base font-black text-slate-900 leading-snug">
-                  Confirm Your Email &amp; Phone Number
+                <h3 className="text-base font-bold text-slate-900 leading-snug">
+                  Confirm Your Details
                 </h3>
               </div>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Please double-check that your <strong className="text-slate-900">Email Address</strong> and{' '}
-              <strong className="text-slate-900">Phone Number</strong> are accurate. These details will be saved directly to our database and used for all future booking alerts, payout updates, and profile updates.
-            </p>
-
             {/* Highlighted Contact Review Box */}
             <div className="rounded-2xl bg-slate-50 border border-slate-200 divide-y divide-slate-200">
-              <div className="p-3.5 flex items-center justify-between gap-3">
+              <div className="p-3 flex items-center justify-between gap-3">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   Artist Name
                 </span>
-                <span className="text-xs font-extrabold text-slate-900 text-right truncate">
+                <span className="text-xs font-bold text-slate-900 text-right truncate">
                   {fullName.trim()}
                 </span>
               </div>
-              <div className="p-3.5 flex items-center justify-between gap-3">
+              <div className="p-3 flex items-center justify-between gap-3">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-sky-600" />
                   Email
                 </span>
-                <span className="text-xs font-extrabold text-sky-700 text-right break-all">
+                <span className="text-xs font-bold text-sky-700 text-right break-all">
                   {email.trim()}
                 </span>
               </div>
-              <div className="p-3.5 flex items-center justify-between gap-3">
+              <div className="p-3 flex items-center justify-between gap-3">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5 text-emerald-600" />
                   Phone
                 </span>
-                <span className="text-xs font-extrabold text-emerald-700 text-right">
+                <span className="text-xs font-bold text-emerald-700 text-right">
                   {phone.trim()}
                 </span>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 flex items-start gap-2 text-[11px] text-emerald-800 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-              <span>
-                No verification email required — your account will be saved immediately so you can complete your artist profile right away.
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
               <button
                 type="button"
                 disabled={loading}
@@ -411,7 +396,7 @@ export default function RegisterPage() {
                 className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
               >
                 <Edit3 className="w-3.5 h-3.5" />
-                <span>Edit Details</span>
+                <span>Edit</span>
               </button>
               <button
                 type="button"
