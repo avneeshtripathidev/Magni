@@ -21,7 +21,7 @@ const EXPLORE_LINKS = [
 
 const COMPANY_LINKS = [
   ['Blog Post', '/blog-post'],
-  ['Become an Artist', '/register/artist'],
+  ['Become an Artist', 'https://artists.magnevents.in/register'],
   ['Client Reviews', '/testimonials'],
 ]
 

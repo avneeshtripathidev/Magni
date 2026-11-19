@@ -130,18 +130,15 @@ export default function Nav() {
             <button onClick={() => openContactModal('contact')} className="lux-nav-cta">
               Contact Us
             </button>
-            <button
-              type="button"
+            <a
+              href="https://artists.magnevents.in/register"
               className="lux-nav-register-btn"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('open-register-modal', { detail: { view: 'artist' } }));
-                }
-              }}
-              aria-label="Are you an Artist? Join Magnevents">
+              aria-label="Are you an Artist? Join Magnevents"
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            >
               <span className="cta-long-text">Are you an Artist?</span>
               <span className="cta-short-text">Are you an Artist?</span>
-            </button>
+            </a>
 
             <button aria-label="Toggle navigation menu" className={`lux-hamburger ${menuOpen ? 'is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>
               <span />

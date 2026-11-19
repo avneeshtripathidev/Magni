@@ -31,7 +31,11 @@ export default function RoleSelector({ setView }) {
 
         <div 
           className="registration-option-card card-artist"
-          onClick={() => setView('artist')}
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.location.href = 'https://artists.magnevents.in/register';
+            }
+          }}
         >
           <div className="option-glow glow-artist" />
           <div className="option-icon">🎤</div>

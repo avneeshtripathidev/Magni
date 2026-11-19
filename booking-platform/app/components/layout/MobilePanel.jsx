@@ -212,13 +212,9 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
             Contact Us
           </button>
 
-          <button
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.dispatchEvent(new CustomEvent('open-register-modal', { detail: { view: 'artist' } }));
-              }
-              onClose();
-            }}
+          <a
+            href="https://artists.magnevents.in/register"
+            onClick={onClose}
             className="lux-mobile-cta secondary"
             style={{
               background: 'rgba(41, 39, 42, 0.9)',
@@ -228,11 +224,14 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
               borderRadius: '12px',
               padding: '12px 20px',
               fontSize: '14px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              textAlign: 'center',
+              textDecoration: 'none',
+              display: 'block'
             }}
           >
             Are you an Artist?
-          </button>
+          </a>
 
           {showiOSGuide && (
             <div className="ios-install-guide-toast">

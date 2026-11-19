@@ -181,7 +181,12 @@ const nextConfig = {
       },
       {
         source: '/artist-registration',
-        destination: '/register/artist',
+        destination: 'https://artists.magnevents.in/register',
+        permanent: true,
+      },
+      {
+        source: '/register/artist',
+        destination: 'https://artists.magnevents.in/register',
         permanent: true,
       },
       {
