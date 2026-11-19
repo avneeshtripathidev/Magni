@@ -465,34 +465,13 @@ export default function PortfolioPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-10 font-sans">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Portfolio & Reels
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Upload your Cover Photo, 3–4+ Stage Photos, and Performance Videos (1 mandatory, additional optional).
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleSavePortfolio}
-          disabled={saving || !!uploadingSlot}
-          className="btn-primary self-start sm:self-auto min-h-[40px] px-5 flex items-center gap-1.5"
-        >
-          {saving ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Saving...</span>
-            </>
-          ) : (
-            <>
-              <Save className="w-3.5 h-3.5" />
-              <span>Save Portfolio</span>
-            </>
-          )}
-        </button>
+      <div className="pb-4 border-b border-slate-200">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Portfolio & Reels
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          Photos, live performance showreels, and media links.
+        </p>
       </div>
 
       <MissingDetailsBanner artist={artist} currentPage="portfolio" />
