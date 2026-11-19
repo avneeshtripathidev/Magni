@@ -38,13 +38,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If visiting auth routes with active token, redirect to dashboard
-  if (isAuthRoute && hasAuthToken) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
-    return NextResponse.redirect(url);
-  }
-
+  // Allow auth routes (/login, /register, etc.) to always render cleanly.
+  // Never redirect away from /login in edge middleware based on raw cookie presence,
+  // which causes infinite redirect loops if tokens are expired, revoked, or signed out on other devices.
   return NextResponse.next();
 }
 

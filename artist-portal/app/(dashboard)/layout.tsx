@@ -20,7 +20,11 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login?logged_out=true');
+      } else {
+        router.replace('/login');
+      }
     }
   }, [user, loading, router]);
 
@@ -60,7 +64,14 @@ export default function DashboardLayout({
   }
 
   if (!user) {
-    return null;
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center gap-3 p-4 text-center font-sans">
+        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
+          Redirecting to Sign In...
+        </span>
+      </div>
+    );
   }
 
   return (

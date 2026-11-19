@@ -174,9 +174,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('magnevents_demo_artist');
           document.cookie = 'artist_bypass_session=; path=/; max-age=0';
+
+          // If arrived via logged_out query, guarantee clean state
+          if (window.location.search.includes('logged_out')) {
+            localStorage.removeItem('magnevents_registered_user');
+            localStorage.removeItem('magnevents_registered_artist');
+            document.cookie = "artist_session_active=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0";
+            setUser(null);
+            setSession(null);
+            setArtist(null);
+            setLoading(false);
+            return;
+          }
         }
 
-        const { data: { session: initSession } } = await supabase.auth.getSession();
+        const { data: { session: initSession }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) {
+          console.warn('Supabase getSession error:', sessionError);
+        }
+
         if (initSession?.user) {
           setSession(initSession);
           setUser(initSession.user);
@@ -185,12 +201,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           await syncOrCreateArtist(initSession.user);
         } else if (typeof window !== 'undefined') {
-          // Restore newly registered artist session (direct DB registration flow)
+          // Restore newly registered artist session only if valid
           const savedUser = localStorage.getItem('magnevents_registered_user');
           const savedArtist = localStorage.getItem('magnevents_registered_artist');
-          if (savedUser) {
-            setUser(JSON.parse(savedUser));
-            if (savedArtist) setArtist(JSON.parse(savedArtist));
+          if (savedUser && !window.location.search.includes('logged_out')) {
+            try {
+              setUser(JSON.parse(savedUser));
+              if (savedArtist) setArtist(JSON.parse(savedArtist));
+            } catch {
+              localStorage.removeItem('magnevents_registered_user');
+              localStorage.removeItem('magnevents_registered_artist');
+              setUser(null);
+              setArtist(null);
+            }
+          } else {
+            setUser(null);
+            setArtist(null);
           }
         }
       } catch (err) {
@@ -202,21 +228,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      // Do not override if using direct DB registered session
-      if (typeof window !== 'undefined' && !newSession && localStorage.getItem('magnevents_registered_user')) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      // If user was signed out (locally or from any other device)
+      if (event === 'SIGNED_OUT' || !newSession) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('magnevents_registered_user');
+          localStorage.removeItem('magnevents_registered_artist');
+          localStorage.removeItem('magnevents_demo_artist');
+          document.cookie = "artist_session_active=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0";
+          document.cookie = "artist_bypass_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0";
+        }
+        setSession(null);
+        setUser(null);
+        setArtist(null);
+        setLoading(false);
         return;
       }
+
       setSession(newSession);
-      setUser(newSession?.user || null);
-      if (newSession?.user) {
-        if (typeof document !== 'undefined') {
-          document.cookie = "artist_session_active=true; path=/; max-age=604800";
-        }
-        await syncOrCreateArtist(newSession.user);
-      } else {
-        setArtist(null);
+      setUser(newSession.user);
+      if (typeof document !== 'undefined') {
+        document.cookie = "artist_session_active=true; path=/; max-age=604800";
       }
+      await syncOrCreateArtist(newSession.user);
       setLoading(false);
     });
 
@@ -326,20 +360,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  // Sign out
+  // Sign out (Reliably clears all devices, cookies, localStorage and redirects)
   const signOut = async () => {
-    if (typeof document !== 'undefined') {
-      document.cookie = "artist_bypass_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      document.cookie = "artist_session_active=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      localStorage.removeItem('magnevents_demo_artist');
-      localStorage.removeItem('magnevents_registered_user');
-      localStorage.removeItem('magnevents_registered_artist');
+    try {
+      if (typeof document !== 'undefined') {
+        // Clear all session and auth cookies across multiple domain and path permutations
+        document.cookie.split(";").forEach((cookie) => {
+          const eqPos = cookie.indexOf("=");
+          const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+          if (
+            name.includes('sb-') ||
+            name.includes('auth-token') ||
+            name.startsWith('artist_') ||
+            name.includes('supabase')
+          ) {
+            document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0`;
+            if (typeof window !== 'undefined') {
+              document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0`;
+            }
+          }
+        });
+
+        localStorage.removeItem('magnevents_demo_artist');
+        localStorage.removeItem('magnevents_registered_user');
+        localStorage.removeItem('magnevents_registered_artist');
+        sessionStorage.clear();
+      }
+
+      await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+    } catch (err) {
+      console.warn('Sign out warning:', err);
+    } finally {
+      setUser(null);
+      setSession(null);
+      setArtist(null);
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login?logged_out=true');
+      } else {
+        router.replace('/login');
+      }
     }
-    await supabase.auth.signOut().catch(() => {});
-    setUser(null);
-    setSession(null);
-    setArtist(null);
-    router.push('/login');
   };
 
   // Forgot password
