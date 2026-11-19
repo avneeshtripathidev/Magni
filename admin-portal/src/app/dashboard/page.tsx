@@ -263,6 +263,10 @@ export default function DashboardOverview() {
           const todayKey = new Date().toISOString().split('T')[0];
 
           analyticsRows.forEach((r: any) => {
+            const path = r.path || '';
+            const fullUrl = r.details?.user?.fullUrl || r.details?.fullUrl || '';
+            if (path.includes('.vercel.app') || fullUrl.includes('.vercel.app')) return;
+
             const dKey = new Date(r.created_at).toISOString().split('T')[0];
             if (!dayMap[dKey]) {
               dayMap[dKey] = { hits: 0, uniqueIps: new Set(), cities: {} };

@@ -174,12 +174,22 @@ export default function AnalyticsPage() {
   const isLocalRecord = (r: AnalyticsRecord) => {
     const ip = r.ip_address || r.details?.ip || '';
     const city = r.city || r.details?.locality?.city || '';
+    const path = r.path || '';
+    const fullUrl = r.details?.user?.fullUrl || r.details?.fullUrl || '';
+    const referrer = r.details?.user?.referrer || r.details?.referrer || r.referrer || '';
+    const isp = r.details?.locality?.isp || '';
+    const screen = r.details?.user?.screen || '';
+
     return (
       ip === '::1' ||
       ip === '127.0.0.1' ||
       ip === 'localhost' ||
       ip.startsWith('::ffff:127.0.0.1') ||
-      city === 'Local Development'
+      city === 'Local Development' ||
+      path.includes('.vercel.app') ||
+      fullUrl.includes('.vercel.app') ||
+      referrer.includes('.vercel.app') ||
+      (screen === '800x600' && (isp.includes('Amazon') || ip.startsWith('13.57.') || ip.startsWith('54.183.')))
     );
   };
 

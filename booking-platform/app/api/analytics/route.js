@@ -64,6 +64,46 @@ export async function POST(req) {
       });
     }
 
+    // Skip recording visits to *.vercel.app preview domains
+    const host = req.headers.get('host') || '';
+    const fullUrl = clientDetails?.fullUrl || '';
+    const referer = req.headers.get('referer') || clientDetails?.referrer || '';
+    if (
+      host.endsWith('.vercel.app') ||
+      fullUrl.includes('.vercel.app') ||
+      referer.includes('.vercel.app') ||
+      path.includes('.vercel.app')
+    ) {
+      return NextResponse.json({
+        success: true,
+        skipped: true,
+        message: 'Vercel preview URL skipped from analytics'
+      });
+    }
+
+    // Skip automated headless crawlers and bots
+    if (
+      rawUA.includes('HeadlessChrome') ||
+      /bot|crawler|spider|slurp|headless|puppeteer|selenium/i.test(rawUA) ||
+      (clientDetails?.screen === '800x600' && (clientIp.startsWith('13.57.') || clientIp.startsWith('54.183.')))
+    ) {
+      return NextResponse.json({
+        success: true,
+        skipped: true,
+        message: 'Automated crawler hit skipped from analytics'
+      });
+    }
+
+    // Normalize path to ensure full URLs are not stored as paths
+    let cleanPath = path || '/';
+    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+      try {
+        cleanPath = new URL(cleanPath).pathname;
+      } catch (e) {
+        cleanPath = '/';
+      }
+    }
+
     // 2. Hash IP for privacy/unique visitor counts
     const ipHash = crypto.createHash('sha256').update(clientIp).digest('hex').substring(0, 16);
 
@@ -117,7 +157,7 @@ export async function POST(req) {
 
     // 6. Attempt insert with dedicated columns if they exist, or fallback safely to baseRecord
     const richRecord = {
-      path: path || '/',
+      path: cleanPath || '/',
       type: type || 'page_view',
       user_agent: rawUA,
       ip_hash: ipHash,
@@ -134,7 +174,7 @@ export async function POST(req) {
     };
 
     const baseRecord = {
-      path: path || '/',
+      path: cleanPath || '/',
       type: type || 'page_view',
       user_agent: rawUA,
       ip_hash: ipHash,

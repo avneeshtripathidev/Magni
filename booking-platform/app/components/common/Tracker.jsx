@@ -10,17 +10,29 @@ export default function Tracker() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    captureAndPersistGoogleAdsAttribution();
 
-    // Skip analytics tracking if running in localhost / local development
+    const hostname = window.location.hostname || '';
+
+    // Skip analytics tracking if running in localhost, local dev, or on vercel.app preview URLs
     if (
-      window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1' ||
-      window.location.hostname === '::1' ||
-      window.location.hostname.endsWith('.local')
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '::1' ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.vercel.app')
     ) {
       return;
     }
+
+    // Skip automated headless crawlers, bots, and test runners
+    if (
+      window.navigator?.webdriver ||
+      /bot|crawler|spider|headless|puppeteer|selenium|lighthouse|preview/i.test(window.navigator?.userAgent || '')
+    ) {
+      return;
+    }
+
+    captureAndPersistGoogleAdsAttribution();
 
     // 1. Maintain persistent session ID across tabs/pages
     let sessionId = sessionStorage.getItem('analytics_session_id');

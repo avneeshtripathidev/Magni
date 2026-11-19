@@ -105,6 +105,23 @@ const nextConfig = {
       },
     ];
 
+    // Enforce noindex on all vercel.app preview/branch deployment hosts
+    headers.push({
+      source: '/:path*',
+      has: [
+        {
+          type: 'host',
+          value: '(.*)\\.vercel\\.app',
+        },
+      ],
+      headers: [
+        {
+          key: 'X-Robots-Tag',
+          value: 'noindex, nofollow',
+        },
+      ],
+    });
+
     if (process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_ENV === 'development') {
       headers.push({
         headers: [
@@ -133,6 +150,30 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // 1. Permanently redirect any *.vercel.app domain directly to canonical https://www.magnevents.in
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: '(.*)\\.vercel\\.app',
+          },
+        ],
+        destination: 'https://www.magnevents.in/:path*',
+        permanent: true,
+      },
+      // 2. Canonicalize apex magnevents.in to www.magnevents.in
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: '^magnevents\\.in$',
+          },
+        ],
+        destination: 'https://www.magnevents.in/:path*',
+        permanent: true,
+      },
       {
         source: '/about',
         destination: '/blog-post',
