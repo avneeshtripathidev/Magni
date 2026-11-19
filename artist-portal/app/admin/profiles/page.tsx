@@ -258,67 +258,57 @@ export default function AdminProfileCardsPage() {
                 const isUnderReview = artist.verification_status === 'under_review';
                 const startingFee = Number(artist.submitted_pricing?.starting_price || artist.price_min || 0);
                 const rankInfo = rankMap[artist.id] || { rank: 1, totalCompleted: artist.successful_bookings || 0 };
-                const tierProg = getArtistTierProgress(rankInfo.totalCompleted);
                 const heroImg = artist.cover_image_url || artist.profile_image_url || '';
-                const TierIcon =
-                  tierProg.tier.level === 5
-                    ? Crown
-                    : tierProg.tier.level === 4
-                    ? Trophy
-                    : tierProg.tier.level === 3
-                    ? Award
-                    : tierProg.tier.level === 2
-                    ? Star
-                    : Sparkles;
+                const hasDistinctStageName =
+                  Boolean(artist.stage_name) &&
+                  artist.stage_name?.trim().toLowerCase() !== (artist.name || '').trim().toLowerCase();
+
+                const openProfileModal = () => {
+                  setModalTab('overview');
+                  setRejectionModalOpen(false);
+                  setSelectedUser(artist);
+                };
 
                 return (
                   <div
                     key={artist.id}
-                    onClick={() => {
-                      setModalTab('overview');
-                      setRejectionModalOpen(false);
-                      setSelectedUser(artist);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setModalTab('overview');
-                        setRejectionModalOpen(false);
-                        setSelectedUser(artist);
-                      }
-                    }}
-                    tabIndex={0}
-                    role="button"
-                    className="bg-white rounded-2xl border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all overflow-hidden cursor-pointer flex flex-col justify-between min-h-[380px] focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm"
+                    className="group bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 hover:border-sky-300 hover:shadow-md transition-all overflow-hidden flex flex-col justify-between shadow-xs"
                   >
-                    {/* Top Tall Visual Cover + Overlay Badges */}
-                    <div className="relative h-28 sm:h-36 lg:h-40 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
+                    {/* 1. Hero Cover Visual + Badges + Price Strip */}
+                    <div
+                      onClick={openProfileModal}
+                      className="relative h-28 sm:h-36 lg:h-40 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0 cursor-pointer"
+                    >
                       {heroImg ? (
                         <img
                           src={heroImg}
                           alt={artist.name}
-                          className="w-full h-full object-cover object-top"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-white/80">
-                          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-base sm:text-xl font-black text-white">
+                        <div className="w-full h-full flex flex-col items-center justify-center text-white/80 p-2 text-center">
+                          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-sm sm:text-lg font-black text-white shadow-xs">
                             {(artist.name || 'A')[0].toUpperCase()}
                           </div>
-                          <span className="text-[9px] sm:text-[10px] font-semibold text-white/60 mt-1 sm:mt-2 uppercase tracking-wider">
+                          <span className="text-[9px] sm:text-[10px] font-semibold text-white/70 mt-1 uppercase tracking-wider truncate max-w-full">
                             {artist.category || 'Performer'}
                           </span>
                         </div>
                       )}
 
-                      <div className="absolute inset-x-0 top-0 p-2 sm:p-3 flex items-center justify-between gap-1 sm:gap-2 bg-gradient-to-b from-black/60 via-black/25 to-transparent">
-                        <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-white/95 text-[9px] sm:text-[10px] font-extrabold text-slate-800 shadow-xs truncate max-w-[65%]">
-                          <span className="text-sky-600">#{rankInfo.rank}</span>
-                          <TierIcon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0 ${tierProg.tier.iconColor}`} />
-                          <span className="truncate">{tierProg.tier.name}</span>
-                        </span>
+                      {/* Top Badges Overlay */}
+                      <div className="absolute inset-x-0 top-0 p-1.5 sm:p-2.5 flex items-center justify-between gap-1 bg-gradient-to-b from-black/70 via-black/30 to-transparent">
+                        <div className="min-w-0 max-w-[65%]">
+                          <ArtistTierBadge
+                            completedEvents={rankInfo.totalCompleted}
+                            rankPosition={rankInfo.rank}
+                            size="xs"
+                            showCount={false}
+                          />
+                        </div>
 
                         <span
-                          className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
+                          className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
                             isApproved
                               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                               : isRejected
@@ -337,84 +327,108 @@ export default function AdminProfileCardsPage() {
                             : 'Pending'}
                         </span>
                       </div>
+
+                      {/* Bottom Image Overlay: Price & Live Status */}
+                      <div className="absolute inset-x-0 bottom-0 p-1.5 sm:p-2 flex items-center justify-between gap-1 bg-gradient-to-t from-black/85 via-black/40 to-transparent text-white">
+                        <div className="flex items-baseline gap-1 truncate">
+                          <span className="text-xs sm:text-sm font-black text-white tracking-tight">
+                            {startingFee > 0 ? `₹${startingFee.toLocaleString('en-IN')}` : 'Fee on req'}
+                          </span>
+                          {startingFee > 0 && <span className="text-[9px] text-white/70 font-medium">/event</span>}
+                        </div>
+
+                        <span className={`inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-xs ${
+                          artist.is_live ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/30' : 'bg-slate-900/60 text-slate-300 border border-white/10'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${artist.is_live ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                          <span>{artist.is_live ? 'Live' : 'Hidden'}</span>
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Card Body */}
-                    <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between gap-2.5 sm:gap-3.5">
-                      <div className="space-y-3">
-                        {/* Name, Category & Location */}
-                        <div className="min-w-0">
-                          <h3 className="text-sm font-extrabold text-slate-900 leading-snug truncate">
+                    {/* 2. Card Body: Identity, Metrics, and Genres */}
+                    <div className="p-2 sm:p-3 flex-1 flex flex-col justify-between gap-2 sm:gap-2.5">
+                      <div className="space-y-1.5 sm:space-y-2">
+                        {/* Identity */}
+                        <div
+                          onClick={openProfileModal}
+                          className="cursor-pointer min-w-0"
+                        >
+                          <h3
+                            className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug truncate group-hover:text-sky-600 transition-colors"
+                            title={artist.name}
+                          >
                             {artist.name}
                           </h3>
-                          <p className="text-xs font-semibold text-sky-700 truncate mt-0.5">
-                            {artist.stage_name || artist.category}
-                          </p>
-                          <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-1">
-                            <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
-                            <span className="truncate">{artist.city || 'Location not set'}</span>
+
+                          <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                            <span className="font-semibold text-sky-700 truncate" title={artist.category || 'Performer'}>
+                              {hasDistinctStageName ? artist.stage_name : (artist.category || 'Performer')}
+                            </span>
+                            <span className="text-slate-300">•</span>
+                            <MapPin className="w-2.5 h-2.5 text-slate-400 flex-shrink-0" />
+                            <span className="truncate" title={artist.city || 'India'}>
+                              {artist.city || 'India'}
+                            </span>
                           </div>
                         </div>
 
-                        {/* Genres Pills */}
+                        {/* Metrics Bar: Completed Events & Star Rating */}
+                        <div className="grid grid-cols-2 gap-1 py-1 px-1.5 sm:px-2 rounded-lg bg-slate-50 border border-slate-100 text-[10px] sm:text-[11px]">
+                          <div className="flex items-center gap-1 text-slate-600 min-w-0">
+                            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-sky-500 flex-shrink-0" />
+                            <span className="font-bold text-slate-900 truncate">{rankInfo.totalCompleted}</span>
+                            <span className="text-[9px] text-slate-400">Events</span>
+                          </div>
+                          <div className="flex items-center justify-end gap-1 text-slate-600 min-w-0">
+                            <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400 fill-amber-400 flex-shrink-0" />
+                            <span className="font-bold text-slate-900 truncate">
+                              {artist.rating ? Number(artist.rating).toFixed(1) : '5.0'}
+                            </span>
+                            <span className="text-[9px] text-slate-400">Rating</span>
+                          </div>
+                        </div>
+
+                        {/* Genres Tags (compact 1-2 pills) */}
                         {artist.genres && artist.genres.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {artist.genres.slice(0, 3).map((g) => (
+                          <div className="flex items-center gap-1 overflow-hidden">
+                            {artist.genres.slice(0, 2).map((g) => (
                               <span
                                 key={g}
-                                className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold"
+                                className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-slate-100 text-slate-600 truncate max-w-[80px]"
+                                title={g}
                               >
                                 {g}
                               </span>
                             ))}
+                            {artist.genres.length > 2 && (
+                              <span className="text-[9px] text-slate-400 font-semibold px-1 py-0.5 rounded bg-slate-50 border border-slate-100 flex-shrink-0">
+                                +{artist.genres.length - 2}
+                              </span>
+                            )}
                           </div>
                         )}
-
-                        {/* Metrics Row */}
-                        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                          <span className="font-bold text-slate-800">{rankInfo.totalCompleted} Events</span>
-                          <span className="inline-flex items-center gap-1 font-bold text-slate-800">
-                            <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                            {artist.rating ? Number(artist.rating).toFixed(1) : 'New'}
-                          </span>
-                        </div>
                       </div>
 
-                      {/* Footer: Price, Live Status & Actions */}
-                      <div className="space-y-3 pt-2 border-t border-slate-100">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-sm font-black text-slate-900">
-                              {startingFee > 0 ? `₹${startingFee.toLocaleString('en-IN')}` : 'Not set'}
-                            </span>
-                            {startingFee > 0 && <span className="text-[10px] text-slate-400">/event</span>}
-                          </div>
-                          <span
-                            className={`inline-flex items-center gap-1 text-[10px] font-bold ${
-                              artist.is_live ? 'text-emerald-600' : 'text-slate-400'
-                            }`}
-                          >
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                artist.is_live ? 'bg-emerald-500' : 'bg-slate-300'
-                              }`}
-                            />
-                            {artist.is_live ? 'Live' : 'Offline'}
-                          </span>
-                        </div>
+                      {/* 3. Footer Actions: WhatsApp Grid + Inspect Button */}
+                      <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                        <WhatsAppShareActions
+                          artist={artist}
+                          rank={rankInfo.rank}
+                          completedEvents={rankInfo.totalCompleted}
+                          variant="grid"
+                        />
 
-                        <div className="flex items-center justify-between gap-2">
-                          <WhatsAppShareActions
-                            artist={artist}
-                            rank={rankInfo.rank}
-                            completedEvents={rankInfo.totalCompleted}
-                            variant="compact"
-                          />
-                          <span className="h-8 px-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-[11px] font-bold inline-flex items-center gap-1">
-                            <span>View</span>
-                            <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                          </span>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={openProfileModal}
+                          className="w-full h-7 sm:h-8 px-2 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200/80 text-sky-700 text-[10px] sm:text-[11px] font-bold inline-flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] group/btn"
+                          title="Open full profile credentials, pricing, and KYC"
+                        >
+                          <Eye className="w-3 h-3 text-sky-600" />
+                          <span>Inspect Profile</span>
+                          <ChevronRight className="w-3 h-3 text-sky-500 group-hover/btn:translate-x-0.5 transition-transform" />
+                        </button>
                       </div>
                     </div>
                   </div>
