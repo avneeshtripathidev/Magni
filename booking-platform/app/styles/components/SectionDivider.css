@@ -73,10 +73,15 @@
   content: none !important;
 }
 
-/* Mobile-only divider visibility utility */
+/* Section & Page-End divider visibility on web (desktop) and mobile */
+.hp-section-divider--mobile-only {
+  display: block !important;
+}
+
 @media (min-width: 769px) {
   .hp-section-divider--mobile-only {
-    display: none !important;
+    display: block !important;
+    margin: 24px auto !important;
   }
 }
 

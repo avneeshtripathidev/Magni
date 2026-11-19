@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import SEOArtistsGrid from '@/app/components/common/SEOArtistsGrid';
 import { CityQuickSearch, CitySpecialistButton } from '@/app/components/city/CityQuickSearch';
-import { MAJOR_CITIES } from '@/app/utils/seoUrlParser';
+import { MAJOR_CITIES, getCityBySlug } from '@/app/utils/seoUrlParser';
 import { getTopArtistsForSEO } from '@/app/utils/fetchTopArtists';
 import '../../seo-pages.css';
 
@@ -77,7 +77,8 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const cityName = city?.name || slugToName(normalizedCitySlug);
+  const matchedCity = getCityBySlug(normalizedCitySlug);
+  const cityName = city?.name || matchedCity?.name || slugToName(normalizedCitySlug);
   const title = city?.seo_title || `Book Live Singers, DJs & Bands in ${cityName} | Magnevents`;
   const description =
     city?.meta_description ||
@@ -144,9 +145,11 @@ export default async function CityLandingPage({ params }) {
 
   // 1b. Fallback if city not in database
   if (!city) {
+    const matchedCity = getCityBySlug(normalizedCitySlug);
     city = {
       id: null,
-      name: slugToName(normalizedCitySlug),
+      name: matchedCity?.name || slugToName(normalizedCitySlug),
+      state: matchedCity?.state || '',
       slug: normalizedCitySlug,
       seo_title: '',
       meta_description: '',

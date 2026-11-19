@@ -1067,7 +1067,7 @@ export default function SEOLandingHero({
               <div>
                 <span className="badge">👑 TOP 5 CURATED PERFORMERS</span>
                 <h2>Top 5 Verified {category}s for {city}</h2>
-                <p>Browse real photos, audience ratings & live booking fees from our active database.</p>
+                <p>Browse verified live performer profiles, authentic stage photos & client ratings.</p>
               </div>
               <Link href="/artists" className="seo-browse-all-link">
                 <span>Browse All 500+ Artists</span>
@@ -1096,46 +1096,43 @@ export default function SEOLandingHero({
                         alt={`Photo of ${artist.name}`}
                         fill
                         sizes="(max-width: 768px) 260px, (max-width: 1200px) 25vw, 20vw"
-                        style={{ objectFit: 'cover' }}
+                        style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
                         onError={() => handleImageError(artist.id)}
                         loading={idx < 3 ? "eager" : "lazy"}
+                        priority={idx < 2}
                       />
                       <div className="seo-card-gradient-overlay" />
 
-                      {/* Floating City / Travel Tag */}
-                      <span className={`seo-card-floating-badge ${artist.isFromCity ? 'local' : 'travel'}`}>
-                        {artist.isFromCity ? `📍 In ${city}` : `✈️ Performs in ${city}`}
+                      {/* Floating Verified Performer Badge (No Location) */}
+                      <span className="seo-card-verified-badge">
+                        <span className="seo-verified-sparkle">✦</span>
+                        <span>Verified Artist</span>
                       </span>
 
                       {/* Floating Rating Badge */}
                       <span className="seo-card-rating-badge">
-                        <span>★</span>
+                        <span className="seo-star-icon">★</span>
                         <span>{Number(artist.rating || 5).toFixed(1)}</span>
                       </span>
                     </div>
 
                     {/* Card Body */}
                     <div className="seo-card-body">
-                      <div>
+                      <div className="seo-card-info-wrap">
                         <span className="seo-card-category-tag" title={artist.subCategory || artist.category}>
                           {artist.subCategory ? artist.subCategory.split(',').slice(0, 2).join(' · ') : artist.category}
                         </span>
                         <h3 className="seo-card-name" title={artist.name}>
                           {artist.name}
                         </h3>
-                        <div className="seo-card-city">
-                          <span>📍 {artist.city || 'India'}</span>
-                          <span>·</span>
-                          <span>{artist.successful_bookings || 15}+ Events</span>
+                        <div className="seo-card-trust-row">
+                          <span className="seo-card-live-dot" />
+                          <span className="seo-card-events-count">
+                            {artist.successful_bookings || 25}+ Verified Shows
+                          </span>
+                          <span className="seo-card-divider-bullet">•</span>
+                          <span className="seo-card-guarantee-tag">Stage Verified</span>
                         </div>
-                      </div>
-
-                      {/* Price Row */}
-                      <div className="seo-card-price-row">
-                        <span className="seo-card-price-label">Starting Fee</span>
-                        <span className="seo-card-price-val">
-                          ₹{artist.price_min ? artist.price_min.toLocaleString('en-IN') : '10,000'}
-                        </span>
                       </div>
 
                       {/* Actions */}
@@ -1148,7 +1145,8 @@ export default function SEOLandingHero({
                             handleOpenBookModal(artist);
                           }}
                         >
-                          <span>⚡ Book</span>
+                          <span>Book Now</span>
+                          <span className="seo-card-btn-arrow">→</span>
                         </button>
 
                         <Link

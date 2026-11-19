@@ -235,17 +235,12 @@ function VibeVideoCard({ item, onPlayModal, onQuoteModal }) {
           </div>
         )}
 
-        {/* Sleek Floating Bottom Bar: Price and Get Quote */}
+        {/* Sleek Floating Bottom Bar: Live Setup & Get Quote (No Price) */}
         <div className="vhs-card-overlay-bottom">
           <div className="vhs-card-footer">
-            <div className="vhs-price-box">
-              <span className="vhs-price-label">Starts from</span>
-              <div className="vhs-price-vals">
-                <span className="vhs-price-val">{item.price}</span>
-                {item.regularPrice && (
-                  <span className="vhs-price-strike">{item.regularPrice}</span>
-                )}
-              </div>
+            <div className="vhs-info-box">
+              <span className="vhs-info-tag">{item.tag}</span>
+              <span className="vhs-info-setup">{item.setup}</span>
             </div>
 
             <button

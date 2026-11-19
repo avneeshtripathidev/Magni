@@ -48,12 +48,15 @@ export default function HomePage() {
         <FeaturedArtistsSection />
         <SectionDivider className="hp-section-divider--mobile-only" />
         <WhyChooseSection />
+        <SectionDivider className="hp-section-divider--mobile-only" />
         <HowToBookSection />
+        <SectionDivider className="hp-section-divider--mobile-only" />
         <TestimonialsSection />
         <SectionDivider className="hp-section-divider--mobile-only" />
         <FaqSection />
         <SectionDivider className="hp-section-divider--mobile-only" />
         <ContactSection />
+        <SectionDivider className="hp-section-divider--mobile-only" />
         <SeoCardsSection className="seo-cards-desktop-only" />
       </div>
 

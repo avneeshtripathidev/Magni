@@ -1,5 +1,6 @@
 import { supabase } from '@database/connection/supabase';
 import { defaultBlogs } from '@/app/blog-post/data';
+import { INDIAN_CITIES_1063 } from '@/app/constants/indianCities1063';
 
 export const revalidate = 86400; // Cache at Edge for 24 hours
 
@@ -262,6 +263,34 @@ export default async function sitemap() {
     }
   }
 
+  // 5b. All 1,063 Indian Cities - Dedicated City Hub Landing Pages (/city/[slug])
+  const all1063CityHubPages = INDIAN_CITIES_1063.map((city) => ({
+    url: `${baseUrl}/city/${city.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  }));
+
+  // 5c. All 1,063 Indian Cities - High-Intent Core Keyword Landing Pages
+  const all1063CityKeywordPages = [];
+  const PAN_INDIA_CORE_PATTERNS = [
+    (c) => `/singer-in-${c}`,
+    (c) => `/wedding-singer-in-${c}`,
+    (c) => `/dj-in-${c}`,
+    (c) => `/live-band-in-${c}`,
+  ];
+
+  for (const city of INDIAN_CITIES_1063) {
+    for (const pattern of PAN_INDIA_CORE_PATTERNS) {
+      all1063CityKeywordPages.push({
+        url: `${baseUrl}${pattern(city.slug)}`,
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.80,
+      });
+    }
+  }
+
   // National Keyword Pages
   const nationalPages = nationalKeywordRoutes.map((route) => ({
     url: `${baseUrl}${route}`,
@@ -374,6 +403,8 @@ export default async function sitemap() {
     ...mumbaiLandingPages,
     ...keyMetroLandingPages,
     ...otherIndiaLandingPages,
+    ...all1063CityHubPages,
+    ...all1063CityKeywordPages,
     ...cityRoutes,
     ...cityBlogRoutes,
     ...artistRoutes,

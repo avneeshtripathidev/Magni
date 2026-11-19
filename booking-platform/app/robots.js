@@ -37,7 +37,10 @@ export default function robots() {
         disallow: disallowList,
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: [
+      `${baseUrl}/sitemap.xml`,
+      `${baseUrl}/sitemaps/all-1063-cities-sitemap.xml`,
+    ],
     host: baseUrl,
   };
 }

@@ -318,7 +318,7 @@
   box-sizing: border-box;
 }
 
-/* Card Footer with Price and Quote Button */
+/* Card Footer with Info & Quote Button */
 .vhs-card-footer {
   display: flex;
   align-items: center;
@@ -326,39 +326,38 @@
   gap: 10px;
 }
 
-.vhs-price-box {
+.vhs-info-box {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.vhs-price-label {
-  font-size: 0.64rem;
-  color: #D8C4B7;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 600;
-  opacity: 0.85;
-}
-
-.vhs-price-vals {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.vhs-price-val {
-  font-size: 1.15rem;
-  font-weight: 800;
+.vhs-info-tag {
+  font-size: 0.82rem;
+  font-weight: 700;
   color: #F5F0E9;
-  line-height: 1.2;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-.vhs-price-strike {
-  font-size: 0.75rem;
-  color: rgba(216, 196, 183, 0.55);
-  text-decoration: line-through;
+.vhs-info-setup {
+  font-size: 0.68rem;
+  color: #D8C4B7;
+  letter-spacing: 0.02em;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.9;
+}
+
+/* Price Box completely removed */
+.vhs-price-box {
+  display: none !important;
 }
 
 .vhs-quote-btn {

@@ -6,7 +6,8 @@ import { supabase } from '@database/connection/supabase-admin';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { CalendarCheck, Search, Loader2, ChevronLeft, ChevronRight, Info, X, MapPin, Calendar, User, Mic2, CheckCircle2, XCircle, AlertCircle, Eye, Trash2, SortAsc, SortDesc, Phone, Mail, Clock, Star, Trophy, Music, Download, ArrowLeft } from 'lucide-react';
+import { CalendarCheck, Search, Loader2, ChevronLeft, ChevronRight, Info, X, MapPin, Calendar, User, Mic2, CheckCircle2, XCircle, AlertCircle, Eye, Trash2, SortAsc, SortDesc, Phone, Mail, Clock, Star, Trophy, Music, Download, ArrowLeft, ShieldCheck, Sparkles } from 'lucide-react';
+import { PortalArtistVerificationView } from '@/components/artists/PortalArtistVerificationView';
 import {
   Dialog,
   DialogContent,
@@ -47,6 +48,7 @@ function ArtistRequestsContent() {
   const searchParams = useSearchParams();
   const replyId = searchParams?.get('reply');
   const actionType = searchParams?.get('action');
+  const [mainTab, setMainTab] = useState<'portal' | 'legacy'>('portal');
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -546,13 +548,14 @@ function ArtistRequestsContent() {
 
   return (
     <div className="space-y-6 pb-8">
-      <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-10 -mt-4 sm:-mt-6 lg:-mt-8 xl:-mt-10 px-4 sm:px-6 lg:px-8 xl:px-10 pt-8 pb-8 bg-gradient-to-b from-slate-50 to-transparent border-b border-white mb-2 text-center sm:text-left">
-          <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Artist Requests</h1>
-              <p className="text-sm font-medium text-slate-500">Manage incoming artist registrations and onboarding requests.</p>
-            </div>
-            
+      <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-10 -mt-4 sm:-mt-6 lg:-mt-8 xl:-mt-10 px-4 sm:px-6 lg:px-8 xl:px-10 pt-8 pb-6 bg-gradient-to-b from-slate-50 to-transparent border-b border-white mb-2 text-center sm:text-left">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Artist Requests & Verifications</h1>
+            <p className="text-sm font-medium text-slate-500">Manage incoming performer applications, ID verifications, and onboarding requests.</p>
+          </div>
+          
+          {mainTab === 'legacy' && (
             <button
               onClick={() => { setExportMode('select'); setExportModalOpen(true); }}
               className="group h-11 px-6 rounded-xl bg-emerald-500 border border-emerald-400 text-white text-[11px] font-black uppercase tracking-[0.2em] hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-sm"
@@ -560,9 +563,44 @@ function ArtistRequestsContent() {
               <Download size={16} strokeWidth={3} className="text-white" />
               Export XLS
             </button>
-          </div>
+          )}
+        </div>
 
-        <div className="flex flex-col space-y-3">
+        {/* Primary Top Tab Switcher */}
+        <div className="flex items-center gap-2 bg-slate-200/70 p-1.5 rounded-2xl w-fit border border-slate-300/40 mt-6">
+          <button
+            onClick={() => setMainTab('portal')}
+            className={cn(
+              "px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
+              mainTab === 'portal'
+                ? "bg-white text-sky-600 shadow-sm border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
+            )}
+          >
+            <ShieldCheck className="w-4 h-4 text-sky-600" />
+            Performer Portal (artists.magnevents.in)
+          </button>
+          <button
+            onClick={() => setMainTab('legacy')}
+            className={cn(
+              "px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
+              mainTab === 'legacy'
+                ? "bg-white text-slate-900 shadow-sm border border-slate-200"
+                : "text-slate-600 hover:text-slate-900"
+            )}
+          >
+            <CalendarCheck className="w-4 h-4 text-slate-500" />
+            Direct Leads & Inquiries (Legacy)
+          </button>
+        </div>
+      </div>
+
+      {mainTab === 'portal' ? (
+        <PortalArtistVerificationView />
+      ) : (
+        <>
+          <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-10 px-4 sm:px-6 lg:px-8 xl:px-10 pb-4">
+            <div className="flex flex-col space-y-3">
           <div className="relative group w-full">
             <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
               <Search size={18} className="text-slate-400 group-focus-within:text-sky-600 transition-colors" strokeWidth={2.5} />
@@ -1165,6 +1203,8 @@ function ArtistRequestsContent() {
           </div>
         </DialogContent>
       </Dialog>
+      </>
+      )}
     </div>
   );
 }

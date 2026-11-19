@@ -3,6 +3,10 @@
  * programmatic SEO location slugs for Magnevents.
  */
 
+import { ALL_1063_SLUGS, getCityBySlug, INDIAN_CITIES_1063 } from '../constants/indianCities1063.js';
+
+export { getCityBySlug, INDIAN_CITIES_1063 };
+
 export const VALID_KEYWORDS = [
   'singer', 'band', 'dj', 'comedian', 'anchor', 'dancer', 'magician', 
   'guitarist', 'violinist', 'saxophonist', 'flutist', 'pianist', 'dhol',
@@ -13,7 +17,7 @@ export const VALID_KEYWORDS = [
   'bollywood', 'punjabi', 'retro', 'classical'
 ];
 
-export const MAJOR_CITIES = [
+const CORE_MAJOR_CITIES = [
   // Delhi NCR & Haryana / UP NCR
   'delhi', 'new-delhi', 'delhi-ncr', 'noida', 'greater-noida', 'gurgaon', 'gurugram',
   'faridabad', 'ghaziabad', 'meerut', 'hapur', 'bulandshahr', 'sonipat', 'panipat',
@@ -80,6 +84,8 @@ export const MAJOR_CITIES = [
   'port-blair'
 ];
 
+export const MAJOR_CITIES = Array.from(new Set([...CORE_MAJOR_CITIES, ...ALL_1063_SLUGS]));
+
 export function parseLocationSlug(rawSlug) {
   const cleanSlug = decodeURIComponent(rawSlug || '').trim().toLowerCase().replace(/[\s_]+/g, '-').replace(/\/+$/, '');
   const isValidKeyword = VALID_KEYWORDS.some(kw => cleanSlug.includes(kw));
@@ -112,11 +118,17 @@ export function parseLocationSlug(rawSlug) {
 
   const parts = cleanSlug.split('-in-');
   if (parts.length > 1) {
-    const cityStr = parts[1].replace(/-/g, ' ').trim();
-    if (cityStr.toLowerCase() === 'delhi ncr') {
-      parsedCity = 'Delhi NCR';
+    const rawCitySlug = parts[1].trim();
+    const matchedCity = getCityBySlug(rawCitySlug);
+    if (matchedCity) {
+      parsedCity = matchedCity.name;
     } else {
-      parsedCity = cityStr.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const cityStr = rawCitySlug.replace(/-/g, ' ').trim();
+      if (cityStr.toLowerCase() === 'delhi ncr') {
+        parsedCity = 'Delhi NCR';
+      } else {
+        parsedCity = cityStr.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
     }
   }
 

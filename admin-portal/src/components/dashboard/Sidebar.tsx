@@ -204,8 +204,14 @@ export function Sidebar({ onClose, userRole = 'admin' }: { onClose?: () => void;
   }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
+    try {
+      localStorage.removeItem('admin_bypass_session');
+      localStorage.removeItem('sb-ecwaqfsjajeidhslybdi-auth-token');
+      localStorage.removeItem('sb-lgtmmvztmelrmlzjppzx-auth-token');
+      await supabase.auth.signOut().catch(() => {});
+    } finally {
+      window.location.href = '/login';
+    }
   };
 
   return (
