@@ -5,15 +5,20 @@ import { useRouter, usePathname } from 'next/navigation';
 import { AdminAuthProvider, useAdminAuth } from '../../lib/auth/adminAuthContext';
 import { AdminSidebar } from '../../components/admin/AdminSidebar';
 import { AdminTopbar } from '../../components/admin/AdminTopbar';
+import { AdminBottomNav } from '../../components/admin/AdminBottomNav';
 import { Loader2 } from 'lucide-react';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-  const { admin, loading } = useAdminAuth();
+  const { admin, loading, artists } = useAdminAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   const isLoginPage = pathname === '/admin/login';
+
+  const pendingCount = (artists || []).filter(
+    (a) => a.verification_status === 'pending' || a.verification_status === 'under_review'
+  ).length;
 
   useEffect(() => {
     if (!loading && !admin && !isLoginPage) {
@@ -90,9 +95,16 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col min-h-screen lg:pl-[240px] w-full min-w-0 overflow-x-hidden relative">
         <AdminTopbar onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <main className="flex-1 p-2 sm:p-4 lg:p-6 max-w-[1600px] mx-auto w-full min-w-0">
+        <main className="flex-1 p-2 sm:p-4 lg:p-6 pb-20 sm:pb-20 lg:pb-6 max-w-[1600px] mx-auto w-full min-w-0">
           {children}
         </main>
+
+        {/* 5. Mobile Admin Bottom Navigation Bar */}
+        <AdminBottomNav
+          onOpenMenu={() => setMobileMenuOpen((prev) => !prev)}
+          isMenuOpen={mobileMenuOpen}
+          pendingCount={pendingCount}
+        />
       </div>
     </div>
   );
