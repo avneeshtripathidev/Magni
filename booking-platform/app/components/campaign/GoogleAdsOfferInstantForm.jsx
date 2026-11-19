@@ -448,10 +448,10 @@ export default function GoogleAdsOfferInstantForm() {
                     <span className="diw-triple-lbl">Instant Event Discount</span>
                   </div>
 
-                  {/* Card 2: First Booking Gift (Highlighted) */}
+                  {/* Card 2: First Booking Gift (Highlighted for 1st-time user) */}
                   <div className="diw-triple-card diw-triple-card-featured">
-                    <span className="diw-triple-pill diw-pill-gold">WELCOME GIFT 🎁</span>
-                    <span className="diw-triple-val diw-val-gold">+15% EXTRA</span>
+                    <span className="diw-triple-pill diw-pill-gold">1ST TIME USER 🎁</span>
+                    <span className="diw-triple-val diw-val-gold">+15% EXTRA OFF</span>
                     <span className="diw-triple-lbl diw-lbl-gold">Code: FIRST15</span>
                   </div>
 
