@@ -251,7 +251,7 @@ export default function AdminProfileCardsPage() {
 
         return (
           <div className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5">
               {paginatedArtists.map((artist) => {
                 const isApproved = artist.verification_status === 'approved';
                 const isRejected = artist.verification_status === 'rejected';
