@@ -562,7 +562,7 @@ export default function GoogleAdsOfferInstantForm() {
                   <span>{isSubmitting ? 'Securing Your Offer & Date...' : 'Unlock My Offer & Lock Date →'}</span>
                 </button>
                 <p className="diw-trust-line">
-                  Lock today&apos;s first-booking welcome price for any 2026–2027 event date • Zero hidden charges
+                  Lock your discount for any event date • No hidden charges
                 </p>
               </form>
             </div>
