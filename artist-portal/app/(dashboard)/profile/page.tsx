@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
-import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
 import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
 import {
   User,
@@ -267,14 +266,7 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          {artist && (
-            <WhatsAppShareActions
-              artist={artist}
-              completedEvents={artist.successful_bookings || 0}
-              variant="full"
-            />
-          )}
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <button
             type="button"
             onClick={handleSubmit}
