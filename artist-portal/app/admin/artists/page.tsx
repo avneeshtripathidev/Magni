@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAdminAuth } from '../../../lib/auth/adminAuthContext';
+import { ArtistProfile } from '../../../types/artist';
 import { ArtistTierBadge } from '../../../components/shared/ArtistTierBadge';
 import { LocationFilter, matchesLocationFilter } from '../../../components/shared/LocationFilter';
 import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
+import { ArtistDetailModal } from '../../../components/admin/ArtistDetailModal';
 import { getArtistRankMap } from '../../../lib/artistTiers';
 import { 
   Search, 
@@ -18,11 +20,14 @@ import {
   Music,
   MapPin,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Users,
+  Loader2,
 } from 'lucide-react';
 
 export default function AdminArtistsDirectoryPage() {
-  const { artists, updateArtistStatus } = useAdminAuth();
+  const { artists, updateArtistStatus, loading } = useAdminAuth();
+  const [selectedArtist, setSelectedArtist] = useState<ArtistProfile | null>(null);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
@@ -112,141 +117,176 @@ export default function AdminArtistsDirectoryPage() {
       </div>
 
       {/* 3. Cards Grid (4 cards in mobile view & 4 per row on desktop) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 md:gap-4">
-        {filtered.map((artist) => {
-          const isApproved = artist.verification_status === 'approved';
-          const isRejected = artist.verification_status === 'rejected';
-          const rankInfo = rankMap[artist.id] || { rank: 1, totalCompleted: artist.successful_bookings || 0 };
-          const heroImg = artist.cover_image_url || artist.profile_image_url || '';
+      {loading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 md:gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-64 rounded-xl sm:rounded-2xl bg-slate-100 animate-pulse border border-slate-200" />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="py-16 text-center p-8 bg-white rounded-2xl border border-dashed border-slate-200 space-y-2">
+          <Users className="w-10 h-10 text-slate-300 mx-auto" />
+          <h3 className="text-sm font-bold text-slate-700">No performers found</h3>
+          <p className="text-xs text-slate-400">Try adjusting your search query, location, or act category.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 md:gap-4">
+          {filtered.map((artist) => {
+            const isApproved = artist.verification_status === 'approved';
+            const isRejected = artist.verification_status === 'rejected';
+            const rankInfo = rankMap[artist.id] || { rank: 1, totalCompleted: artist.successful_bookings || 0 };
+            const heroImg = artist.cover_image_url || artist.profile_image_url || '';
 
-          return (
-            <div
-              key={artist.id}
-              className="bg-white border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all rounded-xl sm:rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs"
-            >
-              {/* Top Visual Cover + Status Overlay */}
-              <div className="relative h-24 sm:h-32 lg:h-36 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
-                {heroImg ? (
-                  <img
-                    src={heroImg}
-                    alt={artist.name}
-                    className="w-full h-full object-cover object-top"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-white/80 p-2 text-center">
-                    <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-sm sm:text-lg font-black text-white">
-                      {(artist.name || 'A')[0].toUpperCase()}
+            return (
+              <div
+                key={artist.id}
+                onClick={() => setSelectedArtist(artist)}
+                className="group/card bg-white border border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all rounded-xl sm:rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs cursor-pointer active:scale-[0.99]"
+              >
+                {/* Top Visual Cover + Status Overlay */}
+                <div className="relative h-24 sm:h-32 lg:h-36 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
+                  {heroImg ? (
+                    <img
+                      src={heroImg}
+                      alt={artist.name}
+                      className="w-full h-full object-cover object-top group-hover/card:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-white/80 p-2 text-center">
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-sm sm:text-lg font-black text-white">
+                        {(artist.name || 'A')[0].toUpperCase()}
+                      </div>
+                      <span className="text-[9px] sm:text-[10px] font-semibold text-white/60 mt-1 uppercase tracking-wider truncate max-w-full">
+                        {artist.category || 'Performer'}
+                      </span>
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-white/60 mt-1 uppercase tracking-wider truncate max-w-full">
-                      {artist.category || 'Performer'}
+                  )}
+
+                  <div className="absolute inset-x-0 top-0 p-1.5 sm:p-2.5 flex items-center justify-between gap-1 bg-gradient-to-b from-black/70 via-black/30 to-transparent">
+                    <div className="min-w-0 max-w-[65%]">
+                      <ArtistTierBadge
+                        completedEvents={rankInfo.totalCompleted}
+                        rankPosition={rankInfo.rank}
+                        size="xs"
+                        showCount={false}
+                      />
+                    </div>
+                    <span
+                      className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
+                        isApproved
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : isRejected
+                          ? 'bg-rose-50 text-rose-700 border-rose-200'
+                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                      }`}
+                    >
+                      {isApproved ? 'Live' : isRejected ? 'Rejected' : 'Review'}
                     </span>
                   </div>
-                )}
+                </div>
 
-                <div className="absolute inset-x-0 top-0 p-1.5 sm:p-2.5 flex items-center justify-between gap-1 bg-gradient-to-b from-black/70 via-black/30 to-transparent">
-                  <div className="min-w-0 max-w-[65%]">
-                    <ArtistTierBadge
-                      completedEvents={rankInfo.totalCompleted}
-                      rankPosition={rankInfo.rank}
-                      size="xs"
-                      showCount={false}
-                    />
+                {/* Card Body */}
+                <div className="p-2 sm:p-3.5 flex-1 flex flex-col justify-between gap-2 sm:gap-3">
+                  <div className="space-y-1.5 sm:space-y-2.5">
+                    {/* Identity */}
+                    <div className="min-w-0">
+                      <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug truncate group-hover/card:text-sky-600 transition-colors" title={artist.name}>
+                        {artist.name}
+                      </h3>
+                      <p className="text-[10px] sm:text-xs text-indigo-600 font-semibold truncate mt-0.5" title={artist.stage_name || artist.category || 'Solo Act'}>
+                        {artist.stage_name || artist.category || 'Solo Act'}
+                      </p>
+                    </div>
+
+                    {/* Metrics */}
+                    <div className="pt-1.5 sm:pt-2 border-t border-slate-100 text-[10px] sm:text-xs text-slate-600 space-y-1">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-slate-400">Events</span>
+                        <span className="font-bold text-slate-900">{rankInfo.totalCompleted} Done</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-slate-400">Category</span>
+                        <span className="font-semibold text-slate-800 truncate text-right max-w-[65px] sm:max-w-[120px]" title={artist.category || '—'}>
+                          {artist.category || '—'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-slate-400">City</span>
+                        <span className="font-semibold text-slate-800 truncate text-right max-w-[65px] sm:max-w-[120px]" title={artist.city || 'Not set'}>
+                          {artist.city || 'Not set'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-slate-400">Status</span>
+                        <span className={`font-bold ${artist.is_live ? 'text-emerald-600' : 'text-slate-400'}`}>
+                          {artist.is_live ? 'Active' : 'Hidden'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <span
-                    className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
-                      isApproved
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : isRejected
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : 'bg-amber-50 text-amber-700 border-amber-200'
-                    }`}
+
+                  {/* Footer Actions */}
+                  <div 
+                    className="pt-1.5 sm:pt-2.5 border-t border-slate-100 space-y-1.5 sm:space-y-2"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    {isApproved ? 'Live' : isRejected ? 'Rejected' : 'Review'}
-                  </span>
-                </div>
-              </div>
+                    <WhatsAppShareActions
+                      artist={artist}
+                      rank={rankInfo.rank}
+                      completedEvents={rankInfo.totalCompleted}
+                      variant="grid"
+                    />
 
-              {/* Card Body */}
-              <div className="p-2 sm:p-3.5 flex-1 flex flex-col justify-between gap-2 sm:gap-3">
-                <div className="space-y-1.5 sm:space-y-2.5">
-                  {/* Identity */}
-                  <div className="min-w-0">
-                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug truncate" title={artist.name}>
-                      {artist.name}
-                    </h3>
-                    <p className="text-[10px] sm:text-xs text-indigo-600 font-semibold truncate mt-0.5" title={artist.stage_name || artist.category || 'Solo Act'}>
-                      {artist.stage_name || artist.category || 'Solo Act'}
-                    </p>
-                  </div>
-
-                  {/* Metrics */}
-                  <div className="pt-1.5 sm:pt-2 border-t border-slate-100 text-[10px] sm:text-xs text-slate-600 space-y-1">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-slate-400">Events</span>
-                      <span className="font-bold text-slate-900">{rankInfo.totalCompleted} Done</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-slate-400">Category</span>
-                      <span className="font-semibold text-slate-800 truncate text-right max-w-[65px] sm:max-w-[120px]" title={artist.category || '—'}>
-                        {artist.category || '—'}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-slate-400">City</span>
-                      <span className="font-semibold text-slate-800 truncate text-right max-w-[65px] sm:max-w-[120px]" title={artist.city || 'Not set'}>
-                        {artist.city || 'Not set'}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-slate-400">Status</span>
-                      <span className={`font-bold ${artist.is_live ? 'text-emerald-600' : 'text-slate-400'}`}>
-                        {artist.is_live ? 'Active' : 'Hidden'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Actions */}
-                <div className="pt-1.5 sm:pt-2.5 border-t border-slate-100 space-y-1.5 sm:space-y-2">
-                  <WhatsAppShareActions
-                    artist={artist}
-                    rank={rankInfo.rank}
-                    completedEvents={rankInfo.totalCompleted}
-                    variant="grid"
-                  />
-
-                  <div className="grid grid-cols-2 gap-1 sm:gap-1.5 w-full">
-                    <Link
-                      href={`/admin/verification?reviewId=${artist.id}`}
-                      className="h-7 sm:h-8 px-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center gap-1 w-full transition-all"
-                    >
-                      <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-500" />
-                      <span>Dossier</span>
-                    </Link>
-
-                    {artist.is_live ? (
+                    <div className="grid grid-cols-2 gap-1 sm:gap-1.5 w-full">
                       <button
-                        onClick={() => updateArtistStatus(artist.id, 'under_review')}
-                        className="h-7 sm:h-8 px-1 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center w-full transition-all"
-                        title="Hide from public search"
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedArtist(artist);
+                        }}
+                        className="h-7 sm:h-8 px-1 rounded-lg border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-700 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center gap-1 w-full transition-all"
+                        title="Inspect full profile credentials and KYC"
                       >
-                        Hide
+                        <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-sky-600" />
+                        <span>Details</span>
                       </button>
-                    ) : (
-                      <button
-                        onClick={() => updateArtistStatus(artist.id, 'approved')}
-                        className="h-7 sm:h-8 px-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold inline-flex items-center justify-center w-full transition-all"
-                      >
-                        Publish
-                      </button>
-                    )}
+
+                      {artist.is_live ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateArtistStatus(artist.id, 'under_review');
+                          }}
+                          className="h-7 sm:h-8 px-1 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center w-full transition-all"
+                          title="Hide from public search"
+                        >
+                          Hide
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateArtistStatus(artist.id, 'approved');
+                          }}
+                          className="h-7 sm:h-8 px-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold inline-flex items-center justify-center w-full transition-all"
+                        >
+                          Publish
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Artist Detail Modal */}
+      <ArtistDetailModal
+        artist={selectedArtist}
+        onClose={() => setSelectedArtist(null)}
+      />
     </div>
   );
 }
