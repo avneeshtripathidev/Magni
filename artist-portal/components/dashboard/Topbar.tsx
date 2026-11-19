@@ -73,7 +73,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       {/* Right: Status Badge, Notification Bell & Mini Avatar */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
         <div className="hidden min-[360px]:block">
-          <StatusBadge status={artist?.verification_status || 'pending'} size="sm" showIcon={false} />
+          <StatusBadge status={artist?.is_live ? 'approved' : (artist?.verification_status || 'approved')} size="sm" showIcon={false} />
         </div>
 
         {/* Notifications Dropdown */}

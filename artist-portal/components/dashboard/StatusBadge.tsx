@@ -14,7 +14,7 @@ export function StatusBadge({ status, showIcon = true, size = 'sm', className = 
     switch (status) {
       case 'approved':
         return {
-          label: 'Live & Verified',
+          label: size === 'sm' ? 'Live' : 'Live & Verified',
           bg: 'bg-emerald-50',
           text: 'text-emerald-700',
           border: 'border-emerald-200',
@@ -77,9 +77,14 @@ export function StatusBadge({ status, showIcon = true, size = 'sm', className = 
       {showIcon ? (
         <Icon className="w-3 h-3 flex-shrink-0" />
       ) : (
-        <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+        <span className="relative flex h-2 w-2 flex-shrink-0">
+          {status === 'approved' && (
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          )}
+          <span className={`relative inline-flex rounded-full h-2 w-2 ${config.dot}`} />
+        </span>
       )}
-      <span>{config.label}</span>
+      <span className="tracking-tight">{config.label}</span>
     </span>
   );
 }
