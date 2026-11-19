@@ -469,18 +469,23 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 mt-0.5"
+                className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 mt-0.5 cursor-pointer"
               />
-              <span className="leading-normal">
-                I agree to the{' '}
-                <button
-                  type="button"
-                  onClick={() => setShowTermsModal(true)}
-                  className="font-semibold text-slate-900 underline underline-offset-2 hover:text-sky-600 transition-colors"
-                >
-                  Performer Terms &amp; Conditions
-                </button>
-              </span>
+              <div className="leading-tight">
+                <span>
+                  I agree to the{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowTermsModal(true)}
+                    className="font-semibold text-slate-900 underline underline-offset-2 hover:text-sky-600 transition-colors"
+                  >
+                    Performer Terms &amp; Conditions
+                  </button>
+                </span>
+                <span className="block text-[11px] text-slate-400 mt-0.5">
+                  Please read carefully before checking the box
+                </span>
+              </div>
             </label>
           </div>
 
