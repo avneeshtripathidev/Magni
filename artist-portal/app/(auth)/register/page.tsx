@@ -354,15 +354,15 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Real-time Password Quality Indicator */}
+            {/* Password Strength Indicator */}
             {password.length > 0 && (
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 animate-in fade-in duration-200">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-sky-500" /> Password Quality
+                  <span className="text-[11px] font-medium text-slate-500">
+                    Password strength
                   </span>
                   <span
-                    className={`text-[11px] font-extrabold uppercase tracking-wider ${
+                    className={`text-[11px] font-semibold ${
                       strengthScore <= 1
                         ? 'text-rose-600'
                         : strengthScore === 2
@@ -373,19 +373,19 @@ export default function RegisterPage() {
                     }`}
                   >
                     {strengthScore === 0
-                      ? 'Too Short'
+                      ? 'Too short'
                       : strengthScore === 1
                       ? 'Weak'
                       : strengthScore === 2
                       ? 'Fair'
                       : strengthScore === 3
                       ? 'Good'
-                      : 'Strong ✓'}
+                      : 'Strong'}
                   </span>
                 </div>
 
-                {/* 4-Segment Progress Bar */}
-                <div className="grid grid-cols-4 gap-1.5 h-1.5">
+                {/* Progress Bar */}
+                <div className="grid grid-cols-4 gap-1.5 h-1">
                   {[1, 2, 3, 4].map((step) => {
                     const isFilled = strengthScore >= step;
                     const barColor =
@@ -407,53 +407,53 @@ export default function RegisterPage() {
                   })}
                 </div>
 
-                {/* Checklist Criteria */}
-                <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[11px]">
+                {/* Criteria Checklist */}
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-0.5 text-[11px]">
                   <div
-                    className={`flex items-center gap-1.5 transition-colors ${
-                      passwordCriteria.length ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    className={`flex items-center gap-1.5 ${
+                      passwordCriteria.length ? 'text-slate-800 font-medium' : 'text-slate-400'
                     }`}
                   >
                     {passwordCriteria.length ? (
-                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                      <Check className="w-3 h-3 flex-shrink-0 text-emerald-600" />
                     ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                      <div className="w-1 h-1 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
                     )}
                     <span>8+ characters</span>
                   </div>
                   <div
-                    className={`flex items-center gap-1.5 transition-colors ${
-                      passwordCriteria.hasNumber ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    className={`flex items-center gap-1.5 ${
+                      passwordCriteria.hasNumber ? 'text-slate-800 font-medium' : 'text-slate-400'
                     }`}
                   >
                     {passwordCriteria.hasNumber ? (
-                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                      <Check className="w-3 h-3 flex-shrink-0 text-emerald-600" />
                     ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                      <div className="w-1 h-1 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
                     )}
-                    <span>At least 1 number</span>
+                    <span>1 number</span>
                   </div>
                   <div
-                    className={`flex items-center gap-1.5 transition-colors ${
-                      passwordCriteria.hasMixedCase ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    className={`flex items-center gap-1.5 ${
+                      passwordCriteria.hasMixedCase ? 'text-slate-800 font-medium' : 'text-slate-400'
                     }`}
                   >
                     {passwordCriteria.hasMixedCase ? (
-                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                      <Check className="w-3 h-3 flex-shrink-0 text-emerald-600" />
                     ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                      <div className="w-1 h-1 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
                     )}
                     <span>Upper &amp; lowercase</span>
                   </div>
                   <div
-                    className={`flex items-center gap-1.5 transition-colors ${
-                      passwordCriteria.hasSpecial ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    className={`flex items-center gap-1.5 ${
+                      passwordCriteria.hasSpecial ? 'text-slate-800 font-medium' : 'text-slate-400'
                     }`}
                   >
                     {passwordCriteria.hasSpecial ? (
-                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                      <Check className="w-3 h-3 flex-shrink-0 text-emerald-600" />
                     ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                      <div className="w-1 h-1 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
                     )}
                     <span>Special character</span>
                   </div>
@@ -463,28 +463,25 @@ export default function RegisterPage() {
           </div>
 
           <div className="pt-1">
-            <div className="flex items-start gap-2.5 text-xs text-slate-600">
+            <label className="flex items-start gap-2 cursor-pointer text-xs text-slate-600 select-none">
               <input
                 id="terms-checkbox"
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 mt-0.5 cursor-pointer"
+                className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 mt-0.5"
               />
-              <label htmlFor="terms-checkbox" className="select-none leading-relaxed text-slate-600">
+              <span className="leading-normal">
                 I agree to the{' '}
                 <button
                   type="button"
                   onClick={() => setShowTermsModal(true)}
-                  className="font-bold text-sky-600 hover:text-sky-700 underline underline-offset-2 transition-colors cursor-pointer"
+                  className="font-semibold text-slate-900 underline underline-offset-2 hover:text-sky-600 transition-colors"
                 >
                   Performer Terms &amp; Conditions
                 </button>
-                <span className="block text-[11px] text-slate-400 mt-0.5">
-                  Includes guaranteed arrival, strict cancellation policy &amp; 100% data security pledge.
-                </span>
-              </label>
-            </div>
+              </span>
+            </label>
           </div>
 
           <button
