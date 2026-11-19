@@ -27,7 +27,6 @@ import {
   Youtube,
   Globe,
   Music2,
-  Sparkles,
   Image as ImageIcon,
   ExternalLink,
   Video,
@@ -657,10 +656,6 @@ export default function ArtistOnboardingPage() {
         {/* Page Heading */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-[10px] font-black uppercase tracking-[0.15em] mb-2">
-              <Sparkles className="w-3 h-3" />
-              Step 2 of 2 • Complete All Artist Details
-            </span>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
               Build Your Performer Profile
             </h1>
