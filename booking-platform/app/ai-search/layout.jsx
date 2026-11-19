@@ -18,7 +18,18 @@ export const metadata = {
     "smart live band booking Delhi Mumbai Bangalore"
   ],
   alternates: {
-    canonical: "/ai-search"
+    canonical: "https://www.magnevents.in/ai-search"
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   openGraph: {
     title: "Magnevents AI Event & Artist Search — Instant Musician Matching",

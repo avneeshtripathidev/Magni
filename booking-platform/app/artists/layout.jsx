@@ -16,12 +16,23 @@ export const metadata = {
     'verified artists India'
   ],
   alternates: {
-    canonical: '/artists',
+    canonical: 'https://www.magnevents.in/artists',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   openGraph: {
     title: 'Book Live Singers, DJs & Bands in India | Artists | Magnevents',
     description: 'Browse and book verified live singers for house parties, DJs near you, live bands in Pune, acoustic artists, and performers with direct booking and transparent pricing.',
-    url: '/artists',
+    url: 'https://www.magnevents.in/artists',
   }
 };
 

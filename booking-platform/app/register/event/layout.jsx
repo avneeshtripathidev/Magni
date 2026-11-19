@@ -2,12 +2,16 @@ export const metadata = {
   title: 'Register Your Event | Magnevents',
   description: 'Tell us about your upcoming event, wedding, party, or corporate function. Connect with verified top musical artists directly.',
   alternates: {
-    canonical: '/register/event',
+    canonical: 'https://www.magnevents.in/register/event',
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   openGraph: {
     title: 'Register Your Event | Magnevents',
     description: 'Tell us about your upcoming event, wedding, party, or corporate function. Connect with verified top musical artists directly.',
-    url: '/register/event',
+    url: 'https://www.magnevents.in/register/event',
   }
 };
 

@@ -13,7 +13,11 @@ import '@/app/styles/pages/HomePage.css'
 
 export const metadata = {
   alternates: {
-    canonical: '/',
+    canonical: 'https://www.magnevents.in',
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

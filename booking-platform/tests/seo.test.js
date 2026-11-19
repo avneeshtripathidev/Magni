@@ -17,7 +17,8 @@ describe('Magnevents Comprehensive SEO & Indexing Assurance (Phase 15)', () => {
     const config = robots();
 
     it('should declare authoritative production canonical sitemap', () => {
-      assert.match(config.sitemap, /^https:\/\/www\.magnevents\.in\/sitemap\.xml$/);
+      const primarySitemap = Array.isArray(config.sitemap) ? config.sitemap[0] : config.sitemap;
+      assert.match(primarySitemap, /^https:\/\/www\.magnevents\.in\/sitemap\.xml$/);
     });
 
     it('should disallow private, administrative, and conversion paths', () => {

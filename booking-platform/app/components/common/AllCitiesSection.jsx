@@ -99,6 +99,7 @@ export default function AllCitiesSection({
                   <Link
                     href={`/ai-search?q=${encodeURIComponent(`Top verified live singers and bands in ${city.name} for event`)}`}
                     className="lux-ai-city-action-btn primary"
+                    rel="nofollow"
                   >
                     <span>✨ AI Match</span>
                     <span>➔</span>

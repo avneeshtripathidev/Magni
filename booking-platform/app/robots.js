@@ -22,6 +22,12 @@ export default function robots() {
     '/thank-you/*',
     '/f/*',
     '/_next/static/chunks/*',
+    // Block crawl loops and duplicate parameter URLs for Google Search Console
+    '/ai-search?*',
+    '/artists?*',
+    '/*?*q=*',
+    '/*?*category=*',
+    '/*?*city=*',
   ];
 
   return {

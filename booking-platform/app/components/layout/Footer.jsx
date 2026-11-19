@@ -5,28 +5,24 @@ import BrandMark from '@/app/components/common/BrandMark'
 import '@/app/styles/components/Footer.css'
 
 const SHOP_LINKS = [
-  ['Wedding Live Bands', '/artists?category=band'],
-  // ['Corporate Music Shows', '/services'],
-  // ['Occasion Experiences', '/services'],
+  ['Wedding Live Bands', '/live-band-booking'],
+  ['Featured Singers', '/singers-near-me'],
   ['Pricing Plans', '/pricing'],
-  ['Featured Singers', '/artists?category=singer'],
-  // ['Stage and Sound Setup', '/services'],
-  ['Last Minute Booking', '/book'],
+  ['Last Minute Booking', '/artists'],
 ]
 
 const EXPLORE_LINKS = [
   ['Artist Categories', '/artists'],
-  ['Live Search', '/search'],
-  ['Markets', '/markets'],
+  ['Live Search', '/ai-search'],
   ['Live Gallery', '/gallery'],
-  ['Events Calendar', '/events'],
+  ['How to Book', '/how-to-book'],
+  ['Why Choose Us', '/why-choose'],
 ]
 
 const COMPANY_LINKS = [
   ['Blog Post', '/blog-post'],
-  ['Contact Us', '/contact'],
-  ['Become an Artist', '/onboarding'],
-  ['Booking Support', '/book'],
+  ['Become an Artist', '/register/artist'],
+  ['Client Reviews', '/testimonials'],
 ]
 
 const LEGAL_LINKS = [
