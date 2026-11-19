@@ -50,25 +50,25 @@ export function ArtistTierBadge({
 
   const sizeClass =
     size === 'xs'
-      ? 'px-2 py-0.5 text-[10px] gap-1'
+      ? 'px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] gap-1'
       : size === 'md'
       ? 'px-3 py-1.5 text-xs gap-1.5'
       : 'px-2.5 py-1 text-[11px] gap-1.5';
 
   return (
     <span
-      className={`inline-flex items-center rounded-full font-bold border ${tier.badgeBg} ${tier.badgeText} ${tier.badgeBorder} ${sizeClass} ${className}`}
+      className={`inline-flex items-center rounded-full font-bold border truncate max-w-full ${tier.badgeBg} ${tier.badgeText} ${tier.badgeBorder} ${sizeClass} ${className}`}
       title={`Level ${tier.level} • ${tier.name} (${tier.rangeLabel}) — ${count} completed events`}
     >
       {rankPosition !== undefined && (
-        <span className="font-black opacity-80">#{rankPosition}</span>
+        <span className="font-black opacity-80 flex-shrink-0">#{rankPosition}</span>
       )}
-      <Icon className={`w-3 h-3 flex-shrink-0 ${tier.iconColor}`} />
-      <span>{tier.name}</span>
+      <Icon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0 ${tier.iconColor}`} />
+      <span className="truncate">{tier.name}</span>
       {showCount && (
         <>
-          <span className="opacity-40">•</span>
-          <span className="font-extrabold">{count} Events</span>
+          <span className="opacity-40 flex-shrink-0">•</span>
+          <span className="font-extrabold flex-shrink-0">{count} Events</span>
         </>
       )}
     </span>

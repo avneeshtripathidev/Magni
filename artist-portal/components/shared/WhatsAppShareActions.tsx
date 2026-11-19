@@ -14,10 +14,11 @@ interface WhatsAppShareActionsProps {
   completedEvents?: number;
   /**
    * - 'compact': Small icon/pill buttons ideal for artist cards & table rows
+   * - 'grid': Full-width 50/50 responsive grid buttons for cards
    * - 'header-dark': Frosted dark-header buttons for the Executive Navy modal header
    * - 'full': Labeled buttons for modals, dossiers, and profile headers
    */
-  variant?: 'compact' | 'header-dark' | 'full';
+  variant?: 'compact' | 'header-dark' | 'full' | 'grid';
   className?: string;
 }
 
@@ -136,6 +137,45 @@ export function WhatsAppShareActions({
         >
           <WhatsAppIcon className="w-3.5 h-3.5" />
           <span>Send on WhatsApp</span>
+        </button>
+      </div>
+    );
+  }
+
+  if (variant === 'grid') {
+    return (
+      <div className={`grid grid-cols-2 gap-1 sm:gap-1.5 w-full ${className}`}>
+        <button
+          type="button"
+          onClick={handleCopy}
+          title="Copy all artist details for WhatsApp"
+          className={`h-7 px-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold inline-flex items-center justify-center gap-1 border transition-all ${
+            copied
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+              : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+          }`}
+        >
+          {copied ? (
+            <>
+              <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-600" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-500" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSendWhatsApp}
+          title="Send all artist details on WhatsApp"
+          className="h-7 px-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-[11px] font-semibold inline-flex items-center justify-center gap-1 transition-all"
+        >
+          <WhatsAppIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+          <span>WP</span>
         </button>
       </div>
     );

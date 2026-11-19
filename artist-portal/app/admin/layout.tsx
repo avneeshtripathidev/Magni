@@ -90,7 +90,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col min-h-screen lg:pl-[240px] w-full min-w-0 overflow-x-hidden relative">
         <AdminTopbar onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <main className="flex-1 p-4 sm:p-5 lg:p-6 max-w-[1600px] mx-auto w-full min-w-0">
+        <main className="flex-1 p-2 sm:p-4 lg:p-6 max-w-[1600px] mx-auto w-full min-w-0">
           {children}
         </main>
       </div>

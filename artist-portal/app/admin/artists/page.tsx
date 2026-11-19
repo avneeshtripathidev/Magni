@@ -112,7 +112,7 @@ export default function AdminArtistsDirectoryPage() {
       </div>
 
       {/* 3. Cards Grid (4 cards in mobile view & 4 per row on desktop) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 md:gap-4">
         {filtered.map((artist) => {
           const isApproved = artist.verification_status === 'approved';
           const isRejected = artist.verification_status === 'rejected';
@@ -122,10 +122,10 @@ export default function AdminArtistsDirectoryPage() {
           return (
             <div
               key={artist.id}
-              className="bg-white border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all rounded-2xl overflow-hidden flex flex-col justify-between min-h-[300px] sm:min-h-[380px] shadow-xs"
+              className="bg-white border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all rounded-xl sm:rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs"
             >
               {/* Top Visual Cover + Status Overlay */}
-              <div className="relative h-28 sm:h-36 lg:h-40 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
+              <div className="relative h-24 sm:h-32 lg:h-36 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
                 {heroImg ? (
                   <img
                     src={heroImg}
@@ -134,25 +134,26 @@ export default function AdminArtistsDirectoryPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-white/80 p-2 text-center">
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-base sm:text-xl font-black text-white">
+                    <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-sm sm:text-lg font-black text-white">
                       {(artist.name || 'A')[0].toUpperCase()}
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-white/60 mt-1 sm:mt-2 uppercase tracking-wider truncate max-w-full">
+                    <span className="text-[9px] sm:text-[10px] font-semibold text-white/60 mt-1 uppercase tracking-wider truncate max-w-full">
                       {artist.category || 'Performer'}
                     </span>
                   </div>
                 )}
 
-                <div className="absolute inset-x-0 top-0 p-2 sm:p-3 flex items-center justify-between gap-1 bg-gradient-to-b from-black/60 via-black/25 to-transparent">
-                  <div className="scale-90 sm:scale-100 origin-left">
+                <div className="absolute inset-x-0 top-0 p-1.5 sm:p-2.5 flex items-center justify-between gap-1 bg-gradient-to-b from-black/70 via-black/30 to-transparent">
+                  <div className="min-w-0 max-w-[65%]">
                     <ArtistTierBadge
                       completedEvents={rankInfo.totalCompleted}
                       rankPosition={rankInfo.rank}
                       size="xs"
+                      showCount={false}
                     />
                   </div>
                   <span
-                    className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
+                    className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
                       isApproved
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         : isRejected
@@ -166,39 +167,39 @@ export default function AdminArtistsDirectoryPage() {
               </div>
 
               {/* Card Body */}
-              <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between gap-2.5 sm:gap-3.5">
-                <div className="space-y-2 sm:space-y-3">
+              <div className="p-2 sm:p-3.5 flex-1 flex flex-col justify-between gap-2 sm:gap-3">
+                <div className="space-y-1.5 sm:space-y-2.5">
                   {/* Identity */}
                   <div className="min-w-0">
-                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug truncate">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug truncate" title={artist.name}>
                       {artist.name}
                     </h3>
-                    <p className="text-[10px] sm:text-xs text-indigo-600 font-semibold truncate mt-0.5">
+                    <p className="text-[10px] sm:text-xs text-indigo-600 font-semibold truncate mt-0.5" title={artist.stage_name || artist.category || 'Solo Act'}>
                       {artist.stage_name || artist.category || 'Solo Act'}
                     </p>
                   </div>
 
                   {/* Metrics */}
-                  <div className="pt-2 border-t border-slate-100 text-[10px] sm:text-xs text-slate-600 space-y-1 sm:space-y-1.5">
+                  <div className="pt-1.5 sm:pt-2 border-t border-slate-100 text-[10px] sm:text-xs text-slate-600 space-y-1">
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-slate-400">Events</span>
                       <span className="font-bold text-slate-900">{rankInfo.totalCompleted} Done</span>
                     </div>
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-slate-400">Category</span>
-                      <span className="font-semibold text-slate-800 truncate max-w-[90px] sm:max-w-none">
+                      <span className="font-semibold text-slate-800 truncate text-right max-w-[65px] sm:max-w-[120px]" title={artist.category || '—'}>
                         {artist.category || '—'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-slate-400">City</span>
-                      <span className="font-semibold text-slate-800 truncate max-w-[90px] sm:max-w-none">
+                      <span className="font-semibold text-slate-800 truncate text-right max-w-[65px] sm:max-w-[120px]" title={artist.city || 'Not set'}>
                         {artist.city || 'Not set'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-1">
                       <span className="text-slate-400">Status</span>
-                      <span className={artist.is_live ? 'text-emerald-600 font-bold' : 'text-slate-400 font-semibold'}>
+                      <span className={`font-bold ${artist.is_live ? 'text-emerald-600' : 'text-slate-400'}`}>
                         {artist.is_live ? 'Active' : 'Hidden'}
                       </span>
                     </div>
@@ -206,30 +207,27 @@ export default function AdminArtistsDirectoryPage() {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="pt-2 sm:pt-3 border-t border-slate-100 space-y-2 sm:space-y-2.5">
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400">Share</span>
-                    <WhatsAppShareActions
-                      artist={artist}
-                      rank={rankInfo.rank}
-                      completedEvents={rankInfo.totalCompleted}
-                      variant="compact"
-                    />
-                  </div>
+                <div className="pt-1.5 sm:pt-2.5 border-t border-slate-100 space-y-1.5 sm:space-y-2">
+                  <WhatsAppShareActions
+                    artist={artist}
+                    rank={rankInfo.rank}
+                    completedEvents={rankInfo.totalCompleted}
+                    variant="grid"
+                  />
 
-                  <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="grid grid-cols-2 gap-1 sm:gap-1.5 w-full">
                     <Link
                       href={`/admin/verification?reviewId=${artist.id}`}
-                      className="h-8 sm:h-9 px-2 sm:px-3 rounded-lg sm:rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-[11px] sm:text-xs font-semibold flex-1 flex items-center justify-center gap-1"
+                      className="h-7 sm:h-8 px-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center gap-1 w-full transition-all"
                     >
-                      <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-500" />
+                      <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-500" />
                       <span>Dossier</span>
                     </Link>
 
                     {artist.is_live ? (
                       <button
                         onClick={() => updateArtistStatus(artist.id, 'under_review')}
-                        className="h-8 sm:h-9 px-2 sm:px-3 rounded-lg sm:rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-[11px] sm:text-xs font-semibold"
+                        className="h-7 sm:h-8 px-1 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center w-full transition-all"
                         title="Hide from public search"
                       >
                         Hide
@@ -237,7 +235,7 @@ export default function AdminArtistsDirectoryPage() {
                     ) : (
                       <button
                         onClick={() => updateArtistStatus(artist.id, 'approved')}
-                        className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-lg sm:rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] sm:text-xs font-bold"
+                        className="h-7 sm:h-8 px-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold inline-flex items-center justify-center w-full transition-all"
                       >
                         Publish
                       </button>

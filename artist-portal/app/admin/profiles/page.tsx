@@ -292,7 +292,7 @@ export default function AdminProfileCardsPage() {
                     className="bg-white rounded-2xl border border-slate-200 hover:border-sky-300 hover:shadow-md transition-all overflow-hidden cursor-pointer flex flex-col justify-between min-h-[380px] focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm"
                   >
                     {/* Top Tall Visual Cover + Overlay Badges */}
-                    <div className="relative h-40 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
+                    <div className="relative h-28 sm:h-36 lg:h-40 w-full bg-gradient-to-br from-slate-800 via-indigo-900 to-sky-900 overflow-hidden flex-shrink-0">
                       {heroImg ? (
                         <img
                           src={heroImg}
@@ -301,24 +301,24 @@ export default function AdminProfileCardsPage() {
                         />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-white/80">
-                          <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-xl font-black text-white">
+                          <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center text-base sm:text-xl font-black text-white">
                             {(artist.name || 'A')[0].toUpperCase()}
                           </div>
-                          <span className="text-[10px] font-semibold text-white/60 mt-2 uppercase tracking-wider">
+                          <span className="text-[9px] sm:text-[10px] font-semibold text-white/60 mt-1 sm:mt-2 uppercase tracking-wider">
                             {artist.category || 'Performer'}
                           </span>
                         </div>
                       )}
 
-                      <div className="absolute inset-x-0 top-0 p-3 flex items-center justify-between gap-2 bg-gradient-to-b from-black/60 via-black/25 to-transparent">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 text-[10px] font-extrabold text-slate-800 shadow-xs">
+                      <div className="absolute inset-x-0 top-0 p-2 sm:p-3 flex items-center justify-between gap-1 sm:gap-2 bg-gradient-to-b from-black/60 via-black/25 to-transparent">
+                        <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-white/95 text-[9px] sm:text-[10px] font-extrabold text-slate-800 shadow-xs truncate max-w-[65%]">
                           <span className="text-sky-600">#{rankInfo.rank}</span>
-                          <TierIcon className={`w-3 h-3 ${tierProg.tier.iconColor}`} />
-                          <span className="truncate max-w-[90px]">{tierProg.tier.name}</span>
+                          <TierIcon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0 ${tierProg.tier.iconColor}`} />
+                          <span className="truncate">{tierProg.tier.name}</span>
                         </span>
 
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
+                          className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
                             isApproved
                               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                               : isRejected
@@ -340,7 +340,7 @@ export default function AdminProfileCardsPage() {
                     </div>
 
                     {/* Card Body */}
-                    <div className="p-4 flex-1 flex flex-col justify-between gap-3.5">
+                    <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between gap-2.5 sm:gap-3.5">
                       <div className="space-y-3">
                         {/* Name, Category & Location */}
                         <div className="min-w-0">
