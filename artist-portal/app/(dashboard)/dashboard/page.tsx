@@ -25,7 +25,6 @@ import {
   DollarSign,
   AlertCircle,
   Search,
-  Download,
   SortAsc,
   SortDesc,
   User,
@@ -238,27 +237,7 @@ export default function ArtistDashboardPage() {
 
   return (
     <div className="space-y-6 font-sans">
-      {/* 1. Header (matching admin.magnevents.in/dashboard/requests) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
-            Client Inquiries & Overview
-          </h1>
-          <p className="text-sm font-medium text-slate-500 mt-2">
-            Incoming requests from the client platform. Acknowledge to confirm performance dates.
-          </p>
-        </div>
-
-        <Link
-          href="/bookings"
-          className="group h-11 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-sm flex items-center justify-center gap-3 transition-all active:scale-[0.98] self-start sm:self-auto"
-        >
-          <Download size={16} strokeWidth={3} className="text-white" />
-          <span>Export XLS</span>
-        </Link>
-      </div>
-
-      {/* 1B. Active Live Events Started by Admin (Compact Banner -> Opens Popup Modal) */}
+      {/* Active Live Events Started by Admin (Compact Banner -> Opens Popup Modal) */}
       {activeLiveEvents.length > 0 && (
         <div className="space-y-3">
           {activeLiveEvents.map((ev) => {
