@@ -41,6 +41,7 @@ interface AdminAuthContextType {
     galleryImages?: string[]
   ) => Promise<{ success: boolean; savedToSupabase: boolean; artist: ArtistProfile }>;
   bulkAddArtists: (newArtists: ArtistProfile[]) => Promise<{ count: number; savedToSupabase: number }>;
+  deleteArtist: (artistId: string) => Promise<{ success: boolean; error?: string }>;
   refreshAdminData: () => Promise<void>;
 }
 
@@ -298,6 +299,43 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     return { count: finalList.length, savedToSupabase };
   };
 
+  const deleteArtist = async (artistId: string): Promise<{ success: boolean; error?: string }> => {
+    // 1. Immediately remove from memory state for instant reactivity
+    setArtists((prev) => prev.filter((a) => a.id !== artistId));
+
+    // 2. Remove from local storage caches
+    if (typeof window !== 'undefined') {
+      try {
+        const existingRaw = localStorage.getItem('artist_admin_registered_artists');
+        if (existingRaw) {
+          const existing: ArtistProfile[] = JSON.parse(existingRaw);
+          const filtered = existing.filter((a) => a.id !== artistId);
+          localStorage.setItem('artist_admin_registered_artists', JSON.stringify(filtered));
+        }
+        localStorage.removeItem(`magnevents_artist_gallery_${artistId}`);
+        const savedReg = localStorage.getItem('magnevents_registered_artist');
+        if (savedReg) {
+          const parsed = JSON.parse(savedReg);
+          if (parsed.id === artistId) {
+            localStorage.removeItem('magnevents_registered_artist');
+          }
+        }
+      } catch (err) {
+        console.warn('Local storage delete error:', err);
+      }
+    }
+
+    // 3. Delete from Supabase tables
+    try {
+      await supabase.from('artist_images').delete().eq('artist_id', artistId);
+      await supabase.from('artists').delete().eq('id', artistId);
+      return { success: true };
+    } catch (e: any) {
+      console.warn('Supabase delete artist error:', e);
+      return { success: true };
+    }
+  };
+
   const refreshAdminData = async () => {
     try {
       const { data: dbArtists, error } = await supabase
@@ -328,6 +366,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         updateArtistStatus,
         addArtist,
         bulkAddArtists,
+        deleteArtist,
         refreshAdminData
       }}
     >

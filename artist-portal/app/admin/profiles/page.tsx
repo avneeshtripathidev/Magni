@@ -40,11 +40,13 @@ import {
   UserCheck,
   Crown,
   Trophy,
-  ArrowUpRight
+  ArrowUpRight,
+  Trash2,
+  Loader2,
 } from 'lucide-react';
 
 export default function AdminProfileCardsPage() {
-  const { artists, updateArtistStatus } = useAdminAuth();
+  const { artists, updateArtistStatus, deleteArtist } = useAdminAuth();
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -53,6 +55,8 @@ export default function AdminProfileCardsPage() {
   const [modalTab, setModalTab] = useState<'overview' | 'pricing' | 'media' | 'kyc'>('overview');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const CARDS_PER_PAGE = 8;
@@ -126,6 +130,21 @@ export default function AdminProfileCardsPage() {
     setRejectionModalOpen(false);
     setRejectionReason('');
     setTimeout(() => setActionNotice(null), 4000);
+  };
+
+  const handleDeleteProfile = async (artist: ArtistProfile) => {
+    setDeleting(true);
+    try {
+      await deleteArtist(artist.id);
+      setSelectedUser(null);
+      setDeleteConfirmOpen(false);
+      setActionNotice(`Performer profile for "${artist.name}" was permanently removed.`);
+      setTimeout(() => setActionNotice(null), 4000);
+    } catch (err) {
+      console.error('Failed to remove profile:', err);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -608,13 +627,28 @@ export default function AdminProfileCardsPage() {
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => setSelectedUser(null)}
-                      className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white border border-white/10 transition-colors"
-                      aria-label="Close details"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setDeleteConfirmOpen(true)}
+                        className="p-2 rounded-xl bg-white/10 hover:bg-rose-500/25 text-white/70 hover:text-rose-300 border border-white/10 transition-colors"
+                        title="Remove profile permanently"
+                        aria-label="Remove Profile"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setSelectedUser(null);
+                          setDeleteConfirmOpen(false);
+                        }}
+                        className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white border border-white/10 transition-colors"
+                        aria-label="Close details"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1096,23 +1130,83 @@ export default function AdminProfileCardsPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Delete Confirmation Card */}
+                {deleteConfirmOpen && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-rose-50 border-2 border-rose-300 text-rose-950 space-y-3 animate-in fade-in">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <Trash2 className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-0.5 min-w-0">
+                        <h4 className="text-xs sm:text-sm font-black text-rose-950 truncate">
+                          Permanently remove &ldquo;{selectedUser.name}&rdquo;?
+                        </h4>
+                        <p className="text-[11px] sm:text-xs text-rose-800">
+                          This will delete this performer from the directory, live listings, and database. This action cannot be undone.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        disabled={deleting}
+                        onClick={() => setDeleteConfirmOpen(false)}
+                        className="px-3.5 py-1.5 rounded-xl border border-slate-300 bg-white text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        disabled={deleting}
+                        onClick={() => handleDeleteProfile(selectedUser)}
+                        className="px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-sm flex items-center gap-1.5 transition-all active:scale-95 disabled:opacity-50"
+                      >
+                        {deleting ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Removing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Yes, Remove Profile</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* D. Clean Sticky Director Decision Footer */}
               <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
-                    Director Action:
-                  </span>
-                  <span className="font-black text-slate-800 capitalize">
-                    {selectedUser.verification_status.replace('_', ' ')}
-                  </span>
+                <div className="flex items-center justify-between w-full sm:w-auto gap-3">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
+                      Director Action:
+                    </span>
+                    <span className="font-black text-slate-800 capitalize">
+                      {selectedUser.verification_status.replace('_', ' ')}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirmOpen(true)}
+                    className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs inline-flex items-center gap-1.5 transition-all active:scale-95"
+                    title="Permanently remove performer from database"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Remove Profile</span>
+                  </button>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => setRejectionModalOpen(true)}
-                    className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs transition-all"
+                    className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs transition-all"
                   >
                     Reject
                   </button>
