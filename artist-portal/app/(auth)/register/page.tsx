@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { ModalPortal } from '../../../components/shared/ModalPortal';
+import { PerformerTermsModal } from '../../../components/shared/PerformerTermsModal';
 import {
   Mic2,
   Lock,
@@ -20,6 +21,8 @@ import {
   ShieldCheck,
   Edit3,
   CheckCircle2,
+  Check,
+  X,
 } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -32,11 +35,27 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Password Quality Evaluation
+  const passwordCriteria = {
+    length: password.length >= 8,
+    hasNumber: /\d/.test(password),
+    hasMixedCase: /[a-z]/.test(password) && /[A-Z]/.test(password),
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>\-_=+]/.test(password),
+  };
+
+  const strengthScore = [
+    passwordCriteria.length,
+    passwordCriteria.hasNumber,
+    passwordCriteria.hasMixedCase,
+    passwordCriteria.hasSpecial,
+  ].filter(Boolean).length;
 
   // Step A: Validate & open confirmation popup to double-check Email & Phone first
   const handleEmailRegister = (e: React.FormEvent) => {
@@ -62,13 +81,18 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (strengthScore < 2) {
+      setError('Password is too weak. Please include at least numbers or a mix of uppercase and lowercase letters.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match. Please verify your confirm password.');
       return;
     }
 
@@ -248,70 +272,219 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  minLength={6}
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 6 characters"
-                  className="w-full pl-9 pr-9 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 shadow-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  title={showPassword ? 'Hide password' : 'Show password'}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-700 transition-colors focus:outline-none"
-                >
-                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
+          <div className="space-y-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min. 8 characters"
+                    className={`w-full pl-9 pr-9 py-2 bg-white border rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 shadow-sm transition-all ${
+                      password.length === 0
+                        ? 'border-slate-200 focus:border-sky-500 focus:ring-sky-100'
+                        : strengthScore <= 1
+                        ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
+                        : strengthScore === 2
+                        ? 'border-amber-300 focus:border-amber-500 focus:ring-amber-100'
+                        : 'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-700 transition-colors focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Confirm</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-enter password"
+                    className={`w-full pl-9 pr-9 py-2 bg-white border rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 shadow-sm transition-all ${
+                      confirmPassword.length === 0
+                        ? 'border-slate-200 focus:border-sky-500 focus:ring-sky-100'
+                        : confirmPassword === password
+                        ? 'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-100 bg-emerald-50/20'
+                        : 'border-rose-300 focus:border-rose-500 focus:ring-rose-100 bg-rose-50/20'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                    title={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-700 transition-colors focus:outline-none"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                {confirmPassword.length > 0 && (
+                  <div className="mt-1 flex items-center gap-1 text-[11px] font-medium transition-all">
+                    {confirmPassword === password ? (
+                      <span className="text-emerald-600 flex items-center gap-1">
+                        <Check className="w-3 h-3 text-emerald-600" /> Passwords match
+                      </span>
+                    ) : (
+                      <span className="text-rose-500 flex items-center gap-1">
+                        <X className="w-3 h-3 text-rose-500" /> Passwords do not match
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Confirm</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  required
-                  minLength={6}
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter password"
-                  className="w-full pl-9 pr-9 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 shadow-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                  title={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-700 transition-colors focus:outline-none"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
+            {/* Real-time Password Quality Indicator */}
+            {password.length > 0 && (
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-sky-500" /> Password Quality
+                  </span>
+                  <span
+                    className={`text-[11px] font-extrabold uppercase tracking-wider ${
+                      strengthScore <= 1
+                        ? 'text-rose-600'
+                        : strengthScore === 2
+                        ? 'text-amber-600'
+                        : strengthScore === 3
+                        ? 'text-sky-600'
+                        : 'text-emerald-600'
+                    }`}
+                  >
+                    {strengthScore === 0
+                      ? 'Too Short'
+                      : strengthScore === 1
+                      ? 'Weak'
+                      : strengthScore === 2
+                      ? 'Fair'
+                      : strengthScore === 3
+                      ? 'Good'
+                      : 'Strong ✓'}
+                  </span>
+                </div>
+
+                {/* 4-Segment Progress Bar */}
+                <div className="grid grid-cols-4 gap-1.5 h-1.5">
+                  {[1, 2, 3, 4].map((step) => {
+                    const isFilled = strengthScore >= step;
+                    const barColor =
+                      strengthScore <= 1
+                        ? 'bg-rose-500'
+                        : strengthScore === 2
+                        ? 'bg-amber-500'
+                        : strengthScore === 3
+                        ? 'bg-sky-500'
+                        : 'bg-emerald-500';
+                    return (
+                      <div
+                        key={step}
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          isFilled ? barColor : 'bg-slate-200'
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Checklist Criteria */}
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[11px]">
+                  <div
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      passwordCriteria.length ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    }`}
+                  >
+                    {passwordCriteria.length ? (
+                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                    )}
+                    <span>8+ characters</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      passwordCriteria.hasNumber ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    }`}
+                  >
+                    {passwordCriteria.hasNumber ? (
+                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                    )}
+                    <span>At least 1 number</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      passwordCriteria.hasMixedCase ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    }`}
+                  >
+                    {passwordCriteria.hasMixedCase ? (
+                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                    )}
+                    <span>Upper &amp; lowercase</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      passwordCriteria.hasSpecial ? 'text-emerald-600 font-semibold' : 'text-slate-400'
+                    }`}
+                  >
+                    {passwordCriteria.hasSpecial ? (
+                      <Check className="w-3.5 h-3.5 flex-shrink-0 text-emerald-600" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 ml-1 mr-0.5 flex-shrink-0" />
+                    )}
+                    <span>Special character</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="pt-1">
-            <label className="flex items-start gap-2 cursor-pointer text-xs text-slate-600">
+            <div className="flex items-start gap-2.5 text-xs text-slate-600">
               <input
+                id="terms-checkbox"
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 mt-0.5"
+                className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 mt-0.5 cursor-pointer"
               />
-              <span>I agree to the Performer Terms.</span>
-            </label>
+              <label htmlFor="terms-checkbox" className="select-none leading-relaxed text-slate-600">
+                I agree to the{' '}
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(true)}
+                  className="font-bold text-sky-600 hover:text-sky-700 underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Performer Terms &amp; Conditions
+                </button>
+                <span className="block text-[11px] text-slate-400 mt-0.5">
+                  Includes guaranteed arrival, strict cancellation policy &amp; 100% data security pledge.
+                </span>
+              </label>
+            </div>
           </div>
 
           <button
@@ -420,6 +593,15 @@ export default function RegisterPage() {
           </div>
         </div>
       </ModalPortal>
+      {/* Performer Terms & Security Commitment Modal */}
+      <PerformerTermsModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+        onAccept={() => {
+          setAgreed(true);
+          setShowTermsModal(false);
+        }}
+      />
     </div>
   );
 }
