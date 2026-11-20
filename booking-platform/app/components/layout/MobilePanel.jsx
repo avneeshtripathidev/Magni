@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { trackArtistCtaClick } from '@/app/utils/artistCtaTracker'
 import BrandMark from '@/app/components/common/BrandMark'
 import { NAV_LINKS } from '@/app/constants'
 
@@ -214,7 +215,10 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
 
           <a
             href="https://artists.magnevents.in/register"
-            onClick={onClose}
+            onClick={() => {
+              trackArtistCtaClick('mobile_drawer_cta');
+              onClose();
+            }}
             className="lux-mobile-cta secondary"
             style={{
               background: 'rgba(41, 39, 42, 0.9)',

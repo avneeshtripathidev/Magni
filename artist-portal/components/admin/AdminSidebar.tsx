@@ -16,7 +16,8 @@ import {
   Sparkles,
   IdCard,
   UserPlus,
-  Lock
+  Lock,
+  MousePointerClick
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -52,6 +53,11 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
           icon: ShieldCheck,
           badge: pendingCount > 0 ? pendingCount : undefined,
           badgePulse: true,
+        },
+        {
+          name: 'Artist Clicks & IPs',
+          href: '/admin/artist-clicks',
+          icon: MousePointerClick,
         },
         {
           name: 'Performer Directory',

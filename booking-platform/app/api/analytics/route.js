@@ -50,12 +50,15 @@ export async function POST(req) {
     // 1. Extract Real Client IP
     const clientIp = extractClientIp(req, data.clientIp);
 
-    // Skip recording local development visits
+    const isArtistAction = type === 'artist_cta_click' || type === 'artist_register_visit';
+
+    // Skip recording local development visits (except artist CTA clicks so testing is visible)
     if (
-      clientIp === '::1' ||
+      !isArtistAction &&
+      (clientIp === '::1' ||
       clientIp === '127.0.0.1' ||
       clientIp === 'localhost' ||
-      clientIp.startsWith('::ffff:127.0.0.1')
+      clientIp.startsWith('::ffff:127.0.0.1'))
     ) {
       return NextResponse.json({
         success: true,
@@ -64,15 +67,16 @@ export async function POST(req) {
       });
     }
 
-    // Skip recording visits to *.vercel.app preview domains
+    // Skip recording visits to *.vercel.app preview domains (except artist CTA clicks)
     const host = req.headers.get('host') || '';
     const fullUrl = clientDetails?.fullUrl || '';
     const referer = req.headers.get('referer') || clientDetails?.referrer || '';
     if (
-      host.endsWith('.vercel.app') ||
+      !isArtistAction &&
+      (host.endsWith('.vercel.app') ||
       fullUrl.includes('.vercel.app') ||
       referer.includes('.vercel.app') ||
-      path.includes('.vercel.app')
+      path.includes('.vercel.app'))
     ) {
       return NextResponse.json({
         success: true,
@@ -148,6 +152,7 @@ export async function POST(req) {
         utm: parsedUser.utm
       },
       campaign: parsedUser.campaign || null,
+      source: data.source || clientDetails?.source || (type === 'artist_cta_click' ? 'are_you_an_artist_cta' : undefined),
       trafficSource: parsedUser.trafficSource,
       isAd: parsedUser.isAd || false,
       timestamp: new Date().toISOString()

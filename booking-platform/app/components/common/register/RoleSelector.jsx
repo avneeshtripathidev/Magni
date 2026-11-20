@@ -1,4 +1,5 @@
 import React from 'react';
+import { trackArtistCtaClick } from '@/app/utils/artistCtaTracker';
 
 export default function RoleSelector({ setView }) {
   return (
@@ -32,6 +33,7 @@ export default function RoleSelector({ setView }) {
         <div 
           className="registration-option-card card-artist"
           onClick={() => {
+            trackArtistCtaClick('role_selector_modal');
             if (typeof window !== 'undefined') {
               window.location.href = 'https://artists.magnevents.in/register';
             }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useArtistAuth } from '../../../lib/auth/authContext';
@@ -41,6 +41,24 @@ export default function RegisterPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Track landing page visit & visitor IP
+  useEffect(() => {
+    try {
+      fetch('/api/track-visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path: '/register',
+          type: 'artist_register_visit',
+          source:
+            typeof document !== 'undefined' && document.referrer.includes('magnevents.in')
+              ? 'magnevents_main_site_cta'
+              : 'direct_register_visit',
+        }),
+      }).catch(() => {});
+    } catch (e) {}
+  }, []);
 
   // Password Quality Evaluation
   const passwordCriteria = {

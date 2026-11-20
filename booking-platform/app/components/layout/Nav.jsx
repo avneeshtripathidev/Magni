@@ -8,6 +8,7 @@ import { useTheme } from '@/app/contexts/ThemeContext';
 import BrandMark from '@/app/components/common/BrandMark';
 import { AIIcon } from '@/app/components/icons/NavigationIcons';
 import { NAV_LINKS } from '@/app/constants';
+import { trackArtistCtaClick } from '@/app/utils/artistCtaTracker';
 import '@/app/styles/components/Nav.css';
 
 const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false });
@@ -132,6 +133,7 @@ export default function Nav() {
             </button>
             <a
               href="https://artists.magnevents.in/register"
+              onClick={() => trackArtistCtaClick('desktop_top_nav')}
               className="lux-nav-register-btn"
               aria-label="Are you an Artist? Join Magnevents"
               style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}

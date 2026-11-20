@@ -1,5 +1,6 @@
 "use client"
 import Link from 'next/link'
+import { trackArtistCtaClick } from '@/app/utils/artistCtaTracker'
 import { useReveal } from '@/app/hooks/useReveal'
 import BrandMark from '@/app/components/common/BrandMark'
 import '@/app/styles/components/Footer.css'
@@ -33,7 +34,17 @@ const LEGAL_LINKS = [
 
 function FooterLink({ to, children }) {
   const external = to.startsWith('mailto:') || to.startsWith('http')
-  if (external) return <a href={to}>{children}</a>
+  if (external) {
+    const isArtist = to.includes('artists.magnevents.in');
+    return (
+      <a
+        href={to}
+        onClick={isArtist ? () => trackArtistCtaClick('footer_link') : undefined}
+      >
+        {children}
+      </a>
+    );
+  }
   return <Link href={to}>{children}</Link>
 }
 

@@ -29,7 +29,8 @@ export function AdminBottomNav({
   const isMenuRouteActive =
     pathname.startsWith('/admin/register-artist') ||
     pathname.startsWith('/admin/profiles') ||
-    pathname.startsWith('/admin/access');
+    pathname.startsWith('/admin/access') ||
+    pathname.startsWith('/admin/artist-clicks');
 
   const navItems = [
     {
