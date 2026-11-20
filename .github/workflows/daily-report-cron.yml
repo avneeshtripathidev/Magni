@@ -1,0 +1,36 @@
+name: Magnevents Daily Form Submissions Report Cron
+
+on:
+  schedule:
+    # 18:25 UTC = 23:55 (11:55 PM) IST every single day
+    - cron: '25 18 * * *'
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: 'Optional date in YYYY-MM-DD format (leave blank for today in IST)'
+        required: false
+        default: ''
+
+jobs:
+  dispatch-daily-report:
+    name: Dispatch Daily Business Report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Daily Report Endpoint
+        run: |
+          TARGET_DATE="${{ github.event.inputs.target_date }}"
+          ENDPOINT="https://www.magnevents.in/api/cron/daily-report"
+          if [ -n "$TARGET_DATE" ]; then
+            ENDPOINT="${ENDPOINT}?date=${TARGET_DATE}"
+          fi
+          echo "Triggering: $ENDPOINT"
+          RESPONSE=$(curl -s -w "\n%{http_code}" "$ENDPOINT")
+          HTTP_BODY=$(echo "$RESPONSE" | sed '$d')
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n 1)
+          echo "HTTP Status: $HTTP_STATUS"
+          echo "Response Body: $HTTP_BODY"
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "::error::Daily report failed with status $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Daily report generated and emailed successfully!"
