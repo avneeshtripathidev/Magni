@@ -28,13 +28,15 @@ import {
   DollarSign,
   Music,
   Star,
+  Trash2,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
-  const { artists, updateArtistStatus } = useAdminAuth();
+  const { artists, updateArtistStatus, deleteArtist } = useAdminAuth();
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [reviewingArtist, setReviewingArtist] = useState<ArtistProfile | null>(null);
   const [approving, setApproving] = useState(false);
+  const [confirmDeleteArtistId, setConfirmDeleteArtistId] = useState<string | null>(null);
 
   const pendingArtists = artists.filter(
     (a) => a.verification_status === 'pending' || a.verification_status === 'under_review'
@@ -75,6 +77,18 @@ export default function AdminDashboardPage() {
     setReviewingArtist(null);
     setActionMessage(`Marked ${name} as changes requested.`);
     setTimeout(() => setActionMessage(null), 4000);
+  };
+
+  const handleDeleteArtist = async (artist: ArtistProfile) => {
+    try {
+      await deleteArtist(artist.id);
+      setReviewingArtist(null);
+      setConfirmDeleteArtistId(null);
+      setActionMessage(`Permanently deleted query for ${artist.name}.`);
+      setTimeout(() => setActionMessage(null), 4000);
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
   };
 
   return (
@@ -607,6 +621,35 @@ export default function AdminDashboardPage() {
                 </span>
 
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                  {confirmDeleteArtistId === reviewingArtist.id ? (
+                    <div className="flex items-center gap-1.5 bg-red-50 p-1 rounded-xl border border-red-300">
+                      <span className="text-[11px] font-bold text-red-700 px-1">Delete query?</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteArtist(reviewingArtist)}
+                        className="px-2.5 py-1 rounded-lg bg-red-600 text-white font-bold text-[11px] hover:bg-red-700"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDeleteArtistId(null)}
+                        className="px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold text-[11px]"
+                      >
+                        No
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteArtistId(reviewingArtist.id)}
+                      className="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-bold text-xs flex items-center gap-1"
+                      title="Permanently delete this query/application"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                      <span>Delete Query</span>
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleQuickReject(reviewingArtist.id, reviewingArtist.name)}

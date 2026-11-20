@@ -29,11 +29,13 @@ import {
   Sparkles,
   Phone,
   Mail,
-  Award
+  Award,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 
 function AdminVerificationQueueContent() {
-  const { artists, updateArtistStatus } = useAdminAuth();
+  const { artists, updateArtistStatus, deleteArtist } = useAdminAuth();
   const searchParams = useSearchParams();
   const reviewIdParam = searchParams.get('reviewId');
 
@@ -43,6 +45,8 @@ function AdminVerificationQueueContent() {
   const [selectedArtist, setSelectedArtist] = useState<ArtistProfile | null>(null);
   const [rejectionNote, setRejectionNote] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
 
   // Auto-open dossier if reviewId is passed via URL query
@@ -108,6 +112,22 @@ function AdminVerificationQueueContent() {
     setShowRejectInput(false);
     setRejectionNote('');
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const handleDeleteApplication = async (artist: ArtistProfile) => {
+    setDeleting(true);
+    try {
+      await deleteArtist(artist.id);
+      setSelectedArtist(null);
+      setDeleteConfirmOpen(false);
+      setShowRejectInput(false);
+      setNotification(`Permanently deleted application query for "${artist.name}".`);
+      setTimeout(() => setNotification(null), 4000);
+    } catch (err) {
+      console.error('Failed to delete application query:', err);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -293,7 +313,7 @@ function AdminVerificationQueueContent() {
 
                       {/* Review & WhatsApp Share Actions */}
                       <td className="py-4 px-5 text-right">
-                        <div className="inline-flex items-center justify-end gap-2">
+                        <div className="inline-flex items-center justify-end gap-1.5">
                           <WhatsAppShareActions
                             artist={artist}
                             rank={rankInfo.rank}
@@ -301,11 +321,27 @@ function AdminVerificationQueueContent() {
                             variant="compact"
                           />
                           <button
-                            onClick={() => setSelectedArtist(artist)}
+                            onClick={() => {
+                              setSelectedArtist(artist);
+                              setDeleteConfirmOpen(false);
+                              setShowRejectInput(false);
+                            }}
                             className="px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-300 font-semibold text-xs shadow-xs transition-all inline-flex items-center gap-1.5 min-h-[36px]"
                           >
                             <Eye className="w-3.5 h-3.5 text-slate-500" />
                             <span>Inspect</span>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedArtist(artist);
+                              setDeleteConfirmOpen(true);
+                              setShowRejectInput(false);
+                            }}
+                            className="p-2 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center shadow-xs"
+                            title="Delete this application query"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>
@@ -663,6 +699,52 @@ function AdminVerificationQueueContent() {
                       </div>
                     </div>
 
+                    {/* Delete Confirmation Warning Box */}
+                    {deleteConfirmOpen && (
+                      <div className="p-4 rounded-xl bg-red-50 border border-red-300 space-y-3 animate-in fade-in">
+                        <div className="flex items-start gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <Trash2 className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-red-900">
+                              Permanently Delete Application Query?
+                            </h4>
+                            <p className="text-[11px] text-red-700 mt-0.5 leading-relaxed">
+                              Are you sure you want to permanently delete the application query for <strong>{selectedArtist.name}</strong> ({selectedArtist.email || 'No email'})? This will remove all their details, KYC proofs, and audio/video links from the system.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 justify-end pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setDeleteConfirmOpen(false)}
+                            className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteApplication(selectedArtist)}
+                            disabled={deleting}
+                            className="px-4 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                          >
+                            {deleting ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Deleting...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Confirm Delete</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Rejection Note Form if open */}
                     {showRejectInput && (
                       <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 space-y-2">
@@ -709,7 +791,23 @@ function AdminVerificationQueueContent() {
 
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <button
-                    onClick={() => setShowRejectInput(true)}
+                    type="button"
+                    onClick={() => {
+                      setShowRejectInput(false);
+                      setDeleteConfirmOpen(true);
+                    }}
+                    className="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-bold text-xs min-h-[40px] flex items-center justify-center gap-1.5 transition-colors"
+                    title="Permanently delete this application query"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                    <span>Delete Query</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setDeleteConfirmOpen(false);
+                      setShowRejectInput(true);
+                    }}
                     className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs min-h-[40px]"
                   >
                     Reject Application

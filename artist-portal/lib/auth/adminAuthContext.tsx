@@ -325,8 +325,13 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 3. Delete from Supabase tables
+    // 3. Delete from Supabase tables (both via server API with service role key & client fallback)
     try {
+      fetch('/api/admin/artists/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ artistId }),
+      }).catch(() => {});
       await supabase.from('artist_images').delete().eq('artist_id', artistId);
       await supabase.from('artists').delete().eq('id', artistId);
       return { success: true };
