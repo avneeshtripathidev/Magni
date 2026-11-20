@@ -5,6 +5,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../supabase/client';
 import { ArtistProfile } from '../../types/artist';
 import { useRouter } from 'next/navigation';
+import { isAuthorizedAdminEmail } from './adminWhitelist';
 
 interface AuthContextType {
   user: User | null;
@@ -66,7 +67,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return existingArtist;
         }
 
-        // 2. Create initial pending artist profile
+        // 2. Prevent auto-creating artist profiles for admin sessions, admin routes, or passive visits
+        const isAdminPath = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+        const isSuperAdminEmail = currentUser.email?.toLowerCase().trim() === 'magneventsdotin@gmail.com';
+        const isExplicitRegistration =
+          typeof window !== 'undefined' &&
+          (window.location.pathname.startsWith('/register') ||
+           window.location.pathname.startsWith('/onboarding') ||
+           sessionStorage.getItem('magnevents_oauth_next')?.includes('/onboarding'));
+
+        if (isAdminPath || isSuperAdminEmail || !isExplicitRegistration) {
+          // Administrators and passive visitors must never have artist rows inserted
+          setArtist(null);
+          return null;
+        }
+
+        // 3. Create initial pending artist profile only during explicit artist onboarding/registration
         const rawName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Artist';
         const cleanSlug = `${rawName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
         
