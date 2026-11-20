@@ -24,6 +24,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Concurrency mutex lock to prevent parallel auth events from inserting duplicate artist records
+const inFlightSyncMap = new Map<string, Promise<any>>();
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -32,101 +35,115 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const syncOrCreateArtist = async (currentUser: User) => {
-    try {
-      // 1. Check if artist record exists for this user_id
-      const { data: existingArtist, error: fetchErr } = await supabase
-        .from('artists')
-        .select('*')
-        .or(`user_id.eq.${currentUser.id},email.eq.${currentUser.email}`)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+    const syncKey = currentUser.id || currentUser.email || '';
+    if (!syncKey) return null;
 
-      if (existingArtist) {
-        // Link user_id if not linked yet
-        if (!existingArtist.user_id) {
-          await supabase
-            .from('artists')
-            .update({ user_id: currentUser.id })
-            .eq('id', existingArtist.id);
-          existingArtist.user_id = currentUser.id;
-        }
-        setArtist(existingArtist as ArtistProfile);
-        return existingArtist;
-      }
-
-      // 2. Create initial pending artist profile
-      const rawName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Artist';
-      const cleanSlug = `${rawName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
-      
-      const newArtistPayload = {
-        user_id: currentUser.id,
-        name: rawName,
-        stage_name: rawName,
-        slug: cleanSlug,
-        email: currentUser.email,
-        phone_no: currentUser.user_metadata?.phone || '',
-        category: 'Live Singer',
-        city: 'Delhi NCR',
-        country: 'India',
-        languages: ['Hindi', 'English'],
-        genres: ['Bollywood', 'Retro'],
-        verification_status: 'pending',
-        is_live: false,
-        profile_completion: 25,
-        submitted_pricing: {
-          starting_price: 5999,
-          solo_price: 5999,
-          duo_price: 9999,
-          band_price: 19999,
-          hourly_price: 3000,
-          travel_charges_policy: "Standard outstation travel & stay to be provided by client"
-        },
-        performance_details: {
-          min_duration_minutes: 60,
-          max_duration_minutes: 240,
-          sound_system_provided: false,
-          technical_requirements: "Stage PA with 2 vocal microphones & monitoring",
-          travel_readiness: "pan_india",
-          serviceable_cities: ["Delhi NCR", "Mumbai", "Bengaluru", "Jaipur", "Chandigarh"]
-        },
-        verification_documents: {
-          legal_name: "",
-          id_type: "",
-          id_number_masked: "",
-          id_document_url: "",
-          address_proof_url: "",
-          pan_or_tax_id: ""
-        }
-      };
-
-      const { data: createdArtist, error: insertErr } = await supabase
-        .from('artists')
-        .insert([newArtistPayload])
-        .select()
-        .single();
-
-      if (!insertErr && createdArtist) {
-        setArtist(createdArtist as ArtistProfile);
-        return createdArtist;
-      }
-
-      // Fallback when remote Supabase artists table is not yet migrated
-      const fallbackArtist: ArtistProfile = {
-        ...(newArtistPayload as any),
-        id: `local-${currentUser.id}`,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      setArtist(fallbackArtist);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('magnevents_registered_artist', JSON.stringify(fallbackArtist));
-      }
-      return fallbackArtist;
-    } catch (err) {
-      console.error('Error syncing artist profile:', err);
+    if (inFlightSyncMap.has(syncKey)) {
+      return inFlightSyncMap.get(syncKey);
     }
-    return null;
+
+    const syncPromise = (async () => {
+      try {
+        // 1. Check if artist record exists for this user_id or email
+        const { data: existingArtist } = await supabase
+          .from('artists')
+          .select('*')
+          .or(`user_id.eq.${currentUser.id},email.eq.${currentUser.email}`)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (existingArtist) {
+          // Link user_id if not linked yet
+          if (!existingArtist.user_id) {
+            await supabase
+              .from('artists')
+              .update({ user_id: currentUser.id })
+              .eq('id', existingArtist.id);
+            existingArtist.user_id = currentUser.id;
+          }
+          setArtist(existingArtist as ArtistProfile);
+          return existingArtist;
+        }
+
+        // 2. Create initial pending artist profile
+        const rawName = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Artist';
+        const cleanSlug = `${rawName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
+        
+        const newArtistPayload = {
+          user_id: currentUser.id,
+          name: rawName,
+          stage_name: rawName,
+          slug: cleanSlug,
+          email: currentUser.email,
+          phone_no: currentUser.user_metadata?.phone || '',
+          category: 'Live Singer',
+          city: 'Delhi NCR',
+          country: 'India',
+          languages: ['Hindi', 'English'],
+          genres: ['Bollywood', 'Retro'],
+          verification_status: 'pending',
+          is_live: false,
+          profile_completion: 25,
+          submitted_pricing: {
+            starting_price: 5999,
+            solo_price: 5999,
+            duo_price: 9999,
+            band_price: 19999,
+            hourly_price: 3000,
+            travel_charges_policy: "Standard outstation travel & stay to be provided by client"
+          },
+          performance_details: {
+            min_duration_minutes: 60,
+            max_duration_minutes: 240,
+            sound_system_provided: false,
+            technical_requirements: "Stage PA with 2 vocal microphones & monitoring",
+            travel_readiness: "pan_india",
+            serviceable_cities: ["Delhi NCR", "Mumbai", "Bengaluru", "Jaipur", "Chandigarh"]
+          },
+          verification_documents: {
+            legal_name: "",
+            id_type: "",
+            id_number_masked: "",
+            id_document_url: "",
+            address_proof_url: "",
+            pan_or_tax_id: ""
+          }
+        };
+
+        const { data: createdArtist, error: insertErr } = await supabase
+          .from('artists')
+          .insert([newArtistPayload])
+          .select()
+          .single();
+
+        if (!insertErr && createdArtist) {
+          setArtist(createdArtist as ArtistProfile);
+          return createdArtist;
+        }
+
+        // Fallback when remote Supabase artists table is not yet migrated
+        const fallbackArtist: ArtistProfile = {
+          ...(newArtistPayload as any),
+          id: `local-${currentUser.id}`,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        setArtist(fallbackArtist);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('magnevents_registered_artist', JSON.stringify(fallbackArtist));
+        }
+        return fallbackArtist;
+      } catch (err) {
+        console.error('Error syncing artist profile:', err);
+        return null;
+      } finally {
+        inFlightSyncMap.delete(syncKey);
+      }
+    })();
+
+    inFlightSyncMap.set(syncKey, syncPromise);
+    return syncPromise;
   };
 
   const updateLocalArtist = (updates: Partial<ArtistProfile>) => {

@@ -78,6 +78,7 @@ export default function RegisterPage() {
   // Step A: Validate & open confirmation popup to double-check Email & Phone first
   const handleEmailRegister = (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setError(null);
 
     const trimmedName = fullName.trim();
@@ -125,6 +126,7 @@ export default function RegisterPage() {
 
   // Step B: Confirmed by artist -> Store directly in DB (NO confirmation email sent)
   const handleConfirmAndSave = async () => {
+    if (loading) return;
     setError(null);
     setLoading(true);
 
@@ -152,6 +154,7 @@ export default function RegisterPage() {
   };
 
   const handleGoogleSignup = async () => {
+    if (googleLoading || loading) return;
     setError(null);
     setGoogleLoading(true);
     try {
