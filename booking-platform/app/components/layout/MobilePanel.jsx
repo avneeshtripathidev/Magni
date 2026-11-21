@@ -1,15 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { trackArtistCtaClick } from '@/app/utils/artistCtaTracker'
 import BrandMark from '@/app/components/common/BrandMark'
 import { NAV_LINKS } from '@/app/constants'
 
 export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpenContactModal }) {
+  const [mounted, setMounted] = useState(false)
   const [showiOSGuide, setShowiOSGuide] = useState(false)
   const [isInstallable, setIsInstallable] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.deferredPrompt) {
@@ -66,7 +72,9 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
     }
   }
 
-  return (
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
     <>
       <aside className={`lux-mobile-panel ${isOpen ? 'open' : ''} ${isLight ? 'is-light' : 'is-dark'}`}>
         <div className="lux-mobile-panel-head">
@@ -249,6 +257,7 @@ export default function MobilePanel({ isOpen, onClose, isLight, pathname, onOpen
         </div>
       </aside>
       {isOpen && <button type="button" className="lux-mobile-backdrop" aria-label="Close menu" onClick={onClose} />}
-    </>
+    </>,
+    document.body
   )
 }

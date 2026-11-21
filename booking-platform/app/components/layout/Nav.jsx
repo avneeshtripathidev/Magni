@@ -9,10 +9,10 @@ import BrandMark from '@/app/components/common/BrandMark';
 import { AIIcon } from '@/app/components/icons/NavigationIcons';
 import { NAV_LINKS } from '@/app/constants';
 import { trackArtistCtaClick } from '@/app/utils/artistCtaTracker';
+import MobilePanel from './MobilePanel';
 import '@/app/styles/components/Nav.css';
 
 const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false });
-const MobilePanel = dynamic(() => import('./MobilePanel'), { ssr: false });
 
 function useScrolled(threshold = 20) {
   const [scrolled, setScrolled] = useState(false);
@@ -139,7 +139,7 @@ export default function Nav() {
               style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <span className="cta-long-text">Are you an Artist?</span>
-              <span className="cta-short-text">Are you an Artist?</span>
+              <span className="cta-short-text">Artist?</span>
             </a>
 
             <button aria-label="Toggle navigation menu" className={`lux-hamburger ${menuOpen ? 'is-open' : ''}`} onClick={() => setMenuOpen(!menuOpen)}>
