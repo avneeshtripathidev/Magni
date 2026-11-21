@@ -24,6 +24,7 @@ export default function SEOLandingPage({
 }) {
   const rawSlug = locationSlug || '';
   const slugNormalized = decodeURIComponent(rawSlug).toLowerCase().trim().replace(/[\s_]+/g, '-').replace(/\/+$/, '');
+  const isDJ = (category || '').toLowerCase().includes('dj') || slugNormalized.includes('dj') || (heroTitle || '').toLowerCase().includes('dj');
 
   return (
     <>
@@ -31,7 +32,7 @@ export default function SEOLandingPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <div className="hp">
+      <div className={`hp ${isDJ ? 'hp-dj-night-theme' : ''}`}>
         {/* Luxury Hero with Interactive Booking Engine & Top 5 Verified Artists Showcase */}
         <SEOLandingHero
           heroTitle={heroTitle}

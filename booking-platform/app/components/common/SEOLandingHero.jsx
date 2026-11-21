@@ -59,7 +59,11 @@ export default function SEOLandingHero({
   const mobPhoneInputRef = useRef(null);
   const [tokenCopied, setTokenCopied] = useState(false);
 
-  const isDJ = (category || '').toLowerCase().includes('dj');
+  const isDJ =
+    (category || '').toLowerCase().includes('dj') ||
+    (subCategory || '').toLowerCase().includes('dj') ||
+    (locationSlug || '').toLowerCase().includes('dj') ||
+    (heroTitle || '').toLowerCase().includes('dj');
   const isBand = (category || '').toLowerCase().includes('band');
   const isComedian = (category || '').toLowerCase().includes('comedian');
 
@@ -575,7 +579,15 @@ export default function SEOLandingHero({
   };
 
   return (
-    <section className="seo-hero-root">
+    <section className={`seo-hero-root ${isDJ ? 'seo-hero-dj-theme' : ''}`}>
+      {isDJ && (
+        <div className="seo-dj-ambient-lights" aria-hidden="true">
+          <div className="seo-dj-laser-beam seo-dj-laser-left" />
+          <div className="seo-dj-laser-beam seo-dj-laser-right" />
+          <div className="seo-dj-strobe-glow" />
+          <div className="seo-dj-bass-aura" />
+        </div>
+      )}
       <div className="seo-hero-backdrop-glow" aria-hidden="true" />
 
       <div className="seo-hero-container">
@@ -623,6 +635,28 @@ export default function SEOLandingHero({
               <p className="seo-hero-subtitle seo-hero-subtitle-left">
                 {heroSubtitle || `Book verified performers directly for your next grand event.`}
               </p>
+
+              {/* DJ Night Party Perks & Sound Setup Strip */}
+              {isDJ && (
+                <div className="seo-dj-perks-strip">
+                  <div className="seo-dj-perk-item">
+                    <span className="seo-dj-perk-icon">🔊</span>
+                    <span>JBL / RCF Sound Setup</span>
+                  </div>
+                  <div className="seo-dj-perk-item">
+                    <span className="seo-dj-perk-icon">💡</span>
+                    <span>Club Lasers &amp; Moving Lights</span>
+                  </div>
+                  <div className="seo-dj-perk-item">
+                    <span className="seo-dj-perk-icon">🎛️</span>
+                    <span>Pioneer Pro DJ Console</span>
+                  </div>
+                  <div className="seo-dj-perk-item">
+                    <span className="seo-dj-perk-icon">⚡</span>
+                    <span>60-Min Fast Soundcheck</span>
+                  </div>
+                </div>
+              )}
 
               <div className="seo-query-pills seo-query-pills-left" role="tablist" aria-label="Event category options">
                 {eventTypes.map((type) => {

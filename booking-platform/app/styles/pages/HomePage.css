@@ -34,6 +34,13 @@
   width: 100%;
 }
 
+.hp.hp-dj-night-theme {
+  background-color: #080512 !important;
+  background-image: radial-gradient(rgba(168, 85, 247, 0.16) 1.2px, transparent 1.2px) !important;
+  background-size: 28px 28px !important;
+  background-repeat: repeat !important;
+}
+
 .hp-shell {
   width: min(1520px, 94%);
   margin: 0 auto;
