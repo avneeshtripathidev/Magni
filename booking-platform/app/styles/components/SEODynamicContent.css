@@ -24,13 +24,13 @@
    1. Overview Section
    -------------------------------------------------------------------------- */
 .seo-overview-card {
-  background: rgba(38, 30, 34, 0.85) !important;
-  border: 1px solid rgba(216, 196, 183, 0.18) !important;
+  background: linear-gradient(145deg, rgba(28, 20, 25, 0.75) 0%, rgba(58, 18, 30, 0.45) 100%) !important;
+  border: 1px solid rgba(216, 196, 183, 0.22) !important;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65), 0 0 30px rgba(126, 48, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
 }
 
 .seo-section-tag {
@@ -97,22 +97,22 @@
 }
 
 .seo-service-card {
-  background: rgba(38, 30, 34, 0.85) !important;
-  border: 1px solid rgba(216, 196, 183, 0.18) !important;
+  background: linear-gradient(145deg, rgba(28, 20, 25, 0.72) 0%, rgba(52, 16, 26, 0.42) 100%) !important;
+  border: 1px solid rgba(216, 196, 183, 0.20) !important;
   padding: 32px 28px;
   border-radius: 20px;
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.50), 0 0 20px rgba(126, 48, 68, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
   position: relative;
   overflow: hidden;
 }
 
 .seo-service-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(232, 185, 67, 0.45);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.70), 0 0 20px rgba(228, 95, 96, 0.15);
+  border-color: rgba(232, 185, 67, 0.55) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 30px rgba(228, 95, 96, 0.22) !important;
 }
 
 .seo-service-icon-wrap {
@@ -148,8 +148,8 @@
    3. Mid-content Concierge Quick Booking Callout
    -------------------------------------------------------------------------- */
 .seo-callout-card {
-  background: #30272A !important;
-  border: 1.5px solid rgba(232, 185, 67, 0.35) !important;
+  background: linear-gradient(145deg, rgba(48, 18, 28, 0.85) 0%, rgba(126, 48, 68, 0.55) 100%) !important;
+  border: 1.5px solid rgba(232, 185, 67, 0.45) !important;
   border-radius: 24px;
   padding: 36px 34px;
   display: flex;
@@ -157,7 +157,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 35px rgba(126, 48, 68, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 35px rgba(126, 48, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   position: relative;
   overflow: hidden;
 }
@@ -271,17 +273,17 @@
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.25s ease;
-  background: rgba(38, 30, 34, 0.82) !important;
-  border: 1px solid rgba(216, 196, 183, 0.16) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  background: linear-gradient(145deg, rgba(28, 20, 25, 0.72) 0%, rgba(50, 16, 25, 0.40) 100%) !important;
+  border: 1px solid rgba(216, 196, 183, 0.18) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
 }
 
 .seo-faq-item.is-open {
-  background: rgba(52, 36, 42, 0.90) !important;
-  border: 1px solid rgba(232, 185, 67, 0.45) !important;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(232, 185, 67, 0.1);
+  background: linear-gradient(145deg, rgba(48, 20, 28, 0.85) 0%, rgba(85, 24, 40, 0.58) 100%) !important;
+  border: 1px solid rgba(232, 185, 67, 0.50) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 25px rgba(232, 185, 67, 0.15) !important;
 }
 
 .seo-faq-trigger {

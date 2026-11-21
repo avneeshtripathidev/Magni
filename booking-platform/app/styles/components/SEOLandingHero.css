@@ -10,25 +10,23 @@
     /* 1. Rose Stone cyber dot matrix grid */
     radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
     /* 2. Deep Velvet Wine Red / Maroon concert stage lighting (#7E3044) on Right */
-    radial-gradient(ellipse 75% 65% at 88% 28%, rgba(126, 48, 68, 0.48) 0%, rgba(66, 18, 30, 0.28) 45%, transparent 75%),
+    radial-gradient(ellipse 75% 70% at 88% 28%, rgba(126, 48, 68, 0.48) 0%, rgba(66, 18, 30, 0.28) 45%, transparent 75%),
     /* 3. Center Golden Marigold / Amber stage warm highlight (#E8B943) */
-    radial-gradient(circle at 72% 38%, rgba(232, 185, 67, 0.10) 0%, transparent 58%),
+    radial-gradient(circle at 72% 38%, rgba(232, 185, 67, 0.12) 0%, transparent 58%),
     /* 4. Left-side pure obsidian black soft fade */
     radial-gradient(ellipse 65% 70% at 15% 35%, rgba(12, 10, 14, 0.88) 0%, transparent 80%),
-    /* 5. Smooth horizontal black-to-maroon fade (Screenshot Theme) */
-    linear-gradient(90deg, rgba(12, 10, 14, 0.98) 0%, rgba(18, 15, 20, 0.92) 38%, rgba(55, 18, 28, 0.65) 75%, rgba(126, 48, 68, 0.50) 100%),
-    /* 6. Vertical depth scrim */
-    linear-gradient(180deg, rgba(14, 12, 16, 0.35) 0%, rgba(16, 13, 18, 0.65) 45%, rgba(12, 10, 14, 0.95) 100%),
-    /* 7. Celebratory concert gold confetti texture */
+    /* 5. Smooth horizontal black-to-maroon fade (User Screenshot Reference) */
+    linear-gradient(90deg, rgba(12, 10, 14, 0.98) 0%, rgba(18, 15, 20, 0.92) 35%, rgba(55, 18, 28, 0.65) 70%, rgba(126, 48, 68, 0.55) 100%),
+    /* 6. Celebratory concert gold confetti texture */
     url('/posters/dj_concert_confetti_bg.jpg');
-  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, cover;
-  background-position: 0 0, center, center, center, center, center, center 20%;
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, cover;
+  background-position: 0 0, center, center, center, center, center top;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat-y;
+  background-attachment: scroll, scroll, scroll, scroll, scroll, fixed;
   color: #fff;
   overflow: hidden;
   isolation: isolate;
   border-bottom: 1px solid rgba(216, 196, 183, 0.16) !important;
-  box-shadow: inset 0 -40px 60px rgba(12, 10, 14, 0.95);
 }
 
 /* ==========================================================================
@@ -44,22 +42,20 @@
     /* 1. Rose Stone cyber dot matrix grid */
     radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
     /* 2. Deep Velvet Wine Red / Maroon concert stage lighting (#7E3044) on Right */
-    radial-gradient(ellipse 75% 65% at 88% 28%, rgba(126, 48, 68, 0.48) 0%, rgba(66, 18, 30, 0.28) 45%, transparent 75%),
+    radial-gradient(ellipse 75% 70% at 88% 28%, rgba(126, 48, 68, 0.48) 0%, rgba(66, 18, 30, 0.28) 45%, transparent 75%),
     /* 3. Center Golden Marigold / Amber stage warm highlight (#E8B943) */
-    radial-gradient(circle at 72% 38%, rgba(232, 185, 67, 0.10) 0%, transparent 58%),
+    radial-gradient(circle at 72% 38%, rgba(232, 185, 67, 0.12) 0%, transparent 58%),
     /* 4. Left-side pure obsidian black soft fade */
     radial-gradient(ellipse 65% 70% at 15% 35%, rgba(12, 10, 14, 0.88) 0%, transparent 80%),
-    /* 5. Smooth horizontal black-to-maroon fade (Screenshot Theme) */
-    linear-gradient(90deg, rgba(12, 10, 14, 0.98) 0%, rgba(18, 15, 20, 0.92) 38%, rgba(55, 18, 28, 0.65) 75%, rgba(126, 48, 68, 0.50) 100%),
-    /* 6. Vertical depth scrim */
-    linear-gradient(180deg, rgba(14, 12, 16, 0.35) 0%, rgba(16, 13, 18, 0.65) 45%, rgba(12, 10, 14, 0.95) 100%),
-    /* 7. Celebratory concert gold confetti texture */
+    /* 5. Smooth horizontal black-to-maroon fade (User Screenshot Reference) */
+    linear-gradient(90deg, rgba(12, 10, 14, 0.98) 0%, rgba(18, 15, 20, 0.92) 35%, rgba(55, 18, 28, 0.65) 70%, rgba(126, 48, 68, 0.55) 100%),
+    /* 6. Celebratory concert gold confetti texture */
     url('/posters/dj_concert_confetti_bg.jpg') !important;
-  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, cover !important;
-  background-position: 0 0, center, center, center, center, center, center 20% !important;
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
+  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, cover !important;
+  background-position: 0 0, center, center, center, center, center top !important;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat-y !important;
+  background-attachment: scroll, scroll, scroll, scroll, scroll, fixed !important;
   border-bottom: 1px solid rgba(216, 196, 183, 0.16) !important;
-  box-shadow: inset 0 -40px 60px rgba(12, 10, 14, 0.95);
 }
 
 /* Atmospheric lights unified to warm maroon & gold */
@@ -181,11 +177,11 @@
 
 /* DJ Theme 5k Badge */
 .seo-hero-dj-theme .seo-5k-events-badge {
-  background: rgba(41, 39, 42, 0.88) !important;
-  border: 1px solid rgba(216, 196, 183, 0.25) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(232, 185, 67, 0.15) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  background: linear-gradient(145deg, rgba(32, 22, 28, 0.85) 0%, rgba(65, 20, 32, 0.60) 100%) !important;
+  border: 1px solid rgba(232, 185, 67, 0.38) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 15px rgba(126, 48, 68, 0.15) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
 }
 
 .seo-hero-dj-theme .seo-5k-text span {
@@ -194,33 +190,33 @@
 
 /* DJ Theme Pills */
 .seo-hero-dj-theme .seo-query-chip {
-  background: rgba(41, 39, 42, 0.78) !important;
-  border: 1px solid rgba(216, 196, 183, 0.22) !important;
+  background: rgba(36, 25, 30, 0.75) !important;
+  border: 1px solid rgba(216, 196, 183, 0.25) !important;
   color: #e2e8f0 !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
 }
 
 .seo-hero-dj-theme .seo-query-chip:hover {
-  background: rgba(126, 48, 68, 0.30) !important;
-  border-color: rgba(232, 185, 67, 0.55) !important;
+  background: rgba(126, 48, 68, 0.35) !important;
+  border-color: rgba(232, 185, 67, 0.65) !important;
   color: #ffffff !important;
   box-shadow: 0 0 15px rgba(232, 185, 67, 0.25) !important;
 }
 
 .seo-hero-dj-theme .seo-query-chip.active {
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.85) 0%, rgba(168, 85, 247, 0.85) 50%, rgba(228, 95, 96, 0.85) 100%) !important;
+  background: linear-gradient(135deg, rgba(126, 48, 68, 0.85) 0%, rgba(228, 95, 96, 0.85) 100%) !important;
   border-color: rgba(232, 185, 67, 0.75) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.45), inset 0 0 12px rgba(232, 185, 67, 0.25) !important;
+  box-shadow: 0 0 20px rgba(228, 95, 96, 0.45), inset 0 0 12px rgba(232, 185, 67, 0.25) !important;
 }
 
 /* DJ Theme Stats Bar */
 .seo-hero-dj-theme .hero-split-live-stats {
-  background: rgba(41, 39, 42, 0.82) !important;
-  border: 1px solid rgba(216, 196, 183, 0.22) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  background: linear-gradient(145deg, rgba(32, 22, 28, 0.80) 0%, rgba(60, 18, 30, 0.50) 100%) !important;
+  border: 1px solid rgba(216, 196, 183, 0.25) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
 }
 
@@ -230,11 +226,11 @@
 
 /* DJ Theme Booking Form Card */
 .seo-hero-dj-theme .hero-tok99-card {
-  background: rgba(41, 39, 42, 0.88) !important;
-  border: 1px solid rgba(216, 196, 183, 0.28) !important;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(126, 48, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
-  backdrop-filter: blur(18px) !important;
-  -webkit-backdrop-filter: blur(18px) !important;
+  background: linear-gradient(160deg, rgba(30, 22, 26, 0.85) 0%, rgba(55, 18, 28, 0.60) 100%) !important;
+  border: 1.5px solid rgba(232, 185, 67, 0.38) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(126, 48, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
 
 .seo-hero-dj-theme .hero-tok99-now-price {
@@ -311,13 +307,13 @@
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  background: #30272A !important;
-  border: 1px solid rgba(232, 185, 67, 0.35) !important;
+  background: linear-gradient(145deg, rgba(32, 22, 28, 0.85) 0%, rgba(65, 20, 32, 0.60) 100%) !important;
+  border: 1px solid rgba(232, 185, 67, 0.38) !important;
   border-radius: 999px;
   padding: 8px 22px 8px 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 15px rgba(126, 48, 68, 0.15) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   transition: transform 0.2s ease;
 }
 
@@ -545,8 +541,10 @@
 }
 
 .seo-query-chip {
-  background: #29272A;
-  border: 1px solid rgba(216, 196, 183, 0.2);
+  background: rgba(36, 25, 30, 0.75) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(216, 196, 183, 0.25) !important;
   color: #D8C4B7;
   padding: 8px 16px;
   border-radius: 20px;
@@ -664,24 +662,24 @@
 
 /* Individual Artist Card - Luxury Obsidian & Champagne Gold Theme */
 .seo-artist-card {
-  background: linear-gradient(180deg, #1C1518 0%, #120D10 100%) !important;
-  border: 1px solid rgba(232, 185, 67, 0.22) !important;
+  background: linear-gradient(160deg, rgba(28, 20, 25, 0.78) 0%, rgba(55, 18, 28, 0.50) 100%) !important;
+  border: 1px solid rgba(232, 185, 67, 0.28) !important;
   border-radius: 20px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.60), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 22px rgba(126, 48, 68, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
   cursor: pointer;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
 }
 
 .seo-artist-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(232, 185, 67, 0.55) !important;
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(232, 185, 67, 0.18);
+  border-color: rgba(232, 185, 67, 0.70) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(232, 185, 67, 0.25) !important;
 }
 
 .seo-artist-card.is-active-selection {
@@ -939,16 +937,16 @@
    High-Conversion Inline Lead Capture Box
    ========================================================================== */
 .seo-interactive-booking-card {
-  background: linear-gradient(165deg, rgba(41, 39, 42, 0.94) 0%, rgba(32, 28, 33, 0.96) 60%, rgba(22, 19, 23, 0.99) 100%) !important;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(216, 196, 183, 0.25) !important;
+  background: linear-gradient(145deg, rgba(30, 22, 26, 0.78) 0%, rgba(68, 20, 34, 0.50) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(232, 185, 67, 0.35) !important;
   border-radius: 24px;
   padding: 28px 32px 24px;
   box-shadow: 
     0 24px 60px rgba(0, 0, 0, 0.75),
-    0 0 40px rgba(126, 48, 68, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 0 40px rgba(126, 48, 68, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   position: relative;
   overflow: hidden;
   max-width: 1100px;
@@ -1494,10 +1492,10 @@
 }
 
 .seo-tier-card {
-  background: linear-gradient(165deg, rgba(32, 26, 30, 0.92) 0%, rgba(20, 16, 19, 0.96) 60%, rgba(14, 11, 13, 0.99) 100%) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(232, 185, 67, 0.22) !important;
+  background: linear-gradient(150deg, rgba(28, 20, 25, 0.75) 0%, rgba(55, 18, 28, 0.45) 100%) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border: 1px solid rgba(216, 196, 183, 0.22) !important;
   border-radius: 24px;
   padding: 34px 28px 28px;
   display: flex;
@@ -1508,29 +1506,30 @@
   position: relative;
   box-shadow: 
     0 18px 45px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 0 25px rgba(126, 48, 68, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   box-sizing: border-box;
   overflow: hidden;
 }
 
 .seo-tier-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(232, 185, 67, 0.55) !important;
+  border-color: rgba(232, 185, 67, 0.60) !important;
   box-shadow: 
     0 26px 65px rgba(0, 0, 0, 0.8),
-    0 0 35px rgba(232, 185, 67, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    0 0 35px rgba(232, 185, 67, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
 }
 
 /* Featured Center Card: Most Popular */
 .seo-tier-card.featured-tier {
-  background: linear-gradient(165deg, rgba(40, 32, 36, 0.95) 0%, rgba(26, 20, 24, 0.98) 60%, rgba(18, 14, 17, 1) 100%) !important;
-  border: 1.5px solid rgba(232, 185, 67, 0.72) !important;
+  background: linear-gradient(150deg, rgba(58, 20, 32, 0.82) 0%, rgba(126, 48, 68, 0.52) 100%) !important;
+  border: 1.5px solid rgba(232, 185, 67, 0.75) !important;
   box-shadow: 
     0 28px 75px rgba(0, 0, 0, 0.82),
-    0 0 45px rgba(232, 185, 67, 0.18),
+    0 0 45px rgba(232, 185, 67, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 0 24px rgba(232, 185, 67, 0.05) !important;
+    inset 0 0 24px rgba(232, 185, 67, 0.08) !important;
 }
 
 .seo-tier-card.featured-tier::before {
@@ -1551,8 +1550,8 @@
   border-color: #E8B943 !important;
   box-shadow: 
     0 34px 85px rgba(0, 0, 0, 0.9),
-    0 0 50px rgba(232, 185, 67, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    0 0 50px rgba(232, 185, 67, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
 }
 
 .seo-tier-tag-row {
@@ -1743,11 +1742,11 @@
   gap: 14px;
   padding: 14px 18px;
   border-radius: 16px;
-  background: linear-gradient(165deg, rgba(41, 39, 42, 0.9) 0%, rgba(28, 25, 29, 0.96) 100%) !important;
-  border: 1px solid rgba(216, 196, 183, 0.16) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(28, 20, 25, 0.75) 0%, rgba(55, 18, 28, 0.45) 100%) !important;
+  border: 1px solid rgba(216, 196, 183, 0.20) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(126, 48, 68, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -3233,9 +3232,11 @@ body.modal-open #unified-header {
   align-items: center;
   gap: 20px;
   padding: 12px 22px;
-  background: linear-gradient(135deg, rgba(126, 48, 68, 0.22) 0%, rgba(41, 39, 42, 0.85) 60%, rgba(232, 185, 67, 0.12) 100%);
+  background: linear-gradient(145deg, rgba(32, 22, 28, 0.80) 0%, rgba(60, 18, 30, 0.50) 100%);
   border: 1px solid rgba(232, 185, 67, 0.35);
   border-radius: 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(245, 240, 233, 0.12);
   width: fit-content;
 }
@@ -3300,11 +3301,13 @@ body.modal-open #unified-header {
 
 .hero-tok99-card {
   position: relative;
-  background: #30272A !important;
-  border: 1.5px solid rgba(232, 185, 67, 0.35) !important;
+  background: linear-gradient(160deg, rgba(30, 22, 26, 0.85) 0%, rgba(55, 18, 28, 0.60) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1.5px solid rgba(232, 185, 67, 0.38) !important;
   border-radius: 24px;
   padding: 26px 24px 22px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(245, 240, 233, 0.1) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(126, 48, 68, 0.22), inset 0 1px 0 rgba(245, 240, 233, 0.15) !important;
   box-sizing: border-box;
   overflow: hidden;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -4022,11 +4025,13 @@ body.modal-open #unified-header {
     box-sizing: border-box !important;
     padding: 16px 14px 14px !important;
     border-radius: 18px !important;
-    border: 1.5px solid rgba(232, 185, 67, 0.35) !important;
-    background: linear-gradient(165deg, rgba(28, 25, 30, 0.98) 0%, rgba(15, 14, 18, 0.99) 100%) !important;
+    border: 1.5px solid rgba(232, 185, 67, 0.38) !important;
+    background: linear-gradient(160deg, rgba(30, 22, 26, 0.88) 0%, rgba(55, 18, 28, 0.65) 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     box-shadow: 
       0 16px 40px rgba(0, 0, 0, 0.8),
-      0 0 25px rgba(232, 185, 67, 0.12),
+      0 0 25px rgba(232, 185, 67, 0.16),
       inset 0 1px 0 rgba(245, 240, 233, 0.15) !important;
     overflow: hidden !important;
   }
