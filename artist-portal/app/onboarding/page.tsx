@@ -1140,12 +1140,25 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-amber-900 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
+                <span>All pricing tiers, set durations, technical rider, and travel policy in this step are <strong>strictly mandatory</strong>.</span>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <div>
-                  <label className="form-label">Solo / Starting Rate (₹) <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Solo / Starting Rate (₹) <span className="text-rose-500 font-bold">*</span></label>
+                    {(!formData.starting_price || formData.starting_price <= 0) && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     step="500"
+                    min="1000"
                     required
                     value={formData.starting_price ?? ''}
                     placeholder="e.g. 15000"
@@ -1161,10 +1174,18 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Duo Act Rate (₹) <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Duo Act Rate (₹) <span className="text-rose-500 font-bold">*</span></label>
+                    {(!formData.duo_price || formData.duo_price <= 0) && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     step="500"
+                    min="1000"
                     required
                     value={formData.duo_price ?? ''}
                     placeholder="e.g. 25000"
@@ -1174,10 +1195,18 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Full Band Show (₹) <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Full Band Show (₹) <span className="text-rose-500 font-bold">*</span></label>
+                    {(!formData.band_price || formData.band_price <= 0) && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     step="500"
+                    min="1000"
                     required
                     value={formData.band_price ?? ''}
                     placeholder="e.g. 45000"
@@ -1187,10 +1216,18 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Hourly Overtime (₹) <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Hourly Overtime (₹) <span className="text-rose-500 font-bold">*</span></label>
+                    {(!formData.hourly_price || formData.hourly_price <= 0) && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     step="500"
+                    min="500"
                     required
                     value={formData.hourly_price ?? ''}
                     placeholder="e.g. 5000"
@@ -1202,30 +1239,51 @@ export default function ArtistOnboardingPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                 <div>
-                  <label className="form-label">Min Set Duration (Minutes) <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Min Set Duration (Minutes) <span className="text-rose-500 font-bold">*</span></label>
+                    {(!formData.min_duration || formData.min_duration <= 0) && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     step="15"
-                    value={formData.min_duration}
-                    onChange={(e) => setFormData({ ...formData, min_duration: Number(e.target.value) })}
-                    className="form-input"
+                    min="15"
+                    required
+                    value={formData.min_duration ?? ''}
+                    placeholder="e.g. 60"
+                    onChange={(e) => setFormData({ ...formData, min_duration: e.target.value === '' ? '' : Number(e.target.value) })}
+                    className="form-input font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="form-label">Max Set Duration (Minutes) <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Max Set Duration (Minutes) <span className="text-rose-500 font-bold">*</span></label>
+                    {(!formData.max_duration || formData.max_duration <= 0) && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     step="15"
-                    value={formData.max_duration}
-                    onChange={(e) => setFormData({ ...formData, max_duration: Number(e.target.value) })}
-                    className="form-input"
+                    min="15"
+                    required
+                    value={formData.max_duration ?? ''}
+                    placeholder="e.g. 180"
+                    onChange={(e) => setFormData({ ...formData, max_duration: e.target.value === '' ? '' : Number(e.target.value) })}
+                    className="form-input font-bold"
                   />
                 </div>
 
                 <div>
                   <label className="form-label">Travel Availability <span className="text-rose-500 font-bold">*</span></label>
                   <select
+                    required
                     value={formData.travel_readiness}
                     onChange={(e) => setFormData({ ...formData, travel_readiness: e.target.value })}
                     className="form-input"
@@ -1240,6 +1298,7 @@ export default function ArtistOnboardingPage() {
                 <div>
                   <label className="form-label">Sound Equipment Provided? <span className="text-rose-500 font-bold">*</span></label>
                   <select
+                    required
                     value={formData.sound_system ? 'yes' : 'no'}
                     onChange={(e) => setFormData({ ...formData, sound_system: e.target.value === 'yes' })}
                     className="form-input"
@@ -1250,9 +1309,17 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="form-label">Technical Stage Rider <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Technical Stage Rider <span className="text-rose-500 font-bold">*</span></label>
+                    {!formData.tech_requirements?.trim() && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Rider Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="text"
+                    required
                     value={formData.tech_requirements}
                     onChange={(e) => setFormData({ ...formData, tech_requirements: e.target.value })}
                     placeholder="e.g. 2 Cordless Mics, Stage Monitor, Acoustic Guitar DI Input"
@@ -1261,12 +1328,20 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="form-label">Travel & Hospitality Policy <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Travel & Hospitality Policy <span className="text-rose-500 font-bold">*</span></label>
+                    {!formData.travel_policy?.trim() && (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                        Policy Required *
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="text"
+                    required
                     value={formData.travel_policy}
                     onChange={(e) => setFormData({ ...formData, travel_policy: e.target.value })}
-                    placeholder="Outstation travel & stay to be covered by host"
+                    placeholder="e.g. Outstation travel & accommodation to be arranged by event host"
                     className="form-input"
                   />
                 </div>
