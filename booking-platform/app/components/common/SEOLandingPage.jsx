@@ -3,7 +3,6 @@
 import SEODynamicContent from '@/app/components/common/SEODynamicContent';
 import SEOLandingHero from '@/app/components/common/SEOLandingHero';
 import VideoGridSection from '@/app/components/home/VideoGridSection';
-import PromotionalOfferSection from '@/app/components/home/PromotionalOfferSection';
 import ContactSection from '@/app/components/home/ContactSection';
 import SectionDivider from '@/app/components/common/SectionDivider';
 import '@/app/styles/pages/HomePage.css';
@@ -43,13 +42,6 @@ export default function SEOLandingPage({
           topArtists={topArtists}
           isSpecialTokenPage={true}
           locationSlug={slugNormalized}
-        />
-
-        <SectionDivider />
-
-        <PromotionalOfferSection 
-          category={category}
-          city={city}
         />
 
         <SectionDivider />

@@ -1804,51 +1804,6 @@ export default function SEOLandingHero({
           </div>
         </div>
 
-        {/* ==========================================================================
-           5. Streamlined Trust & Guarantee Bar
-           ========================================================================== */}
-        <div className="seo-guarantee-bar">
-          <div className="seo-guarantee-item">
-            <div className="seo-guarantee-icon-wrap">
-              <span className="seo-guarantee-icon">🛡️</span>
-            </div>
-            <div className="seo-guarantee-text">
-              <strong>100% Arrival Guarantee</strong>
-              <span>Emergency verified backup</span>
-            </div>
-          </div>
-
-          <div className="seo-guarantee-item">
-            <div className="seo-guarantee-icon-wrap">
-              <span className="seo-guarantee-icon">🎙️</span>
-            </div>
-            <div className="seo-guarantee-text">
-              <strong>Stage &amp; Sound Assistance</strong>
-              <span>Pro audio &amp; mics setup</span>
-            </div>
-          </div>
-
-          <div className="seo-guarantee-item">
-            <div className="seo-guarantee-icon-wrap">
-              <span className="seo-guarantee-icon">🔒</span>
-            </div>
-            <div className="seo-guarantee-text">
-              <strong>Secure Escrow Payments</strong>
-              <span>Safe deposit protection</span>
-            </div>
-          </div>
-
-          <div className="seo-guarantee-item">
-            <div className="seo-guarantee-icon-wrap">
-              <span className="seo-guarantee-icon">⚡</span>
-            </div>
-            <div className="seo-guarantee-text">
-              <strong>Dedicated Coordinator</strong>
-              <span>Personal show manager</span>
-            </div>
-          </div>
-        </div>
-
       </div>
 
 
