@@ -29,6 +29,10 @@
    AUTHENTIC DJ PARTY NIGHT CONCERT THEME SYSTEM (BRAND PALETTE & CONFETTI BG)
    ========================================================================== */
 .seo-hero-root.seo-hero-dj-theme {
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
   background-color: #141216 !important;
   background-image:
     /* 1. Luxury cyber dot matrix grid in Rose Stone (#D8C4B7) tint */
@@ -167,10 +171,10 @@
 
 /* DJ Theme Enhanced Title */
 .seo-hero-dj-theme .seo-hero-gradient-text {
-  background: linear-gradient(135deg, #FFF0B8 0%, var(--color-marigold, #E8B943) 55%, #C89427 100%) !important;
+  background: linear-gradient(135deg, #FFFFFF 15%, #F5F0E9 55%, var(--color-marigold, #E8B943) 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
-  filter: drop-shadow(0 0 25px rgba(232, 185, 67, 0.35)) !important;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4)) !important;
 }
 
 /* DJ Theme 5k Badge */
@@ -933,17 +937,16 @@
    High-Conversion Inline Lead Capture Box
    ========================================================================== */
 .seo-interactive-booking-card {
-  background: linear-gradient(165deg, rgba(32, 26, 30, 0.94) 0%, rgba(20, 16, 19, 0.97) 50%, rgba(14, 11, 13, 0.99) 100%);
+  background: linear-gradient(165deg, rgba(41, 39, 42, 0.94) 0%, rgba(32, 28, 33, 0.96) 60%, rgba(22, 19, 23, 0.99) 100%) !important;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(232, 185, 67, 0.35);
-  border-radius: 26px;
-  padding: 34px 38px 30px;
+  border: 1px solid rgba(216, 196, 183, 0.25) !important;
+  border-radius: 24px;
+  padding: 28px 32px 24px;
   box-shadow: 
-    0 28px 75px rgba(0, 0, 0, 0.82),
-    0 0 50px rgba(232, 185, 67, 0.09),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 0 20px rgba(232, 185, 67, 0.03);
+    0 24px 60px rgba(0, 0, 0, 0.75),
+    0 0 40px rgba(126, 48, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
   position: relative;
   overflow: hidden;
   max-width: 1100px;
@@ -1576,7 +1579,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: linear-gradient(135deg, #FF6565 0%, #E45F60 50%, #C93B4A 100%);
+  background: linear-gradient(135deg, var(--color-coral, #E45F60) 0%, var(--color-wine, #7E3044) 100%);
   border: 1px solid rgba(255, 255, 255, 0.35);
   color: #ffffff;
   font-weight: 800;
@@ -1703,11 +1706,11 @@
 }
 
 .seo-tier-btn.seo-tier-btn-featured {
-  background: linear-gradient(135deg, #FF6565 0%, #E45F60 45%, #C93B4A 100%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, var(--color-wine, #7E3044) 0%, var(--color-coral, #E45F60) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
   box-shadow: 
-    0 8px 24px rgba(228, 95, 96, 0.45),
+    0 8px 24px rgba(228, 95, 96, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -1738,8 +1741,8 @@
   gap: 14px;
   padding: 14px 18px;
   border-radius: 16px;
-  background: linear-gradient(165deg, rgba(32, 26, 30, 0.88) 0%, rgba(20, 16, 19, 0.95) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: linear-gradient(165deg, rgba(41, 39, 42, 0.9) 0%, rgba(28, 25, 29, 0.96) 100%) !important;
+  border: 1px solid rgba(216, 196, 183, 0.16) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -1798,7 +1801,8 @@
 
 .seo-guarantee-text span {
   font-size: 11.5px;
-  color: rgba(245, 240, 233, 0.65);
+  color: #D8C4B7;
+  opacity: 0.88;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -2362,19 +2366,48 @@ body.modal-open #unified-header {
 }
 
 .seo-dj-feat-body {
-  padding: 16px 20px 22px;
+  padding: 16px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   flex: 1;
 }
 
 .seo-dj-feat-body h4 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-ivory, #F5F0E9);
   margin: 0;
   letter-spacing: -0.01em;
+}
+
+.seo-dj-feat-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 8px;
+  flex: 1;
+}
+
+.seo-dj-feat-mini-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(126, 48, 68, 0.22);
+  border: 1px solid rgba(216, 196, 183, 0.22);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-ivory, #F5F0E9);
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.seo-dj-feat-card:hover .seo-dj-feat-mini-tag {
+  background: rgba(126, 48, 68, 0.38);
+  border-color: rgba(232, 185, 67, 0.45);
+  color: #ffffff;
 }
 
 .seo-dj-feat-body p {
@@ -3718,7 +3751,8 @@ body.modal-open #unified-header {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    overflow-x: clip !important;
+    overflow: hidden !important;
+    overflow-x: hidden !important;
   }
 
   .seo-hero-container {
@@ -3855,8 +3889,8 @@ body.modal-open #unified-header {
   .seo-hero-title-left {
     display: block !important;
     font-family: var(--font-display, "Playfair Display", serif) !important;
-    font-size: clamp(25px, 7.2vw, 32px) !important;
-    line-height: 1.18 !important;
+    font-size: clamp(21px, 6vw, 28px) !important;
+    line-height: 1.2 !important;
     letter-spacing: -0.015em !important;
     margin: 4px 0 8px 0 !important;
     width: 100% !important;

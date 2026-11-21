@@ -1246,8 +1246,12 @@ export default function SEOLandingHero({
                     <span className="seo-dj-feat-icon-bubble">🎛️</span>
                   </div>
                   <div className="seo-dj-feat-body">
-                    <h4>Pioneer DJ Consoles & Sound</h4>
-                    <p>Club-grade Pioneer CDJ/XDJ setups with high-clarity JBL / RCF line array speakers and wireless dual mics.</p>
+                    <h4>Pioneer DJ Consoles &amp; Sound</h4>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">🎛️ Pioneer CDJ/XDJ</span>
+                      <span className="seo-dj-feat-mini-tag">🔊 JBL/RCF Audio</span>
+                      <span className="seo-dj-feat-mini-tag">🎙️ Dual Wireless Mics</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>Check Live Setup</span>
                       <span>→</span>
@@ -1278,7 +1282,11 @@ export default function SEOLandingHero({
                   </div>
                   <div className="seo-dj-feat-body">
                     <h4>Live Punjabi Dhol Duo</h4>
-                    <p>Electrifying live dhol accompaniment to boost energy for Baraat, Sangeet & wedding celebrations in {city}.</p>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">🥁 High-Voltage Baraat</span>
+                      <span className="seo-dj-feat-mini-tag">🔥 Sangeet Energy</span>
+                      <span className="seo-dj-feat-mini-tag">⚡ 2 Dhol Masters</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>Add to Booking</span>
                       <span>→</span>
@@ -1308,8 +1316,12 @@ export default function SEOLandingHero({
                     <span className="seo-dj-feat-icon-bubble">🎶</span>
                   </div>
                   <div className="seo-dj-feat-body">
-                    <h4>Custom Curated Genres</h4>
-                    <p>Bollywood Club Remixes, Punjabi Bhangra, Commercial EDM, Tech House, 90s Nostalgia, and International Top 40.</p>
+                    <h4>Curated Genre Playlists</h4>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">🎵 Bollywood Hits</span>
+                      <span className="seo-dj-feat-mini-tag">🎧 Commercial EDM</span>
+                      <span className="seo-dj-feat-mini-tag">💃 Punjabi &amp; 90s</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>Choose Playlist</span>
                       <span>→</span>
@@ -1339,8 +1351,12 @@ export default function SEOLandingHero({
                     <span className="seo-dj-feat-icon-bubble">🎆</span>
                   </div>
                   <div className="seo-dj-feat-body">
-                    <h4>Stage Lights, SFX & Cold Pyro</h4>
-                    <p>Intelligent Sharpy moving head lights, smoke haze machines, CO2 jets, and cold sparklers for grand entries.</p>
+                    <h4>Stage Lighting &amp; SFX</h4>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">💡 Moving Sharpy Beams</span>
+                      <span className="seo-dj-feat-mini-tag">✨ Cold Sparklers</span>
+                      <span className="seo-dj-feat-mini-tag">💨 Smoke &amp; Haze FX</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>View SFX Options</span>
                       <span>→</span>
@@ -1371,7 +1387,11 @@ export default function SEOLandingHero({
                   </div>
                   <div className="seo-dj-feat-body">
                     <h4>Top Live {category}s</h4>
-                    <p>Celebrated performers & vocalists available for weddings, corporate galas & private parties in {city}.</p>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">🎙️ Celebrated Vocalists</span>
+                      <span className="seo-dj-feat-mini-tag">🛡️ Arrival Guarantee</span>
+                      <span className="seo-dj-feat-mini-tag">⭐ 4.9+ Rated Shows</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>Check Availability</span>
                       <span>→</span>
@@ -1399,8 +1419,12 @@ export default function SEOLandingHero({
                     <span className="seo-dj-feat-icon-bubble">🎸</span>
                   </div>
                   <div className="seo-dj-feat-body">
-                    <h4>Acoustic & Full Band Setups</h4>
-                    <p>From intimate acoustic duos to grand 5-piece live stage bands with full digital sound mixing.</p>
+                    <h4>Acoustic &amp; Full Band Setups</h4>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">🎸 Acoustic Duos</span>
+                      <span className="seo-dj-feat-mini-tag">🥁 5-Piece Stage Band</span>
+                      <span className="seo-dj-feat-mini-tag">🎹 Digital Mixing</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>Explore Setups</span>
                       <span>→</span>
@@ -1429,7 +1453,11 @@ export default function SEOLandingHero({
                   </div>
                   <div className="seo-dj-feat-body">
                     <h4>Multi-Genre Repertoire</h4>
-                    <p>Bollywood hits, Ghazals, Sufi classics, Retro 90s, Pop Rock, and contemporary party medleys.</p>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">🍷 Sufi &amp; Ghazals</span>
+                      <span className="seo-dj-feat-mini-tag">🎵 Bollywood Hits</span>
+                      <span className="seo-dj-feat-mini-tag">⚡ Pop &amp; Rock</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>Request Setlist</span>
                       <span>→</span>
@@ -1458,7 +1486,11 @@ export default function SEOLandingHero({
                   </div>
                   <div className="seo-dj-feat-body">
                     <h4>Complete Sound Coordination</h4>
-                    <p>PA speakers, stage monitors, wireless Shure microphones & technical rider support managed for you.</p>
+                    <div className="seo-dj-feat-tags-list">
+                      <span className="seo-dj-feat-mini-tag">🔊 Digital PA Speakers</span>
+                      <span className="seo-dj-feat-mini-tag">🎙️ Shure Stage Mics</span>
+                      <span className="seo-dj-feat-mini-tag">🎧 Sound Technician</span>
+                    </div>
                     <div className="seo-dj-feat-action-hint">
                       <span>Get Instant Quote</span>
                       <span>→</span>
@@ -1471,16 +1503,16 @@ export default function SEOLandingHero({
         )}
 
         {/* ==========================================================================
-           3. Direct 1-Step Lead Engine (NO MODAL NEEDED TO SUBMIT!)
+           3. Direct 1-Step Lead Engine & VIP Artist Concierge Ribbon
            ========================================================================== */}
         <div ref={formRef} id="seo-lead-form" className="seo-interactive-booking-card">
           {!isSubmitted ? (
-            <form onSubmit={handleInlineSubmit}>
+            <form onSubmit={handleInlineSubmit} className="seo-concierge-form">
               <div className="seo-booking-header">
                 <div className="seo-booking-title-group">
                   <div className="seo-booking-eyebrow">
-                    <span className="seo-eyebrow-sparkle">✨</span>
-                    <span>DIRECT ARTIST BOOKING &amp; REAL-TIME QUOTES</span>
+                    <span className="seo-pulse-dot-green" />
+                    <span>VIP CONCIERGE • 5-MIN FAST RESPONSE</span>
                   </div>
                   <h3 className="seo-booking-title">
                     Get Instant <span className="lux-gold-gradient">{category} Price List</span> &amp; Availability in {city}
@@ -1512,12 +1544,12 @@ export default function SEOLandingHero({
                 )}
               </AnimatePresence>
 
-              {/* Input Grid */}
+              {/* Modern Compact Input Grid */}
               <div className="seo-booking-grid">
                 {/* Mobile / WhatsApp Number (PRIMARY HIGH-CONVERTING INPUT) */}
                 <div className="seo-input-group">
                   <label htmlFor="seo-phone">
-                    <span>WhatsApp / Mobile Number</span>
+                    <span>WhatsApp Number</span>
                     <span className="seo-label-req">*</span>
                   </label>
                   <div className="seo-phone-input-wrap">
@@ -1537,7 +1569,7 @@ export default function SEOLandingHero({
                       inputMode="numeric"
                       pattern="[0-9]*"
                       maxLength={10}
-                      placeholder="Enter 10-digit mobile"
+                      placeholder="10-digit mobile number"
                       value={phone}
                       onChange={(e) => {
                         const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -1626,10 +1658,10 @@ export default function SEOLandingHero({
                   onClick={handleWhatsAppQuote}
                   className="seo-btn-whatsapp"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
                   </svg>
-                  <span>Chat Directly on WhatsApp</span>
+                  <span>Chat on WhatsApp</span>
                 </button>
               </div>
 
@@ -1734,8 +1766,8 @@ export default function SEOLandingHero({
                       </span>
                     ) : (
                       <span className="seo-tier-kicker">
-                        {tier.id.includes('band') || tier.id.includes('ensemble') || tier.id.includes('celebrity') || tier.id.includes('headliner')
-                          ? '👑 GRAND PRODUCTION'
+                        {tier.id.includes('band') || tier.id.includes('ensemble') || tier.id.includes('celebrity') || tier.id.includes('headliner') || tier.id.includes('concert') || tier.id.includes('mega')
+                          ? '👑 GRAND PRODUCTION & CONCERT'
                           : '✦ INTIMATE GATHERINGS'}
                       </span>
                     )}
