@@ -89,36 +89,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const newArtistPayload = {
           user_id: currentUser.id,
           name: rawName,
-          stage_name: rawName,
+          stage_name: "", // User fills this
           slug: cleanSlug,
           email: currentUser.email,
           phone_no: currentUser.user_metadata?.phone || '',
-          category: 'Live Singer',
-          city: 'Delhi NCR',
-          country: 'India',
-          languages: ['Hindi', 'English'],
-          genres: ['Bollywood', 'Retro'],
-          verification_status: 'pending',
+          category: "", // User fills this
+          city: "", // User fills this
+          country: "India",
+          languages: [], // User fills this
+          genres: [], // User fills this
+          verification_status: "pending",
           is_live: false,
-          profile_completion: 25,
+          profile_completion: 15,
           submitted_pricing: {
-            starting_price: 5999,
-            solo_price: 5999,
-            duo_price: 9999,
-            band_price: 19999,
-            hourly_price: 3000,
-            travel_charges_policy: "Standard outstation travel & stay to be provided by client"
+            starting_price: 0,
+            solo_price: 0,
+            duo_price: 0,
+            band_price: 0,
+            hourly_price: 0,
+            travel_charges_policy: ""
           },
           performance_details: {
             min_duration_minutes: 60,
-            max_duration_minutes: 240,
+            max_duration_minutes: 180,
             sound_system_provided: false,
-            technical_requirements: "Stage PA with 2 vocal microphones & monitoring",
+            technical_requirements: "",
             travel_readiness: "pan_india",
-            serviceable_cities: ["Delhi NCR", "Mumbai", "Bengaluru", "Jaipur", "Chandigarh"]
+            serviceable_cities: []
           },
           verification_documents: {
-            legal_name: "",
+            legal_name: rawName,
             id_type: "",
             id_number_masked: "",
             id_document_url: "",

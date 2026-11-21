@@ -120,36 +120,36 @@ export default function ArtistOnboardingPage() {
   const [customLocation, setCustomLocation] = useState('');
 
   const [formData, setFormData] = useState({
-    // Step 1: Identity & Act
+    // Step 1: Identity & Act (Only name and email will be prefilled; all other fields are blank for user to fill)
     name: '',
     stage_name: '',
     phone_no: '',
     email: '',
-    city: 'Delhi NCR',
-    state: 'Delhi',
+    city: '',
+    state: '',
     country: 'India',
-    experience_years: 3,
-    category: 'Solo Singer',
-    sub_category: 'Bollywood & Sufi',
+    experience_years: '' as any,
+    category: '',
+    sub_category: '',
 
-    // Step 2: Repertoire, Coverage Area & Bio
-    genres: ['Bollywood', 'Sufi'] as string[],
-    languages: ['Hindi', 'English'] as string[],
-    serviceable_cities: ['Delhi NCR'] as string[],
+    // Step 2: Repertoire, Coverage Area & Bio (Blank for user to choose)
+    genres: [] as string[],
+    languages: [] as string[],
+    serviceable_cities: [] as string[],
     bio: '',
 
-    // Step 3: Pricing & Logistics
-    starting_price: 15000,
-    solo_price: 15000,
-    duo_price: 25000,
-    band_price: 45000,
-    hourly_price: 5000,
-    travel_policy: 'Outstation travel & accommodation to be arranged by event host',
-    min_duration: 60,
-    max_duration: 180,
+    // Step 3: Pricing & Logistics (Blank for user to fill)
+    starting_price: '' as any,
+    solo_price: '' as any,
+    duo_price: '' as any,
+    band_price: '' as any,
+    hourly_price: '' as any,
+    travel_policy: '',
+    min_duration: '' as any,
+    max_duration: '' as any,
     travel_readiness: 'pan_india',
     sound_system: false,
-    tech_requirements: 'Stage PA with 2 wireless vocal mics & stage monitor',
+    tech_requirements: '',
 
     // Step 4: Portfolio, Media & Socials
     profile_image_url: '',
@@ -176,52 +176,21 @@ export default function ArtistOnboardingPage() {
     upi_id: '',
   });
 
-  // Pre-fill from newly registered user / artist
+  // Pre-fill from newly registered user: ONLY Name and Gmail!
+  // All other fields start empty so the user fills them himself.
   useEffect(() => {
     const initialName =
       artist?.name ||
       user?.user_metadata?.full_name ||
       '';
     const initialEmail = artist?.email || user?.email || '';
-    const initialPhone = artist?.phone_no || user?.user_metadata?.phone || '';
 
     setFormData((prev) => ({
       ...prev,
       name: prev.name || initialName,
-      stage_name: prev.stage_name || artist?.stage_name || '',
-      phone_no: prev.phone_no || initialPhone,
       email: prev.email || initialEmail,
-      city: artist?.city || prev.city,
-      state: artist?.state || prev.state,
-      experience_years: artist?.experience_years || prev.experience_years,
-      category: artist?.category || prev.category,
-      sub_category: artist?.sub_category || prev.sub_category,
-      genres: artist?.genres?.length ? artist.genres : prev.genres,
-      languages: artist?.languages?.length ? artist.languages : prev.languages,
-      serviceable_cities: artist?.performance_details?.serviceable_cities?.length
-        ? artist.performance_details.serviceable_cities
-        : prev.serviceable_cities,
-      bio: artist?.bio || prev.bio,
-      starting_price: artist?.submitted_pricing?.starting_price || artist?.price_min || prev.starting_price,
-      solo_price: artist?.submitted_pricing?.solo_price || artist?.price_min || prev.solo_price,
-      duo_price: artist?.submitted_pricing?.duo_price || prev.duo_price,
-      band_price: artist?.submitted_pricing?.band_price || artist?.price_max || prev.band_price,
-      hourly_price: artist?.submitted_pricing?.hourly_price || prev.hourly_price,
-      profile_image_url: artist?.profile_image_url || prev.profile_image_url,
-      cover_image_url: artist?.cover_image_url || prev.cover_image_url,
-      youtube_links: artist?.youtube_links?.length ? artist.youtube_links : prev.youtube_links,
-      audio_samples: artist?.audio_samples?.length ? artist.audio_samples : prev.audio_samples,
-      instagram_url: artist?.instagram_url || prev.instagram_url,
-      youtube_url: artist?.youtube_url || prev.youtube_url,
-      spotify_url: artist?.spotify_url || prev.spotify_url,
-      website_url: artist?.website_url || prev.website_url,
-      legal_name: artist?.verification_documents?.legal_name || prev.legal_name || initialName,
-      id_type: artist?.verification_documents?.id_type || prev.id_type,
-      id_number_masked: artist?.verification_documents?.id_number_masked || prev.id_number_masked,
-      pan_or_tax_id: artist?.verification_documents?.pan_or_tax_id || prev.pan_or_tax_id,
-      id_document_url: artist?.verification_documents?.id_document_url || prev.id_document_url,
-      address_proof_url: artist?.verification_documents?.address_proof_url || prev.address_proof_url,
-      bank_holder: prev.bank_holder || initialName,
+      legal_name: prev.legal_name || initialName,
+      // Keep everything else user-driven!
     }));
   }, [artist, user]);
 
@@ -901,6 +870,7 @@ export default function ArtistOnboardingPage() {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="form-input"
                   >
+                    <option value="">-- Select Your Performance Category * --</option>
                     {CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>
                         {cat}
@@ -952,8 +922,9 @@ export default function ArtistOnboardingPage() {
                     required
                     min="0"
                     max="50"
-                    value={formData.experience_years}
-                    onChange={(e) => setFormData({ ...formData, experience_years: Number(e.target.value) })}
+                    value={formData.experience_years ?? ''}
+                    onChange={(e) => setFormData({ ...formData, experience_years: e.target.value === '' ? '' : Number(e.target.value) })}
+                    placeholder="e.g. 3"
                     className="form-input"
                   />
                 </div>
@@ -1117,16 +1088,18 @@ export default function ArtistOnboardingPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <div>
-                  <label className="form-label">Solo / Starting Rate (₹) *</label>
+                  <label className="form-label">Solo / Starting Rate (₹) <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="number"
                     step="500"
-                    value={formData.starting_price}
+                    required
+                    value={formData.starting_price ?? ''}
+                    placeholder="e.g. 15000"
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        starting_price: Number(e.target.value),
-                        solo_price: Number(e.target.value),
+                        starting_price: e.target.value === '' ? '' : Number(e.target.value),
+                        solo_price: e.target.value === '' ? '' : Number(e.target.value),
                       })
                     }
                     className="form-input font-bold"
@@ -1138,8 +1111,10 @@ export default function ArtistOnboardingPage() {
                   <input
                     type="number"
                     step="500"
-                    value={formData.duo_price}
-                    onChange={(e) => setFormData({ ...formData, duo_price: Number(e.target.value) })}
+                    required
+                    value={formData.duo_price ?? ''}
+                    placeholder="e.g. 25000"
+                    onChange={(e) => setFormData({ ...formData, duo_price: e.target.value === '' ? '' : Number(e.target.value) })}
                     className="form-input font-bold"
                   />
                 </div>
@@ -1149,8 +1124,10 @@ export default function ArtistOnboardingPage() {
                   <input
                     type="number"
                     step="500"
-                    value={formData.band_price}
-                    onChange={(e) => setFormData({ ...formData, band_price: Number(e.target.value) })}
+                    required
+                    value={formData.band_price ?? ''}
+                    placeholder="e.g. 45000"
+                    onChange={(e) => setFormData({ ...formData, band_price: e.target.value === '' ? '' : Number(e.target.value) })}
                     className="form-input font-bold"
                   />
                 </div>
@@ -1160,8 +1137,10 @@ export default function ArtistOnboardingPage() {
                   <input
                     type="number"
                     step="500"
-                    value={formData.hourly_price}
-                    onChange={(e) => setFormData({ ...formData, hourly_price: Number(e.target.value) })}
+                    required
+                    value={formData.hourly_price ?? ''}
+                    placeholder="e.g. 5000"
+                    onChange={(e) => setFormData({ ...formData, hourly_price: e.target.value === '' ? '' : Number(e.target.value) })}
                     className="form-input font-bold"
                   />
                 </div>
