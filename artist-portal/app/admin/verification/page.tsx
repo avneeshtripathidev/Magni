@@ -42,8 +42,24 @@ import {
   Radio,
   Layers,
   Building,
-  Image as ImageIcon
+  Image as ImageIcon,
+  MessageSquare,
+  MessageCircle,
+  Send,
+  MessageSquareQuote,
+  CornerDownRight,
+  Reply
 } from 'lucide-react';
+import {
+  FOLLOW_UP_PRESETS,
+  FollowUpMessage,
+  getArtistFollowUps,
+  saveArtistFollowUp,
+  logArtistReply,
+  buildArtistFollowUpWhatsAppUrl,
+  buildArtistFollowUpEmailUrl
+} from '../../../lib/artistFollowUp';
+import { artistService } from '../../../services/artistService';
 
 function AdminVerificationQueueContent() {
   const { artists, updateArtistStatus, deleteArtist } = useAdminAuth();
@@ -60,6 +76,20 @@ function AdminVerificationQueueContent() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
+
+  // Director Follow-up & 2-way Artist Conversation state
+  const [showFollowUpInput, setShowFollowUpInput] = useState(false);
+  const [followUpSubject, setFollowUpSubject] = useState(FOLLOW_UP_PRESETS[0].subject);
+  const [followUpMessage, setFollowUpMessage] = useState('');
+  const [followUpChannels, setFollowUpChannels] = useState<{ email: boolean; whatsapp: boolean; portal: boolean }>({
+    email: true,
+    whatsapp: true,
+    portal: true,
+  });
+  const [followUpSending, setFollowUpSending] = useState(false);
+  const [followUpHistory, setFollowUpHistory] = useState<FollowUpMessage[]>([]);
+  const [recordingReplyId, setRecordingReplyId] = useState<string | null>(null);
+  const [artistReplyText, setArtistReplyText] = useState('');
 
   // Auto-open dossier if reviewId is passed via URL query
   useEffect(() => {
@@ -133,6 +163,7 @@ function AdminVerificationQueueContent() {
       setSelectedArtist(null);
       setDeleteConfirmOpen(false);
       setShowRejectInput(false);
+      setShowFollowUpInput(false);
       setNotification(`Permanently deleted application query for "${artist.name}".`);
       setTimeout(() => setNotification(null), 4000);
     } catch (err) {
@@ -140,6 +171,83 @@ function AdminVerificationQueueContent() {
     } finally {
       setDeleting(false);
     }
+  };
+
+  // Sync follow-up history whenever selectedArtist changes
+  useEffect(() => {
+    if (selectedArtist) {
+      const history = getArtistFollowUps(selectedArtist.id);
+      setFollowUpHistory(history);
+      const defaultPreset = FOLLOW_UP_PRESETS[0];
+      setFollowUpSubject(defaultPreset.subject);
+      setFollowUpMessage(defaultPreset.message(selectedArtist));
+      setShowFollowUpInput(false);
+      setRecordingReplyId(null);
+      setArtistReplyText('');
+    }
+  }, [selectedArtist?.id]);
+
+  const handleSendFollowUp = async () => {
+    if (!selectedArtist || !followUpMessage.trim()) return;
+    setFollowUpSending(true);
+
+    const channelsUsed: ('email' | 'whatsapp' | 'portal')[] = [];
+    if (followUpChannels.email && selectedArtist.email) channelsUsed.push('email');
+    if (followUpChannels.whatsapp && selectedArtist.phone_no) channelsUsed.push('whatsapp');
+    if (followUpChannels.portal) channelsUsed.push('portal');
+
+    const newMsg: FollowUpMessage = {
+      id: `fu_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      artist_id: selectedArtist.id,
+      sender: 'director',
+      sender_name: 'Magnevents Director',
+      subject: followUpSubject || 'Artist Application Follow-Up',
+      message: followUpMessage.trim(),
+      channels: channelsUsed.length ? channelsUsed : ['portal'],
+      created_at: new Date().toISOString(),
+      status: 'sent',
+    };
+
+    const updated = saveArtistFollowUp(newMsg);
+    setFollowUpHistory(updated);
+
+    // Dispatch in-portal notification
+    if (followUpChannels.portal) {
+      await artistService.sendNotification({
+        artist_id: selectedArtist.id,
+        title: `Director Query: ${newMsg.subject}`,
+        message: newMsg.message,
+        type: 'info',
+        action_url: '/verification',
+      });
+    }
+
+    // Keep artist status under_review (NOT rejected)
+    if (selectedArtist.verification_status === 'pending') {
+      await updateArtistStatus(selectedArtist.id, 'under_review', `Director Follow-Up: ${newMsg.subject}`);
+      setSelectedArtist((prev) => (prev ? { ...prev, verification_status: 'under_review' } : null));
+    }
+
+    setNotification(`Follow-up sent to ${selectedArtist.name}. Conversation is active.`);
+    setTimeout(() => setNotification(null), 4500);
+
+    // Launch WhatsApp if selected and phone exists
+    if (followUpChannels.whatsapp && selectedArtist.phone_no) {
+      const waUrl = buildArtistFollowUpWhatsAppUrl(selectedArtist, followUpMessage);
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    setFollowUpSending(false);
+  };
+
+  const handleSaveArtistReply = (followUpId: string) => {
+    if (!selectedArtist || !artistReplyText.trim()) return;
+    const updated = logArtistReply(selectedArtist.id, followUpId, artistReplyText.trim());
+    setFollowUpHistory(updated);
+    setRecordingReplyId(null);
+    setArtistReplyText('');
+    setNotification(`Logged artist reply note for ${selectedArtist.name}.`);
+    setTimeout(() => setNotification(null), 3500);
   };
 
   return (
@@ -1731,6 +1839,321 @@ function AdminVerificationQueueContent() {
                     </div>
                   </div>
                 )}
+
+                {/* Director Follow-Up & 2-Way Artist Inquiry Panel */}
+                {(showFollowUpInput || followUpHistory.length > 0) && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-sky-50/80 via-white to-sky-50/30 border border-sky-200 shadow-sm space-y-4">
+                    {/* Header */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-sky-100">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+                          <MessageSquareQuote className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                              Director Follow-Up &amp; Artist Query
+                            </h4>
+                            <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[10px] font-extrabold">
+                              Not a Rejection
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-500 mt-0.5">
+                            Direct inquiry for {selectedArtist.name}. The artist is notified and can reply to resolve any doubts or questions.
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowFollowUpInput((prev) => !prev)}
+                        className="text-xs font-bold text-sky-700 hover:text-sky-900 px-2.5 py-1 rounded-lg hover:bg-sky-100/60 transition-colors"
+                      >
+                        {showFollowUpInput ? 'Hide Composer' : '+ New Follow-Up Query'}
+                      </button>
+                    </div>
+
+                    {/* Composer Area */}
+                    {showFollowUpInput && (
+                      <div className="space-y-3 bg-white p-3.5 sm:p-4 rounded-xl border border-sky-200/80 shadow-xs">
+                        {/* Quick Presets */}
+                        <div>
+                          <span className="text-[11px] font-bold text-slate-500 block mb-1.5">
+                            Quick Topic Presets:
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {FOLLOW_UP_PRESETS.map((preset) => (
+                              <button
+                                key={preset.id}
+                                type="button"
+                                onClick={() => {
+                                  setFollowUpSubject(preset.subject);
+                                  setFollowUpMessage(preset.message(selectedArtist));
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-800 text-[11px] font-semibold transition-all flex items-center gap-1"
+                              >
+                                <span>{preset.icon}</span>
+                                <span>{preset.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Subject */}
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                            Follow-Up Subject:
+                          </label>
+                          <input
+                            type="text"
+                            value={followUpSubject}
+                            onChange={(e) => setFollowUpSubject(e.target.value)}
+                            placeholder="Enter inquiry topic..."
+                            className="w-full px-3 py-2 bg-slate-50/70 border border-slate-200 rounded-lg text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-sky-200 focus:bg-white"
+                          />
+                        </div>
+
+                        {/* Message Box */}
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                            Message to Artist:
+                          </label>
+                          <textarea
+                            value={followUpMessage}
+                            onChange={(e) => setFollowUpMessage(e.target.value)}
+                            placeholder="Type your question or clarification for the artist..."
+                            className="w-full p-3 bg-slate-50/70 border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-200 focus:bg-white h-24 font-normal"
+                          />
+                        </div>
+
+                        {/* Notification Channels */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-700">
+                            <span className="font-bold text-[11px] text-slate-500">Channels:</span>
+                            <label className="inline-flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={followUpChannels.email}
+                                onChange={(e) =>
+                                  setFollowUpChannels((prev) => ({ ...prev, email: e.target.checked }))
+                                }
+                                className="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5"
+                              />
+                              <span className="text-[11px] font-semibold">✉️ Email ({selectedArtist.email || 'No email'})</span>
+                            </label>
+
+                            <label className="inline-flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={followUpChannels.whatsapp}
+                                onChange={(e) =>
+                                  setFollowUpChannels((prev) => ({ ...prev, whatsapp: e.target.checked }))
+                                }
+                                className="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5"
+                              />
+                              <span className="text-[11px] font-semibold">💬 WhatsApp ({selectedArtist.phone_no || 'No phone'})</span>
+                            </label>
+
+                            <label className="inline-flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={followUpChannels.portal}
+                                onChange={(e) =>
+                                  setFollowUpChannels((prev) => ({ ...prev, portal: e.target.checked }))
+                                }
+                                className="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5"
+                              />
+                              <span className="text-[11px] font-semibold">🔔 In-Portal Alert</span>
+                            </label>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {selectedArtist.phone_no && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const url = buildArtistFollowUpWhatsAppUrl(selectedArtist, followUpMessage);
+                                  window.open(url, '_blank', 'noopener,noreferrer');
+                                }}
+                                className="px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#1ebe5d] text-white text-xs font-bold flex items-center gap-1 shadow-xs"
+                                title="Open WhatsApp chat with prefilled follow-up text"
+                              >
+                                <MessageCircle className="w-3.5 h-3.5" />
+                                <span>WhatsApp Query</span>
+                              </button>
+                            )}
+
+                            {selectedArtist.email && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const url = buildArtistFollowUpEmailUrl(selectedArtist, followUpSubject, followUpMessage);
+                                  window.location.href = url;
+                                }}
+                                className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold flex items-center gap-1"
+                                title="Open email client with prefilled follow-up"
+                              >
+                                <Mail className="w-3.5 h-3.5" />
+                                <span>Email Query</span>
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={handleSendFollowUp}
+                              disabled={followUpSending || !followUpMessage.trim()}
+                              className="px-4 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                              {followUpSending ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  <span>Sending...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Send className="w-3.5 h-3.5" />
+                                  <span>Send Follow-Up</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Previous Conversation History / Log */}
+                    {followUpHistory.length > 0 && (
+                      <div className="space-y-2 pt-1">
+                        <span className="text-[11px] font-bold text-slate-600 block uppercase tracking-wider">
+                          Conversation &amp; Inquiry History ({followUpHistory.length}):
+                        </span>
+
+                        <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                          {followUpHistory.map((item) => (
+                            <div
+                              key={item.id}
+                              className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-2"
+                            >
+                              <div className="flex flex-wrap items-center justify-between gap-1.5">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-sky-500" />
+                                  <span className="font-bold text-xs text-slate-900">
+                                    {item.subject}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                                  <span>{new Date(item.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                                  <span>•</span>
+                                  <span
+                                    className={`px-1.5 py-0.5 rounded-md font-bold uppercase ${
+                                      item.status === 'replied'
+                                        ? 'bg-emerald-100 text-emerald-800'
+                                        : 'bg-amber-100 text-amber-800'
+                                    }`}
+                                  >
+                                    {item.status === 'replied' ? '✓ Replied' : 'Awaiting Reply'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <p className="text-xs text-slate-700 whitespace-pre-wrap pl-3.5 border-l-2 border-sky-300">
+                                {item.message}
+                              </p>
+
+                              {/* Channels Used */}
+                              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 text-[10px]">
+                                <div className="flex items-center gap-1.5 text-slate-500">
+                                  <span>Notified via:</span>
+                                  {item.channels.includes('email') && (
+                                    <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">
+                                      ✉️ Email
+                                    </span>
+                                  )}
+                                  {item.channels.includes('whatsapp') && (
+                                    <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">
+                                      💬 WhatsApp
+                                    </span>
+                                  )}
+                                  {item.channels.includes('portal') && (
+                                    <span className="px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 font-semibold">
+                                      🔔 In-Portal
+                                    </span>
+                                  )}
+                                </div>
+
+                                {item.status === 'sent' && recordingReplyId !== item.id && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setRecordingReplyId(item.id);
+                                      setArtistReplyText('');
+                                    }}
+                                    className="text-sky-700 hover:text-sky-900 font-bold hover:underline flex items-center gap-1"
+                                  >
+                                    <Reply className="w-3 h-3" />
+                                    <span>+ Log Artist&apos;s Reply / Doubt Resolution</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Artist Reply Record Bubble if replied */}
+                              {item.status === 'replied' && item.reply_note && (
+                                <div className="p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-200 text-xs space-y-1">
+                                  <div className="flex items-center justify-between text-[10px] font-bold text-emerald-800">
+                                    <span className="flex items-center gap-1">
+                                      <CornerDownRight className="w-3 h-3 text-emerald-600" />
+                                      <span>Artist Response:</span>
+                                    </span>
+                                    {item.reply_at && (
+                                      <span className="text-slate-400 font-normal">
+                                        {new Date(item.reply_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-emerald-950 italic pl-4">
+                                    &ldquo;{item.reply_note}&rdquo;
+                                  </p>
+                                </div>
+                              )}
+
+                              {/* Recording reply input */}
+                              {recordingReplyId === item.id && (
+                                <div className="p-2.5 rounded-lg bg-sky-50/60 border border-sky-200 text-xs space-y-2">
+                                  <label className="block text-[11px] font-bold text-sky-900">
+                                    Record Artist&apos;s Response (via Call, WhatsApp or Email):
+                                  </label>
+                                  <textarea
+                                    value={artistReplyText}
+                                    onChange={(e) => setArtistReplyText(e.target.value)}
+                                    placeholder="Type what the artist replied or clarified..."
+                                    className="w-full p-2 bg-white border border-sky-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-sky-400 h-16"
+                                  />
+                                  <div className="flex items-center gap-2 justify-end">
+                                    <button
+                                      type="button"
+                                      onClick={() => setRecordingReplyId(null)}
+                                      className="px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-600 text-xs hover:bg-slate-50 font-medium"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSaveArtistReply(item.id)}
+                                      disabled={!artistReplyText.trim()}
+                                      className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs disabled:opacity-50"
+                                    >
+                                      Save Reply
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 {/* Sticky Modal Actions Footer */}
               <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
@@ -1766,6 +2189,29 @@ function AdminVerificationQueueContent() {
                     className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs min-h-[40px]"
                   >
                     Reject Application
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeleteConfirmOpen(false);
+                      setShowRejectInput(false);
+                      setShowFollowUpInput((prev) => !prev);
+                    }}
+                    className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl border font-bold text-xs min-h-[40px] flex items-center justify-center gap-1.5 transition-all ${
+                      showFollowUpInput
+                        ? 'bg-sky-600 text-white border-sky-600 shadow-sm'
+                        : 'bg-sky-50 hover:bg-sky-100 border-sky-300 text-sky-800'
+                    }`}
+                    title="Start a direct follow-up conversation with this artist (Not a rejection)"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>Follow-Up / Query</span>
+                    {followUpHistory.length > 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 rounded-full bg-sky-200/90 text-sky-900 text-[10px] font-black">
+                        {followUpHistory.length}
+                      </span>
+                    )}
                   </button>
 
                   <button

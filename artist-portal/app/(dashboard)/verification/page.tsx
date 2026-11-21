@@ -17,7 +17,14 @@ import {
   Save,
   Send,
   Upload,
+  MessageSquare,
+  MessageCircle,
+  CornerDownRight,
+  Reply,
+  Mail,
+  Check,
 } from 'lucide-react';
+import { getArtistFollowUps, logArtistReply, FollowUpMessage } from '../../../lib/artistFollowUp';
 
 export default function VerificationPage() {
   const { artist, refreshArtist } = useArtistAuth();
@@ -37,12 +44,35 @@ export default function VerificationPage() {
   };
 
   const [formData, setFormData] = useState(existingDocs);
+  const [followUps, setFollowUps] = useState<FollowUpMessage[]>([]);
+  const [artistDoubtReply, setArtistDoubtReply] = useState('');
 
   useEffect(() => {
     if (artist?.verification_documents) {
       setFormData(artist.verification_documents);
     }
+    if (artist?.id) {
+      setFollowUps(getArtistFollowUps(artist.id));
+    }
   }, [artist]);
+
+  const handleArtistSubmitReply = (followUpId: string) => {
+    if (!artist || !artistDoubtReply.trim()) return;
+    const text = artistDoubtReply.trim();
+    const updated = logArtistReply(artist.id, followUpId, text);
+    setFollowUps(updated);
+    setArtistDoubtReply('');
+    setMessage({
+      type: 'success',
+      text: 'Your reply has been saved and shared with the Director and Curation Team.',
+    });
+    artistService.sendNotification({
+      artist_id: artist.id,
+      type: 'verification',
+      title: 'Artist Reply Logged',
+      message: `${artist.stage_name || artist.name} replied: "${text}"`,
+    });
+  };
 
   const handlePrivateDocUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -186,6 +216,123 @@ export default function VerificationPage() {
           <button onClick={() => setMessage(null)} className="text-xs opacity-70 hover:opacity-100 font-semibold">
             Dismiss
           </button>
+        </div>
+      )}
+
+      {/* Director Follow-Up / Inquiry Banner */}
+      {followUps.length > 0 && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-50 via-white to-blue-50 border border-sky-200 shadow-sm space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-sky-100">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-sky-100 text-sky-700">
+                <MessageSquare className="w-4 h-4" />
+              </span>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <span>Director Follow-Up &amp; Application Inquiry</span>
+                  <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[10px] font-extrabold uppercase">
+                    Active Discussion
+                  </span>
+                </h3>
+                <p className="text-[11px] text-slate-500">
+                  Our verification team is reviewing your profile and sent a direct query. (This is not a rejection)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {followUps.map((item) => (
+              <div
+                key={item.id}
+                className="p-3.5 rounded-xl bg-white border border-sky-100/80 shadow-2xs space-y-2.5"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <span className="font-bold text-xs text-sky-950">
+                    {item.subject}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {new Date(item.created_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-700 whitespace-pre-wrap pl-3 border-l-2 border-sky-400">
+                  {item.message}
+                </p>
+
+                {item.status === 'replied' && item.reply_note ? (
+                  <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-[10px] font-bold text-emerald-800">
+                      <span className="flex items-center gap-1">
+                        <CornerDownRight className="w-3 h-3 text-emerald-600" />
+                        <span>Your Reply:</span>
+                      </span>
+                      {item.reply_at && (
+                        <span className="text-slate-400 font-normal">
+                          {new Date(item.reply_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-emerald-950 italic pl-4">
+                      &ldquo;{item.reply_note}&rdquo;
+                    </p>
+                  </div>
+                ) : (
+                  <div className="pt-2 border-t border-slate-100 space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1">
+                        <Reply className="w-3 h-3 text-sky-600" />
+                        <span>Have any questions or doubts? Reply to the Director:</span>
+                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={`https://wa.me/917992117094?text=${encodeURIComponent(
+                            `Hi Magnevents Team, this is ${artist?.stage_name || artist?.name} replying to verification query: "${item.subject}". `
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                        >
+                          <MessageCircle className="w-3 h-3 text-emerald-600" />
+                          <span>WhatsApp</span>
+                        </a>
+
+                        <a
+                          href={`mailto:support@magnevents.in?subject=${encodeURIComponent(
+                            `Re: ${item.subject} - ${artist?.stage_name || artist?.name}`
+                          )}`}
+                          className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                        >
+                          <Mail className="w-3 h-3 text-slate-600" />
+                          <span>Email</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <textarea
+                        value={artistDoubtReply}
+                        onChange={(e) => setArtistDoubtReply(e.target.value)}
+                        placeholder="Type your response, clarification, or ask any doubts here..."
+                        rows={2}
+                        className="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:bg-white resize-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleArtistSubmitReply(item.id)}
+                        disabled={!artistDoubtReply.trim()}
+                        className="px-3.5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 self-end flex items-center gap-1"
+                      >
+                        <Send className="w-3 h-3" />
+                        <span>Send</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

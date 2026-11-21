@@ -1,6 +1,4 @@
-/* ==========================================================================
-   SEOLandingHero.css - High-Converting Luxury Event Landing Page System
-   ========================================================================== */
+
 
 .seo-hero-root {
   position: relative;
@@ -9,7 +7,6 @@
   padding: 24px 20px 60px;
   background-color: #141216;
   background-image:
-    /* Subtle luxury cyber dot matrix grid in Rose Stone tint (#D8C4B7) */
     radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
     /* Wine Red concert stage lighting (#7E3044) */
     radial-gradient(ellipse 70% 50% at 25% 25%, rgba(126, 48, 68, 0.38) 0%, transparent 65%),

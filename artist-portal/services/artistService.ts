@@ -60,26 +60,69 @@ export const artistService = {
 
   // Fetch in-app notifications
   async getNotifications(artistId: string): Promise<ArtistNotification[]> {
-    const { data, error } = await supabase
-      .from('artist_notifications')
-      .select('*')
-      .eq('artist_id', artistId)
-      .order('created_at', { ascending: false })
-      .limit(30);
+    try {
+      const { data, error } = await supabase
+        .from('artist_notifications')
+        .select('*')
+        .eq('artist_id', artistId)
+        .order('created_at', { ascending: false })
+        .limit(30);
 
-    if (error) {
-      console.warn('Could not load notifications:', error);
-      return [];
+      if (!error && data && data.length > 0) {
+        return data;
+      }
+    } catch (err) {
+      console.warn('Could not load notifications from Supabase:', err);
     }
-    return data || [];
+
+    // LocalStorage fallback for offline / local testing
+    try {
+      if (typeof window !== 'undefined') {
+        const local = localStorage.getItem(`artist_notifs_${artistId}`);
+        return local ? JSON.parse(local) : [];
+      }
+    } catch {}
+
+    return [];
+  },
+
+  // Dispatch an in-app notification to an artist
+  async sendNotification(
+    notification: Omit<ArtistNotification, 'id' | 'created_at' | 'is_read'> & { is_read?: boolean }
+  ): Promise<ArtistNotification> {
+    const newNotif: ArtistNotification = {
+      is_read: false,
+      ...notification,
+      id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      await supabase.from('artist_notifications').insert([newNotif]);
+    } catch (e) {
+      console.warn('Could not persist notification to Supabase:', e);
+    }
+
+    try {
+      if (typeof window !== 'undefined') {
+        const key = `artist_notifs_${notification.artist_id}`;
+        const raw = localStorage.getItem(key);
+        const existing: ArtistNotification[] = raw ? JSON.parse(raw) : [];
+        localStorage.setItem(key, JSON.stringify([newNotif, ...existing]));
+      }
+    } catch {}
+
+    return newNotif;
   },
 
   // Mark notification read
   async markNotificationRead(notificationId: string) {
-    await supabase
-      .from('artist_notifications')
-      .update({ is_read: true })
-      .eq('id', notificationId);
+    try {
+      await supabase
+        .from('artist_notifications')
+        .update({ is_read: true })
+        .eq('id', notificationId);
+    } catch {}
   },
 
   // Fetch bookings assigned to or requested for this artist
