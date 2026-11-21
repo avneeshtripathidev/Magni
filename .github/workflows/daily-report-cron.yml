@@ -2,14 +2,24 @@ name: Magnevents Daily Form Submissions Report Cron
 
 on:
   schedule:
-    # 18:25 UTC = 23:55 (11:55 PM) IST every single day
+    # 18:25 UTC = 23:55 (11:55 PM) IST (Primary dispatch before midnight)
     - cron: '25 18 * * *'
+    # 18:45 UTC = 00:15 (12:15 AM) IST (Catch-up 20 min later)
+    - cron: '45 18 * * *'
+    # 19:15 UTC = 00:45 (12:45 AM) IST (Midnight safety sweep)
+    - cron: '15 19 * * *'
+    # 02:30 UTC = 08:00 (8:00 AM) IST (Morning guarantee sweep)
+    - cron: '30 2 * * *'
   workflow_dispatch:
     inputs:
       target_date:
-        description: 'Optional date in YYYY-MM-DD format (leave blank for today in IST)'
+        description: 'Optional date in YYYY-MM-DD format (leave blank for auto-detected IST date)'
         required: false
         default: ''
+      force:
+        description: 'Force resend even if already marked as sent (true/false)'
+        required: false
+        default: 'false'
 
 jobs:
   dispatch-daily-report:
@@ -19,9 +29,21 @@ jobs:
       - name: Trigger Daily Report Endpoint
         run: |
           TARGET_DATE="${{ github.event.inputs.target_date }}"
+          FORCE="${{ github.event.inputs.force }}"
           ENDPOINT="https://www.magnevents.in/api/cron/daily-report"
+          PARAMS=""
           if [ -n "$TARGET_DATE" ]; then
-            ENDPOINT="${ENDPOINT}?date=${TARGET_DATE}"
+            PARAMS="date=${TARGET_DATE}"
+          fi
+          if [ "$FORCE" = "true" ]; then
+            if [ -n "$PARAMS" ]; then
+              PARAMS="${PARAMS}&force=true"
+            else
+              PARAMS="force=true"
+            fi
+          fi
+          if [ -n "$PARAMS" ]; then
+            ENDPOINT="${ENDPOINT}?${PARAMS}"
           fi
           echo "Triggering: $ENDPOINT"
           RESPONSE=$(curl -s -w "\n%{http_code}" "$ENDPOINT")
@@ -33,4 +55,4 @@ jobs:
             echo "::error::Daily report failed with status $HTTP_STATUS"
             exit 1
           fi
-          echo "Daily report generated and emailed successfully!"
+          echo "Daily report verified and dispatched successfully!"

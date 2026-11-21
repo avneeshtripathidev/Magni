@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -30,6 +31,7 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const dateParam = searchParams.get('date'); // Optional YYYY-MM-DD
     const sendEmail = searchParams.get('send_email') !== 'false';
+    const force = searchParams.get('force') === 'true';
 
     // 1. Verify Vercel Cron Secret if configured in production
     const authHeader = req.headers.get('authorization');
@@ -51,7 +53,7 @@ export async function GET(req) {
       '';
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // 3. Determine target date in IST (UTC+5:30)
+    // 3. Determine target date in IST (UTC+5:30) with automatic missed-report catch-up
     let targetDateStr = '';
     let startOfTodayUTC;
     let endOfTodayUTC;
@@ -59,37 +61,81 @@ export async function GET(req) {
 
     if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
       targetDateStr = dateParam;
-      startOfTodayUTC = new Date(`${targetDateStr}T00:00:00+05:30`);
-      endOfTodayUTC = new Date(`${targetDateStr}T23:59:59.999+05:30`);
-      displayDateStr = startOfTodayUTC.toLocaleDateString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        weekday: 'long',
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
     } else {
       const now = new Date();
-      // If triggered after midnight (e.g. 12:15 AM IST), offset by -2 hours to attribute to the calendar day that just ended
-      const adjustedTime = new Date(now.getTime() - 2 * 60 * 60 * 1000);
       const istOffset = 5.5 * 60 * 60 * 1000;
-      const istTime = new Date(adjustedTime.getTime() + istOffset);
-      
-      const year = istTime.getUTCFullYear();
-      const month = String(istTime.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(istTime.getUTCDate()).padStart(2, '0');
-      targetDateStr = `${year}-${month}-${day}`;
+      const istNow = new Date(now.getTime() + istOffset);
+      const istHour = istNow.getUTCHours();
+      const todayStr = istNow.toISOString().slice(0, 10);
+      const yesterdayDate = new Date(istNow.getTime() - 24 * 60 * 60 * 1000);
+      const yesterdayStr = yesterdayDate.toISOString().slice(0, 10);
 
-      startOfTodayUTC = new Date(`${targetDateStr}T00:00:00+05:30`);
-      endOfTodayUTC = new Date(`${targetDateStr}T23:59:59.999+05:30`);
+      // If running between 00:00 and 12:00 IST (morning/after-midnight hours):
+      // Check if yesterday's report was already sent
+      if (istHour < 12) {
+        let yesterdayAlreadySent = false;
+        try {
+          const { data: yLog } = await supabase
+            .from('notifications_outbox')
+            .select('id')
+            .eq('channel', 'daily_report')
+            .eq('reference_code', `daily-report-${yesterdayStr}`)
+            .eq('status', 'sent')
+            .limit(1);
+          yesterdayAlreadySent = Boolean(yLog && yLog.length > 0);
+        } catch (e) {
+          // If table check fails, default to safe 2-hour offset
+          const adjustedTime = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+          const adjIst = new Date(adjustedTime.getTime() + istOffset);
+          yesterdayAlreadySent = adjIst.getUTCDate() === istNow.getUTCDate();
+        }
 
-      displayDateStr = startOfTodayUTC.toLocaleDateString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        weekday: 'long',
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
+        // If yesterday was NOT sent, automatically catch up and send yesterday's report!
+        if (!yesterdayAlreadySent) {
+          targetDateStr = yesterdayStr;
+        } else {
+          targetDateStr = todayStr;
+        }
+      } else {
+        // Evening / late night hours (12:00 PM to 11:59 PM IST): Target today
+        targetDateStr = todayStr;
+      }
+    }
+
+    startOfTodayUTC = new Date(`${targetDateStr}T00:00:00+05:30`);
+    endOfTodayUTC = new Date(`${targetDateStr}T23:59:59.999+05:30`);
+
+    displayDateStr = startOfTodayUTC.toLocaleDateString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      weekday: 'long',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+
+    // Idempotency Lock: If already sent for this date and force is not set, exit gracefully
+    if (!force && sendEmail) {
+      try {
+        const { data: sentLog } = await supabase
+          .from('notifications_outbox')
+          .select('id, created_at')
+          .eq('channel', 'daily_report')
+          .eq('reference_code', `daily-report-${targetDateStr}`)
+          .eq('status', 'sent')
+          .limit(1);
+
+        if (sentLog && sentLog.length > 0) {
+          return NextResponse.json({
+            success: true,
+            alreadySent: true,
+            message: `Daily report for ${targetDateStr} was already dispatched at ${sentLog[0].created_at}. Pass ?force=true to resend.`,
+            targetDate: targetDateStr,
+            date: displayDateStr,
+          });
+        }
+      } catch (logErr) {
+        console.warn('Could not check daily_report log in outbox:', logErr?.message || logErr);
+      }
     }
 
     // 4. Query all submissions for this calendar day in IST
@@ -425,6 +471,20 @@ export async function GET(req) {
         html: htmlBody,
       });
       emailSent = true;
+
+      // Record in notifications_outbox as sent lock
+      try {
+        await supabase.from('notifications_outbox').insert({
+          channel: 'daily_report',
+          reference_code: `daily-report-${targetDateStr}`,
+          recipient: emailRecipient,
+          subject: `📊 Daily Form Submissions: ${uniqueCount} Unique Leads (${displayDateStr})`,
+          status: 'sent',
+          payload: { uniqueCount, rawTotalCount, totalPipelineBudget, targetDate: targetDateStr },
+        });
+      } catch (insertErr) {
+        console.warn('Could not record daily_report in notifications_outbox:', insertErr?.message || insertErr);
+      }
     }
 
     return NextResponse.json({
@@ -446,4 +506,8 @@ export async function GET(req) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(req) {
+  return GET(req);
 }
