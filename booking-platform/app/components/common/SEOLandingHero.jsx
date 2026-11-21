@@ -1093,6 +1093,308 @@ export default function SEOLandingHero({
         )}
 
         {/* ==========================================================================
+           4. Interactive 3-Tier Price Guide (Answers "How much does it cost?")
+           ========================================================================== */}
+        <div id="pricing" className="seo-pricing-guide-section">
+          <div className="seo-section-head-v2" style={{ textAlign: 'center', justifyContent: 'center' }}>
+            <div>
+              <span className="badge">✨ TRANSPARENT PRICING PACKAGES</span>
+              <h2><span className="lux-gold-gradient">{category} Pricing Packages</span> in {city}</h2>
+              <p>Direct artist fees with zero middleman charges. Select a package to lock your date &amp; check live availability.</p>
+            </div>
+          </div>
+
+          <div className="seo-pricing-cards-grid">
+            {budgetTiers.map((tier) => (
+              <div key={tier.id} className={`seo-tier-card ${tier.isPopular ? 'featured-tier' : ''}`}>
+                <div className="seo-tier-header">
+                  <div className="seo-tier-tag-row">
+                    {tier.isPopular ? (
+                      <span className="seo-tier-badge">
+                        <span className="seo-star-icon">★</span>
+                        <span>MOST POPULAR IN {city.toUpperCase()}</span>
+                      </span>
+                    ) : (
+                      <span className="seo-tier-kicker">
+                        {tier.id.includes('band') || tier.id.includes('ensemble') || tier.id.includes('celebrity') || tier.id.includes('headliner') || tier.id.includes('concert') || tier.id.includes('mega')
+                          ? '👑 GRAND PRODUCTION & CONCERT'
+                          : '✦ INTIMATE GATHERINGS'}
+                      </span>
+                    )}
+                  </div>
+                  <h4>{tier.title}</h4>
+                  <div className={`seo-tier-price ${tier.isPopular ? 'featured-price' : ''}`}>
+                    {tier.price}
+                  </div>
+                </div>
+
+                <ul className="seo-tier-features">
+                  {tier.features.map((feat, idx) => (
+                    <li key={idx}>
+                      <span className="feat-check">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span>
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectTier(tier)}
+                  className={`seo-tier-btn ${tier.isPopular ? 'seo-tier-btn-featured' : ''}`}
+                >
+                  <span>Check Availability</span>
+                  <span className="btn-arrow">→</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ==========================================================================
+           3. Direct 1-Step Lead Engine & VIP Artist Concierge Ribbon
+           ========================================================================== */}
+        <div ref={formRef} id="seo-lead-form" className="seo-interactive-booking-card">
+          {!isSubmitted ? (
+            <form onSubmit={handleInlineSubmit} className="seo-concierge-form">
+              <div className="seo-booking-header">
+                <div className="seo-booking-title-group">
+                  <div className="seo-booking-eyebrow">
+                    <span className="seo-pulse-dot-green" />
+                    <span>VIP CONCIERGE • 5-MIN FAST RESPONSE</span>
+                  </div>
+                  <h3 className="seo-booking-title">
+                    Get Instant <span className="lux-gold-gradient">{category} Price List</span> &amp; Availability in {city}
+                  </h3>
+                  <p>Direct artist rates sent to your WhatsApp in 5 minutes • Zero spam guarantee</p>
+                </div>
+                <div className="seo-fast-response-tag">
+                  <span className="seo-pulse-dot-green" />
+                  <span>Avg 5-Min WhatsApp Reply</span>
+                </div>
+              </div>
+
+              {/* If user clicked an artist to feature in inquiry */}
+              <AnimatePresence>
+                {selectedArtist && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="seo-selected-artist-bar"
+                  >
+                    <span>
+                      🎯 Target Performer Selected: <strong>{selectedArtist.name}</strong> (~₹{selectedArtist.price_min?.toLocaleString('en-IN')})
+                    </span>
+                    <button type="button" onClick={() => setSelectedArtist(null)}>
+                      Clear selection
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Modern Compact Input Grid */}
+              <div className="seo-booking-grid">
+                {/* Mobile / WhatsApp Number (PRIMARY HIGH-CONVERTING INPUT) */}
+                <div className="seo-input-group">
+                  <label htmlFor="seo-phone">
+                    <span>WhatsApp Number</span>
+                    <span className="seo-label-req">*</span>
+                  </label>
+                  <div className="seo-phone-input-wrap">
+                    <span className="seo-phone-prefix">
+                      <svg width="18" height="12" viewBox="0 0 18 12" fill="none" className="seo-flag-svg">
+                        <rect width="18" height="4" fill="#FF9933" />
+                        <rect y="4" width="18" height="4" fill="#FFFFFF" />
+                        <rect y="8" width="18" height="4" fill="#138808" />
+                        <circle cx="9" cy="6" r="1.5" stroke="#000088" strokeWidth="0.6" fill="none" />
+                      </svg>
+                      <span>+91</span>
+                    </span>
+                    <input
+                      ref={phoneInputRef}
+                      id="seo-phone"
+                      type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={10}
+                      placeholder="10-digit mobile number"
+                      value={phone}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setPhone(digits);
+                        if (phoneError) setPhoneError("");
+                      }}
+                      className="seo-phone-input"
+                      required
+                    />
+                  </div>
+                  {phoneError && <span className="seo-input-error">{phoneError}</span>}
+                </div>
+
+                {/* Event Type */}
+                <div className="seo-input-group">
+                  <label htmlFor="seo-event-type">
+                    <span>Event Type</span>
+                  </label>
+                  <div className="seo-select-wrap">
+                    <select
+                      id="seo-event-type"
+                      value={selectedEventType}
+                      onChange={(e) => setSelectedEventType(e.target.value)}
+                      className="seo-input-control"
+                    >
+                      {eventTypes.map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Event Date */}
+                <div className="seo-input-group">
+                  <label htmlFor="seo-event-date">
+                    <span>Event Date</span>
+                  </label>
+                  <div className="seo-date-wrap">
+                    <input
+                      id="seo-event-date"
+                      type="date"
+                      min={getMinDate()}
+                      value={eventDate}
+                      onChange={(e) => setEventDate(e.target.value)}
+                      className="seo-input-control"
+                      style={{ colorScheme: 'dark' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Name (Optional for zero-friction) */}
+                <div className="seo-input-group">
+                  <label htmlFor="seo-name">
+                    <span>Your Name <span className="seo-label-opt">(Optional)</span></span>
+                  </label>
+                  <input
+                    id="seo-name"
+                    type="text"
+                    placeholder="E.g. Rajesh Kumar"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="seo-input-control"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="seo-booking-actions">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="seo-btn-submit"
+                >
+                  {isSubmitting ? (
+                    <span>⏳ Checking Availability...</span>
+                  ) : (
+                    <>
+                      <span>Send Me Available Artists &amp; Price List</span>
+                      <span className="seo-btn-arrow">→</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleWhatsAppQuote}
+                  className="seo-btn-whatsapp"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
+                  </svg>
+                  <span>Chat on WhatsApp</span>
+                </button>
+              </div>
+
+              <div className="seo-form-guarantee-note">
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <span>100% Free Service</span>
+                </span>
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                  <span>Direct Artist Pricing</span>
+                </span>
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <polyline points="9 12 11 14 15 10"/>
+                  </svg>
+                  <span>100% Arrival Guarantee</span>
+                </span>
+                <span className="seo-trust-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                  <span>Zero Spam Policy</span>
+                </span>
+              </div>
+            </form>
+          ) : (
+            /* Instant Animated Success Confirmation Screen */
+            <div className="seo-success-box">
+              <div className="seo-success-icon">✓</div>
+              <h3>Inquiry Received for {city}!</h3>
+              {refCode && (
+                <div style={{
+                  display: 'inline-block',
+                  margin: '0 auto 12px',
+                  padding: '4px 14px',
+                  background: 'rgba(232, 185, 67,  0.15)',
+                  border: '1px solid rgba(232, 185, 67,  0.4)',
+                  borderRadius: '100px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: '#E8B943',
+                  letterSpacing: '0.05em'
+                }}>
+                  BOOKING REF: {refCode}
+                </div>
+              )}
+              <p>
+                Thank you{name ? `, ${name}` : ''}! Our dedicated {city} entertainment manager is preparing available {category} profiles, video clips, and customized price packages for your event on {eventDate}.
+              </p>
+              <div className="seo-success-actions">
+                <button
+                  type="button"
+                  onClick={handleWhatsAppQuote}
+                  className="seo-btn-whatsapp"
+                  style={{ minWidth: '240px' }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
+                  </svg>
+                  <span>Open WhatsApp to Fast-Track</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSubmitted(false)}
+                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', fontSize: '13px' }}
+                >
+                  Submit Another Inquiry
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ==========================================================================
            2. Top 5 Verified Artists Showcase Section OR Specialized DJ/Category Showcase
            ========================================================================== */}
         {topArtists && topArtists.length > 0 ? (
@@ -1501,308 +1803,6 @@ export default function SEOLandingHero({
             )}
           </div>
         )}
-
-        {/* ==========================================================================
-           3. Direct 1-Step Lead Engine & VIP Artist Concierge Ribbon
-           ========================================================================== */}
-        <div ref={formRef} id="seo-lead-form" className="seo-interactive-booking-card">
-          {!isSubmitted ? (
-            <form onSubmit={handleInlineSubmit} className="seo-concierge-form">
-              <div className="seo-booking-header">
-                <div className="seo-booking-title-group">
-                  <div className="seo-booking-eyebrow">
-                    <span className="seo-pulse-dot-green" />
-                    <span>VIP CONCIERGE • 5-MIN FAST RESPONSE</span>
-                  </div>
-                  <h3 className="seo-booking-title">
-                    Get Instant <span className="lux-gold-gradient">{category} Price List</span> &amp; Availability in {city}
-                  </h3>
-                  <p>Direct artist rates sent to your WhatsApp in 5 minutes • Zero spam guarantee</p>
-                </div>
-                <div className="seo-fast-response-tag">
-                  <span className="seo-pulse-dot-green" />
-                  <span>Avg 5-Min WhatsApp Reply</span>
-                </div>
-              </div>
-
-              {/* If user clicked an artist to feature in inquiry */}
-              <AnimatePresence>
-                {selectedArtist && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="seo-selected-artist-bar"
-                  >
-                    <span>
-                      🎯 Target Performer Selected: <strong>{selectedArtist.name}</strong> (~₹{selectedArtist.price_min?.toLocaleString('en-IN')})
-                    </span>
-                    <button type="button" onClick={() => setSelectedArtist(null)}>
-                      Clear selection
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Modern Compact Input Grid */}
-              <div className="seo-booking-grid">
-                {/* Mobile / WhatsApp Number (PRIMARY HIGH-CONVERTING INPUT) */}
-                <div className="seo-input-group">
-                  <label htmlFor="seo-phone">
-                    <span>WhatsApp Number</span>
-                    <span className="seo-label-req">*</span>
-                  </label>
-                  <div className="seo-phone-input-wrap">
-                    <span className="seo-phone-prefix">
-                      <svg width="18" height="12" viewBox="0 0 18 12" fill="none" className="seo-flag-svg">
-                        <rect width="18" height="4" fill="#FF9933" />
-                        <rect y="4" width="18" height="4" fill="#FFFFFF" />
-                        <rect y="8" width="18" height="4" fill="#138808" />
-                        <circle cx="9" cy="6" r="1.5" stroke="#000088" strokeWidth="0.6" fill="none" />
-                      </svg>
-                      <span>+91</span>
-                    </span>
-                    <input
-                      ref={phoneInputRef}
-                      id="seo-phone"
-                      type="tel"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={10}
-                      placeholder="10-digit mobile number"
-                      value={phone}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                        setPhone(digits);
-                        if (phoneError) setPhoneError("");
-                      }}
-                      className="seo-phone-input"
-                      required
-                    />
-                  </div>
-                  {phoneError && <span className="seo-input-error">{phoneError}</span>}
-                </div>
-
-                {/* Event Type */}
-                <div className="seo-input-group">
-                  <label htmlFor="seo-event-type">
-                    <span>Event Type</span>
-                  </label>
-                  <div className="seo-select-wrap">
-                    <select
-                      id="seo-event-type"
-                      value={selectedEventType}
-                      onChange={(e) => setSelectedEventType(e.target.value)}
-                      className="seo-input-control"
-                    >
-                      {eventTypes.map(t => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Event Date */}
-                <div className="seo-input-group">
-                  <label htmlFor="seo-event-date">
-                    <span>Event Date</span>
-                  </label>
-                  <div className="seo-date-wrap">
-                    <input
-                      id="seo-event-date"
-                      type="date"
-                      min={getMinDate()}
-                      value={eventDate}
-                      onChange={(e) => setEventDate(e.target.value)}
-                      className="seo-input-control"
-                      style={{ colorScheme: 'dark' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Name (Optional for zero-friction) */}
-                <div className="seo-input-group">
-                  <label htmlFor="seo-name">
-                    <span>Your Name <span className="seo-label-opt">(Optional)</span></span>
-                  </label>
-                  <input
-                    id="seo-name"
-                    type="text"
-                    placeholder="E.g. Rajesh Kumar"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="seo-input-control"
-                  />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="seo-booking-actions">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="seo-btn-submit"
-                >
-                  {isSubmitting ? (
-                    <span>⏳ Checking Availability...</span>
-                  ) : (
-                    <>
-                      <span>Send Me Available Artists &amp; Price List</span>
-                      <span className="seo-btn-arrow">→</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleWhatsAppQuote}
-                  className="seo-btn-whatsapp"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
-                  </svg>
-                  <span>Chat on WhatsApp</span>
-                </button>
-              </div>
-
-              <div className="seo-form-guarantee-note">
-                <span className="seo-trust-badge">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                  <span>100% Free Service</span>
-                </span>
-                <span className="seo-trust-badge">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                  </svg>
-                  <span>Direct Artist Pricing</span>
-                </span>
-                <span className="seo-trust-badge">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    <polyline points="9 12 11 14 15 10"/>
-                  </svg>
-                  <span>100% Arrival Guarantee</span>
-                </span>
-                <span className="seo-trust-badge">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8B943" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                  </svg>
-                  <span>Zero Spam Policy</span>
-                </span>
-              </div>
-            </form>
-          ) : (
-            /* Instant Animated Success Confirmation Screen */
-            <div className="seo-success-box">
-              <div className="seo-success-icon">✓</div>
-              <h3>Inquiry Received for {city}!</h3>
-              {refCode && (
-                <div style={{
-                  display: 'inline-block',
-                  margin: '0 auto 12px',
-                  padding: '4px 14px',
-                  background: 'rgba(232, 185, 67,  0.15)',
-                  border: '1px solid rgba(232, 185, 67,  0.4)',
-                  borderRadius: '100px',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  color: '#E8B943',
-                  letterSpacing: '0.05em'
-                }}>
-                  BOOKING REF: {refCode}
-                </div>
-              )}
-              <p>
-                Thank you{name ? `, ${name}` : ''}! Our dedicated {city} entertainment manager is preparing available {category} profiles, video clips, and customized price packages for your event on {eventDate}.
-              </p>
-              <div className="seo-success-actions">
-                <button
-                  type="button"
-                  onClick={handleWhatsAppQuote}
-                  className="seo-btn-whatsapp"
-                  style={{ minWidth: '240px' }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.451 5.437 0 9.857-4.403 9.86-9.809.001-2.618-1.01-5.08-2.858-6.93C16.528 2.015 14.07 1.006 11.453 1.006c-5.434 0-9.852 4.403-9.855 9.81-.001 2.062.54 4.079 1.566 5.86l-.99 3.613 3.712-.977zm11.304-6.816c-.302-.15-1.788-.882-2.066-.983-.277-.101-.478-.15-.678.15-.2.3-.775.983-.95 1.185-.175.201-.35.227-.652.076-.302-.15-1.274-.469-2.427-1.498-.897-.8-1.502-1.788-1.678-2.09-.175-.302-.019-.465.132-.615.136-.135.302-.35.454-.526.15-.176.2-.302.302-.503.101-.2.05-.376-.026-.526-.075-.15-.678-1.636-.93-2.243-.244-.59-.493-.51-.678-.518-.176-.008-.377-.01-.578-.01-.2 0-.527.075-.803.376-.277.301-1.055 1.031-1.055 2.516 0 1.485 1.079 2.921 1.229 3.122.15.2 2.125 3.245 5.148 4.549.719.311 1.28.497 1.717.637.722.23 1.38.197 1.901.12.58-.087 1.788-.73 2.04-1.435.252-.703.252-1.306.176-1.435-.076-.13-.277-.201-.578-.352z"/>
-                  </svg>
-                  <span>Open WhatsApp to Fast-Track</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsSubmitted(false)}
-                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '12px 20px', borderRadius: '12px', cursor: 'pointer', fontSize: '13px' }}
-                >
-                  Submit Another Inquiry
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ==========================================================================
-           4. Interactive 3-Tier Price Guide (Answers "How much does it cost?")
-           ========================================================================== */}
-        <div id="pricing" className="seo-pricing-guide-section">
-          <div className="seo-section-head-v2" style={{ textAlign: 'center', justifyContent: 'center' }}>
-            <div>
-              <span className="badge">✨ TRANSPARENT PRICING PACKAGES</span>
-              <h2><span className="lux-gold-gradient">{category} Pricing Packages</span> in {city}</h2>
-              <p>Direct artist fees with zero middleman charges. Select a package to lock your date &amp; check live availability.</p>
-            </div>
-          </div>
-
-          <div className="seo-pricing-cards-grid">
-            {budgetTiers.map((tier) => (
-              <div key={tier.id} className={`seo-tier-card ${tier.isPopular ? 'featured-tier' : ''}`}>
-                <div className="seo-tier-header">
-                  <div className="seo-tier-tag-row">
-                    {tier.isPopular ? (
-                      <span className="seo-tier-badge">
-                        <span className="seo-star-icon">★</span>
-                        <span>MOST POPULAR IN {city.toUpperCase()}</span>
-                      </span>
-                    ) : (
-                      <span className="seo-tier-kicker">
-                        {tier.id.includes('band') || tier.id.includes('ensemble') || tier.id.includes('celebrity') || tier.id.includes('headliner') || tier.id.includes('concert') || tier.id.includes('mega')
-                          ? '👑 GRAND PRODUCTION & CONCERT'
-                          : '✦ INTIMATE GATHERINGS'}
-                      </span>
-                    )}
-                  </div>
-                  <h4>{tier.title}</h4>
-                  <div className={`seo-tier-price ${tier.isPopular ? 'featured-price' : ''}`}>
-                    {tier.price}
-                  </div>
-                </div>
-
-                <ul className="seo-tier-features">
-                  {tier.features.map((feat, idx) => (
-                    <li key={idx}>
-                      <span className="feat-check">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      </span>
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectTier(tier)}
-                  className={`seo-tier-btn ${tier.isPopular ? 'seo-tier-btn-featured' : ''}`}
-                >
-                  <span>Check Availability</span>
-                  <span className="btn-arrow">→</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
 
       </div>
 
