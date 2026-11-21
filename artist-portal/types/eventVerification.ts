@@ -34,6 +34,13 @@ export interface EventVerificationRecord {
   budget: number;
   booking_status: 'confirmed' | 'pending' | 'completed' | 'rejected';
   payout_status?: string;
+  rejection_reason?: string;
+  artist_messages?: {
+    id: string;
+    text: string;
+    artist_name: string;
+    sent_at: string;
+  }[];
 
   // Admin-triggered Live Event Verification workflow
   event_live_status: EventLiveStatus;

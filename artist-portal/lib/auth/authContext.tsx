@@ -263,7 +263,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       // If user was signed out (locally or from any other device)
-      if (event === 'SIGNED_OUT' || !newSession) {
+      if (event === 'SIGNED_OUT') {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('magnevents_registered_user');
           localStorage.removeItem('magnevents_registered_artist');
@@ -275,6 +275,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setArtist(null);
         setLoading(false);
+        return;
+      }
+
+      if (!newSession) {
         return;
       }
 

@@ -301,6 +301,54 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (action === 'update_booking_status' && booking_id) {
+      const idx = records.findIndex((r) => r.booking_id === booking_id);
+      if (idx !== -1) {
+        const updated: EventVerificationRecord = {
+          ...records[idx],
+          booking_status: body.status || 'rejected',
+          rejection_reason: body.reason || undefined,
+          updated_at: now,
+        };
+        records[idx] = updated;
+        writeStore(records);
+        await syncToSupabase(updated);
+        return NextResponse.json({
+          success: true,
+          event: updated,
+          proofStatus: computeProofStatus(updated),
+        });
+      }
+    }
+
+    if (action === 'artist_message' && booking_id) {
+      const idx = records.findIndex((r) => r.booking_id === booking_id);
+      if (idx !== -1) {
+        const currentMessages = Array.isArray(records[idx].artist_messages)
+          ? records[idx].artist_messages!
+          : [];
+        const newMsg = {
+          id: `msg_${Date.now()}`,
+          text: body.message,
+          artist_name: body.artist_name || 'Artist',
+          sent_at: now,
+        };
+        const updated: EventVerificationRecord = {
+          ...records[idx],
+          artist_messages: [...currentMessages, newMsg],
+          updated_at: now,
+        };
+        records[idx] = updated;
+        writeStore(records);
+        await syncToSupabase(updated);
+        return NextResponse.json({
+          success: true,
+          message: newMsg,
+          messages: updated.artist_messages,
+        });
+      }
+    }
+
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (err: any) {
     return NextResponse.json(

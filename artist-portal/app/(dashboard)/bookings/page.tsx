@@ -29,6 +29,12 @@ import {
   AlertCircle,
   Radio,
   Upload,
+  MessageSquare,
+  MessageCircle,
+  Send,
+  CornerDownRight,
+  AlertTriangle,
+  Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -60,6 +66,18 @@ export default function BookingsPage() {
     artist?.performance_details?.blocked_dates || []
   );
   const [savingAvailability, setSavingAvailability] = useState(false);
+
+  // Reject Booking Modal State
+  const [rejectBooking, setRejectBooking] = useState<any | null>(null);
+  const [rejectReason, setRejectReason] = useState('Schedule / Date Conflict with another show');
+  const [rejectNote, setRejectNote] = useState('');
+  const [submittingReject, setSubmittingReject] = useState(false);
+
+  // Chat with Admin Coordinator State
+  const [chatBooking, setChatBooking] = useState<any | null>(null);
+  const [chatMessage, setChatMessage] = useState('');
+  const [sendingChat, setSendingChat] = useState(false);
+  const [chatBookingMessages, setChatBookingMessages] = useState<Record<string, any[]>>({});
 
   const isEventForArtist = useCallback(
     (e: EventVerificationRecord) => {
@@ -176,19 +194,149 @@ export default function BookingsPage() {
 
   // Handle Decline Booking
   const handleDeclineBooking = async (bookingId: string) => {
+    handleOpenRejectModal({ id: bookingId });
+  };
+
+  // Handle Open Reject Modal
+  const handleOpenRejectModal = (b: any) => {
+    setRejectBooking(b);
+    setRejectReason('Schedule / Date Conflict with another show');
+    setRejectNote('');
+  };
+
+  // Handle Confirm Reject / Decline Booking
+  const handleConfirmRejectBooking = async () => {
+    if (!rejectBooking) return;
+    setSubmittingReject(true);
+    const bookingId = rejectBooking.id;
+    const fullReason = rejectNote.trim()
+      ? `${rejectReason} — Note: ${rejectNote.trim()}`
+      : rejectReason;
+
     try {
-      await artistService.updateBookingStatus(bookingId, 'rejected', 'Performer unavailable for requested time');
+      await artistService.updateBookingStatus(bookingId, 'rejected', fullReason);
+
+      try {
+        await fetch('/api/artist/event-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'update_booking_status',
+            booking_id: bookingId,
+            status: 'rejected',
+            reason: fullReason,
+          }),
+        });
+      } catch (e) {}
+
+      await artistService.sendNotification({
+        artist_id: artist?.id || 'admin',
+        type: 'booking',
+        title: `Booking #${bookingId} Declined/Rejected by Performer`,
+        message: `${artist?.stage_name || artist?.name || 'Artist'} rejected booking #${bookingId}: "${fullReason}". Coordinator reassignment required.`,
+      });
+
       setBookings((prev) =>
-        prev.map((b) => (b.id === bookingId ? { ...b, status: 'rejected' } : b))
+        prev.map((b) => (b.id === bookingId ? { ...b, status: 'rejected', notes: fullReason } : b))
       );
-      setActionMessage({ type: 'success', text: `Booking #${bookingId} declined.` });
-      setTimeout(() => setActionMessage(null), 4000);
+      setLiveEvents((prev) =>
+        prev.map((e) => (e.booking_id === bookingId ? { ...e, booking_status: 'rejected' } : e))
+      );
+
+      setActionMessage({
+        type: 'success',
+        text: `Booking #${bookingId} has been declined. Admin coordinator notified for reassignment.`,
+      });
+      setRejectBooking(null);
+      setTimeout(() => setActionMessage(null), 5000);
     } catch (err: any) {
       setBookings((prev) =>
-        prev.map((b) => (b.id === bookingId ? { ...b, status: 'rejected' } : b))
+        prev.map((b) => (b.id === bookingId ? { ...b, status: 'rejected', notes: fullReason } : b))
       );
-      setActionMessage({ type: 'success', text: `Booking #${bookingId} declined.` });
+      setLiveEvents((prev) =>
+        prev.map((e) => (e.booking_id === bookingId ? { ...e, booking_status: 'rejected' } : e))
+      );
+      setActionMessage({
+        type: 'success',
+        text: `Booking #${bookingId} marked as rejected. Coordinator notified.`,
+      });
+      setRejectBooking(null);
+      setTimeout(() => setActionMessage(null), 5000);
+    } finally {
+      setSubmittingReject(false);
+    }
+  };
+
+  // Handle Open Chat Modal
+  const handleOpenChatModal = (b: any) => {
+    setChatBooking(b);
+    setChatMessage('');
+    try {
+      const stored = localStorage.getItem(`magne_booking_chat_${b.id}`);
+      if (stored) {
+        setChatBookingMessages((prev) => ({ ...prev, [b.id]: JSON.parse(stored) }));
+      }
+    } catch (e) {}
+  };
+
+  // Handle Send Booking Message to Admin
+  const handleSendBookingMessage = async () => {
+    if (!chatBooking || !chatMessage.trim()) return;
+    setSendingChat(true);
+    const bookingId = chatBooking.id;
+    const msgText = chatMessage.trim();
+    const newMsg = {
+      id: `msg_${Date.now()}`,
+      text: msgText,
+      artist_name: artist?.stage_name || artist?.name || 'Artist',
+      sent_at: new Date().toISOString(),
+    };
+
+    try {
+      try {
+        await fetch('/api/artist/event-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'artist_message',
+            booking_id: bookingId,
+            message: msgText,
+            artist_name: artist?.stage_name || artist?.name,
+            artist_id: artist?.id,
+          }),
+        });
+      } catch (e) {}
+
+      await artistService.sendNotification({
+        artist_id: artist?.id || 'admin',
+        type: 'booking',
+        title: `Artist Message on Booking #${bookingId}`,
+        message: `${artist?.stage_name || artist?.name || 'Artist'}: "${msgText}"`,
+      });
+
+      const updatedList = [...(chatBookingMessages[bookingId] || []), newMsg];
+      setChatBookingMessages((prev) => ({
+        ...prev,
+        [bookingId]: updatedList,
+      }));
+
+      try {
+        localStorage.setItem(`magne_booking_chat_${bookingId}`, JSON.stringify(updatedList));
+      } catch (e) {}
+
+      setActionMessage({
+        type: 'success',
+        text: `Your message regarding Booking #${bookingId} has been sent to the Artist Admin.`,
+      });
+      setChatMessage('');
       setTimeout(() => setActionMessage(null), 4000);
+    } catch (err: any) {
+      setActionMessage({
+        type: 'error',
+        text: 'Failed to send message. Please use WhatsApp or Call Coordinator.',
+      });
+    } finally {
+      setSendingChat(false);
     }
   };
 
@@ -568,10 +716,11 @@ export default function BookingsPage() {
                         </button>
                       )}
 
-                      {/* Interactive Accept / Decline for Pending Leads */}
+                      {/* Action Buttons */}
                       {isPending ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <button
+                            type="button"
                             onClick={() => handleAcceptBooking(item.id)}
                             className="btn-primary py-2 px-3 text-xs flex items-center gap-1 min-h-[38px] touch-manipulation"
                             title="Accept this gig"
@@ -580,22 +729,64 @@ export default function BookingsPage() {
                             <span>Accept</span>
                           </button>
                           <button
-                            onClick={() => handleDeclineBooking(item.id)}
-                            className="btn-secondary py-2 px-2.5 text-xs text-rose-700 hover:bg-rose-50 border-rose-200 min-h-[38px] touch-manipulation"
+                            type="button"
+                            onClick={() => handleOpenRejectModal(item)}
+                            className="btn-secondary py-2 px-2.5 text-xs text-rose-700 hover:bg-rose-50 border-rose-200 min-h-[38px] touch-manipulation flex items-center gap-1"
                             title="Decline this gig"
                           >
                             <X className="w-3.5 h-3.5" />
                             <span>Decline</span>
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenChatModal(item)}
+                            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 min-h-[38px] touch-manipulation text-sky-700 hover:bg-sky-50 border-sky-200"
+                            title="Send message or query to Artist Admin"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5 text-sky-600" />
+                            <span>Chat with Admin</span>
+                          </button>
                         </div>
                       ) : (
-                        <a
-                          href={`tel:${item.coordinator_phone || '+918076515257'}`}
-                          className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 min-h-[38px] touch-manipulation"
-                        >
-                          <PhoneCall className="w-3.5 h-3.5 text-sky-600" />
-                          <span>Call Coordinator</span>
-                        </a>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* Chat with Admin Button */}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenChatModal(item)}
+                            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 min-h-[38px] touch-manipulation text-sky-700 hover:bg-sky-50 border-sky-200"
+                            title="Send message or chat with Artist Admin for this booking"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5 text-sky-600" />
+                            <span>Chat with Admin</span>
+                          </button>
+
+                          {/* Call Coordinator Button */}
+                          <a
+                            href={`tel:${item.coordinator_phone || '+918076515257'}`}
+                            className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 min-h-[38px] touch-manipulation"
+                            title="Call your assigned event coordinator"
+                          >
+                            <PhoneCall className="w-3.5 h-3.5 text-sky-600" />
+                            <span>Call Coordinator</span>
+                          </a>
+
+                          {/* Reject / Cancel Booking Button */}
+                          {item.status !== 'rejected' && item.status !== 'cancelled' ? (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenRejectModal(item)}
+                              className="btn-secondary text-xs py-2 px-2.5 flex items-center gap-1 min-h-[38px] touch-manipulation text-rose-700 hover:bg-rose-50 border-rose-200"
+                              title="Reject or decline this booking"
+                            >
+                              <X className="w-3.5 h-3.5 text-rose-600" />
+                              <span>Reject</span>
+                            </button>
+                          ) : (
+                            <span className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold">
+                              Declined by Performer
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -738,6 +929,312 @@ export default function BookingsPage() {
         onClose={() => setShowKYCModal(false)}
         event={kycEvent || liveEvents[0]}
       />
+
+      {/* Reject / Decline Booking Modal */}
+      <ModalPortal
+        isOpen={!!rejectBooking}
+        onClose={() => setRejectBooking(null)}
+      >
+        {rejectBooking && (
+          <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95">
+            {/* Header */}
+            <div className="px-6 py-4 bg-gradient-to-r from-rose-50 via-white to-red-50 border-b border-rose-100 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900">
+                    Reject Booking #{rejectBooking.id}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    {rejectBooking.event_type || rejectBooking.package_title || 'Live Performance'} • {rejectBooking.city}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRejectBooking(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 overflow-y-auto space-y-4 text-xs">
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold">Important Notice:</span> Declining or rejecting this booking will immediately alert the Magnevents Artist Coordinator to reassign another verified performer for this client.
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Please select reason for rejection:
+                </label>
+                <div className="space-y-1.5">
+                  {[
+                    'Schedule / Date Conflict with another show',
+                    'Personal Emergency or Health Illness',
+                    'Sound / Tech Rider Setup not provided',
+                    'Performance Fee / Budget Discrepancy',
+                    'Travel / Venue Location not reachable',
+                    'Other Operational Reason',
+                  ].map((reason) => (
+                    <label
+                      key={reason}
+                      className={`flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${
+                        rejectReason === reason
+                          ? 'bg-rose-50/80 border-rose-300 text-rose-950 font-bold'
+                          : 'bg-slate-50/60 border-slate-200 hover:bg-slate-100/60 text-slate-700'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="reject_reason"
+                        checked={rejectReason === reason}
+                        onChange={() => setRejectReason(reason)}
+                        className="text-rose-600 focus:ring-rose-500 w-3.5 h-3.5"
+                      />
+                      <span>{reason}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Additional Note for Coordinator (Optional):
+                </label>
+                <textarea
+                  value={rejectNote}
+                  onChange={(e) => setRejectNote(e.target.value)}
+                  placeholder="Provide any details to help coordinator manage client expectations..."
+                  rows={3}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setRejectBooking(null)}
+                disabled={submittingReject}
+                className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors"
+              >
+                Keep Booking
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmRejectBooking}
+                disabled={submittingReject || !rejectReason}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 flex items-center gap-1.5 transition-colors"
+              >
+                {submittingReject ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Rejecting...</span>
+                  </>
+                ) : (
+                  <>
+                    <X className="w-3.5 h-3.5" />
+                    <span>Confirm Rejection</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+      </ModalPortal>
+
+      {/* Chat / Message with Artist Admin Modal */}
+      <ModalPortal
+        isOpen={!!chatBooking}
+        onClose={() => setChatBooking(null)}
+      >
+        {chatBooking && (
+          <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95">
+            {/* Header */}
+            <div className="px-6 py-4 bg-gradient-to-r from-sky-50 via-white to-blue-50 border-b border-sky-100 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900">
+                    Message Artist Admin &amp; Coordinator
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Booking #{chatBooking.id} • {chatBooking.event_type || chatBooking.package_title} ({chatBooking.city})
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setChatBooking(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 overflow-y-auto space-y-4 text-xs">
+              {/* Coordinator Card */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-black text-xs">
+                    MA
+                  </div>
+                  <div>
+                    <span className="font-extrabold text-slate-900 block text-xs">
+                      Magnevents Artist Operations Desk
+                    </span>
+                    <span className="text-[10px] text-slate-500">
+                      Coordinator: {chatBooking.coordinator_name || 'Assigned Lead'} • {chatBooking.coordinator_phone || '+91 80765 15257'}
+                    </span>
+                  </div>
+                </div>
+
+                <a
+                  href={`tel:${chatBooking.coordinator_phone || '+918076515257'}`}
+                  className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold text-[11px] hover:bg-slate-100 flex items-center gap-1 shadow-2xs"
+                >
+                  <PhoneCall className="w-3 h-3 text-sky-600" />
+                  <span>Call</span>
+                </a>
+              </div>
+
+              {/* Quick Query Presets */}
+              <div>
+                <span className="text-[11px] font-bold text-slate-500 block mb-1.5 uppercase tracking-wider">
+                  Quick Topic Presets:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    {
+                      label: '📍 Venue & Address',
+                      text: `Hi Admin, could you share the exact Google Maps location & client coordinator contact for booking #${chatBooking.id} in ${chatBooking.city}?`,
+                    },
+                    {
+                      label: '🎛️ Sound & PA Setup',
+                      text: `Hi Admin, please clarify if the sound PA console, monitors, and wireless microphones are provided by venue or if I should carry my personal rider setup?`,
+                    },
+                    {
+                      label: '⏰ Timing & Call Schedule',
+                      text: `Hi Admin, what is the exact soundcheck and stage call time for booking #${chatBooking.id}?`,
+                    },
+                    {
+                      label: '💰 Advance & Escrow',
+                      text: `Hi Admin, quick query regarding the escrow advance payment and payout release for booking #${chatBooking.id}.`,
+                    },
+                    {
+                      label: '❓ General Question',
+                      text: `Hi Admin, I have a doubt regarding my upcoming performance for booking #${chatBooking.id}. Could you please guide me?`,
+                    },
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setChatMessage(preset.text)}
+                      className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-800 text-[11px] font-semibold transition-all"
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Message Textarea */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Your Message to Coordinator:
+                </label>
+                <textarea
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  placeholder="Type your message, query, or doubt for the admin coordinator..."
+                  rows={4}
+                  className="w-full p-3 bg-slate-50/70 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-200 focus:bg-white resize-none"
+                />
+              </div>
+
+              {/* Booking Messages Thread (if any) */}
+              {chatBookingMessages[chatBooking.id]?.length > 0 && (
+                <div className="space-y-2 pt-1 border-t border-slate-100">
+                  <span className="text-[11px] font-bold text-slate-500 block uppercase tracking-wider">
+                    Message Thread ({chatBookingMessages[chatBooking.id].length}):
+                  </span>
+                  <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                    {chatBookingMessages[chatBooking.id].map((msg: any) => (
+                      <div
+                        key={msg.id}
+                        className="p-2.5 rounded-xl bg-sky-50/70 border border-sky-200/80 text-xs space-y-1"
+                      >
+                        <div className="flex items-center justify-between text-[10px] text-sky-800 font-bold">
+                          <span>You (Performer)</span>
+                          <span className="text-slate-400 font-normal">
+                            {new Date(msg.sent_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className="text-slate-800 whitespace-pre-wrap">{msg.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+              <a
+                href={`https://wa.me/${(chatBooking.coordinator_phone || '918076515257').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                  `Hi Admin Coordinator, this is ${artist?.stage_name || artist?.name || 'Artist'} regarding Booking #${chatBooking.id} (${chatBooking.event_type} in ${chatBooking.city}):\n\n${chatMessage || 'Hi, I have a doubt regarding this event.'}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold text-xs flex items-center gap-1.5 transition-colors"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Chat on WhatsApp</span>
+              </a>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setChatBooking(null)}
+                  disabled={sendingChat}
+                  className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendBookingMessage}
+                  disabled={sendingChat || !chatMessage.trim()}
+                  className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shadow-xs disabled:opacity-50 flex items-center gap-1.5 transition-colors"
+                >
+                  {sendingChat ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send to Admin</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </ModalPortal>
     </div>
   );
 }
