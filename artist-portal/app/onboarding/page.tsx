@@ -188,7 +188,7 @@ export default function ArtistOnboardingPage() {
     setFormData((prev) => ({
       ...prev,
       name: prev.name || initialName,
-      stage_name: prev.stage_name || artist?.stage_name || initialName,
+      stage_name: prev.stage_name || artist?.stage_name || '',
       phone_no: prev.phone_no || initialPhone,
       email: prev.email || initialEmail,
       city: artist?.city || prev.city,
@@ -452,7 +452,12 @@ export default function ArtistOnboardingPage() {
     if (step === 1) {
       const missingStep1: string[] = [];
       if (!formData.name.trim()) missingStep1.push('Legal Full Name');
-      if (!formData.stage_name.trim()) missingStep1.push('Stage / Act Name');
+      if (!formData.stage_name.trim()) {
+        missingStep1.push('Stage / Act Name');
+      } else if (formData.name.trim() && formData.stage_name.trim().toLowerCase() === formData.name.trim().toLowerCase()) {
+        setError('Stage / Act Name must be different from your Legal Full Name. Please enter your stage persona, DJ title, or band moniker (e.g. DJ Aarav, The Acoustic Project, etc.).');
+        return;
+      }
       if (!formData.phone_no.trim()) missingStep1.push('Contact Phone / WhatsApp');
       if (!formData.email.trim()) missingStep1.push('Email Address');
       if (!formData.category.trim()) missingStep1.push('Primary Category');
@@ -834,15 +839,34 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Stage / Act Name <span className="text-rose-500 font-bold">*</span></label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Stage / Act Name <span className="text-rose-500 font-bold">*</span></label>
+                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                      Must be different from Legal Name
+                    </span>
+                  </div>
                   <input
                     type="text"
                     required
                     value={formData.stage_name}
                     onChange={(e) => setFormData({ ...formData, stage_name: e.target.value })}
-                    placeholder="e.g. Aarav & The Acoustic Project"
-                    className="form-input"
+                    placeholder="e.g. DJ Aarav, The Acoustic Project, Sufi Soul"
+                    className={`form-input ${
+                      formData.stage_name && formData.name && formData.stage_name.trim().toLowerCase() === formData.name.trim().toLowerCase()
+                        ? 'border-rose-400 bg-rose-50/50 text-rose-900 focus:ring-rose-200'
+                        : ''
+                    }`}
                   />
+                  {formData.stage_name && formData.name && formData.stage_name.trim().toLowerCase() === formData.name.trim().toLowerCase() ? (
+                    <p className="text-[11px] text-rose-600 font-bold mt-1 flex items-center gap-1 animate-in fade-in">
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-600 flex-shrink-0" />
+                      <span>Stage Name cannot be identical to Legal Name. Please use your stage moniker or DJ/band name.</span>
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Public performer name displayed to clients (e.g. DJ Chinna, Soul Strings).
+                    </p>
+                  )}
                 </div>
 
                 <div>
