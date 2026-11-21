@@ -6,7 +6,7 @@
 
 .seo-dynamic-content {
   padding: 60px 20px 80px;
-  background: #211B1D !important;
+  background: transparent !important;
   color: var(--color-ivory, #F5F0E9);
   position: relative;
   overflow: hidden;
@@ -24,13 +24,13 @@
    1. Overview Section
    -------------------------------------------------------------------------- */
 .seo-overview-card {
-  background: #30272A !important;
-  border: 1px solid rgba(216, 196, 183, 0.16) !important;
+  background: rgba(38, 30, 34, 0.85) !important;
+  border: 1px solid rgba(216, 196, 183, 0.18) !important;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
 }
 
 .seo-section-tag {
@@ -97,14 +97,14 @@
 }
 
 .seo-service-card {
-  background: #30272A !important;
-  border: 1px solid rgba(216, 196, 183, 0.16) !important;
+  background: rgba(38, 30, 34, 0.85) !important;
+  border: 1px solid rgba(216, 196, 183, 0.18) !important;
   padding: 32px 28px;
   border-radius: 20px;
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   position: relative;
   overflow: hidden;
 }
@@ -271,13 +271,15 @@
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.25s ease;
-  background: #30272A !important;
+  background: rgba(38, 30, 34, 0.82) !important;
   border: 1px solid rgba(216, 196, 183, 0.16) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
 }
 
 .seo-faq-item.is-open {
-  background: #382E32 !important;
+  background: rgba(52, 36, 42, 0.90) !important;
   border: 1px solid rgba(232, 185, 67, 0.45) !important;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(232, 185, 67, 0.1);
 }
@@ -344,7 +346,7 @@
 
 .seo-related-chip {
   padding: 9px 20px;
-  background: #30272A !important;
+  background: rgba(38, 30, 34, 0.80) !important;
   border: 1px solid rgba(216, 196, 183, 0.18) !important;
   border-radius: 30px;
   color: rgba(245, 240, 233, 0.85);
@@ -352,6 +354,8 @@
   font-size: 0.92rem;
   font-weight: 500;
   transition: all 0.25s ease;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
 .seo-related-chip:hover {
