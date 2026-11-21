@@ -2,37 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, CheckCircle, Sparkles, MessageCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '@/app/styles/components/SEODynamicContent.css';
 
-export default function SEODynamicContent({ category, city, overviewHtml, services, faqs, relatedLinks }) {
+export default function SEODynamicContent({ category, city, overviewHtml, faqs, relatedLinks }) {
   const [openFaq, setOpenFaq] = useState(0);
-
-  const handleOpenBookingModal = () => {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(
-        new CustomEvent('open-artist-booking', {
-          detail: {
-            service: `${category} in ${city}`
-          }
-        })
-      );
-      window.dispatchEvent(
-        new CustomEvent('open-contact-modal', {
-          detail: {
-            type: 'booking',
-            service: `${category} in ${city}`
-          }
-        })
-      );
-    }
-  };
-
-  const handleWhatsApp = () => {
-    const text = `Hi Magnevents! I am looking to hire a ${category} in ${city}. Please share pricing and available performers.`;
-    window.open(`https://wa.me/918076515257?text=${encodeURIComponent(text)}`, '_blank');
-  };
 
   return (
     <div className="seo-dynamic-content">
@@ -53,61 +28,6 @@ export default function SEODynamicContent({ category, city, overviewHtml, servic
             />
           </section>
         )}
-
-        {/* Services Section */}
-        {services && services.length > 0 && (
-          <section className="seo-services">
-            <div className="seo-services-head">
-              <span className="seo-section-tag">
-                🎭 EVENT TYPES &amp; PACKAGES
-              </span>
-              <h2 className="seo-services-title">
-                Popular Services for {category}s in {city}
-              </h2>
-            </div>
-            <div className="seo-services-grid">
-              {services.map((srv, idx) => (
-                <div key={idx} className="seo-service-card">
-                  <div className="seo-service-icon-wrap">
-                    <CheckCircle size={24} />
-                  </div>
-                  <h3 className="seo-service-card-title">{srv.title}</h3>
-                  <p className="seo-service-card-desc">{srv.desc}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Mid-content Concierge Quick Booking Callout */}
-        <div className="seo-callout-card">
-          <div className="seo-callout-left">
-            <h3 className="seo-callout-title">
-              Planning an event in {city}?
-            </h3>
-            <p className="seo-callout-desc">
-              Let our expert entertainment concierges match you with the perfect verified {category} tailored to your venue and budget.
-            </p>
-          </div>
-          <div className="seo-callout-actions">
-            <button
-              type="button"
-              onClick={handleOpenBookingModal}
-              className="seo-btn-concierge-primary"
-            >
-              <Sparkles size={16} />
-              <span>Check Availability</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleWhatsApp}
-              className="seo-btn-concierge-whatsapp"
-            >
-              <MessageCircle size={16} />
-              <span>WhatsApp Us</span>
-            </button>
-          </div>
-        </div>
 
         {/* FAQs Section */}
         {faqs && faqs.length > 0 && (

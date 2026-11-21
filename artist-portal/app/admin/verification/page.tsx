@@ -296,14 +296,19 @@ function AdminVerificationQueueContent() {
                             <span>{artist.youtube_links?.length || 0} Reels</span>
                           </span>
 
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${
-                            artist.verification_documents?.id_type 
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' 
-                              : 'bg-rose-50 text-rose-700 border-rose-200/60'
-                          }`}>
-                            <FileText className="w-3 h-3 text-emerald-600" />
-                            <span>{artist.verification_documents?.id_type ? 'ID Attached' : 'No ID'}</span>
-                          </span>
+                          {(() => {
+                            const hasDoc = Boolean(artist.verification_documents?.id_document_url?.trim() || artist.verification_documents?.id_number_masked?.trim());
+                            return (
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold border ${
+                                hasDoc 
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' 
+                                  : 'bg-slate-50 text-slate-500 border-slate-200'
+                              }`}>
+                                <FileText className={`w-3 h-3 ${hasDoc ? 'text-emerald-600' : 'text-slate-400'}`} />
+                                <span>{hasDoc ? 'ID Attached' : 'No ID'}</span>
+                              </span>
+                            );
+                          })()}
                         </div>
                       </td>
 
@@ -956,8 +961,8 @@ function AdminVerificationQueueContent() {
                           </div>
                           <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
                             <span className="text-slate-500 font-medium">Govt ID Type</span>
-                            <span className={docs?.id_type ? 'font-bold text-slate-900 uppercase' : 'font-medium text-slate-400'}>
-                              {docs?.id_type || 'Not filled'}
+                            <span className={(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? 'font-bold text-slate-900 uppercase' : 'font-medium text-slate-400'}>
+                              {(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? docs.id_type : 'Not submitted'}
                             </span>
                           </div>
                           <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
@@ -1574,7 +1579,9 @@ function AdminVerificationQueueContent() {
 
                       <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 space-y-1">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Government ID Document Type</span>
-                        <span className="text-base font-extrabold text-slate-900 uppercase block">{docs?.id_type || 'Not filled'}</span>
+                        <span className="text-base font-extrabold text-slate-900 uppercase block">
+                          {(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? docs.id_type : 'Not submitted'}
+                        </span>
                         <span className="text-[11px] text-amber-700">Aadhaar / PAN / Passport</span>
                       </div>
 

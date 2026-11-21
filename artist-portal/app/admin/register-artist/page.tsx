@@ -152,7 +152,7 @@ export default function AdminArtistRegistrationPage() {
   const [dragOverGallery, setDragOverGallery] = useState(false);
 
   // 6. Private KYC Documents (Cloudflare R2: artist-private-kyc/)
-  const [kycIdType, setKycIdType] = useState<'aadhaar' | 'pan' | 'passport' | 'voter_id' | 'driving_license' | ''>('aadhaar');
+  const [kycIdType, setKycIdType] = useState<'aadhaar' | 'pan' | 'passport' | 'voter_id' | 'driving_license' | ''>('');
   const [kycIdMasked, setKycIdMasked] = useState('');
   const [kycPan, setKycPan] = useState('');
   const [kycDocUrl, setKycDocUrl] = useState('');
@@ -532,7 +532,7 @@ export default function AdminArtistRegistrationPage() {
     setGalleryPhotos([]);
     setCloudflareVideos(['']);
     setYoutubeVideos(['']);
-    setKycIdType('aadhaar');
+    setKycIdType('');
     setKycIdMasked('');
     setKycPan('');
     setKycDocUrl('');
@@ -637,7 +637,7 @@ export default function AdminArtistRegistrationPage() {
         },
         verification_documents: {
           legal_name: fullName.trim(),
-          id_type: kycIdType,
+          id_type: (kycDocUrl.trim() || kycIdMasked.trim()) ? kycIdType : '',
           id_number_masked: kycIdMasked.trim(),
           id_document_url: kycDocUrl.trim(),
           address_proof_url: kycAddressUrl.trim(),

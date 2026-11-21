@@ -54,13 +54,12 @@ export default function SEOLandingPage({
 
         <SectionDivider />
 
-        {overviewHtml && services && faqs && relatedLinks ? (
+        {overviewHtml && faqs && relatedLinks ? (
           <>
             <SEODynamicContent 
               category={category}
               city={city}
               overviewHtml={overviewHtml}
-              services={services}
               faqs={faqs}
               relatedLinks={relatedLinks}
             />

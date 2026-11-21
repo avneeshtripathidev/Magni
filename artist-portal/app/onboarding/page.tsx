@@ -164,7 +164,7 @@ export default function ArtistOnboardingPage() {
 
     // Step 5: KYC & Settlement Bank
     legal_name: '',
-    id_type: 'aadhaar',
+    id_type: '',
     id_number_masked: '',
     pan_or_tax_id: '',
     id_document_url: '',
@@ -581,7 +581,7 @@ export default function ArtistOnboardingPage() {
       },
       verification_documents: {
         legal_name: formData.legal_name.trim() || formData.name.trim(),
-        id_type: formData.id_type as any,
+        id_type: (formData.id_document_url.trim() || formData.id_number_masked.trim()) ? (formData.id_type as any) : '',
         id_number_masked: formData.id_number_masked.trim(),
         pan_or_tax_id: formData.pan_or_tax_id.trim().toUpperCase(),
         id_document_url: formData.id_document_url.trim(),

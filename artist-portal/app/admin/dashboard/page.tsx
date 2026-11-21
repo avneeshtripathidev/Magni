@@ -255,7 +255,7 @@ export default function AdminDashboardPage() {
                     </td>
 
                     <td className="py-3.5 px-4">
-                      {artist.verification_documents?.id_document_url || artist.verification_documents?.id_type ? (
+                      {artist.verification_documents?.id_document_url ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[11px] border border-emerald-200/50 uppercase">
                           <FileText className="w-3 h-3 text-emerald-600" />
                           <span>{artist.verification_documents?.id_type || 'ID Attached'}</span>
@@ -524,8 +524,8 @@ export default function AdminDashboardPage() {
                     </div>
                     <div className="flex justify-between gap-2">
                       <span className="text-slate-400">Govt ID Type</span>
-                      <span className={docs?.id_type ? 'font-bold text-slate-900 uppercase' : 'text-slate-400'}>
-                        {docs?.id_type || 'Not filled'}
+                      <span className={(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? 'font-bold text-slate-900 uppercase' : 'text-slate-400'}>
+                        {(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? docs.id_type : 'Not submitted'}
                       </span>
                     </div>
                     <div className="flex justify-between gap-2">

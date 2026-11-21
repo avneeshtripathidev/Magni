@@ -1051,15 +1051,15 @@ export default function AdminProfileCardsPage() {
                         </div>
                         <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
                           <span className="text-[10px] uppercase font-bold text-slate-400 block">Govt ID &amp; Aadhaar Number</span>
-                          <span className={`text-sm block mt-1 ${selectedUser.verification_documents?.id_type || selectedUser.verification_documents?.id_number_masked ? 'font-black text-slate-900 uppercase' : 'font-medium text-slate-400'}`}>
-                            {selectedUser.verification_documents?.id_type || selectedUser.verification_documents?.id_number_masked
+                          <span className={`text-sm block mt-1 ${(selectedUser.verification_documents?.id_document_url || selectedUser.verification_documents?.id_number_masked) && selectedUser.verification_documents?.id_type ? 'font-black text-slate-900 uppercase' : 'font-medium text-slate-400'}`}>
+                            {(selectedUser.verification_documents?.id_document_url || selectedUser.verification_documents?.id_number_masked)
                               ? [
                                   selectedUser.verification_documents?.id_type,
                                   selectedUser.verification_documents?.id_number_masked,
                                 ]
                                   .filter(Boolean)
                                   .join(' • ')
-                              : 'Not filled'}
+                              : 'Not submitted'}
                           </span>
                         </div>
                         <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
