@@ -179,6 +179,14 @@ export default function ArtistOnboardingPage() {
   // Pre-fill from newly registered user: ONLY Name and Gmail!
   // All other fields start empty so the user fills them himself.
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const stepParam = parseInt(urlParams.get('step') || '', 10);
+      if (stepParam >= 1 && stepParam <= 4) {
+        setStep(stepParam);
+      }
+    }
+
     const initialName =
       artist?.name ||
       user?.user_metadata?.full_name ||
@@ -735,8 +743,12 @@ export default function ArtistOnboardingPage() {
                 key={s.id}
                 type="button"
                 onClick={() => {
-                  setError(null);
-                  setStep(s.id);
+                  if (s.id < step) {
+                    setError(null);
+                    setStep(s.id);
+                  } else if (s.id > step) {
+                    handleNextStep();
+                  }
                 }}
                 className={`flex-1 min-w-[130px] px-3.5 py-2.5 rounded-[16px] text-[11px] font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
                   isActive
@@ -947,8 +959,25 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-amber-900 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
+                <span>All sections in this step are <strong>strictly mandatory</strong>. You must select your genres, performance languages, coverage areas, and write your biography to proceed.</span>
+              </div>
+
               <div>
-                <label className="form-label">Select Genres You Perform <span className="text-rose-500 font-bold">*</span></label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="form-label mb-0">Select Genres You Perform <span className="text-rose-500 font-bold">*</span></label>
+                  {formData.genres.length === 0 ? (
+                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">
+                      At least 1 genre required *
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-md border border-sky-200">
+                      {formData.genres.length} Selected
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500 mb-2">Click genres to select. All new profiles start with zero pre-selections.</p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {GENRES.map((g) => {
                     const selected = formData.genres.includes(g);
@@ -972,7 +1001,19 @@ export default function ArtistOnboardingPage() {
               </div>
 
               <div>
-                <label className="form-label">Performance Languages <span className="text-rose-500 font-bold">*</span></label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="form-label mb-0">Performance Languages <span className="text-rose-500 font-bold">*</span></label>
+                  {formData.languages.length === 0 ? (
+                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">
+                      At least 1 language required *
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                      {formData.languages.length} Selected
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500 mb-2">Select all languages you perform live in.</p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {LANGUAGES.map((l) => {
                     const selected = formData.languages.includes(l);
@@ -1007,9 +1048,15 @@ export default function ArtistOnboardingPage() {
                       Select all cities or areas you easily travel to and cover for live gigs.
                     </p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
-                    {formData.serviceable_cities.length} {formData.serviceable_cities.length === 1 ? 'Area' : 'Areas'} Selected
-                  </span>
+                  {formData.serviceable_cities.length === 0 ? (
+                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200">
+                      At least 1 coverage city required *
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
+                      {formData.serviceable_cities.length} {formData.serviceable_cities.length === 1 ? 'Area' : 'Areas'} Selected
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -1056,12 +1103,19 @@ export default function ArtistOnboardingPage() {
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="form-label mb-0">Artist Biography <span className="text-rose-500 font-bold">*</span></label>
-                  <span className="text-[11px] font-semibold text-slate-400">
-                    {formData.bio.length} chars
-                  </span>
+                  {formData.bio.trim().length < 20 ? (
+                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                      Bio required (min 20 characters) *
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-semibold text-emerald-600 font-bold">
+                      {formData.bio.length} chars (Valid)
+                    </span>
+                  )}
                 </div>
                 <textarea
                   rows={5}
+                  required
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   placeholder="Describe your musical journey, notable weddings/corporate gigs, signature songs, and what makes your live performance unforgettable..."
