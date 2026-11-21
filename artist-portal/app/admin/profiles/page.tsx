@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useAdminAuth } from '../../../lib/auth/adminAuthContext';
 import { ArtistProfile } from '../../../types/artist';
@@ -36,6 +36,7 @@ import {
   Award,
   IdCard,
   Sliders,
+  ChevronLeft,
   ChevronRight,
   UserCheck,
   Crown,
@@ -43,6 +44,9 @@ import {
   ArrowUpRight,
   Trash2,
   Loader2,
+  CalendarCheck,
+  CalendarX,
+  Lock,
 } from 'lucide-react';
 
 export default function AdminProfileCardsPage() {
@@ -52,7 +56,14 @@ export default function AdminProfileCardsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState<ArtistProfile | null>(null);
-  const [modalTab, setModalTab] = useState<'overview' | 'pricing' | 'media' | 'kyc'>('overview');
+  const [modalTab, setModalTab] = useState<'overview' | 'pricing' | 'media' | 'kyc' | 'schedule'>('overview');
+  const [scheduleMonth, setScheduleMonth] = useState<Date>(new Date());
+  const [scheduleBlockedDates, setScheduleBlockedDates] = useState<string[]>([]);
+  const [scheduleBookedDates, setScheduleBookedDates] = useState<Array<{ bookingId?: string; date: string; title: string; status?: string }>>([]);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [scheduleSaving, setScheduleSaving] = useState(false);
+  const [scheduleNotice, setScheduleNotice] = useState<string | null>(null);
+  const [scheduleFilter, setScheduleFilter] = useState<'all' | 'free' | 'busy'>('all');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -146,6 +157,218 @@ export default function AdminProfileCardsPage() {
       setDeleting(false);
     }
   };
+
+  // Fetch live availability whenever selectedUser changes
+  useEffect(() => {
+    if (!selectedUser?.id) {
+      setScheduleBlockedDates([]);
+      setScheduleBookedDates([]);
+      return;
+    }
+
+    const initialBlocked = (selectedUser as any).blocked_dates || selectedUser.performance_details?.blocked_dates || [];
+    setScheduleBlockedDates(Array.isArray(initialBlocked) ? [...initialBlocked] : []);
+
+    let isMounted = true;
+    setScheduleLoading(true);
+
+    fetch(`/api/artist/availability?artistId=${encodeURIComponent(selectedUser.id)}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!isMounted) return;
+        if (json?.success && json?.data) {
+          if (Array.isArray(json.data.blockedDates)) {
+            setScheduleBlockedDates(json.data.blockedDates);
+          }
+          if (Array.isArray(json.data.bookedDates)) {
+            setScheduleBookedDates(json.data.bookedDates);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load artist availability:', err);
+      })
+      .finally(() => {
+        if (isMounted) setScheduleLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedUser?.id]);
+
+  const handleToggleArtistDate = async (dateStr: string) => {
+    if (!selectedUser) return;
+    const isBooked = scheduleBookedDates.some((b) => b.date === dateStr);
+    if (isBooked) {
+      setScheduleNotice(`Notice: ${dateStr} is booked for an active event and cannot be marked free.`);
+      setTimeout(() => setScheduleNotice(null), 3500);
+      return;
+    }
+
+    const isBlocked = scheduleBlockedDates.includes(dateStr);
+    const nextBlocked = isBlocked
+      ? scheduleBlockedDates.filter((d) => d !== dateStr)
+      : [...scheduleBlockedDates, dateStr];
+
+    setScheduleBlockedDates(nextBlocked);
+    setScheduleSaving(true);
+    const statusLabel = isBlocked ? 'Free (Available) ✓' : 'Busy (Blocked) ✕';
+    setScheduleNotice(`${dateStr} marked as ${statusLabel}`);
+
+    try {
+      const res = await fetch('/api/artist/availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artistId: selectedUser.id,
+          blockedDates: nextBlocked,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to update availability');
+
+      setSelectedUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              blocked_dates: nextBlocked,
+              performance_details: {
+                ...(prev.performance_details || {}),
+                blocked_dates: nextBlocked,
+              },
+            }
+          : prev
+      );
+    } catch (err) {
+      console.error('Error updating availability:', err);
+      setScheduleNotice('Failed to sync availability with server.');
+    } finally {
+      setScheduleSaving(false);
+      setTimeout(() => setScheduleNotice(null), 3500);
+    }
+  };
+
+  const handleMarkAllMonthFree = async () => {
+    if (!selectedUser) return;
+    const year = scheduleMonth.getFullYear();
+    const monthIndex = scheduleMonth.getMonth();
+    const prefix = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+
+    const nextBlocked = scheduleBlockedDates.filter((d) => !d.startsWith(prefix));
+    setScheduleBlockedDates(nextBlocked);
+    setScheduleSaving(true);
+    setScheduleNotice(`Marked all dates in ${scheduleMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })} as Free (Available) ✓`);
+
+    try {
+      await fetch('/api/artist/availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artistId: selectedUser.id,
+          blockedDates: nextBlocked,
+        }),
+      });
+      setSelectedUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              blocked_dates: nextBlocked,
+              performance_details: {
+                ...(prev.performance_details || {}),
+                blocked_dates: nextBlocked,
+              },
+            }
+          : prev
+      );
+    } catch (err) {
+      console.error('Error updating availability:', err);
+      setScheduleNotice('Failed to sync availability.');
+    } finally {
+      setScheduleSaving(false);
+      setTimeout(() => setScheduleNotice(null), 3500);
+    }
+  };
+
+  const handleBlockAllWeekends = async () => {
+    if (!selectedUser) return;
+    const year = scheduleMonth.getFullYear();
+    const monthIndex = scheduleMonth.getMonth();
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+    const weekends: string[] = [];
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dt = new Date(year, monthIndex, d);
+      const dayOfWeek = dt.getDay(); // 0 is Sun, 6 is Sat
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        weekends.push(dateStr);
+      }
+    }
+
+    const nextBlocked = Array.from(new Set([...scheduleBlockedDates, ...weekends]));
+    setScheduleBlockedDates(nextBlocked);
+    setScheduleSaving(true);
+    setScheduleNotice(`Blocked all weekend dates (Saturdays & Sundays) in ${scheduleMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' })} ✕`);
+
+    try {
+      await fetch('/api/artist/availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artistId: selectedUser.id,
+          blockedDates: nextBlocked,
+        }),
+      });
+      setSelectedUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              blocked_dates: nextBlocked,
+              performance_details: {
+                ...(prev.performance_details || {}),
+                blocked_dates: nextBlocked,
+              },
+            }
+          : prev
+      );
+    } catch (err) {
+      console.error('Error updating availability:', err);
+      setScheduleNotice('Failed to sync availability.');
+    } finally {
+      setScheduleSaving(false);
+      setTimeout(() => setScheduleNotice(null), 3500);
+    }
+  };
+
+  const currentMonthYear = scheduleMonth.getFullYear();
+  const currentMonthIndex = scheduleMonth.getMonth();
+  const currentDaysInMonth = new Date(currentMonthYear, currentMonthIndex + 1, 0).getDate();
+  const currentMonthName = scheduleMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  const todayDateStr = new Date().toISOString().split('T')[0];
+
+  const monthStats = useMemo(() => {
+    let freeCount = 0;
+    let blockedCount = 0;
+    let bookedCount = 0;
+    const prefix = `${currentMonthYear}-${String(currentMonthIndex + 1).padStart(2, '0')}`;
+
+    for (let d = 1; d <= currentDaysInMonth; d++) {
+      const dStr = `${prefix}-${String(d).padStart(2, '0')}`;
+      const isBooked = scheduleBookedDates.some((b) => b.date === dStr);
+      const isBlocked = scheduleBlockedDates.includes(dStr);
+      if (isBooked) {
+        bookedCount++;
+      } else if (isBlocked) {
+        blockedCount++;
+      } else {
+        freeCount++;
+      }
+    }
+    return { freeCount, blockedCount, bookedCount, total: currentDaysInMonth };
+  }, [currentMonthYear, currentMonthIndex, currentDaysInMonth, scheduleBlockedDates, scheduleBookedDates]);
+
+  const isTodayFree = !scheduleBlockedDates.includes(todayDateStr) && !scheduleBookedDates.some((b) => b.date === todayDateStr);
 
   return (
     <div className="space-y-6 font-sans">
@@ -665,6 +888,7 @@ export default function AdminProfileCardsPage() {
                       icon: Video,
                     },
                     { id: 'kyc', label: 'KYC & Identity', icon: ShieldCheck },
+                    { id: 'schedule', label: 'Schedule & Availability', icon: Calendar },
                   ].map((tab) => {
                     const TabIcon = tab.icon;
                     const active = modalTab === tab.id;
@@ -742,6 +966,46 @@ export default function AdminProfileCardsPage() {
                           {selectedUser.experience_years || 3} Years
                         </span>
                       </div>
+                    </div>
+
+                    {/* Quick Availability & Schedule Status Card */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-white border border-emerald-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3.5">
+                        <div
+                          className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm ${
+                            isTodayFree ? 'bg-emerald-600 text-white' : 'bg-rose-500 text-white'
+                          }`}
+                        >
+                          {isTodayFree ? <CheckCircle2 className="w-6 h-6" /> : <X className="w-6 h-6" />}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">Live Schedule</span>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${
+                                isTodayFree ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                              }`}
+                            >
+                              {isTodayFree ? '✓ Free Today' : '✕ Busy Today'}
+                            </span>
+                          </div>
+                          <h4 className="text-sm sm:text-base font-black text-slate-900 mt-0.5">
+                            {selectedUser.stage_name || selectedUser.name} is {isTodayFree ? 'Free for Gigs Today' : 'Unavailable Today'}
+                          </h4>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {monthStats.freeCount} days free in {currentMonthName} • {monthStats.blockedCount} days marked busy • {monthStats.bookedCount} booked gigs
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setModalTab('schedule')}
+                        className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold inline-flex items-center gap-2 self-start md:self-auto shadow-sm transition-all cursor-pointer"
+                      >
+                        <Calendar className="w-4 h-4 text-emerald-400" />
+                        <span>Open Schedule Box (Day Ticks) →</span>
+                      </button>
                     </div>
 
                     {/* Two-Column Info Grid: Contact + Bio & Repertoire */}
@@ -1097,6 +1361,300 @@ export default function AdminProfileCardsPage() {
                             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
                           </a>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 5: SCHEDULE & AVAILABILITY */}
+                {modalTab === 'schedule' && (
+                  <div className="space-y-4 animate-in fade-in">
+                    {/* Schedule Control Panel: Month Switcher & Real-Time Sync */}
+                    <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="p-1.5 rounded-lg bg-sky-100 text-sky-700">
+                              <Calendar className="w-4 h-4" />
+                            </span>
+                            <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                              Artist Monthly Schedule &amp; Day Availability
+                            </h3>
+                            {scheduleSaving && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold animate-pulse">
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                                <span>Syncing...</span>
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Tick or click any date box to toggle {selectedUser.stage_name || selectedUser.name} between{' '}
+                            <span className="text-emerald-700 font-bold">✓ Free</span> and{' '}
+                            <span className="text-rose-700 font-bold">✕ Busy</span>.
+                          </p>
+                        </div>
+
+                        {/* Month Navigation */}
+                        <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                          <button
+                            type="button"
+                            onClick={() => setScheduleMonth(new Date(currentMonthYear, currentMonthIndex - 1, 1))}
+                            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
+                            title="Previous Month"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+
+                          <span className="px-3.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 font-black text-xs text-slate-800 min-w-[130px] text-center">
+                            {currentMonthName}
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => setScheduleMonth(new Date(currentMonthYear, currentMonthIndex + 1, 1))}
+                            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
+                            title="Next Month"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setScheduleMonth(new Date())}
+                            className="px-2.5 py-1.5 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-xs font-bold transition-colors ml-1 cursor-pointer"
+                          >
+                            Today
+                          </button>
+                        </div>
+                      </div>
+
+                      {scheduleNotice && (
+                        <div className="p-3 rounded-xl bg-slate-900 text-white text-xs font-bold flex items-center justify-between shadow-sm animate-in fade-in">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                            <span>{scheduleNotice}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setScheduleNotice(null)}
+                            className="text-white/60 hover:text-white"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+
+                      {/* KPI Summary Badges & Batch Actions */}
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1">
+                        {/* Summary Badges */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div className="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>{monthStats.freeCount} Free Days (✓)</span>
+                          </div>
+                          <div className="px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-rose-500" />
+                            <span>{monthStats.blockedCount} Busy / Blocked (✕)</span>
+                          </div>
+                          {monthStats.bookedCount > 0 && (
+                            <div className="px-3 py-1.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 text-xs font-bold flex items-center gap-1.5">
+                              <Star className="w-3.5 h-3.5 text-purple-600 fill-purple-600" />
+                              <span>{monthStats.bookedCount} Confirmed Gigs</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Filter Tabs + Quick Batch Buttons */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div className="flex p-0.5 bg-slate-100 rounded-xl border border-slate-200 text-xs">
+                            {(['all', 'free', 'busy'] as const).map((filterMode) => (
+                              <button
+                                key={filterMode}
+                                type="button"
+                                onClick={() => setScheduleFilter(filterMode)}
+                                className={`px-2.5 py-1 rounded-lg font-bold capitalize transition-all cursor-pointer ${
+                                  scheduleFilter === filterMode
+                                    ? 'bg-white text-slate-900 shadow-xs'
+                                    : 'text-slate-500 hover:text-slate-900'
+                                }`}
+                              >
+                                {filterMode === 'all' ? 'All Days' : filterMode === 'free' ? '✓ Free' : '✕ Busy'}
+                              </button>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={handleMarkAllMonthFree}
+                            disabled={scheduleSaving}
+                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Mark Month Free</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={handleBlockAllWeekends}
+                            disabled={scheduleSaving}
+                            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1 border border-slate-200 transition-colors disabled:opacity-50 cursor-pointer"
+                          >
+                            <Lock className="w-3.5 h-3.5 text-slate-500" />
+                            <span>Block Weekends</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Schedule Interactive Calendar Grid Box */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+                      {/* Weekday Column Headers */}
+                      <div className="grid grid-cols-7 gap-2 text-center">
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName, idx) => (
+                          <div
+                            key={dayName}
+                            className={`py-1 text-[11px] font-black uppercase tracking-wider ${
+                              idx === 0 || idx === 6 ? 'text-amber-600 font-extrabold' : 'text-slate-400'
+                            }`}
+                          >
+                            {dayName}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Grid of Day Cards */}
+                      <div className="grid grid-cols-7 gap-2">
+                        {/* Leading empty slots for first day of month */}
+                        {Array.from({ length: new Date(currentMonthYear, currentMonthIndex, 1).getDay() }).map((_, i) => (
+                          <div key={`empty-${i}`} className="min-h-[92px] rounded-xl bg-slate-50/50 border border-slate-100/50" />
+                        ))}
+
+                        {/* Days of current month */}
+                        {Array.from({ length: currentDaysInMonth }).map((_, i) => {
+                          const dayNum = i + 1;
+                          const dateStr = `${currentMonthYear}-${String(currentMonthIndex + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                          const isToday = dateStr === todayDateStr;
+                          const bookedInfo = scheduleBookedDates.find((b) => b.date === dateStr);
+                          const isBooked = Boolean(bookedInfo);
+                          const isBlocked = scheduleBlockedDates.includes(dateStr);
+                          const isFree = !isBooked && !isBlocked;
+
+                          if (scheduleFilter === 'free' && !isFree) {
+                            return (
+                              <div
+                                key={dateStr}
+                                className="min-h-[92px] rounded-xl bg-slate-50 border border-slate-100 opacity-25 flex items-center justify-center p-2 text-center"
+                              >
+                                <span className="text-xs font-bold text-slate-400">{dayNum}</span>
+                              </div>
+                            );
+                          }
+
+                          if (scheduleFilter === 'busy' && !isBlocked && !isBooked) {
+                            return (
+                              <div
+                                key={dateStr}
+                                className="min-h-[92px] rounded-xl bg-slate-50 border border-slate-100 opacity-25 flex items-center justify-center p-2 text-center"
+                              >
+                                <span className="text-xs font-bold text-slate-400">{dayNum}</span>
+                              </div>
+                            );
+                          }
+
+                          if (isBooked) {
+                            return (
+                              <div
+                                key={dateStr}
+                                className="min-h-[92px] p-2.5 rounded-xl bg-purple-50 border-2 border-purple-300 flex flex-col justify-between text-left transition-all relative overflow-hidden"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-black text-purple-900">{dayNum}</span>
+                                  <span className="px-1.5 py-0.5 rounded bg-purple-200 text-purple-800 text-[9px] font-black uppercase">
+                                    Gig
+                                  </span>
+                                </div>
+                                <div className="mt-1">
+                                  <span className="text-[10px] font-bold text-purple-900 line-clamp-1 block">
+                                    {bookedInfo?.title || 'Booked Show'}
+                                  </span>
+                                  <span className="text-[9px] font-semibold text-purple-600 block">Locked</span>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <button
+                              key={dateStr}
+                              type="button"
+                              onClick={() => handleToggleArtistDate(dateStr)}
+                              className={`min-h-[92px] p-2.5 rounded-xl border-2 text-left flex flex-col justify-between transition-all group relative cursor-pointer ${
+                                isFree
+                                  ? 'bg-emerald-50/70 hover:bg-emerald-100/80 border-emerald-300 hover:border-emerald-500 text-emerald-950 shadow-xs'
+                                  : 'bg-rose-50/70 hover:bg-rose-100/80 border-rose-300 hover:border-rose-500 text-rose-950 shadow-xs'
+                              } ${isToday ? 'ring-2 ring-sky-500 ring-offset-1' : ''}`}
+                              title={isFree ? `Date is Free. Click to tick Busy` : `Date is Busy. Click to tick Free`}
+                            >
+                              {/* Day Header */}
+                              <div className="flex items-center justify-between w-full">
+                                <span className={`text-xs font-black ${isFree ? 'text-emerald-900' : 'text-rose-900'}`}>
+                                  {dayNum}
+                                </span>
+
+                                {isToday && (
+                                  <span className="px-1.5 py-0.2 rounded bg-sky-500 text-white text-[9px] font-black uppercase tracking-tight">
+                                    Today
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Free / Busy Tick Indicator Box */}
+                              <div className="mt-1.5 w-full">
+                                {isFree ? (
+                                  <div className="flex items-center gap-1.5 p-1 rounded-lg bg-emerald-100/90 text-emerald-800">
+                                    <div className="w-4 h-4 rounded-md bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                                      <Check className="w-3 h-3 stroke-[3]" />
+                                    </div>
+                                    <span className="text-[11px] font-black tracking-tight leading-none">FREE</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-1.5 p-1 rounded-lg bg-rose-100/90 text-rose-800">
+                                    <div className="w-4 h-4 rounded-md bg-rose-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                                      <X className="w-3 h-3 stroke-[3]" />
+                                    </div>
+                                    <span className="text-[11px] font-black tracking-tight leading-none">BUSY</span>
+                                  </div>
+                                )}
+
+                                <span className="text-[9px] font-semibold text-slate-400 group-hover:text-slate-600 block mt-1 transition-colors">
+                                  {isFree ? 'Tick to Busy' : 'Tick to Free'}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Legend & Guide Bar */}
+                      <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded-md bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                            <span className="font-semibold text-slate-700">Free (Available to be booked)</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded-md bg-rose-600 text-white flex items-center justify-center text-[10px] font-bold">✕</span>
+                            <span className="font-semibold text-slate-700">Busy (Blocked / Unavailable)</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded-md bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">★</span>
+                            <span className="font-semibold text-slate-700">Confirmed Booking</span>
+                          </div>
+                        </div>
+
+                        <span className="text-[11px] text-slate-400">
+                          💡 Ticking any date instantly syncs with live platform availability.
+                        </span>
                       </div>
                     </div>
                   </div>
