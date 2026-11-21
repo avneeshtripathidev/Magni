@@ -501,17 +501,18 @@ export default function ArtistOnboardingPage() {
       }
     }
 
-    // STEP 4 VALIDATION: All fields mandatory
+    // STEP 4 VALIDATION: Exactly 1 Cover Photo and 1 Video are mandatory
     if (step === 4) {
       const missingStep4: string[] = [];
-      if (!formData.cover_image_url.trim()) missingStep4.push('Cover Banner Photo');
-      if (!formData.profile_image_url.trim()) missingStep4.push('Profile Avatar');
-      if (!formData.gallery_images || formData.gallery_images.length < 1) missingStep4.push('at least 1 Stage Photo in Gallery');
-      if (!formData.youtube_links || formData.youtube_links.length < 1) missingStep4.push('at least 1 Performance Video / Reel');
-      if (!formData.instagram_url.trim()) missingStep4.push('Instagram Profile Handle');
+      if (!formData.cover_image_url.trim() && !formData.profile_image_url.trim()) {
+        missingStep4.push('Cover Banner Photo (Mandatory)');
+      }
+      if (!formData.youtube_links || formData.youtube_links.length < 1) {
+        missingStep4.push('at least 1 Performance Video or Reel (Mandatory)');
+      }
 
       if (missingStep4.length > 0) {
-        setError(`All fields are mandatory. Please provide: ${missingStep4.join(', ')}.`);
+        setError(`Please provide mandatory media: ${missingStep4.join(', ')}.`);
         return;
       }
 
@@ -1366,14 +1367,30 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-amber-900 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
+                <span>In this step, <strong>1 Cover Banner Photo</strong> and <strong>1 Performance Video / Reel</strong> are strictly mandatory. All other photos, audio demos, and social profiles are optional.</span>
+              </div>
+
               {/* Cover Photo (Mandatory) & Profile Avatar (Optional) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <div>
-                      <label className="form-label mb-0 text-slate-900 font-bold">
-                        Cover Banner (16:9) <span className="text-rose-500">*</span>
-                      </label>
+                      <div className="flex items-center gap-2">
+                        <label className="form-label mb-0 text-slate-900 font-bold">
+                          Cover Banner (16:9) <span className="text-rose-500 font-bold">*</span>
+                        </label>
+                        {!formData.cover_image_url.trim() ? (
+                          <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                            1 Required *
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            ✓ Added
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[11px] text-slate-400">Header photo on your booking page</p>
                     </div>
                     <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-xs font-bold text-white shadow-xs transition-all">
@@ -1419,10 +1436,15 @@ export default function ArtistOnboardingPage() {
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <div>
-                      <label className="form-label mb-0 text-slate-900 font-bold">
-                        Profile Avatar <span className="text-rose-500 font-bold">*</span>
-                      </label>
-                      <p className="text-[11px] text-slate-400">Headshot or stage avatar</p>
+                      <div className="flex items-center gap-2">
+                        <label className="form-label mb-0 text-slate-900 font-bold">
+                          Profile Avatar
+                        </label>
+                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                          Optional
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">Headshot or stage avatar (falls back to Cover Banner)</p>
                     </div>
                     <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-sky-400 text-xs font-bold text-slate-700 shadow-xs transition-all">
                       {uploadingField === 'profile_image_url' ? (
@@ -1465,13 +1487,13 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
-              {/* Artist Stage Photos (3-4+ images: 1 Mandatory, Extra Optional) */}
+              {/* Artist Stage Photos (Optional — up to 15 photos) */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <label className="form-label mb-0 text-slate-900 font-bold">Stage &amp; Live Photos</label>
-                    <span className="px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-[10px] font-black uppercase">
-                      1 Required &bull; Up to 15 Photos
+                    <span className="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-black uppercase">
+                      Optional &bull; Up to 15 Photos
                     </span>
                   </div>
                   <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition-all">
@@ -1503,7 +1525,7 @@ export default function ArtistOnboardingPage() {
                         >
                           <img src={photoUrl} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover" />
                           <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-xs text-white text-[9px] font-bold">
-                            {isFirst ? 'Primary Photo' : `Photo ${idx + 1}`}
+                            Photo {idx + 1}
                           </span>
                           <button
                             type="button"
@@ -1511,7 +1533,7 @@ export default function ArtistOnboardingPage() {
                             className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-rose-600 text-white transition-colors"
                             title="Remove photo"
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       );
@@ -1519,26 +1541,16 @@ export default function ArtistOnboardingPage() {
                     return (
                       <label
                         key={`onb-slot-${idx}`}
-                        className={`cursor-pointer rounded-2xl aspect-[4/3] border-2 border-dashed flex flex-col items-center justify-center gap-1.5 p-3 text-center transition-all ${
-                          isFirst
-                            ? 'border-sky-300 bg-sky-50/50 hover:bg-sky-50 text-sky-900'
-                            : 'border-slate-200 bg-white hover:border-sky-300 hover:bg-slate-50 text-slate-600'
-                        }`}
+                        className="cursor-pointer rounded-2xl aspect-[4/3] border-2 border-dashed border-slate-200 bg-white hover:border-sky-300 hover:bg-slate-50 text-slate-600 flex flex-col items-center justify-center gap-1.5 p-3 text-center transition-all"
                       >
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          isFirst ? 'bg-sky-100 text-sky-600' : 'bg-slate-100 text-slate-400'
-                        }`}>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-400">
                           <Plus className="w-4 h-4" />
                         </div>
                         <span className="text-xs font-bold text-slate-800">
                           {isFirst ? 'Primary Photo' : `Photo ${idx + 1}`}
                         </span>
-                        <span
-                          className={`text-[10px] font-bold ${
-                            isFirst ? 'text-sky-600' : 'text-slate-400'
-                          }`}
-                        >
-                          {isFirst ? 'Required *' : 'Optional'}
+                        <span className="text-[10px] font-bold text-slate-400">
+                          Optional
                         </span>
                         <input
                           type="file"
@@ -1553,14 +1565,22 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
-              {/* Performance Videos & Reels */}
+              {/* Performance Videos & Reels (1 Mandatory) */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <label className="form-label mb-0 text-slate-900 font-bold">Performance Videos &amp; Reels</label>
-                    <span className="px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-[10px] font-black uppercase">
-                      1 Required
-                    </span>
+                    <label className="form-label mb-0 text-slate-900 font-bold">
+                      Performance Videos &amp; Reels <span className="text-rose-500 font-bold">*</span>
+                    </label>
+                    {formData.youtube_links.length === 0 ? (
+                      <span className="px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-black uppercase">
+                        1 Required *
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase">
+                        {formData.youtube_links.length} Video{formData.youtube_links.length > 1 ? 's' : ''} Added
+                      </span>
+                    )}
                   </div>
                   <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition-all">
                     {uploadingField === 'video_upload' ? (
@@ -1695,7 +1715,8 @@ export default function ArtistOnboardingPage() {
                   <div>
                     <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
                       <Instagram className="w-3.5 h-3.5 text-rose-500" />
-                      <span>Instagram Profile <strong className="text-rose-500">*</strong></span>
+                      <span>Instagram Profile</span>
+                      <span className="text-[10px] text-slate-400 font-normal">(Optional)</span>
                     </label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">@</span>
