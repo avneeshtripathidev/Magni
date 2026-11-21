@@ -30,30 +30,32 @@
   overflow-x: hidden !important;
   max-width: 100vw !important;
   box-sizing: border-box !important;
-  background-color: #141216 !important;
+  background-color: #0b0f19 !important;
   background-image:
     /* 1. Luxury cyber dot matrix grid in Rose Stone (#D8C4B7) tint */
-    radial-gradient(rgba(216, 196, 183, 0.14) 1.2px, transparent 1.2px),
-    /* 2. Top Golden Marigold radiance (#E8B943) */
-    radial-gradient(ellipse 75% 50% at 50% -5%, rgba(232, 185, 67, 0.22) 0%, transparent 65%),
-    /* 3. Deep Wine Red concert stage wash on left (#7E3044) */
-    radial-gradient(circle at 18% 28%, rgba(126, 48, 68, 0.45) 0%, transparent 55%),
-    /* 4. Coral celebration ambient glow on right (#E45F60) */
-    radial-gradient(circle at 82% 30%, rgba(228, 95, 96, 0.25) 0%, transparent 50%),
-    /* 5. Center Golden Marigold warmth (#E8B943) */
-    radial-gradient(ellipse 65% 45% at 50% 45%, rgba(232, 185, 67, 0.10) 0%, transparent 70%),
-    /* 6. Dark charcoal scrim overlay for pristine readability */
-    linear-gradient(180deg, rgba(20, 17, 23, 0.72) 0%, rgba(26, 23, 29, 0.82) 42%, rgba(16, 14, 18, 0.96) 100%),
-    /* 7. Concert Confetti Background Image from Live Performance Card */
+    radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
+    /* 2. Electric Cyan / Blue stage spotlight wash on Left (from image 2 & 3) */
+    radial-gradient(ellipse 70% 60% at 12% 25%, rgba(14, 165, 233, 0.38) 0%, rgba(30, 58, 138, 0.22) 50%, transparent 75%),
+    /* 3. Deep Magenta / Wine Red concert haze on Right (from image 3 & brand) */
+    radial-gradient(ellipse 75% 65% at 88% 28%, rgba(217, 70, 239, 0.34) 0%, rgba(126, 48, 68, 0.42) 45%, transparent 75%),
+    /* 4. Top-center ambient violet radiance blending blue & magenta */
+    radial-gradient(ellipse 80% 48% at 50% -10%, rgba(168, 85, 247, 0.30) 0%, transparent 68%),
+    /* 5. Center Golden Marigold / Amber stage warm highlight */
+    radial-gradient(circle at 50% 42%, rgba(232, 185, 67, 0.12) 0%, transparent 60%),
+    /* 6. Smooth horizontal fade-wise gradient: electric cyan -> deep violet -> concert magenta */
+    linear-gradient(90deg, rgba(14, 165, 233, 0.16) 0%, rgba(99, 102, 241, 0.12) 32%, rgba(168, 85, 247, 0.14) 68%, rgba(228, 95, 96, 0.18) 100%),
+    /* 7. Dark luxury charcoal scrim overlay for pristine readability */
+    linear-gradient(180deg, rgba(11, 15, 25, 0.70) 0%, rgba(18, 16, 26, 0.82) 42%, rgba(13, 11, 17, 0.96) 100%),
+    /* 8. Celebratory concert confetti party background image */
     url('/posters/dj_concert_confetti_bg.jpg') !important;
-  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, cover !important;
-  background-position: 0 0, center, center, center, center, center, center 20% !important;
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
+  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, cover !important;
+  background-position: 0 0, center, center, center, center, center, center, center 20% !important;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
   border-bottom: 1px solid rgba(216, 196, 183, 0.22) !important;
-  box-shadow: inset 0 -40px 60px rgba(16, 14, 18, 0.95);
+  box-shadow: inset 0 -40px 60px rgba(13, 11, 17, 0.95);
 }
 
-/* Laser beams and nightclub stage atmospheric lights in Brand Marigold & Wine/Coral */
+/* Laser beams and nightclub stage atmospheric lights in Electric Cyan & Magenta/Coral */
 .seo-dj-ambient-lights {
   position: absolute;
   inset: 0;
@@ -68,23 +70,23 @@
   width: 120%;
   height: 2px;
   pointer-events: none;
-  opacity: 0.65;
+  opacity: 0.70;
   filter: blur(1.5px);
 }
 
 .seo-dj-laser-left {
   left: -20%;
   transform: rotate(26deg);
-  background: linear-gradient(90deg, transparent 0%, rgba(232, 185, 67, 0.85) 50%, transparent 100%);
-  box-shadow: 0 0 25px rgba(232, 185, 67, 0.75), 0 0 50px rgba(232, 185, 67, 0.35);
+  background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.95) 50%, transparent 100%);
+  box-shadow: 0 0 25px rgba(14, 165, 233, 0.85), 0 0 55px rgba(2, 132, 199, 0.45);
   animation: dj-laser-sweep-left 6s ease-in-out infinite alternate;
 }
 
 .seo-dj-laser-right {
   right: -20%;
   transform: rotate(-26deg);
-  background: linear-gradient(90deg, transparent 0%, rgba(228, 95, 96, 0.85) 50%, transparent 100%);
-  box-shadow: 0 0 25px rgba(228, 95, 96, 0.75), 0 0 50px rgba(126, 48, 68, 0.45);
+  background: linear-gradient(90deg, transparent 0%, rgba(217, 70, 239, 0.90) 50%, transparent 100%);
+  box-shadow: 0 0 25px rgba(217, 70, 239, 0.80), 0 0 55px rgba(126, 48, 68, 0.45);
   animation: dj-laser-sweep-right 7s ease-in-out infinite alternate;
 }
 
@@ -93,11 +95,11 @@
   top: -100px;
   left: 50%;
   transform: translateX(-50%);
-  width: 700px;
-  height: 400px;
+  width: 750px;
+  height: 420px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(232, 185, 67, 0.22) 0%, rgba(126, 48, 68, 0.20) 45%, transparent 70%);
-  filter: blur(60px);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.26) 0%, rgba(14, 165, 233, 0.18) 40%, rgba(228, 95, 96, 0.18) 70%, transparent 85%);
+  filter: blur(65px);
   animation: dj-strobe-breathe 4s ease-in-out infinite alternate;
 }
 
@@ -107,7 +109,7 @@
   left: 0;
   right: 0;
   height: 250px;
-  background: linear-gradient(to top, rgba(16, 14, 18, 0.98), transparent);
+  background: linear-gradient(to top, rgba(13, 11, 17, 0.98), transparent);
   pointer-events: none;
 }
 
@@ -204,10 +206,10 @@
 }
 
 .seo-hero-dj-theme .seo-query-chip.active {
-  background: linear-gradient(135deg, rgba(126, 48, 68, 0.85) 0%, rgba(228, 95, 96, 0.85) 100%) !important;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.85) 0%, rgba(168, 85, 247, 0.85) 50%, rgba(228, 95, 96, 0.85) 100%) !important;
   border-color: rgba(232, 185, 67, 0.75) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 20px rgba(228, 95, 96, 0.45), inset 0 0 12px rgba(232, 185, 67, 0.25) !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.45), inset 0 0 12px rgba(232, 185, 67, 0.25) !important;
 }
 
 /* DJ Theme Stats Bar */
@@ -273,7 +275,7 @@
   }
   .seo-hero-root.seo-hero-dj-theme {
     padding: 16px 12px 40px;
-    background-position: 0 0, center, center, center, center, center, center top !important;
+    background-position: 0 0, center, center, center, center, center, center, center top !important;
   }
 }
 
