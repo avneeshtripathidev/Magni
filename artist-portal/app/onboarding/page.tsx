@@ -445,27 +445,99 @@ export default function ArtistOnboardingPage() {
     }
   };
 
-  const handleNextStep = (e?: React.FormEvent) => {
+    const handleNextStep = (e?: React.FormEvent) => {
     setError(null);
+
+    // STEP 1 VALIDATION: All fields mandatory
     if (step === 1) {
-      if (!formData.name.trim() || !formData.stage_name.trim() || !formData.city.trim()) {
-        setError('Please enter your Legal Name, Stage Name, and Base City to continue.');
+      const missingStep1: string[] = [];
+      if (!formData.name.trim()) missingStep1.push('Legal Full Name');
+      if (!formData.stage_name.trim()) missingStep1.push('Stage / Act Name');
+      if (!formData.phone_no.trim()) missingStep1.push('Contact Phone / WhatsApp');
+      if (!formData.email.trim()) missingStep1.push('Email Address');
+      if (!formData.category.trim()) missingStep1.push('Primary Category');
+      if (!formData.sub_category.trim()) missingStep1.push('Specialty / Sub-Category');
+      if (!formData.city.trim()) missingStep1.push('Base City');
+      if (!formData.state.trim()) missingStep1.push('State / Region');
+      if (formData.experience_years === undefined || formData.experience_years === null || formData.experience_years < 0) {
+        missingStep1.push('Years of Experience');
+      }
+
+      if (missingStep1.length > 0) {
+        setError(`All fields are mandatory. Please provide: ${missingStep1.join(', ')}.`);
+        return;
+      }
+
+      // Phone validation (at least 10 digits)
+      const digitsOnly = formData.phone_no.replace(/\D/g, '');
+      if (digitsOnly.length < 10) {
+        setError('Please enter a valid 10-digit mobile number for Contact Phone / WhatsApp.');
+        return;
+      }
+
+      // Email validation
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+        setError('Please enter a valid email address.');
         return;
       }
     }
-    if (step === 4) {
-      const missing: string[] = [];
-      if (!formData.cover_image_url.trim()) missing.push('Cover Photo');
-      if (formData.gallery_images.length < 1) missing.push('at least 1 Artist Photo');
-      if (formData.youtube_links.length < 1) missing.push('at least 1 Performance Video');
-      if (missing.length > 0) {
-        setError(`Required to continue: Please upload ${missing.join(', ')}. Additional photos and videos are optional.`);
+
+    // STEP 2 VALIDATION: All fields mandatory
+    if (step === 2) {
+      const missingStep2: string[] = [];
+      if (!formData.genres || formData.genres.length === 0) missingStep2.push('at least 1 Musical Genre');
+      if (!formData.languages || formData.languages.length === 0) missingStep2.push('at least 1 Performance Language');
+      if (!formData.serviceable_cities || formData.serviceable_cities.length === 0) missingStep2.push('at least 1 Performance Coverage Area');
+      if (!formData.bio.trim() || formData.bio.trim().length < 20) missingStep2.push('Artist Biography (minimum 20 characters)');
+
+      if (missingStep2.length > 0) {
+        setError(`All fields are mandatory. Please complete: ${missingStep2.join(', ')}.`);
         return;
       }
+    }
+
+    // STEP 3 VALIDATION: All fields mandatory
+    if (step === 3) {
+      const missingStep3: string[] = [];
+      if (!formData.starting_price || formData.starting_price <= 0) missingStep3.push('Solo / Starting Rate (₹)');
+      if (!formData.duo_price || formData.duo_price <= 0) missingStep3.push('Duo Act Rate (₹)');
+      if (!formData.band_price || formData.band_price <= 0) missingStep3.push('Full Band Show Rate (₹)');
+      if (!formData.hourly_price || formData.hourly_price <= 0) missingStep3.push('Hourly Overtime Rate (₹)');
+      if (!formData.min_duration || formData.min_duration <= 0) missingStep3.push('Min Set Duration');
+      if (!formData.max_duration || formData.max_duration <= 0) missingStep3.push('Max Set Duration');
+      if (!formData.tech_requirements.trim()) missingStep3.push('Technical Stage Rider');
+      if (!formData.travel_policy.trim()) missingStep3.push('Travel & Hospitality Policy');
+
+      if (missingStep3.length > 0) {
+        setError(`All fields are mandatory. Please provide: ${missingStep3.join(', ')}.`);
+        return;
+      }
+
+      if (Number(formData.max_duration) < Number(formData.min_duration)) {
+        setError('Max Set Duration must be greater than or equal to Min Set Duration.');
+        return;
+      }
+    }
+
+    // STEP 4 VALIDATION: All fields mandatory
+    if (step === 4) {
+      const missingStep4: string[] = [];
+      if (!formData.cover_image_url.trim()) missingStep4.push('Cover Banner Photo');
+      if (!formData.profile_image_url.trim()) missingStep4.push('Profile Avatar');
+      if (!formData.gallery_images || formData.gallery_images.length < 1) missingStep4.push('at least 1 Stage Photo in Gallery');
+      if (!formData.youtube_links || formData.youtube_links.length < 1) missingStep4.push('at least 1 Performance Video / Reel');
+      if (!formData.instagram_url.trim()) missingStep4.push('Instagram Profile Handle');
+
+      if (missingStep4.length > 0) {
+        setError(`All fields are mandatory. Please provide: ${missingStep4.join(', ')}.`);
+        return;
+      }
+
       if (e) e.preventDefault();
       handleFinalSubmit(e || ({} as any));
       return;
     }
+
     if (step < 4) {
       setStep(step + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -743,9 +815,14 @@ export default function ArtistOnboardingPage() {
                 </div>
               </div>
 
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-amber-900 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse flex-shrink-0" />
+                <span>All fields marked with <strong className="text-rose-600">*</strong> are mandatory for verification and live approval.</span>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="form-label">Legal Full Name *</label>
+                  <label className="form-label">Legal Full Name <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="text"
                     required
@@ -757,7 +834,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Stage / Act Name *</label>
+                  <label className="form-label">Stage / Act Name <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="text"
                     required
@@ -769,7 +846,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Contact Phone / WhatsApp *</label>
+                  <label className="form-label">Contact Phone / WhatsApp <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="tel"
                     required
@@ -781,19 +858,21 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Email Address</label>
+                  <label className="form-label">Email Address <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="email"
+                    required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="artist@example.com"
-                    className="form-input bg-slate-50"
+                    className="form-input bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="form-label">Primary Category *</label>
+                  <label className="form-label">Primary Category <span className="text-rose-500 font-bold">*</span></label>
                   <select
+                    required
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="form-input"
@@ -807,9 +886,10 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Specialty / Sub-Category</label>
+                  <label className="form-label">Specialty / Sub-Category <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="text"
+                    required
                     value={formData.sub_category}
                     onChange={(e) => setFormData({ ...formData, sub_category: e.target.value })}
                     placeholder="e.g. Bollywood Unplugged, Sufi Rock, Sangeet Specialist"
@@ -818,7 +898,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Base City *</label>
+                  <label className="form-label">Base City <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="text"
                     required
@@ -830,9 +910,10 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">State / Region</label>
+                  <label className="form-label">State / Region <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="text"
+                    required
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                     placeholder="e.g. Delhi, Maharashtra, Karnataka"
@@ -841,9 +922,10 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Years of Live Stage Experience</label>
+                  <label className="form-label">Years of Live Stage Experience <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="number"
+                    required
                     min="0"
                     max="50"
                     value={formData.experience_years}
@@ -871,7 +953,7 @@ export default function ArtistOnboardingPage() {
               </div>
 
               <div>
-                <label className="form-label">Select Genres You Perform</label>
+                <label className="form-label">Select Genres You Perform <span className="text-rose-500 font-bold">*</span></label>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {GENRES.map((g) => {
                     const selected = formData.genres.includes(g);
@@ -895,7 +977,7 @@ export default function ArtistOnboardingPage() {
               </div>
 
               <div>
-                <label className="form-label">Performance Languages</label>
+                <label className="form-label">Performance Languages <span className="text-rose-500 font-bold">*</span></label>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {LANGUAGES.map((l) => {
                     const selected = formData.languages.includes(l);
@@ -924,7 +1006,7 @@ export default function ArtistOnboardingPage() {
                   <div>
                     <label className="form-label mb-0 flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Performance Coverage Locations (Where You Can Easily Perform)</span>
+                      <span>Performance Coverage Locations (Where You Can Easily Perform) <strong className="text-rose-500">*</strong></span>
                     </label>
                     <p className="text-[11px] text-slate-500 mt-0.5">
                       Select all cities or areas you easily travel to and cover for live gigs.
@@ -978,7 +1060,7 @@ export default function ArtistOnboardingPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="form-label mb-0">Artist Biography</label>
+                  <label className="form-label mb-0">Artist Biography <span className="text-rose-500 font-bold">*</span></label>
                   <span className="text-[11px] font-semibold text-slate-400">
                     {formData.bio.length} chars
                   </span>
@@ -1028,7 +1110,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Duo Act Rate (₹)</label>
+                  <label className="form-label">Duo Act Rate (₹) <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="number"
                     step="500"
@@ -1039,7 +1121,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Full Band Show (₹)</label>
+                  <label className="form-label">Full Band Show (₹) <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="number"
                     step="500"
@@ -1050,7 +1132,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Hourly Overtime (₹)</label>
+                  <label className="form-label">Hourly Overtime (₹) <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="number"
                     step="500"
@@ -1063,7 +1145,7 @@ export default function ArtistOnboardingPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                 <div>
-                  <label className="form-label">Min Set Duration (Minutes)</label>
+                  <label className="form-label">Min Set Duration (Minutes) <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="number"
                     step="15"
@@ -1074,7 +1156,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Max Set Duration (Minutes)</label>
+                  <label className="form-label">Max Set Duration (Minutes) <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="number"
                     step="15"
@@ -1085,7 +1167,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Travel Availability</label>
+                  <label className="form-label">Travel Availability <span className="text-rose-500 font-bold">*</span></label>
                   <select
                     value={formData.travel_readiness}
                     onChange={(e) => setFormData({ ...formData, travel_readiness: e.target.value })}
@@ -1099,7 +1181,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="form-label">Sound Equipment Provided?</label>
+                  <label className="form-label">Sound Equipment Provided? <span className="text-rose-500 font-bold">*</span></label>
                   <select
                     value={formData.sound_system ? 'yes' : 'no'}
                     onChange={(e) => setFormData({ ...formData, sound_system: e.target.value === 'yes' })}
@@ -1111,7 +1193,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="form-label">Technical Stage Rider</label>
+                  <label className="form-label">Technical Stage Rider <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="text"
                     value={formData.tech_requirements}
@@ -1122,7 +1204,7 @@ export default function ArtistOnboardingPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="form-label">Travel & Hospitality Policy</label>
+                  <label className="form-label">Travel & Hospitality Policy <span className="text-rose-500 font-bold">*</span></label>
                   <input
                     type="text"
                     value={formData.travel_policy}
@@ -1206,7 +1288,7 @@ export default function ArtistOnboardingPage() {
                   <div className="flex items-center justify-between gap-2">
                     <div>
                       <label className="form-label mb-0 text-slate-900 font-bold">
-                        Profile Avatar <span className="text-slate-400 font-normal">(Optional)</span>
+                        Profile Avatar <span className="text-rose-500 font-bold">*</span>
                       </label>
                       <p className="text-[11px] text-slate-400">Headshot or stage avatar</p>
                     </div>
@@ -1481,7 +1563,7 @@ export default function ArtistOnboardingPage() {
                   <div>
                     <label className="text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
                       <Instagram className="w-3.5 h-3.5 text-rose-500" />
-                      <span>Instagram Profile</span>
+                      <span>Instagram Profile <strong className="text-rose-500">*</strong></span>
                     </label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">@</span>
