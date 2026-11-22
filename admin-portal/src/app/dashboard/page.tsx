@@ -209,13 +209,13 @@ export default function DashboardOverview() {
         analyticsResult
       ] = await Promise.all([
         countQuery,
-        supabase.from('bookings').select('*', { count: 'exact', head: true }),
+        supabase.from('bookings').select('*', { count: 'exact', head: true }).neq('booking_source', 'wedding_invitation_service').not('event_type', 'ilike', '%Wedding Invitation%'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'admin'),
         recentQuery,
         aomQuery,
         popularQuery,
-        supabase.from('bookings').select('*, artists(name, category)').order('created_at', { ascending: false }).limit(5),
-        supabase.from('analytics').select('created_at, ip_address, city').order('created_at', { ascending: false }).limit(300).catch(() => ({ data: [] }))
+        supabase.from('bookings').select('*, artists(name, category)').neq('booking_source', 'wedding_invitation_service').not('event_type', 'ilike', '%Wedding Invitation%').order('created_at', { ascending: false }).limit(5),
+        (supabase.from('analytics').select('created_at, ip_address, city').order('created_at', { ascending: false }).limit(300) as any).then((res: any) => res, () => ({ data: [] }))
       ]);
 
       const analyticsRows = (analyticsResult as any)?.data || [];
@@ -253,7 +253,11 @@ export default function DashboardOverview() {
       setSpotlightArtists(spotlightItems.slice(0, 1));
       setRecentArtists(top20);
 
-      const recentBookingsList = bookings || [];
+      const recentBookingsList = (bookings || []).filter((b: any) =>
+        b.booking_source !== 'wedding_invitation_service' &&
+        b.source_form !== 'Wedding Invitation Studio' &&
+        !b.event_type?.toLowerCase().includes('wedding invitation')
+      );
       setRecentBookings(recentBookingsList);
 
       // Day-wise visitor intelligence from parallel query

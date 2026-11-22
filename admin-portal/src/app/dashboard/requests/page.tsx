@@ -88,6 +88,8 @@ function ClientRequestsContent() {
         .select('*, artists(id, name, alias, category, city, price_min, price_max, is_trending, is_artist_of_month, artist_images!fk_artist_id(image_url))')
         .or('booking_source.eq.client,booking_source.is.null,booking_source.neq.manual')
         .or('event_type.neq.Artist Registration,event_type.is.null')
+        .neq('booking_source', 'wedding_invitation_service')
+        .not('event_type', 'ilike', '%Wedding Invitation%')
         .not('status', 'in', '("confirmed","completed")');
 
       if (searchQuery) {
@@ -105,7 +107,13 @@ function ClientRequestsContent() {
       const { data, error } = await query.order(sortBy, { ascending: sortOrder === 'asc' });
 
       if (error) throw error;
-      setRequests(data || []);
+      // Filter out any wedding invitation studio inquiries so they strictly appear only in the Artist Panel
+      const filtered = (data || []).filter((r: any) => 
+        r.booking_source !== 'wedding_invitation_service' &&
+        r.source_form !== 'Wedding Invitation Studio' &&
+        !r.event_type?.toLowerCase().includes('wedding invitation')
+      );
+      setRequests(filtered);
       setCurrentPage(1);
     } catch (error: any) {
       toast({

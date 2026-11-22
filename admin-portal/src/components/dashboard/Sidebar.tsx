@@ -158,14 +158,22 @@ export function Sidebar({ onClose, userRole = 'admin' }: { onClose?: () => void;
       try {
         const { data, error } = await (supabase
           .from('bookings') as any)
-          .select('event_type')
+          .select('event_type, booking_source')
           .or('booking_source.eq.client,booking_source.is.null,booking_source.neq.manual')
-          .or('status.eq.pending,status.eq.new,status.eq.lead,status.is.null');
+          .or('status.eq.pending,status.eq.new,status.eq.lead,status.is.null')
+          .neq('booking_source', 'wedding_invitation_service')
+          .not('event_type', 'ilike', '%Wedding Invitation%');
           
         if (!error && data) {
           let clientCount = 0;
           let artistCount = 0;
           data.forEach((b: any) => {
+            if (
+              b.booking_source === 'wedding_invitation_service' ||
+              b.event_type?.toLowerCase().includes('wedding invitation')
+            ) {
+              return;
+            }
             if (b.event_type === 'Artist Registration') artistCount++;
             else clientCount++;
           });

@@ -50,6 +50,25 @@ export const weddingInquiryService = {
     artistId?: string;
     search?: string;
   }): Promise<WeddingInquiryRecord[]> {
+    // When executing in browser client, call the secure internal server API route
+    if (typeof window !== 'undefined') {
+      try {
+        const qParams = new URLSearchParams();
+        if (params?.status) qParams.set('status', params.status);
+        if (params?.artistId) qParams.set('artistId', params.artistId);
+        if (params?.search) qParams.set('search', params.search);
+        const res = await fetch(`/api/wedding-inquiries?${qParams.toString()}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data)) {
+            return json.data;
+          }
+        }
+      } catch (clientErr) {
+        console.warn('[WeddingService] Client fetch failed, falling back to direct client query:', clientErr);
+      }
+    }
+
     const supabase = getMainSupabase();
 
     // 1. Try public.wedding_inquiries first
@@ -93,7 +112,7 @@ export const weddingInquiryService = {
       const { data: bData, error: bErr } = await supabase
         .from('bookings')
         .select('*')
-        .or('booking_source.eq.wedding_invitation_service,event_type.ilike.%Wedding Invitation%')
+        .or('booking_source.eq.wedding_invitation_service,event_type.ilike.%Wedding Invitation%,source_form.eq.Wedding Invitation Studio')
         .order('created_at', { ascending: false });
 
       if (bErr || !bData) return [];
@@ -180,6 +199,19 @@ export const weddingInquiryService = {
     id: string,
     status: WeddingInquiryRecord['status']
   ): Promise<{ success: boolean; data?: any; error?: string }> {
+    if (typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/wedding-inquiries', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'status', id, status }),
+        });
+        return await res.json();
+      } catch (err: any) {
+        return { success: false, error: err.message };
+      }
+    }
+
     const supabase = getMainSupabase();
 
     // 1. Try wedding_inquiries
@@ -235,6 +267,19 @@ export const weddingInquiryService = {
     artistId: string,
     artistName: string
   ): Promise<{ success: boolean; error?: string }> {
+    if (typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/wedding-inquiries', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'assign', id, artistId, artistName }),
+        });
+        return await res.json();
+      } catch (err: any) {
+        return { success: false, error: err.message };
+      }
+    }
+
     const supabase = getMainSupabase();
 
     try {
@@ -269,6 +314,19 @@ export const weddingInquiryService = {
     noteText: string,
     author: 'artist' | 'admin'
   ): Promise<{ success: boolean; error?: string }> {
+    if (typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/wedding-inquiries', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'note', id, note: noteText, author }),
+        });
+        return await res.json();
+      } catch (err: any) {
+        return { success: false, error: err.message };
+      }
+    }
+
     const supabase = getMainSupabase();
     const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
     const formattedNote = `[${timestamp} - ${author.toUpperCase()}]: ${noteText}\n`;

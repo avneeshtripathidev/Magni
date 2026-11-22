@@ -69,9 +69,9 @@ export default function BookingsPage() {
 
       let query = (supabase
         .from('bookings') as any)
-        .select('*, artists(id, name, alias, category, city, contact_person, phone_no, email, is_trending, is_artist_of_month, artist_images!fk_artist_id(image_url))');
-
-
+        .select('*, artists(id, name, alias, category, city, contact_person, phone_no, email, is_trending, is_artist_of_month, artist_images!fk_artist_id(image_url))')
+        .neq('booking_source', 'wedding_invitation_service')
+        .not('event_type', 'ilike', '%Wedding Invitation%');
 
       query = query.or(
         `booking_source.eq.manual,and(booking_source.eq.client,status.neq.pending)`
@@ -90,7 +90,12 @@ export default function BookingsPage() {
       const { data, error } = await query.order(sortBy, { ascending: sortOrder === 'asc' });
 
       if (error) throw error;
-      setBookings(data || []);
+      const filtered = (data || []).filter((b: any) =>
+        b.booking_source !== 'wedding_invitation_service' &&
+        b.source_form !== 'Wedding Invitation Studio' &&
+        !b.event_type?.toLowerCase().includes('wedding invitation')
+      );
+      setBookings(filtered);
     } catch (error: any) {
       if (error?.message?.includes('relation') || error?.code === '42P01') {
         setBookings([]);
@@ -107,11 +112,35 @@ export default function BookingsPage() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const { count: total } = await (supabase.from('bookings') as any).select('*', { count: 'exact', head: true });
-      const { count: pending } = await (supabase.from('bookings') as any).select('*', { count: 'exact', head: true }).eq('status', 'pending');
-      const { count: confirmed } = await (supabase.from('bookings') as any).select('*', { count: 'exact', head: true }).eq('status', 'confirmed');
-      const { count: completed } = await (supabase.from('bookings') as any).select('*', { count: 'exact', head: true }).eq('status', 'completed');
-      const { count: cancelled } = await (supabase.from('bookings') as any).select('*', { count: 'exact', head: true }).eq('status', 'cancelled');
+      const { count: total } = await (supabase.from('bookings') as any)
+        .select('*', { count: 'exact', head: true })
+        .neq('booking_source', 'wedding_invitation_service')
+        .not('event_type', 'ilike', '%Wedding Invitation%');
+
+      const { count: pending } = await (supabase.from('bookings') as any)
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending')
+        .neq('booking_source', 'wedding_invitation_service')
+        .not('event_type', 'ilike', '%Wedding Invitation%');
+
+      const { count: confirmed } = await (supabase.from('bookings') as any)
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'confirmed')
+        .neq('booking_source', 'wedding_invitation_service')
+        .not('event_type', 'ilike', '%Wedding Invitation%');
+
+      const { count: completed } = await (supabase.from('bookings') as any)
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'completed')
+        .neq('booking_source', 'wedding_invitation_service')
+        .not('event_type', 'ilike', '%Wedding Invitation%');
+
+      const { count: cancelled } = await (supabase.from('bookings') as any)
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'cancelled')
+        .neq('booking_source', 'wedding_invitation_service')
+        .not('event_type', 'ilike', '%Wedding Invitation%');
+
       setStats({
         total: total || 0,
         pending: pending || 0,

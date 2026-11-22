@@ -16,6 +16,18 @@ function generateInquiryId() {
   return `WED-${datePart}-${randomPart}`;
 }
 
+function parseBudgetNumber(val) {
+  if (!val) return 2500;
+  if (typeof val === 'number') return val;
+  const str = String(val).replace(/,/g, '');
+  const match = str.match(/\d+(\.\d+)?/);
+  if (match) {
+    const n = parseFloat(match[0]);
+    if (!isNaN(n) && n > 0) return n;
+  }
+  return 2500;
+}
+
 async function sendNotificationEmail(inquiry) {
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.replace(/^"|"$/g, '') : null;
@@ -192,7 +204,7 @@ export async function POST(req) {
           venue: 'Digital / Pan-India Delivery',
           city: 'Pan-India',
           state: 'India',
-          budget: budget ? parseFloat(String(budget).replace(/[^0-9.]/g, '')) || 2500 : 2500,
+          budget: parseBudgetNumber(budget),
           status: 'pending',
           booking_source: 'wedding_invitation_service',
           reference_code: inquiry_id,
