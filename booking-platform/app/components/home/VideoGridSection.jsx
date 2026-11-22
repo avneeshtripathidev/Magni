@@ -261,7 +261,7 @@ function VibeVideoCard({ item, onPlayModal, onQuoteModal }) {
   );
 }
 
-export default function VideoGridSection() {
+export default function VideoGridSection({ city, category, className = "" } = {}) {
   const scrollRef = useRef(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -321,7 +321,7 @@ export default function VideoGridSection() {
   };
 
   return (
-    <section className="video-horizontal-section hp-shell hp-block" aria-label="Experience the Vibe">
+    <section className={`video-horizontal-section hp-shell hp-block ${className}`} aria-label="Experience the Vibe">
       {/* Header with Eyebrow, Title and Navigation Buttons */}
       <div className="vhs-header">
         <div className="vhs-header-content">
@@ -333,7 +333,9 @@ export default function VideoGridSection() {
             Experience the <span className="lux-gold-gradient">Vibe</span>
           </h2>
           <p className="vhs-subheading">
-            Watch real live clips from house parties, birthdays, and luxury celebrations across Delhi &amp; NCR.
+            {city 
+              ? `Watch real live clips from house parties, birthdays, and luxury celebrations in ${city} & across India.`
+              : `Watch real live clips from house parties, birthdays, and luxury celebrations across Delhi & NCR.`}
           </p>
         </div>
 

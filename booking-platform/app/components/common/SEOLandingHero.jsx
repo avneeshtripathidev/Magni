@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { bookingService } from '@/app/services/bookingService';
+import VideoGridSection from '@/app/components/home/VideoGridSection';
 import '@/app/styles/components/SEOLandingHero.css';
 import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
@@ -1503,7 +1504,74 @@ export default function SEOLandingHero({
         )}
 
         {/* ==========================================================================
-           3. Direct 1-Step Lead Engine & VIP Artist Concierge Ribbon
+           3. Live Performance Video Showcase ("Experience the Vibe" Carousel)
+           ========================================================================== */}
+        <VideoGridSection city={city} category={category} />
+
+        {/* ==========================================================================
+           4. Interactive 3-Tier Price Guide (Answers "How much does it cost?")
+           ========================================================================== */}
+        <div id="pricing" className="seo-pricing-guide-section">
+          <div className="seo-section-head-v2" style={{ textAlign: 'center', justifyContent: 'center' }}>
+            <div>
+              <span className="badge">✨ TRANSPARENT PRICING PACKAGES</span>
+              <h2><span className="lux-gold-gradient">{category} Pricing Packages</span> in {city}</h2>
+              <p>Direct artist fees with zero middleman charges. Select a package to lock your date &amp; check live availability.</p>
+            </div>
+          </div>
+
+          <div className="seo-pricing-cards-grid">
+            {budgetTiers.map((tier) => (
+              <div key={tier.id} className={`seo-tier-card ${tier.isPopular ? 'featured-tier' : ''}`}>
+                <div className="seo-tier-header">
+                  <div className="seo-tier-tag-row">
+                    {tier.isPopular ? (
+                      <span className="seo-tier-badge">
+                        <span className="seo-star-icon">★</span>
+                        <span>MOST POPULAR IN {city.toUpperCase()}</span>
+                      </span>
+                    ) : (
+                      <span className="seo-tier-kicker">
+                        {tier.id.includes('band') || tier.id.includes('ensemble') || tier.id.includes('celebrity') || tier.id.includes('headliner') || tier.id.includes('concert') || tier.id.includes('mega')
+                          ? '👑 GRAND PRODUCTION & CONCERT'
+                          : '✦ INTIMATE GATHERINGS'}
+                      </span>
+                    )}
+                  </div>
+                  <h4>{tier.title}</h4>
+                  <div className={`seo-tier-price ${tier.isPopular ? 'featured-price' : ''}`}>
+                    {tier.price}
+                  </div>
+                </div>
+
+                <ul className="seo-tier-features">
+                  {tier.features.map((feat, idx) => (
+                    <li key={idx}>
+                      <span className="feat-check">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span>
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectTier(tier)}
+                  className={`seo-tier-btn ${tier.isPopular ? 'seo-tier-btn-featured' : ''}`}
+                >
+                  <span>Check Availability</span>
+                  <span className="btn-arrow">→</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ==========================================================================
+           5. Direct 1-Step Lead Engine & VIP Artist Concierge Ribbon
            ========================================================================== */}
         <div ref={formRef} id="seo-lead-form" className="seo-interactive-booking-card">
           {!isSubmitted ? (
@@ -1740,68 +1808,6 @@ export default function SEOLandingHero({
               </div>
             </div>
           )}
-        </div>
-
-        {/* ==========================================================================
-           4. Interactive 3-Tier Price Guide (Answers "How much does it cost?")
-           ========================================================================== */}
-        <div id="pricing" className="seo-pricing-guide-section">
-          <div className="seo-section-head-v2" style={{ textAlign: 'center', justifyContent: 'center' }}>
-            <div>
-              <span className="badge">✨ TRANSPARENT PRICING PACKAGES</span>
-              <h2><span className="lux-gold-gradient">{category} Pricing Packages</span> in {city}</h2>
-              <p>Direct artist fees with zero middleman charges. Select a package to lock your date &amp; check live availability.</p>
-            </div>
-          </div>
-
-          <div className="seo-pricing-cards-grid">
-            {budgetTiers.map((tier) => (
-              <div key={tier.id} className={`seo-tier-card ${tier.isPopular ? 'featured-tier' : ''}`}>
-                <div className="seo-tier-header">
-                  <div className="seo-tier-tag-row">
-                    {tier.isPopular ? (
-                      <span className="seo-tier-badge">
-                        <span className="seo-star-icon">★</span>
-                        <span>MOST POPULAR IN {city.toUpperCase()}</span>
-                      </span>
-                    ) : (
-                      <span className="seo-tier-kicker">
-                        {tier.id.includes('band') || tier.id.includes('ensemble') || tier.id.includes('celebrity') || tier.id.includes('headliner') || tier.id.includes('concert') || tier.id.includes('mega')
-                          ? '👑 GRAND PRODUCTION & CONCERT'
-                          : '✦ INTIMATE GATHERINGS'}
-                      </span>
-                    )}
-                  </div>
-                  <h4>{tier.title}</h4>
-                  <div className={`seo-tier-price ${tier.isPopular ? 'featured-price' : ''}`}>
-                    {tier.price}
-                  </div>
-                </div>
-
-                <ul className="seo-tier-features">
-                  {tier.features.map((feat, idx) => (
-                    <li key={idx}>
-                      <span className="feat-check">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      </span>
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectTier(tier)}
-                  className={`seo-tier-btn ${tier.isPopular ? 'seo-tier-btn-featured' : ''}`}
-                >
-                  <span>Check Availability</span>
-                  <span className="btn-arrow">→</span>
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
 
       </div>

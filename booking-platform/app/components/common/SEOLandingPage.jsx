@@ -2,7 +2,6 @@
 
 import SEODynamicContent from '@/app/components/common/SEODynamicContent';
 import SEOLandingHero from '@/app/components/common/SEOLandingHero';
-import VideoGridSection from '@/app/components/home/VideoGridSection';
 import ContactSection from '@/app/components/home/ContactSection';
 import SectionDivider from '@/app/components/common/SectionDivider';
 import '@/app/styles/pages/HomePage.css';
@@ -32,7 +31,7 @@ export default function SEOLandingPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <div className={`hp ${isDJ ? 'hp-dj-night-theme' : ''}`}>
-        {/* Luxury Hero with Interactive Booking Engine & Top 5 Verified Artists Showcase */}
+        {/* Luxury Hero with Interactive Booking Engine, Top 5 Verified Artists, & Experience the Vibe Videos */}
         <SEOLandingHero
           heroTitle={heroTitle}
           heroSubtitle={heroSubtitle}
@@ -59,8 +58,6 @@ export default function SEOLandingPage({
           </>
         ) : null}
 
-        <VideoGridSection />
-        <SectionDivider />
         <ContactSection />
       </div>
     </>

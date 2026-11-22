@@ -4815,6 +4815,31 @@ body.modal-open #unified-header {
   }
 }
 
+/* ==========================================================================
+   Position 3: Experience the Vibe Video Section within SEO Landing Hero
+   ========================================================================== */
+.seo-hero-container .video-horizontal-section {
+  padding: 1.25rem 0 1.5rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+.seo-hero-container .video-horizontal-section .vhs-header {
+  margin-bottom: 1.5rem !important;
+}
+
+@media (max-width: 768px) {
+  .seo-hero-container .video-horizontal-section {
+    padding: 0.5rem 0 1rem !important;
+  }
+  .seo-hero-container .video-horizontal-section .vhs-header {
+    margin-bottom: 1rem !important;
+  }
+}
+
+
 
 
 
