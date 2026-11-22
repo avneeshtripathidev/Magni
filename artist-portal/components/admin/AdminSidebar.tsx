@@ -77,6 +77,11 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
           icon: CalendarCheck,
         },
         {
+          name: 'Wedding Inquiries',
+          href: '/admin/wedding-invitations',
+          icon: Sparkles,
+        },
+        {
           name: 'Admin Access (3 Max)',
           href: '/admin/access',
           icon: Lock,

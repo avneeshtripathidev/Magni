@@ -44,6 +44,7 @@ export function Sidebar({ onClose }: SidebarProps) {
       items: [
         { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Live Bookings', href: '/bookings', icon: CalendarCheck },
+        { name: 'Wedding Inquiries', href: '/wedding-invitations', icon: Sparkles },
         { name: 'Payouts & Earnings', href: '/payments', icon: CreditCard },
       ],
     },
