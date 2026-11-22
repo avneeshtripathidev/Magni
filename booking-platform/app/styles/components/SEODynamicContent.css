@@ -614,9 +614,28 @@
   }
 
   .seo-visual-highlights-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin: 20px 0 24px 0;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 12px !important;
+    margin: 16px -14px 20px -14px !important;
+    padding: 4px 14px 14px !important;
+    width: calc(100% + 28px) !important;
+    box-sizing: border-box !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .seo-visual-highlights-grid::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .seo-highlight-card {
+    flex: 0 0 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+    scroll-snap-align: start !important;
   }
 
   .seo-visual-flow-card {
@@ -625,15 +644,32 @@
   }
 
   .seo-how-it-works-flow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 12px !important;
+    margin: 14px -14px 10px -14px !important;
+    padding: 4px 14px 14px !important;
+    width: calc(100% + 28px) !important;
+    box-sizing: border-box !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .seo-how-it-works-flow::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .seo-flow-step-card {
+    flex: 0 0 230px !important;
+    min-width: 230px !important;
+    max-width: 230px !important;
+    scroll-snap-align: start !important;
   }
 
   .seo-flow-divider {
-    transform: rotate(90deg);
-    justify-content: center;
-    margin: -2px 0;
+    display: none !important;
   }
 
   .seo-callout-card {
