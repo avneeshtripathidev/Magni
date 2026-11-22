@@ -621,7 +621,8 @@ export default function AdminWeddingInvitationsPage() {
             return (
               <div
                 key={inq.id}
-                className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:shadow-lg hover:border-amber-200/80 transition-all flex flex-col justify-between space-y-4 group relative"
+                onClick={() => setSelectedInquiry(inq)}
+                className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:border-amber-300 hover:-translate-y-1 transition-all flex flex-col justify-between space-y-4 group relative cursor-pointer"
               >
                 {/* Card Top: ID, Status & Quick Follow Button */}
                 <div className="space-y-3">
@@ -719,7 +720,8 @@ export default function AdminWeddingInvitationsPage() {
                     <span className="font-semibold text-slate-400">Assigned Designer:</span>
                     {inq.assigned_artist_name ? (
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setAssigningInquiry(inq);
                           setSelectedArtistId(inq.assigned_artist_id || '');
                         }}
@@ -729,7 +731,8 @@ export default function AdminWeddingInvitationsPage() {
                       </button>
                     ) : (
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setAssigningInquiry(inq);
                           setSelectedArtistId('');
                         }}
@@ -749,6 +752,7 @@ export default function AdminWeddingInvitationsPage() {
                       href={waUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                       className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors"
                     >
                       <MessageCircle size={14} />
@@ -758,6 +762,7 @@ export default function AdminWeddingInvitationsPage() {
                     {/* Quick Call */}
                     <a
                       href={`tel:${cleanPhone}`}
+                      onClick={(e) => e.stopPropagation()}
                       className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors"
                     >
                       <Phone size={14} className="text-slate-600" />
@@ -769,6 +774,7 @@ export default function AdminWeddingInvitationsPage() {
                     {/* Inline Status Dropdown */}
                     <select
                       value={inq.status}
+                      onClick={(e) => e.stopPropagation()}
                       onChange={(e) => handleStatusChange(inq.id, e.target.value as any)}
                       className="w-1/2 py-2 px-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none"
                     >
@@ -781,7 +787,10 @@ export default function AdminWeddingInvitationsPage() {
 
                     {/* View Details Drawer */}
                     <button
-                      onClick={() => setSelectedInquiry(inq)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedInquiry(inq);
+                      }}
                       className="w-1/2 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors"
                     >
                       <Eye size={13} /> Details & Notes
@@ -820,8 +829,12 @@ export default function AdminWeddingInvitationsPage() {
                   );
 
                   return (
-                    <tr key={inq.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-4 px-5">
+                    <tr
+                      key={inq.id}
+                      onClick={() => setSelectedInquiry(inq)}
+                      className="hover:bg-amber-50/50 transition-colors cursor-pointer group"
+                    >
+                      <td className="py-4 px-5" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleToggleFollow(inq.id)}
                           className={`p-1.5 rounded-xl border transition-all ${
@@ -838,10 +851,10 @@ export default function AdminWeddingInvitationsPage() {
                         {inq.inquiry_id}
                       </td>
                       <td className="py-4 px-5">
-                        <div className="font-black text-slate-900">{inq.customer_name}</div>
+                        <div className="font-black text-slate-900 group-hover:text-amber-800 transition-colors">{inq.customer_name}</div>
                         {inq.email && <div className="text-xs text-slate-400">{inq.email}</div>}
                       </td>
-                      <td className="py-4 px-5">
+                      <td className="py-4 px-5" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-mono font-semibold text-slate-600">{inq.phone}</span>
                           <a
