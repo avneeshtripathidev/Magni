@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -251,6 +251,90 @@ export default function SEOLandingHero({
       }
     ];
   }, [isDJ, isBand, isComedian]);
+
+  // Mobile pricing carousel state & auto-centering
+  const pricingGridRef = useRef(null);
+  const [activeTierIndex, setActiveTierIndex] = useState(() => {
+    const popIdx = budgetTiers.findIndex(t => t.isPopular);
+    return popIdx >= 0 ? popIdx : 1;
+  });
+
+  const handleGridScroll = useCallback(() => {
+    const grid = pricingGridRef.current;
+    if (!grid) return;
+    const cards = grid.querySelectorAll('.seo-tier-card');
+    if (!cards.length) return;
+
+    const gridCenter = grid.scrollLeft + (grid.clientWidth / 2);
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    cards.forEach((card, idx) => {
+      const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+      const distance = Math.abs(gridCenter - cardCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = idx;
+      }
+    });
+
+    setActiveTierIndex(closestIndex);
+  }, []);
+
+  const scrollToTierIndex = useCallback((idx) => {
+    const grid = pricingGridRef.current;
+    if (!grid) return;
+    const cards = grid.querySelectorAll('.seo-tier-card');
+    if (cards[idx]) {
+      const card = cards[idx];
+      const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+      const targetScrollLeft = cardCenter - (grid.clientWidth / 2);
+      grid.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth'
+      });
+      setActiveTierIndex(idx);
+    }
+  }, []);
+
+  // Center the Most Popular pricing card on mount for mobile viewports
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const grid = pricingGridRef.current;
+    if (!grid) return;
+
+    const centerPopularCard = () => {
+      if (window.innerWidth > 768) return;
+      const popularIdx = budgetTiers.findIndex(t => t.isPopular);
+      const targetIdx = popularIdx >= 0 ? popularIdx : 1;
+      const cards = grid.querySelectorAll('.seo-tier-card');
+      const targetCard = cards[targetIdx] || grid.querySelector('.featured-tier');
+      if (targetCard) {
+        const cardCenter = targetCard.offsetLeft + (targetCard.offsetWidth / 2);
+        const targetScrollLeft = cardCenter - (grid.clientWidth / 2);
+        grid.scrollLeft = targetScrollLeft;
+        setActiveTierIndex(targetIdx);
+      }
+    };
+
+    // Run after paint and after layout stabilizes
+    centerPopularCard();
+    const t1 = setTimeout(centerPopularCard, 100);
+    const t2 = setTimeout(centerPopularCard, 350);
+
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        centerPopularCard();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [budgetTiers]);
 
   // WhatsApp click handler
   const handleWhatsAppQuote = () => {
@@ -1528,9 +1612,16 @@ export default function SEOLandingHero({
             </div>
           </div>
 
-          <div className="seo-pricing-cards-grid">
-            {budgetTiers.map((tier) => (
-              <div key={tier.id} className={`seo-tier-card ${tier.isPopular ? 'featured-tier' : ''}`}>
+          <div
+            ref={pricingGridRef}
+            onScroll={handleGridScroll}
+            className="seo-pricing-cards-grid"
+          >
+            {budgetTiers.map((tier, idx) => (
+              <div
+                key={tier.id}
+                className={`seo-tier-card ${tier.isPopular ? 'featured-tier' : ''} ${activeTierIndex === idx ? 'active-tier' : ''}`}
+              >
                 <div className="seo-tier-header">
                   <div className="seo-tier-tag-row">
                     {tier.isPopular ? (
@@ -1553,8 +1644,8 @@ export default function SEOLandingHero({
                 </div>
 
                 <ul className="seo-tier-features">
-                  {tier.features.map((feat, idx) => (
-                    <li key={idx}>
+                  {tier.features.map((feat, fIdx) => (
+                    <li key={fIdx}>
                       <span className="feat-check">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
@@ -1574,6 +1665,21 @@ export default function SEOLandingHero({
                   <span className="btn-arrow">→</span>
                 </button>
               </div>
+            ))}
+          </div>
+
+          {/* Mobile Pricing Carousel Dots Indicator */}
+          <div className="seo-pricing-dots-wrap" aria-label="Pricing Packages Navigation">
+            {budgetTiers.map((tier, idx) => (
+              <button
+                key={tier.id}
+                type="button"
+                onClick={() => scrollToTierIndex(idx)}
+                className={`seo-pricing-dot ${activeTierIndex === idx ? 'active' : ''} ${tier.isPopular ? 'dot-popular' : ''}`}
+                aria-label={`View ${tier.title} package`}
+              >
+                {tier.isPopular && <span className="dot-star">★</span>}
+              </button>
             ))}
           </div>
         </div>
