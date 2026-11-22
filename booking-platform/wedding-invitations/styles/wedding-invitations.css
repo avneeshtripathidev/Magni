@@ -231,164 +231,833 @@
 /* DESIGN GALLERY GRID */
 .wedding-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 26px;
 }
 
 .wedding-card {
   position: relative;
-  background: linear-gradient(180deg, rgba(30, 24, 28, 0.8) 0%, rgba(20, 16, 18, 0.95) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  border-radius: 18px;
+  background: linear-gradient(180deg, #1C1518 0%, #120D10 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.28);
+  border-radius: 20px;
   overflow: hidden;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  text-align: left;
 }
 
 .wedding-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(212, 175, 55, 0.65);
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.15);
+  transform: translateY(-7px);
+  border-color: rgba(212, 175, 55, 0.85);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75), 0 0 30px rgba(212, 175, 55, 0.22);
 }
 
-.wedding-card-preview {
+/* 1. REALISTIC INVITATION PREVIEW STAGE */
+.wedding-card-preview-stage {
   position: relative;
-  height: 220px;
-  background: radial-gradient(circle at 50% 40%, rgba(212, 175, 55, 0.15) 0%, rgba(15, 12, 14, 0.9) 100%);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  height: 290px;
+  background: radial-gradient(circle at 50% 35%, rgba(212, 175, 55, 0.1) 0%, rgba(14, 10, 12, 0.95) 100%);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.22);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 16px 14px 28px;
   overflow: hidden;
 }
 
-.wedding-card-badge {
+.wedding-card-floating-badge {
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(18, 14, 16, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  color: #D4AF37;
+  background: rgba(18, 13, 16, 0.88);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #FAF7F2;
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 3px 9px;
-  border-radius: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  z-index: 2;
-}
-
-.wedding-card-palette {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
+  z-index: 3;
   display: flex;
+  align-items: center;
   gap: 4px;
-  z-index: 2;
+  backdrop-filter: blur(8px);
 }
 
-.wedding-color-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+/* Hover Quick View Overlay */
+.wedding-card-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 10, 12, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 4;
 }
 
-.wedding-card-inner-art {
-  width: 85%;
-  height: 90%;
-  border: 1.5px solid rgba(212, 175, 55, 0.45);
-  border-radius: 12px;
+.wedding-card:hover .wedding-card-hover-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.wedding-hover-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: #D4AF37;
+  color: #120E10;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(212, 175, 55, 0.4);
+  transform: translateY(8px);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.wedding-card:hover .wedding-hover-view-btn {
+  transform: translateY(0);
+}
+
+.wedding-hover-view-btn:hover {
+  background: #FAF7F2;
+  color: #120E10;
+}
+
+/* THE INVITATION ARTWORK CANVAS */
+.wedding-card-render-wrapper {
+  width: 195px;
+  height: 245px;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65), 0 0 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
+}
+
+.wedding-card:hover .wedding-card-render-wrapper {
+  transform: scale(1.04);
+}
+
+.wedding-art-canvas {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(22, 18, 20, 0.7);
-  padding: 12px;
   text-align: center;
+  padding: 10px 8px;
   position: relative;
 }
 
-.wedding-card-inner-art::before {
-  content: "";
+/* STAGE FOOTER (MAP PIN / VIDEO BADGE & PALETTE DOTS) */
+.wedding-card-stage-footer {
   position: absolute;
-  inset: 4px;
-  border: 1px dashed rgba(212, 175, 55, 0.25);
-  border-radius: 8px;
-  pointer-events: none;
+  bottom: 8px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 2;
 }
 
-.wedding-card-body {
-  padding: 18px 18px 20px;
+.wedding-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(18, 14, 16, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #F5E6CA;
+}
+
+.wedding-stage-pill.video-pill {
+  border-color: rgba(232, 185, 67, 0.7);
+  color: #E8B943;
+}
+
+.wedding-card-palette-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.wedding-palette-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* -------------------------------------------------------------
+   ARTWORK STYLES FOR EACH CARD MOTIF
+-------------------------------------------------------------- */
+/* 1. Jharokha Heritage */
+.art-jharokha {
+  background: linear-gradient(160deg, #5A0E1C 0%, #3B0610 100%);
+  color: #FAF7F2;
+}
+.art-jharokha-arch {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #D4AF37;
+  border-radius: 40px 40px 6px 6px;
+  padding: 10px 6px 6px;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.2);
 }
-
-.wedding-card-format {
-  font-size: 0.74rem;
-  color: #D4AF37;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.wedding-card-title {
-  font-size: 1.08rem;
+.art-crest-crown { font-size: 14px; }
+.art-heritage-sub { font-size: 8px; letter-spacing: 2px; color: #D4AF37; font-weight: 700; }
+.art-couple-name {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.05rem;
   font-weight: 700;
   color: #FAF7F2;
-  margin: 0 0 8px;
-  line-height: 1.35;
+  line-height: 1.15;
 }
+.art-couple-name.dark { color: #2A1C16; }
+.art-event-date { font-size: 7.5px; letter-spacing: 1px; color: #D4AF37; font-weight: 600; }
+.art-event-date.dark { color: #8C6239; }
+.art-venue-text { font-size: 7px; color: rgba(250, 247, 242, 0.75); }
+.art-venue-text.dark { color: #665045; }
+.art-elephant-procession { display: flex; align-items: center; gap: 8px; font-size: 12px; }
 
-.wedding-card-desc {
-  font-size: 0.82rem;
-  color: rgba(248, 235, 232, 0.72);
-  line-height: 1.45;
-  margin: 0 0 16px;
-  flex: 1;
+/* 2. Gilded Botanical */
+.art-botanical {
+  background: #FAF6F2;
+  color: #2A1D1B;
 }
-
-.wedding-card-features-list {
+.art-botanical-border {
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  padding: 8px 6px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 16px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  position: relative;
 }
-
-.wedding-feat-pill {
-  font-size: 0.72rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2px 7px;
-  border-radius: 4px;
-  color: rgba(248, 235, 232, 0.85);
-}
-
-.wedding-card-action-btn {
+.art-monogram-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #C5A059;
+  background: rgba(197, 160, 89, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+}
+.art-monogram-text { font-size: 9px; font-weight: 700; color: #9A6F2A; font-family: Georgia, serif; }
+.art-botanical-script { font-size: 7.5px; font-style: italic; color: #735D54; }
+.art-botanical-leaf { font-size: 8px; color: #8F9E8B; }
+.art-botanical-corner { position: absolute; font-size: 10px; }
+.art-botanical-corner.top-left { top: 2px; left: 2px; }
+.art-botanical-corner.top-right { top: 2px; right: 2px; }
+.art-botanical-corner.bottom-left { bottom: 2px; left: 2px; }
+.art-botanical-corner.bottom-right { bottom: 2px; right: 2px; }
+
+/* 3. Vedic Shloka */
+.art-vedic {
+  background: linear-gradient(160deg, #7A1422 0%, #4D0914 100%);
+  color: #FAF7F2;
+}
+.art-vedic-frame {
   width: 100%;
-  padding: 10px;
-  background: rgba(212, 175, 55, 0.12);
-  border: 1px solid rgba(212, 175, 55, 0.45);
+  height: 100%;
+  border: 1.5px solid #E88943;
   border-radius: 10px;
-  color: #F5E6CA;
-  font-size: 0.88rem;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-marigold-toran { font-size: 9px; letter-spacing: 1px; }
+.art-ganesha-badge {
+  font-size: 16px;
+  color: #E8B943;
+  font-weight: 800;
+}
+.art-sanskrit-shloka { font-size: 7.5px; color: #E8B943; font-weight: 700; }
+.art-shubh-vivah { font-size: 9px; color: #FFF8E7; font-weight: 700; letter-spacing: 1px; }
+.art-mandap-base { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+
+/* 4. Noor-e-Nikah */
+.art-nikah {
+  background: linear-gradient(160deg, #093823 0%, #041E12 100%);
+  color: #FAF7F2;
+}
+.art-nikah-frame {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #D4AF37;
+  border-radius: 36px 36px 8px 8px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  box-shadow: inset 0 0 12px rgba(212, 175, 55, 0.25);
+}
+.art-bismillah { font-size: 8px; color: #D4AF37; font-family: serif; }
+.art-crescent-star { font-size: 14px; color: #D4AF37; }
+.art-nikah-title { font-size: 8px; letter-spacing: 2px; color: #D4AF37; font-weight: 700; }
+.art-arabesque-base { font-size: 9px; color: #D4AF37; }
+
+/* 5. Cathedral Arch Grace */
+.art-cathedral {
+  background: #FDFCF9;
+  color: #1F2421;
+}
+.art-cathedral-arch {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #7A8B99;
+  border-radius: 46px 46px 6px 6px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-dove-icon { font-size: 15px; }
+.art-cathedral-sub { font-size: 7.5px; letter-spacing: 1.5px; color: #536270; font-weight: 700; }
+.art-scripture { font-size: 7px; font-style: italic; color: #72808E; }
+.art-olive-branch { font-size: 9px; color: #7A8B99; }
+
+/* 6. Cinematic Video Reel */
+.art-video-reel {
+  background: #0D0911;
+  color: #FAF7F2;
+}
+.art-video-frame {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #E8B943;
+  border-radius: 10px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 50% 50%, rgba(232, 185, 67, 0.15) 0%, transparent 80%);
+}
+.art-film-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 7px;
+  color: #E8B943;
+  font-weight: 700;
+}
+.art-live-indicator { color: #E45F60; font-weight: 800; }
+.art-play-pulse {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(232, 185, 67, 0.2);
+  border: 1.5px solid #E8B943;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px rgba(232, 185, 67, 0.4);
+}
+.art-video-title { font-size: 7.5px; letter-spacing: 1px; color: #E8B943; font-weight: 700; }
+.art-equalizer-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 12px;
+}
+.art-equalizer-bars span {
+  width: 2.5px;
+  background: #E8B943;
+  border-radius: 1px;
+}
+.art-equalizer-bars span:nth-child(1) { height: 6px; }
+.art-equalizer-bars span:nth-child(2) { height: 11px; }
+.art-equalizer-bars span:nth-child(3) { height: 8px; }
+.art-equalizer-bars span:nth-child(4) { height: 12px; }
+.art-equalizer-bars span:nth-child(5) { height: 7px; }
+.art-equalizer-bars span:nth-child(6) { height: 10px; }
+.art-audio-note { font-size: 6.5px; color: rgba(250, 247, 242, 0.7); }
+
+/* 7. Minimalist Monogram */
+.art-minimalist {
+  background: #181416;
+  color: #FAF7F2;
+}
+.art-minimalist-border {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #B08D57;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-minimal-sub { font-size: 6.5px; letter-spacing: 2px; color: #B08D57; }
+.art-monogram-crest {
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+  letter-spacing: 3px;
+  color: #FAF7F2;
+  font-weight: 300;
+}
+.art-minimal-line { width: 30px; height: 1px; background: #B08D57; }
+
+/* 8. Genda Phool Haldi */
+.art-haldi {
+  background: linear-gradient(160deg, #F9A01B 0%, #D87B00 100%);
+  color: #261605;
+}
+.art-haldi-frame {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #FFE6A7;
+  border-radius: 10px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-genda-garlands { font-size: 10px; }
+.art-haldi-badge { font-size: 7.5px; letter-spacing: 1px; font-weight: 800; color: #431E05; }
+.art-haldi-sub { font-size: 7.5px; font-weight: 600; color: #532A09; }
+.art-dholak-icon { font-size: 13px; }
+
+/* 9. Starlit Midnight Gala */
+.art-gala {
+  background: linear-gradient(160deg, #0A1329 0%, #040914 100%);
+  color: #FAF7F2;
+}
+.art-gala-frame {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #E5C158;
+  border-radius: 8px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-star-cluster { font-size: 10px; color: #E5C158; }
+.art-gala-header { font-size: 7.5px; letter-spacing: 2px; color: #E5C158; font-weight: 700; }
+.art-champagne-toast { font-size: 15px; }
+.art-gala-sub { font-size: 7px; color: rgba(250, 247, 242, 0.7); }
+
+/* 10. Save The Date */
+.art-save-date {
+  background: #FFF0F5;
+  color: #2D1E22;
+}
+.art-calendar-card {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #D87093;
+  border-radius: 8px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-paperclip { font-size: 12px; }
+.art-std-title { font-size: 8px; letter-spacing: 2px; color: #C2185B; font-weight: 800; }
+.art-mini-calendar {
+  background: #FFFFFF;
+  border: 1px solid #F8BBD0;
+  border-radius: 6px;
+  padding: 4px 6px;
+  width: 90%;
+  box-sizing: border-box;
+}
+.art-cal-month { font-size: 6.5px; font-weight: 800; color: #880E4F; margin-bottom: 2px; }
+.art-cal-days {
+  display: flex;
+  justify-content: space-between;
+  font-size: 7px;
+  color: #555555;
+  font-weight: 600;
+}
+.art-cal-circled {
+  background: #E91E63;
+  color: #FFFFFF !important;
+  border-radius: 50%;
+  padding: 1px 3px;
+  font-weight: 800;
+}
+
+/* 11. Engagement Ring Ceremony */
+.art-engagement {
+  background: linear-gradient(160deg, #2D144B 0%, #170728 100%);
+  color: #FAF7F2;
+}
+.art-ring-frame {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #B39DDB;
+  border-radius: 10px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-diamond-flare { font-size: 17px; filter: drop-shadow(0 0 6px #B39DDB); }
+.art-ring-sub { font-size: 7.5px; letter-spacing: 1.5px; color: #B39DDB; font-weight: 700; }
+.art-ring-quote { font-size: 7px; font-style: italic; color: rgba(250, 247, 242, 0.7); }
+
+/* 12. Rajwada Silk Scroll */
+.art-patrika {
+  background: #FDF5E6;
+  color: #2E1A11;
+  padding: 4px 6px;
+}
+.art-scroll-roller {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 10px;
+}
+.art-scroll-rod {
+  flex: 1;
+  height: 4px;
+  background: linear-gradient(90deg, #C5A059 0%, #E8B943 50%, #C5A059 100%);
+  border-radius: 2px;
+}
+.art-finial { font-size: 9px; color: #8B0000; }
+.art-scroll-body {
+  width: 90%;
+  flex: 1;
+  border-left: 2px solid #8B0000;
+  border-right: 2px solid #8B0000;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.art-peacock-icon { font-size: 13px; }
+.art-patrika-sub { font-size: 7.5px; color: #8B0000; font-weight: 800; }
+.art-patrika-text { font-size: 6.5px; color: #7B3F00; font-weight: 600; }
+
+/* -------------------------------------------------------------
+   2. CLEAN, VISUAL CARD INFO BOX
+-------------------------------------------------------------- */
+.wedding-card-info-box {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background: #140E11;
+}
+
+.wedding-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.wedding-card-format-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #D4AF37;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wedding-card-price-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.wedding-card-price-tag .price-label {
+  font-size: 0.68rem;
+  color: rgba(248, 235, 232, 0.6);
+  text-transform: uppercase;
+}
+
+.wedding-card-price-tag .price-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #FAF7F2;
+  letter-spacing: -0.02em;
+}
+
+.wedding-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #FAF7F2;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.wedding-card-subtitle {
+  font-size: 0.8rem;
+  color: rgba(248, 235, 232, 0.7);
+  line-height: 1.4;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 2.3em;
+}
+
+.wedding-card-micro-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.micro-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(248, 235, 232, 0.82);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.wedding-card-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.wedding-card-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #FAF7F2;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.wedding-card-action-btn:hover {
-  background: #D4AF37;
+.wedding-card-btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #D4AF37;
+  color: #D4AF37;
+}
+
+.wedding-card-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #D4AF37 0%, #B89228 100%);
+  border: 1px solid #D4AF37;
   color: #120E10;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+}
+
+.wedding-card-btn-primary:hover {
+  background: #FAF7F2;
+  color: #120E10;
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+}
+
+/* -------------------------------------------------------------
+   3. SAMPLE PREVIEW LIGHTBOX MODAL
+-------------------------------------------------------------- */
+.wedding-preview-modal {
+  padding: 24px;
+}
+
+.wedding-preview-modal-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .wedding-preview-modal-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.wedding-preview-art-col {
+  display: flex;
+  justify-content: center;
+}
+
+.wedding-preview-art-col .wedding-card-render-wrapper {
+  width: 220px;
+  height: 280px;
+}
+
+.wedding-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
   font-weight: 700;
+  color: #D4AF37;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.wedding-preview-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FAF7F2;
+  margin: 0 0 2px;
+}
+
+.wedding-preview-cat {
+  font-size: 0.82rem;
+  color: rgba(248, 235, 232, 0.65);
+  margin-bottom: 14px;
+}
+
+.wedding-preview-price-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.wedding-preview-price-box .price-lbl {
+  font-size: 0.75rem;
+  color: rgba(248, 235, 232, 0.6);
+}
+
+.wedding-preview-price-box .price-val {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #D4AF37;
+}
+
+.wedding-preview-price-box .price-note {
+  font-size: 0.72rem;
+  color: rgba(248, 235, 232, 0.5);
+}
+
+.wedding-preview-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.spec-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.spec-icon {
+  color: #D4AF37;
+  margin-top: 2px;
+}
+
+.spec-name {
+  font-weight: 700;
+  color: #FAF7F2;
+  font-size: 0.82rem;
+}
+
+.spec-val {
+  color: rgba(248, 235, 232, 0.7);
+  font-size: 0.78rem;
+}
+
+.wedding-preview-palette-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.palette-label {
+  font-size: 0.78rem;
+  color: rgba(248, 235, 232, 0.6);
+}
+
+.palette-swatches {
+  display: flex;
+  gap: 5px;
+}
+
+.preview-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 /* SERVICES SECTION */
