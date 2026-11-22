@@ -127,13 +127,10 @@ export async function POST(req) {
     const body = await req.json();
 
     // 1. Validation
-    const customer_name = (body.customer_name || body.name || '').trim();
+    const customer_name = (body.customer_name || body.name || 'Wedding Host').trim();
     const rawPhone = (body.phone || body.whatsapp || '').trim();
     const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
 
-    if (!customer_name) {
-      return NextResponse.json({ success: false, error: 'Full name is required.' }, { status: 400 });
-    }
     if (!cleanPhone || cleanPhone.length < 10) {
       return NextResponse.json({ success: false, error: 'A valid 10-digit mobile or WhatsApp number is required.' }, { status: 400 });
     }

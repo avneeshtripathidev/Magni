@@ -119,13 +119,13 @@ export default function WeddingInquiryForm({ initialData = null, isOpen = false,
         <div>
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <div className="wedding-badge-gold">
-              <Sparkles size={13} /> Custom Design Request
+              <Sparkles size={13} /> Instant Design Preview
             </div>
-            <h3 style={{ fontSize: '1.35rem', color: '#FAF7F2', margin: '8px 0 4px', fontWeight: '700' }}>
-              {formData.selected_design_name ? `Request: ${formData.selected_design_name}` : "Let's Create an Invitation Worth Remembering"}
+            <h3 style={{ fontSize: '1.3rem', color: '#FAF7F2', margin: '8px 0 6px', fontWeight: '700' }}>
+              {formData.selected_design_name ? `Request: ${formData.selected_design_name}` : "Custom Wedding Invitation Suite"}
             </h3>
-            <p style={{ color: 'rgba(248, 235, 232, 0.7)', fontSize: '0.82rem', margin: 0 }}>
-              Tell us your celebration details and we will craft a bespoke invitation suite.
+            <p style={{ color: 'rgba(248, 235, 232, 0.72)', fontSize: '0.84rem', margin: 0, lineHeight: 1.45 }}>
+              Enter your WhatsApp number to receive preview drafts, video samples &amp; pricing directly on WhatsApp.
             </p>
           </div>
 
@@ -136,134 +136,42 @@ export default function WeddingInquiryForm({ initialData = null, isOpen = false,
           )}
 
           <form onSubmit={handleSubmit}>
+            {/* Primary Phone Number Field */}
             <div className="wedding-form-group">
-              <label className="wedding-form-label">Full Name *</label>
+              <label className="wedding-form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>WhatsApp / Mobile Number *</span>
+                <span style={{ color: '#25D366', fontSize: '0.76rem', fontWeight: 'bold' }}>Instant Samples via WhatsApp</span>
+              </label>
+              <div className="wedding-phone-input-wrap">
+                <span className="wedding-phone-prefix">🇮🇳 +91</span>
+                <input
+                  type="tel"
+                  name="phone"
+                  autoFocus
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Enter 10-digit mobile number"
+                  className="wedding-phone-input"
+                  required
+                  maxLength={10}
+                />
+              </div>
+              {validationErrors.phone && <div className="wedding-form-error">{validationErrors.phone}</div>}
+            </div>
+
+            {/* Optional Couple / Host Name Field */}
+            <div className="wedding-form-group" style={{ marginBottom: '14px' }}>
+              <label className="wedding-form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Your Name</span>
+                <span style={{ fontSize: '0.74rem', opacity: 0.6, fontWeight: 'normal' }}>Optional</span>
+              </label>
               <input
                 type="text"
                 name="customer_name"
                 value={formData.customer_name}
                 onChange={handleChange}
-                placeholder="e.g. Aarav Sharma"
+                placeholder="e.g. Aarav / Neha"
                 className="wedding-form-input"
-                required
-              />
-              {validationErrors.customer_name && <div className="wedding-form-error">{validationErrors.customer_name}</div>}
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="wedding-form-group">
-                <label className="wedding-form-label">Phone / WhatsApp Number *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="10-digit mobile"
-                  className="wedding-form-input"
-                  required
-                />
-                {validationErrors.phone && <div className="wedding-form-error">{validationErrors.phone}</div>}
-              </div>
-
-              <div className="wedding-form-group">
-                <label className="wedding-form-label">Wedding Date *</label>
-                <input
-                  type="date"
-                  name="wedding_date"
-                  value={formData.wedding_date}
-                  onChange={handleChange}
-                  className="wedding-form-input"
-                  required
-                />
-                {validationErrors.wedding_date && <div className="wedding-form-error">{validationErrors.wedding_date}</div>}
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="wedding-form-group">
-                <label className="wedding-form-label">Invitation Type *</label>
-                <select
-                  name="invitation_type"
-                  value={formData.invitation_type}
-                  onChange={handleChange}
-                  className="wedding-form-select"
-                >
-                  <option value="Digital Wedding Card">Digital Wedding Card (WhatsApp)</option>
-                  <option value="Traditional Wedding Card">Traditional Wedding Card (Print)</option>
-                  <option value="Animated Invitation">Animated Invitation (GIF / Motion)</option>
-                  <option value="Wedding Invitation Video">Wedding Invitation Video (1080p MP4)</option>
-                  <option value="Save The Date Card">Save The Date Announcement</option>
-                  <option value="Complete Wedding Suite">Complete Wedding Suite (All-In-One)</option>
-                </select>
-              </div>
-
-              <div className="wedding-form-group">
-                <label className="wedding-form-label">Design Category</label>
-                <select
-                  name="design_category"
-                  value={formData.design_category}
-                  onChange={handleChange}
-                  className="wedding-form-select"
-                >
-                  {INVITATION_CATEGORIES.filter(c => c.id !== 'all').map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="wedding-form-group">
-                <label className="wedding-form-label">Email Address (Optional)</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="e.g. couple@gmail.com"
-                  className="wedding-form-input"
-                />
-              </div>
-
-              <div className="wedding-form-group">
-                <label className="wedding-form-label">Estimated Budget</label>
-                <select
-                  name="budget"
-                  value={formData.budget}
-                  onChange={handleChange}
-                  className="wedding-form-select"
-                >
-                  <option value="₹1,499 - ₹2,499">₹1,499 - ₹2,499 (Essential Digital)</option>
-                  <option value="₹2,500 - ₹4,999">₹2,500 - ₹4,999 (Royal Video Suite)</option>
-                  <option value="₹5,000 - ₹9,999">₹5,000 - ₹9,999 (Custom Bespoke Suite)</option>
-                  <option value="₹10,000+">₹10,000+ (Full Luxury Print & Video)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="wedding-form-group">
-              <label className="wedding-form-label">Reference Link / Instagram Design URL (Optional)</label>
-              <input
-                type="url"
-                name="reference_url"
-                value={formData.reference_url}
-                onChange={handleChange}
-                placeholder="https://... (Pinterest, Instagram or drive link)"
-                className="wedding-form-input"
-              />
-            </div>
-
-            <div className="wedding-form-group">
-              <label className="wedding-form-label">Special Requirements / Couple Names / Venue Details</label>
-              <textarea
-                name="requirements"
-                rows={3}
-                value={formData.requirements}
-                onChange={handleChange}
-                placeholder="Share bride & groom names, specific cultural ceremonies (Mehendi, Sangeet, Reception), preferred colors or custom shlokas..."
-                className="wedding-form-textarea"
               />
             </div>
 
@@ -271,18 +179,26 @@ export default function WeddingInquiryForm({ initialData = null, isOpen = false,
               type="submit"
               disabled={loading}
               className="wedding-btn-primary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
+              style={{ width: '100%', justifyContent: 'center', marginTop: '10px', padding: '14px 20px', fontSize: '0.98rem', fontWeight: '700' }}
             >
               {loading ? (
                 <>
-                  <Loader2 size={16} className="animate-spin" /> Submitting Inquiry...
+                  <Loader2 size={16} className="animate-spin" /> Preparing Previews...
                 </>
               ) : (
                 <>
-                  Get Your Custom Wedding Invitation <Send size={15} />
+                  Get Previews &amp; Pricing on WhatsApp <Send size={15} />
                 </>
               )}
             </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '14px', color: 'rgba(248, 235, 232, 0.55)', fontSize: '0.76rem' }}>
+              <span>🔒 100% Privacy</span>
+              <span>•</span>
+              <span>⚡ Fast 5-Min Response</span>
+              <span>•</span>
+              <span>✨ No Spam</span>
+            </div>
           </form>
         </div>
       )}

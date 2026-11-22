@@ -4,29 +4,32 @@
  */
 
 export async function submitWeddingInquiry(payload) {
-  // Client-side quick validation
+  // Client-side quick validation - Only 10-digit mobile number required
   const errors = {};
-  if (!payload.customer_name?.trim()) {
-    errors.customer_name = 'Please provide your full name.';
-  }
   const cleanPhone = (payload.phone || '').replace(/[^0-9]/g, '');
   if (!cleanPhone || cleanPhone.length < 10) {
     errors.phone = 'Please provide a valid 10-digit WhatsApp or mobile number.';
-  }
-  if (!payload.wedding_date?.trim()) {
-    errors.wedding_date = 'Please select your wedding or event date.';
-  }
-  if (!payload.invitation_type) {
-    errors.invitation_type = 'Please select an invitation type.';
   }
 
   if (Object.keys(errors).length > 0) {
     return {
       success: false,
       validationErrors: errors,
-      error: 'Please complete all required fields correctly.'
+      error: 'Please enter a valid 10-digit phone number.'
     };
   }
+
+  const safePayload = {
+    ...payload,
+    customer_name: (payload.customer_name || '').trim() || 'Wedding Host',
+    phone: cleanPhone,
+    whatsapp: cleanPhone,
+    invitation_type: payload.invitation_type || 'Digital Wedding Card',
+    design_category: payload.design_category || 'Royal Wedding Invitations',
+    budget: payload.budget || 'Standard Package',
+    wedding_date: payload.wedding_date || null,
+    requirements: payload.requirements || (payload.selected_design_name ? `Requested Design: ${payload.selected_design_name}` : 'WhatsApp Catalog & Preview Request')
+  };
 
   try {
     const response = await fetch('/api/wedding-inquiries', {
@@ -34,7 +37,7 @@ export async function submitWeddingInquiry(payload) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(safePayload),
     });
 
     const data = await response.json();
