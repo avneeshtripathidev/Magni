@@ -778,6 +778,31 @@
 .art-patrika-sub { font-size: 7.5px; color: #8B0000; font-weight: 800; }
 .art-patrika-text { font-size: 6.5px; color: #7B3F00; font-weight: 600; }
 
+/* 13. Royal Shagun & Best Wishes Suite */
+.art-shagun {
+  background: linear-gradient(160deg, #5C0A1A 0%, #35040E 100%);
+  color: #FAF7F2;
+}
+.art-shagun-frame {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #D4AF37;
+  border-radius: 12px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+}
+.art-shagun-envelope { font-size: 16px; filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.5)); }
+.art-shagun-header { font-size: 7px; letter-spacing: 1.5px; color: #D4AF37; font-weight: 800; }
+.art-shagun-blessing { font-size: 7px; font-style: italic; color: rgba(250, 247, 242, 0.85); line-height: 1.3; }
+.art-shagun-shloka { font-size: 7.5px; color: #E8B943; font-weight: 700; }
+.art-shagun-footer { font-size: 6.5px; letter-spacing: 1px; color: #D4AF37; font-weight: 600; }
+
+
 /* -------------------------------------------------------------
    2. CLEAN, VISUAL CARD INFO BOX
 -------------------------------------------------------------- */

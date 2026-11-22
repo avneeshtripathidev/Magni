@@ -24,6 +24,14 @@ export const INVITATION_CATEGORIES = [
     description: 'Instant WhatsApp-ready e-invitations with interactive clickable venue maps & RSVP.'
   },
   {
+    id: 'best-wishes',
+    name: 'Digital Best Wishes Cards',
+    slug: 'digital-best-wishes-cards',
+    icon: '💌',
+    badge: 'Trending',
+    description: 'Personalized digital wedding best wishes, congratulations cards, and shagun blessings for couples.'
+  },
+  {
     id: 'animated-invites',
     name: 'Animated Invitations',
     slug: 'animated-wedding-invitations',

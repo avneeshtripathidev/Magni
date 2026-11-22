@@ -190,5 +190,21 @@ export const INVITATION_DESIGNS = [
     description: 'Traditional royal scroll layout with gold tassels, peacock feather accents, saffron parchment textures, and family pedigree.',
     palette: ['#8B0000', '#C5A059', '#FDF5E6'],
     features: ['Traditional Patrika Formatting', 'Extended Family Mentions', 'Kuldevi / Ishtadev Blessing', 'Vector Master Print Files']
+  },
+  {
+    id: 'des-13',
+    name: 'Royal Shagun & Best Wishes Suite',
+    category: 'best-wishes',
+    categoryName: 'Digital Best Wishes Cards',
+    format: 'Digital Greeting Card + WhatsApp PDF',
+    aspect: 'portrait',
+    accentColor: '#D4AF37',
+    startingPrice: '₹999',
+    deliveryTime: '12 Hours Express',
+    tag: 'Best Wishes Special',
+    subtitle: 'Golden shagun congratulations card with personalized couple blessings',
+    description: 'Luxury congratulations e-card with shagun envelope motifs, personalized blessings for the newlyweds, and photo integration.',
+    palette: ['#5C0A1A', '#D4AF37', '#FFFBF2'],
+    features: ['Personalized Couple Blessings', 'Shagun Envelope Artwork', 'Couple Photo Integration', 'Instant WhatsApp Share']
   }
 ];

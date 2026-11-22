@@ -43,7 +43,7 @@ export default function WeddingHero({ onOpenInquiry }) {
         {/* Top Trust Capsule */}
         <div style={{ textAlign: 'center', marginBottom: '16px' }}>
           <div className="wedding-badge-gold">
-            <Sparkles size={14} /> Bespoke Wedding Invitations & Digital Suites
+            <Sparkles size={14} /> Bespoke Wedding Invitations & Digital Best Wishes Cards
           </div>
         </div>
 
@@ -51,11 +51,11 @@ export default function WeddingHero({ onOpenInquiry }) {
           {/* Left Column: Visual Storytelling & Headline */}
           <div className="wedding-hero-left">
             <h1 className="wedding-title-gold" style={{ fontSize: 'clamp(2.1rem, 4.2vw, 3.2rem)', lineHeight: 1.18, margin: '0 0 16px' }}>
-              Beautiful Wedding Invitations, Designed to Make Your Moments Special
+              Beautiful Wedding Invitations & Digital Cards for Your Best Wishes
             </h1>
 
             <p className="wedding-subtitle" style={{ margin: '0 0 22px', fontSize: '1.05rem', textAlign: 'left' }}>
-              Discover elegant digital and traditional wedding invitations, thoughtfully designed to celebrate your special day. From WhatsApp e-cards to cinematic video invites and royal stationery.
+              Discover elegant digital wedding cards, personalized best wishes e-cards, and traditional royal suites. From WhatsApp invitations and wedding congratulations to cinematic video invites.
             </p>
 
             {/* Feature Pills */}
@@ -78,8 +78,9 @@ export default function WeddingHero({ onOpenInquiry }) {
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {[
-                  { label: '👑 Royal Palace Suites', hash: '#gallery' },
+                  { label: '💌 Digital Best Wishes Cards', hash: '#gallery' },
                   { label: '📱 WhatsApp Digital Cards', hash: '#gallery' },
+                  { label: '👑 Royal Palace Suites', hash: '#gallery' },
                   { label: '🎬 1080p Video Invites', hash: '#gallery' },
                   { label: '🪔 Traditional Patrika', hash: '#gallery' },
                   { label: '🌸 Floral Botanical', hash: '#gallery' },
@@ -240,6 +241,7 @@ export default function WeddingHero({ onOpenInquiry }) {
                           className="wedding-form-select"
                         >
                           <option value="Digital Wedding Card">Digital WhatsApp Card</option>
+                          <option value="Digital Best Wishes Card">Digital Best Wishes Card</option>
                           <option value="Wedding Invitation Video">1080p Video Invite</option>
                           <option value="Traditional Wedding Card">Print Patrika</option>
                           <option value="Animated Invitation">Animated Motion Card</option>

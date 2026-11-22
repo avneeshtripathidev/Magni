@@ -195,7 +195,6 @@ export function InvitationArtwork({ design }) {
       );
 
     case 'des-12': // Rajwada Silk Scroll (Patrika)
-    default:
       return (
         <div className="wedding-art-canvas art-patrika">
           <div className="art-scroll-roller top">
@@ -214,6 +213,21 @@ export function InvitationArtwork({ design }) {
             <span className="art-finial left">⚜</span>
             <span className="art-scroll-rod" />
             <span className="art-finial right">⚜</span>
+          </div>
+        </div>
+      );
+
+    case 'des-13': // Royal Shagun & Best Wishes Suite
+    default:
+      return (
+        <div className="wedding-art-canvas art-shagun">
+          <div className="art-shagun-frame">
+            <div className="art-shagun-envelope">💌</div>
+            <div className="art-shagun-header">BEST WISHES & CONGRATULATIONS</div>
+            <div className="art-couple-name">Aarav & Meera</div>
+            <div className="art-shagun-blessing">“May your journey together be blessed with eternal love & joy.”</div>
+            <div className="art-shagun-shloka">सदा सौभाग्यवती भव ✦ दीर्घायु भव</div>
+            <div className="art-shagun-footer">WARMEST WISHES & SHAGUN</div>
           </div>
         </div>
       );
