@@ -228,8 +228,8 @@ export async function POST(req) {
       }
     }
 
-    // 4. Trigger Email Notification to Admin & Wedding Studio
-    await sendNotificationEmail(newRecord);
+    // 4. Email notifications disabled as per request (leads sent directly to Artist Panel & Database)
+    // await sendNotificationEmail(newRecord);
 
     return NextResponse.json({
       success: true,
