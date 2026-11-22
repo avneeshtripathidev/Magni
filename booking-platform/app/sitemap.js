@@ -20,17 +20,17 @@ export default async function sitemap() {
     { route: '/gallery', priority: 0.8, changeFrequency: 'weekly' },
     { route: '/testimonials', priority: 0.8, changeFrequency: 'weekly' },
     { route: '/blog-post', priority: 0.85, changeFrequency: 'weekly' },
-    // Wedding Invitation & Digital Card Design Service Routes
-    { route: '/wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
-    { route: '/wedding-card-design', priority: 0.9, changeFrequency: 'weekly' },
-    { route: '/digital-wedding-cards', priority: 0.9, changeFrequency: 'weekly' },
-    { route: '/traditional-wedding-cards', priority: 0.9, changeFrequency: 'weekly' },
-    { route: '/animated-wedding-invitations', priority: 0.9, changeFrequency: 'weekly' },
-    { route: '/video-wedding-invitations', priority: 0.9, changeFrequency: 'weekly' },
-    { route: '/save-the-date-invitations', priority: 0.85, changeFrequency: 'weekly' },
-    { route: '/engagement-invitations', priority: 0.85, changeFrequency: 'weekly' },
-    { route: '/haldi-mehendi-invitations', priority: 0.85, changeFrequency: 'weekly' },
-    { route: '/reception-invitations', priority: 0.85, changeFrequency: 'weekly' },
+    // Wedding Invitation & Digital Card Design Service Routes (High Priority, Daily Crawl)
+    { route: '/wedding-invitations', priority: 1.0, changeFrequency: 'daily' },
+    { route: '/wedding-card-design', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/digital-wedding-cards', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/traditional-wedding-cards', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/animated-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/video-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/save-the-date-invitations', priority: 0.90, changeFrequency: 'daily' },
+    { route: '/engagement-invitations', priority: 0.90, changeFrequency: 'daily' },
+    { route: '/haldi-mehendi-invitations', priority: 0.90, changeFrequency: 'daily' },
+    { route: '/reception-invitations', priority: 0.90, changeFrequency: 'daily' },
     { route: '/register', priority: 0.75, changeFrequency: 'monthly' },
     { route: '/register/artist', priority: 0.75, changeFrequency: 'monthly' },
     { route: '/register/event', priority: 0.75, changeFrequency: 'monthly' },
@@ -219,6 +219,37 @@ export default async function sitemap() {
     (c) => `/sufi-singer-in-${c}`,
     (c) => `/guitarist-in-${c}`
   ];
+
+  // 4b. Focused Wedding Invitation City Landing Pages (Delhi NCR, Mumbai MMR, Lucknow, and Richest Wedding Hubs - Daily Crawl, 0.96 Priority)
+  const TOP_WEDDING_HUBS = [
+    // Delhi & Delhi NCR
+    'delhi', 'new-delhi', 'delhi-ncr', 'gurgaon', 'gurugram', 'noida', 'greater-noida', 'ghaziabad', 'faridabad',
+    // Mumbai Region & Pune
+    'mumbai', 'navi-mumbai', 'thane', 'pune',
+    // Lucknow & Key UP Centers
+    'lucknow', 'kanpur', 'varanasi', 'agra', 'prayagraj',
+    // Richest Destination Wedding Hotspots
+    'jaipur', 'udaipur', 'jodhpur', 'goa', 'chandigarh', 'bangalore', 'bengaluru', 'hyderabad', 'kolkata', 'ahmedabad', 'surat', 'indore', 'dehradun', 'amritsar', 'ludhiana'
+  ];
+
+  const WEDDING_CITY_PATTERNS = [
+    (c) => `/wedding-invitations-in-${c}`,
+    (c) => `/wedding-card-design-in-${c}`,
+    (c) => `/digital-wedding-cards-in-${c}`,
+    (c) => `/video-wedding-invitations-in-${c}`,
+  ];
+
+  const topWeddingCityLandingPages = [];
+  for (const city of TOP_WEDDING_HUBS) {
+    for (const pattern of WEDDING_CITY_PATTERNS) {
+      topWeddingCityLandingPages.push({
+        url: `${baseUrl}${pattern(city)}`,
+        lastModified: now,
+        changeFrequency: 'daily',
+        priority: 0.96,
+      });
+    }
+  }
 
   // 5. Generate Priority-Tiered Landing Page Entries
   const delhiNcrLandingPages = [];
@@ -409,6 +440,7 @@ export default async function sitemap() {
   // 9. Combine, Deduplicate and Return Full Sitemap
   const allEntries = [
     ...coreRoutes,
+    ...topWeddingCityLandingPages,
     ...nationalPages,
     ...delhiNcrLandingPages,
     ...mumbaiLandingPages,

@@ -14,7 +14,8 @@ export const VALID_KEYWORDS = [
   'ghazal', 'gazal', 'sufi', 'gig', 'entertainment', 'packages', 'sangeet', 
   'mehndi', 'haldi', 'acoustic', 'corporate', 'wedding', 'party', 'function', 
   'reception', 'engagement', 'anniversary', 'birthday', 'house-party', 'chowki',
-  'bollywood', 'punjabi', 'retro', 'classical'
+  'bollywood', 'punjabi', 'retro', 'classical', 'invitation', 'invitations',
+  'card', 'cards', 'patrika', 'best-wishes'
 ];
 
 const CORE_MAJOR_CITIES = [
