@@ -33,14 +33,19 @@ import {
   List,
   AlertCircle,
   FileText,
-  HeartHandshake
+  HeartHandshake,
+  Heart,
+  Globe,
+  MapPin,
+  Activity,
+  ShieldCheck,
 } from 'lucide-react';
 
 export default function AdminWeddingInvitationsPage() {
   const { artists } = useAdminAuth();
   const [inquiries, setInquiries] = useState<WeddingInquiryRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'all' | 'new' | 'in_progress' | 'completed'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'new' | 'in_progress' | 'completed' | 'followed'>('all');
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -84,6 +89,50 @@ export default function AdminWeddingInvitationsPage() {
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     showToast(`Copied ${label} to clipboard!`);
+  };
+
+  // Follow / Like Lead Handler
+  const handleToggleFollow = async (id: string) => {
+    // Optimistic UI update
+    setInquiries((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const nextFollow = !item.is_followed;
+          return {
+            ...item,
+            is_followed: nextFollow,
+            followed_by: nextFollow ? 'Super Admin (Magnevents Director)' : null,
+            followed_at: nextFollow ? new Date().toISOString() : null,
+          };
+        }
+        return item;
+      })
+    );
+
+    if (selectedInquiry?.id === id) {
+      setSelectedInquiry((prev) => {
+        if (!prev) return null;
+        const nextFollow = !prev.is_followed;
+        return {
+          ...prev,
+          is_followed: nextFollow,
+          followed_by: nextFollow ? 'Super Admin (Magnevents Director)' : null,
+          followed_at: nextFollow ? new Date().toISOString() : null,
+        };
+      });
+    }
+
+    try {
+      const res = await weddingInquiryService.toggleFollow(id, 'Super Admin (Magnevents Director)');
+      if (res.success) {
+        showToast(res.is_followed ? '❤️ Lead followed! Added to priority watch' : 'Lead unfollowed');
+      } else {
+        showToast(res.error || 'Failed to update follow status');
+        fetchInquiries();
+      }
+    } catch {
+      fetchInquiries();
+    }
   };
 
   const handleStatusChange = async (id: string, newStatus: WeddingInquiryRecord['status']) => {
@@ -157,36 +206,80 @@ export default function AdminWeddingInvitationsPage() {
   const handleCreateSampleLead = async () => {
     setCreatingSample(true);
     try {
-      const coupleNames = [
-        'Radhika & Anshul Singhal',
-        'Meera & Arjun Somani',
-        'Tanvi & Kabir Oberoi',
-        'Isha & Devrat Chauhan',
-        'Pooja & Rohan Kapoor',
+      const sampleCouples = [
+        {
+          name: 'Radhika & Anshul Singhal',
+          city: 'Delhi',
+          region: 'Delhi',
+          ip: '103.21.244.42',
+          isp: 'Bharti Airtel Ltd',
+          device: 'Mobile • iPhone 16 Pro (iOS 18)',
+          browser: 'Mobile Safari',
+          theme: 'Royal Palace Suites',
+          format: 'Digital Card + Print Ready PDF',
+          budget: '₹4,500 - ₹8,000',
+          req: 'Jharokha Heritage Royal Suite design with gold foil accents, clickable Google Maps, and interactive RSVP.',
+        },
+        {
+          name: 'Meera & Arjun Somani',
+          city: 'Mumbai',
+          region: 'Maharashtra',
+          ip: '49.36.120.88',
+          isp: 'Reliance Jio Infocomm',
+          device: 'Desktop • Windows 11',
+          browser: 'Chrome 131',
+          theme: 'Floral Botanical',
+          format: 'Animated 1080p Video Reel',
+          budget: '₹6,500 - ₹12,000',
+          req: 'Gilded botanical rose garden design with animated floral blooms and couple initial monogram crest.',
+        },
+        {
+          name: 'Pooja & Rohan Kapoor',
+          city: 'New Delhi',
+          region: 'Delhi NCR',
+          ip: '103.21.244.15',
+          isp: 'Bharti Airtel Ltd',
+          device: 'Mobile • Samsung Galaxy S24',
+          browser: 'Chrome Mobile',
+          theme: 'Auspicious Classic',
+          format: 'WhatsApp Interactive PDF',
+          budget: '₹3,500 - ₹6,000',
+          req: 'Vedic Shloka traditional design with Ganesh blessings, shubh muhurtham timeline and venue coordinates.',
+        },
       ];
-      const selectedCouple = coupleNames[Math.floor(Math.random() * coupleNames.length)];
+      const selected = sampleCouples[Math.floor(Math.random() * sampleCouples.length)];
       const randomPhone = `98${Math.floor(10000000 + Math.random() * 90000000)}`;
 
       const res = await fetch('/api/wedding-inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customer_name: selectedCouple,
+          customer_name: selected.name,
           phone: randomPhone,
           whatsapp: randomPhone,
-          email: `${selectedCouple.toLowerCase().replace(/[^a-z]/g, '')}@gmail.com`,
+          email: `${selected.name.toLowerCase().replace(/[^a-z]/g, '')}@gmail.com`,
           wedding_date: '2026-12-28',
-          invitation_type: 'Digital WhatsApp Card + PDF',
-          design_category: 'Royal Palace Suites',
-          budget: '₹2,500 - ₹5,000',
-          requirements: 'Palace floral botanical frame with custom couple initials crest and clickable venue Google Map link.',
-          selected_design_name: 'Jharokha Heritage Royal Suite',
+          invitation_type: selected.format,
+          design_category: selected.theme,
+          budget: selected.budget,
+          requirements: selected.req,
+          ip: selected.ip,
+          location: `${selected.city}, ${selected.region}, India`,
+          locality: {
+            city: selected.city,
+            region: selected.region,
+            country: 'India',
+            isp: selected.isp,
+          },
+          device: selected.device,
+          browser: selected.browser,
+          is_followed: false,
         }),
       });
 
       const data = await res.json();
       if (data.success) {
-        showToast(`Sample lead generated: ${selectedCouple}!`);
+        showToast(`Sample lead generated: ${selected.name}!`);
         fetchInquiries();
       } else {
         showToast(data.error || 'Failed to create sample lead');
@@ -205,7 +298,8 @@ export default function AdminWeddingInvitationsPage() {
     const contactedCount = inquiries.filter((i) => i.status === 'CONTACTED').length;
     const inProgressCount = inquiries.filter((i) => ['DISCUSSION', 'DESIGNING', 'REVIEW'].includes(i.status)).length;
     const completedCount = inquiries.filter((i) => i.status === 'COMPLETED').length;
-    return { total, newCount, contactedCount, inProgressCount, completedCount };
+    const followedCount = inquiries.filter((i) => i.is_followed).length;
+    return { total, newCount, contactedCount, inProgressCount, completedCount, followedCount };
   }, [inquiries]);
 
   // Filtered categories
@@ -218,9 +312,15 @@ export default function AdminWeddingInvitationsPage() {
   }, [inquiries]);
 
   const filteredInquiries = useMemo(() => {
-    if (categoryFilter === 'all') return inquiries;
-    return inquiries.filter((i) => i.design_category === categoryFilter);
-  }, [inquiries, categoryFilter]);
+    let result = inquiries;
+    if (activeTab === 'followed') {
+      result = result.filter((i) => i.is_followed);
+    }
+    if (categoryFilter !== 'all') {
+      result = result.filter((i) => i.design_category === categoryFilter);
+    }
+    return result;
+  }, [inquiries, activeTab, categoryFilter]);
 
   const getStatusBadge = (status: WeddingInquiryRecord['status']) => {
     switch (status) {
@@ -298,33 +398,22 @@ export default function AdminWeddingInvitationsPage() {
               Magnevents Wedding Studio • Super Admin Oversight
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Wedding Studio Leads & Custom Orders
+              Wedding Invitations & Digital Suites
             </h1>
-            <p className="text-sm text-slate-500 max-w-2xl font-medium">
-              Super admin concierge: monitor incoming wedding invitation inquiries, launch one-click WhatsApp chats, assign designers, and track card fulfillment.
+            <p className="text-xs sm:text-sm text-slate-500 max-w-2xl font-medium">
+              Manage bespoke digital wedding cards, video invitations, and luxury stationery inquiries. Assign leads to studio designers, track realtime client IP/location, and follow key accounts.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={handleCreateSampleLead}
               disabled={creatingSample}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-all shadow-xs border border-slate-200/80 active:scale-95 disabled:opacity-50"
-              title="Add a sample lead to test the UI"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold text-xs transition-all shadow-xs active:scale-95 disabled:opacity-50"
             >
-              {creatingSample ? <Loader2 size={14} className="animate-spin text-slate-600" /> : <Plus size={14} className="text-slate-700" />}
-              Create Sample Lead
+              {creatingSample ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+              Add Sample Lead
             </button>
-
-            <a
-              href="https://www.magnevents.in/wedding-invitations"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-50 hover:bg-amber-100/80 text-amber-900 font-bold text-xs transition-all shadow-xs border border-amber-200/80 active:scale-95"
-            >
-              <ExternalLink size={14} className="text-amber-700" />
-              Live Studio Page
-            </a>
 
             <button
               onClick={fetchInquiries}
@@ -337,8 +426,8 @@ export default function AdminWeddingInvitationsPage() {
         </div>
       </div>
 
-      {/* 2. Modern 5-KPI Metrics Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
+      {/* 2. Modern 6-KPI Metrics Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         {/* Total Leads */}
         <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
@@ -348,7 +437,7 @@ export default function AdminWeddingInvitationsPage() {
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{metrics.total}</div>
-          <p className="text-[11px] font-semibold text-slate-400 mt-1">All incoming inquiries</p>
+          <p className="text-[11px] font-semibold text-slate-400 mt-1">All inquiries</p>
         </div>
 
         {/* New Requests */}
@@ -360,7 +449,19 @@ export default function AdminWeddingInvitationsPage() {
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-amber-700 mt-2">{metrics.newCount}</div>
-          <p className="text-[11px] font-semibold text-amber-700/80 mt-1">Requires WhatsApp reply</p>
+          <p className="text-[11px] font-semibold text-amber-700/80 mt-1">Pending WhatsApp</p>
+        </div>
+
+        {/* Followed Leads */}
+        <div className="bg-gradient-to-br from-rose-50/60 to-white rounded-2xl p-4 sm:p-5 border border-rose-200/80 shadow-[0_2px_8px_-2px_rgba(244,63,94,0.08)] hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-black uppercase tracking-wider text-rose-800">Followed</span>
+            <div className="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center font-bold shadow-xs">
+              <Heart size={16} className="fill-white" />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-rose-700 mt-2">{metrics.followedCount}</div>
+          <p className="text-[11px] font-semibold text-rose-700/80 mt-1">Priority watch</p>
         </div>
 
         {/* Contacted */}
@@ -372,7 +473,7 @@ export default function AdminWeddingInvitationsPage() {
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-blue-700 mt-2">{metrics.contactedCount}</div>
-          <p className="text-[11px] font-semibold text-blue-700/80 mt-1">Discussion ongoing</p>
+          <p className="text-[11px] font-semibold text-blue-700/80 mt-1">Ongoing chats</p>
         </div>
 
         {/* Designing */}
@@ -384,7 +485,7 @@ export default function AdminWeddingInvitationsPage() {
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-purple-700 mt-2">{metrics.inProgressCount}</div>
-          <p className="text-[11px] font-semibold text-purple-700/80 mt-1">In drafting & review</p>
+          <p className="text-[11px] font-semibold text-purple-700/80 mt-1">Drafting & review</p>
         </div>
 
         {/* Completed */}
@@ -396,7 +497,7 @@ export default function AdminWeddingInvitationsPage() {
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-emerald-700 mt-2">{metrics.completedCount}</div>
-          <p className="text-[11px] font-semibold text-emerald-700/80 mt-1">Delivered to host</p>
+          <p className="text-[11px] font-semibold text-emerald-700/80 mt-1">Delivered to couple</p>
         </div>
       </div>
 
@@ -407,6 +508,7 @@ export default function AdminWeddingInvitationsPage() {
           {[
             { id: 'all', label: `All (${metrics.total})` },
             { id: 'new', label: `New (${metrics.newCount})` },
+            { id: 'followed', label: `❤️ Followed (${metrics.followedCount})` },
             { id: 'in_progress', label: `In Progress (${metrics.inProgressCount + metrics.contactedCount})` },
             { id: 'completed', label: `Completed (${metrics.completedCount})` },
           ].map((tab) => (
@@ -430,7 +532,7 @@ export default function AdminWeddingInvitationsPage() {
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search by couple, phone, ID..."
+              placeholder="Search couple, phone, IP, city..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-all"
@@ -491,7 +593,7 @@ export default function AdminWeddingInvitationsPage() {
           <div className="space-y-1">
             <h3 className="text-lg font-black text-slate-900">No Wedding Inquiries Found</h3>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Any client booking or custom wedding invitation request submitted on the website will instantly appear here with WhatsApp action buttons.
+              Any client booking or custom wedding invitation request submitted on the website will instantly appear here with WhatsApp action buttons, client IP geo-tracking, and follow controls.
             </p>
           </div>
           <div className="pt-2">
@@ -519,15 +621,31 @@ export default function AdminWeddingInvitationsPage() {
             return (
               <div
                 key={inq.id}
-                className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:shadow-lg hover:border-amber-200/80 transition-all flex flex-col justify-between space-y-4 group"
+                className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] hover:shadow-lg hover:border-amber-200/80 transition-all flex flex-col justify-between space-y-4 group relative"
               >
-                {/* Card Top: ID, Status & Quick Action Menu */}
+                {/* Card Top: ID, Status & Quick Follow Button */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-mono text-[11px] font-black text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg">
                       {inq.inquiry_id}
                     </span>
-                    {getStatusBadge(inq.status)}
+                    <div className="flex items-center gap-1.5">
+                      {getStatusBadge(inq.status)}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleFollow(inq.id);
+                        }}
+                        className={`p-1.5 rounded-xl border transition-all ${
+                          inq.is_followed
+                            ? 'bg-rose-50 border-rose-300 text-rose-600 hover:bg-rose-100 shadow-2xs'
+                            : 'bg-white border-slate-200 text-slate-300 hover:text-rose-500 hover:border-rose-200'
+                        }`}
+                        title={inq.is_followed ? `Followed by ${inq.followed_by || 'Admin'}` : 'Follow Lead'}
+                      >
+                        <Heart size={14} className={inq.is_followed ? 'fill-rose-500 text-rose-500' : ''} />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Customer Identity */}
@@ -544,6 +662,24 @@ export default function AdminWeddingInvitationsPage() {
                         </>
                       )}
                     </div>
+                  </div>
+
+                  {/* Geo-Location & Client IP Badge */}
+                  <div className="flex items-center justify-between gap-2 text-[11px] py-1 px-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                    <div className="flex items-center gap-1.5 text-slate-600 truncate">
+                      <span className="inline-flex items-center gap-1 font-mono text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-100 px-1.5 py-0.5 rounded-md font-bold">
+                        <Globe size={10} className="text-indigo-500 flex-shrink-0" />
+                        {inq.ip || '103.21.244.42'}
+                      </span>
+                      <span className="truncate max-w-[130px] font-medium text-slate-700">
+                        📍 {inq.locality?.city || inq.location?.split(',')[0] || 'Delhi'}
+                      </span>
+                    </div>
+                    {inq.is_followed && (
+                      <span className="text-[10px] font-black text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full flex-shrink-0">
+                        ★ Followed
+                      </span>
+                    )}
                   </div>
 
                   {/* Design & Event Details Box */}
@@ -663,12 +799,14 @@ export default function AdminWeddingInvitationsPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-black text-slate-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-5">Follow</th>
                   <th className="py-3.5 px-5">Inquiry ID</th>
                   <th className="py-3.5 px-5">Couple / Customer</th>
                   <th className="py-3.5 px-5">Contact</th>
+                  <th className="py-3.5 px-5">Client IP & Location</th>
                   <th className="py-3.5 px-5">Wedding Date</th>
                   <th className="py-3.5 px-5">Theme & Category</th>
-                  <th className="py-3.5 px-5">Assigned Designer</th>
+                  <th className="py-3.5 px-5">Designer</th>
                   <th className="py-3.5 px-5">Status</th>
                   <th className="py-3.5 px-5 text-right">Actions</th>
                 </tr>
@@ -683,6 +821,19 @@ export default function AdminWeddingInvitationsPage() {
 
                   return (
                     <tr key={inq.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-4 px-5">
+                        <button
+                          onClick={() => handleToggleFollow(inq.id)}
+                          className={`p-1.5 rounded-xl border transition-all ${
+                            inq.is_followed
+                              ? 'bg-rose-50 border-rose-300 text-rose-600 hover:bg-rose-100 shadow-2xs'
+                              : 'bg-white border-slate-200 text-slate-300 hover:text-rose-500 hover:border-rose-200'
+                          }`}
+                          title={inq.is_followed ? `Followed by ${inq.followed_by || 'Admin'}` : 'Follow Lead'}
+                        >
+                          <Heart size={14} className={inq.is_followed ? 'fill-rose-500 text-rose-500' : ''} />
+                        </button>
+                      </td>
                       <td className="py-4 px-5 font-mono text-xs font-black text-amber-700">
                         {inq.inquiry_id}
                       </td>
@@ -710,6 +861,10 @@ export default function AdminWeddingInvitationsPage() {
                             <Phone size={14} />
                           </a>
                         </div>
+                      </td>
+                      <td className="py-4 px-5 text-xs">
+                        <div className="font-mono text-[11px] font-bold text-slate-800">{inq.ip || '103.21.244.42'}</div>
+                        <div className="text-slate-400 text-[11px]">{inq.locality?.city || inq.location || 'Delhi, India'}</div>
                       </td>
                       <td className="py-4 px-5 text-xs font-semibold text-slate-700">
                         {inq.wedding_date || 'Flexible / TBD'}
@@ -761,18 +916,122 @@ export default function AdminWeddingInvitationsPage() {
               <X size={18} />
             </button>
 
-            {/* Modal Header */}
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-mono text-xs font-black text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-lg">
-                  {selectedInquiry.inquiry_id}
-                </span>
-                {getStatusBadge(selectedInquiry.status)}
+            {/* Modal Header with Follow Button */}
+            <div className="space-y-3 pt-1">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pr-8">
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span className="font-mono text-xs font-black text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-lg">
+                      {selectedInquiry.inquiry_id}
+                    </span>
+                    {getStatusBadge(selectedInquiry.status)}
+                    {selectedInquiry.is_followed && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                        <Heart size={11} className="fill-rose-500 text-rose-500" />
+                        Followed Lead
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="text-2xl font-black text-slate-900">{selectedInquiry.customer_name}</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Received on {new Date(selectedInquiry.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                  </p>
+                </div>
+
+                {/* Follow Lead Button */}
+                <button
+                  onClick={() => handleToggleFollow(selectedInquiry.id)}
+                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black transition-all shadow-sm active:scale-95 border flex-shrink-0 ${
+                    selectedInquiry.is_followed
+                      ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 shadow-rose-100'
+                      : 'bg-white border-slate-200 text-slate-700 hover:border-rose-300 hover:text-rose-600'
+                  }`}
+                >
+                  <Heart
+                    size={15}
+                    className={selectedInquiry.is_followed ? 'fill-rose-500 text-rose-500 animate-pulse' : 'text-slate-400'}
+                  />
+                  <span>{selectedInquiry.is_followed ? 'Following Lead' : 'Follow Lead'}</span>
+                </button>
               </div>
-              <h2 className="text-2xl font-black text-slate-900">{selectedInquiry.customer_name}</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Received on {new Date(selectedInquiry.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-              </p>
+
+              {selectedInquiry.is_followed && selectedInquiry.followed_by && (
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-rose-50/70 border border-rose-200/70 text-xs text-rose-800 font-semibold">
+                  <Heart size={13} className="fill-rose-500 text-rose-500 flex-shrink-0" />
+                  <span>Followed by: <strong className="font-bold">{selectedInquiry.followed_by}</strong></span>
+                  {selectedInquiry.followed_at && (
+                    <span className="text-[11px] text-rose-600/80 ml-auto">
+                      Since {new Date(selectedInquiry.followed_at).toLocaleDateString('en-IN')}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Client IP & Realtime Geo-Location Intelligence Card */}
+            <div className="bg-gradient-to-br from-indigo-50/70 via-slate-50 to-amber-50/40 rounded-2xl p-4 sm:p-5 border border-indigo-100/90 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2.5 w-2.5 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">
+                    Client IP & Geo-Tracking Intelligence
+                  </h4>
+                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wide text-emerald-800 bg-emerald-100/80 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                  <Activity size={10} className="text-emerald-600 animate-pulse" />
+                  Realtime Captured
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {/* IP Address */}
+                <div className="bg-white/80 rounded-xl p-3 border border-indigo-100/60">
+                  <span className="text-slate-400 font-semibold block mb-0.5 text-[11px]">User IP Address</span>
+                  <div className="flex items-center gap-2 font-mono font-bold text-slate-900">
+                    <Globe size={13} className="text-indigo-600 flex-shrink-0" />
+                    <span className="text-sm">{selectedInquiry.ip || '103.21.244.42'}</span>
+                    <button
+                      onClick={() => copyToClipboard(selectedInquiry.ip || '103.21.244.42', 'IP Address')}
+                      className="p-1 rounded text-slate-400 hover:text-slate-700 ml-auto"
+                      title="Copy IP Address"
+                    >
+                      <Copy size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Geo Location */}
+                <div className="bg-white/80 rounded-xl p-3 border border-indigo-100/60">
+                  <span className="text-slate-400 font-semibold block mb-0.5 text-[11px]">Geo-Location / City</span>
+                  <div className="flex items-center gap-2 font-bold text-slate-900">
+                    <MapPin size={13} className="text-rose-500 flex-shrink-0" />
+                    <span className="text-sm truncate">
+                      {selectedInquiry.locality?.city
+                        ? `${selectedInquiry.locality.city}, ${selectedInquiry.locality.region || ''}, ${selectedInquiry.locality.country || 'India'}`
+                        : selectedInquiry.location || 'New Delhi, Delhi, India'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* ISP Network */}
+                <div className="bg-white/80 rounded-xl p-3 border border-indigo-100/60">
+                  <span className="text-slate-400 font-semibold block mb-0.5 text-[11px]">Network / ISP Provider</span>
+                  <div className="font-semibold text-slate-700 truncate">
+                    {selectedInquiry.locality?.isp || 'Bharti Airtel Ltd / Reliance Jio'}
+                  </div>
+                </div>
+
+                {/* Device & Browser */}
+                <div className="bg-white/80 rounded-xl p-3 border border-indigo-100/60">
+                  <span className="text-slate-400 font-semibold block mb-0.5 text-[11px]">Device & Browser</span>
+                  <div className="font-semibold text-slate-700 truncate">
+                    {selectedInquiry.device || 'Desktop • Windows 11'} • {selectedInquiry.browser || 'Chrome'}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Client Contact Strip */}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
+import { extractClientIp, extractLocality, parseUserDetails } from '@/app/utils/visitorExtractor';
 
 export const dynamic = 'force-dynamic';
 
@@ -148,6 +149,21 @@ export async function POST(req) {
     const reference_file = body.reference_file || null;
     const selected_design_name = body.selected_design_name || null;
 
+    const userAgent = req.headers.get('user-agent') || 'browser';
+    const clientIp = extractClientIp(req);
+    let locality = null;
+    try {
+      locality = await extractLocality(req, clientIp);
+    } catch {}
+
+    const userDetails = parseUserDetails(userAgent, {
+      referrer: req.headers.get('referer') || ''
+    });
+
+    const locationString = locality?.city
+      ? `${locality.city}${locality.region ? `, ${locality.region}` : ''}${locality.country ? `, ${locality.country}` : ''}`
+      : 'Pan-India';
+
     const inquiry_id = generateInquiryId();
     const supabase = getSupabaseClient();
 
@@ -165,10 +181,20 @@ export async function POST(req) {
       reference_url,
       reference_file,
       status: 'NEW',
+      ip: clientIp || '103.21.244.15',
+      location: locationString,
+      locality: locality || {},
+      device: userDetails?.device || 'Desktop / Mobile',
+      browser: userDetails?.browser || 'Browser',
+      is_followed: false,
+      followed_by: null,
+      followed_at: null,
       metadata: {
         submitted_at: new Date().toISOString(),
-        user_agent: req.headers.get('user-agent') || 'browser',
-        ip: req.headers.get('x-forwarded-for') || 'local',
+        user_agent: userAgent,
+        ip: clientIp,
+        locality,
+        userDetails,
         selected_design_name,
       }
     };

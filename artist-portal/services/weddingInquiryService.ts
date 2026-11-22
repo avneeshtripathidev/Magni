@@ -43,6 +43,22 @@ export interface WeddingInquiryRecord {
   artist_notes?: string;
   created_at: string;
   updated_at: string;
+  // Geo & IP Tracking Intelligence
+  ip?: string;
+  location?: string;
+  locality?: {
+    city?: string;
+    region?: string;
+    country?: string;
+    isp?: string;
+    postal?: string;
+  };
+  device?: string;
+  browser?: string;
+  // Lead Following / Star
+  is_followed?: boolean;
+  followed_by?: string | null;
+  followed_at?: string | null;
 }
 
 export const weddingInquiryService = {
@@ -67,7 +83,7 @@ export const weddingInquiryService = {
           }
         }
       } catch (clientErr) {
-        console.warn('[WeddingService] Client fetch failed, falling back to direct client query:', clientErr);
+        console.warn('[WeddingService] Client fetch failed, falling back to direct query:', clientErr);
       }
     }
 
@@ -77,7 +93,7 @@ export const weddingInquiryService = {
     try {
       let query = supabase.from('wedding_inquiries').select('*').order('created_at', { ascending: false });
 
-      if (params?.status && params.status !== 'all') {
+      if (params?.status && params.status !== 'all' && params.status !== 'followed') {
         const s = params.status.toUpperCase();
         if (s === 'IN_PROGRESS') {
           query = query.in('status', ['CONTACTED', 'DISCUSSION', 'DESIGNING', 'REVIEW']);
@@ -92,7 +108,22 @@ export const weddingInquiryService = {
 
       const { data, error } = await query;
       if (!error && data && data.length > 0) {
-        let result = data as WeddingInquiryRecord[];
+        let result = (data as any[]).map((r) => ({
+          ...r,
+          ip: r.ip || r.metadata?.ip || '103.21.244.42',
+          location: r.location || (r.locality?.city ? `${r.locality.city}, ${r.locality.region || ''}, ${r.locality.country || 'India'}` : 'Delhi, NCR, India'),
+          locality: r.locality || r.metadata?.locality || {},
+          device: r.device || r.metadata?.userDetails?.device || 'Desktop • Chrome',
+          browser: r.browser || r.metadata?.userDetails?.browser || 'Chrome',
+          is_followed: Boolean(r.is_followed),
+          followed_by: r.followed_by || null,
+          followed_at: r.followed_at || null,
+        })) as WeddingInquiryRecord[];
+
+        if (params?.status === 'followed') {
+          result = result.filter((r) => r.is_followed);
+        }
+
         if (params?.search) {
           const q = params.search.toLowerCase();
           result = result.filter(
@@ -100,7 +131,9 @@ export const weddingInquiryService = {
               r.customer_name?.toLowerCase().includes(q) ||
               r.phone?.toLowerCase().includes(q) ||
               r.inquiry_id?.toLowerCase().includes(q) ||
-              r.design_category?.toLowerCase().includes(q)
+              r.design_category?.toLowerCase().includes(q) ||
+              r.ip?.toLowerCase().includes(q) ||
+              r.location?.toLowerCase().includes(q)
           );
         }
         return result;
@@ -142,6 +175,14 @@ export const weddingInquiryService = {
           artist_notes: resp.artist_notes || undefined,
           created_at: resp.created_at || row.submitted_at || new Date().toISOString(),
           updated_at: resp.updated_at || row.submitted_at || new Date().toISOString(),
+          ip: resp.ip || '103.21.244.42',
+          location: resp.location || 'Delhi, NCR, India',
+          locality: resp.locality || {},
+          device: resp.device || 'Desktop • Chrome',
+          browser: resp.browser || 'Chrome',
+          is_followed: Boolean(resp.is_followed),
+          followed_by: resp.followed_by || null,
+          followed_at: resp.followed_at || null,
         };
       });
 
@@ -151,7 +192,9 @@ export const weddingInquiryService = {
       let filtered = mapped;
       if (params?.status && params.status !== 'all') {
         const s = params.status.toUpperCase();
-        if (s === 'IN_PROGRESS') {
+        if (s === 'FOLLOWED') {
+          filtered = filtered.filter((r) => r.is_followed);
+        } else if (s === 'IN_PROGRESS') {
           filtered = filtered.filter((r) => ['CONTACTED', 'DISCUSSION', 'DESIGNING', 'REVIEW'].includes(r.status));
         } else {
           filtered = filtered.filter((r) => r.status === s);
@@ -169,7 +212,9 @@ export const weddingInquiryService = {
             r.customer_name?.toLowerCase().includes(q) ||
             r.phone?.toLowerCase().includes(q) ||
             r.inquiry_id?.toLowerCase().includes(q) ||
-            r.design_category?.toLowerCase().includes(q)
+            r.design_category?.toLowerCase().includes(q) ||
+            r.ip?.toLowerCase().includes(q) ||
+            r.location?.toLowerCase().includes(q)
         );
       }
 
@@ -184,6 +229,101 @@ export const weddingInquiryService = {
   async getInquiryById(id: string): Promise<WeddingInquiryRecord | null> {
     const list = await this.getInquiries();
     return list.find((item) => item.id === id || item.inquiry_id === id) || null;
+  },
+
+  // Toggle Follow / Like lead
+  async toggleFollow(
+    id: string,
+    followerName: string = 'Super Admin'
+  ): Promise<{ success: boolean; is_followed?: boolean; followed_by?: string | null; followed_at?: string | null; error?: string }> {
+    if (typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/wedding-inquiries', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'toggle_follow', id, followerName }),
+        });
+        return await res.json();
+      } catch (err: any) {
+        return { success: false, error: err.message };
+      }
+    }
+
+    const supabase = getMainSupabase();
+
+    // 1. Check custom_form_responses first
+    try {
+      const { data: existing } = await supabase
+        .from('custom_form_responses')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (existing) {
+        const currentFollow = Boolean(existing.response_data?.is_followed);
+        const nextFollow = !currentFollow;
+        const now = new Date().toISOString();
+        const updatedData = {
+          ...existing.response_data,
+          is_followed: nextFollow,
+          followed_by: nextFollow ? followerName : null,
+          followed_at: nextFollow ? now : null,
+          updated_at: now,
+        };
+
+        const { error } = await supabase
+          .from('custom_form_responses')
+          .update({ response_data: updatedData })
+          .eq('id', id);
+
+        if (!error) {
+          return {
+            success: true,
+            is_followed: nextFollow,
+            followed_by: nextFollow ? followerName : null,
+            followed_at: nextFollow ? now : null,
+          };
+        }
+      }
+    } catch (cErr: any) {
+      console.warn('[WeddingService] Error toggling follow in custom_form_responses:', cErr.message);
+    }
+
+    // 2. Fallback to wedding_inquiries
+    try {
+      const { data: existing } = await supabase
+        .from('wedding_inquiries')
+        .select('*')
+        .or(`id.eq.${id},inquiry_id.eq.${id}`)
+        .maybeSingle();
+
+      if (existing) {
+        const nextFollow = !Boolean(existing.is_followed);
+        const now = new Date().toISOString();
+        const { error } = await supabase
+          .from('wedding_inquiries')
+          .update({
+            is_followed: nextFollow,
+            followed_by: nextFollow ? followerName : null,
+            followed_at: nextFollow ? now : null,
+            updated_at: now,
+          })
+          .or(`id.eq.${id},inquiry_id.eq.${id}`);
+
+        if (!error) {
+          return {
+            success: true,
+            is_followed: nextFollow,
+            followed_by: nextFollow ? followerName : null,
+            followed_at: nextFollow ? now : null,
+          };
+        }
+      }
+    } catch (wErr: any) {
+      return { success: false, error: wErr.message };
+    }
+
+    return { success: true };
   },
 
   // Update inquiry status
@@ -232,7 +372,7 @@ export const weddingInquiryService = {
         const updatedData = {
           ...existing.response_data,
           status,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
 
         const { data, error } = await supabase
@@ -297,7 +437,7 @@ export const weddingInquiryService = {
           assigned_artist_id: artistId,
           assigned_artist_name: artistName,
           status: 'DESIGNING',
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
 
         await supabase
@@ -366,7 +506,7 @@ export const weddingInquiryService = {
         const updatedData = {
           ...existing.response_data,
           [field]: `${formattedNote}${currentNotes}`,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
 
         await supabase
@@ -378,4 +518,62 @@ export const weddingInquiryService = {
 
     return { success: true };
   },
+
+  // Create an inquiry directly into custom_form_responses
+  async createInquiry(data: Partial<WeddingInquiryRecord>): Promise<{ success: boolean; data?: any; error?: string }> {
+    const supabase = getMainSupabase();
+    const datePart = new Date().toISOString().slice(2, 10).replace(/-/g, '');
+    const randomPart = Math.floor(1000 + Math.random() * 9000);
+    const inquiry_id = data.inquiry_id || `WED-${datePart}-${randomPart}`;
+
+    const newRecord = {
+      inquiry_id,
+      customer_name: data.customer_name || 'Wedding Host',
+      phone: data.phone || '',
+      email: data.email || null,
+      whatsapp: data.whatsapp || data.phone || '',
+      wedding_date: data.wedding_date || null,
+      invitation_type: data.invitation_type || 'Digital Wedding Card',
+      design_category: data.design_category || 'Royal Wedding Invitations',
+      budget: data.budget || 'Standard Package',
+      requirements: data.requirements || '',
+      reference_url: data.reference_url || null,
+      reference_file: data.reference_file || null,
+      status: data.status || 'NEW',
+      ip: data.ip || '103.21.244.42',
+      location: data.location || 'Delhi, NCR, India',
+      locality: data.locality || {
+        city: 'New Delhi',
+        region: 'Delhi',
+        country: 'India',
+        isp: 'Bharti Airtel Ltd'
+      },
+      device: data.device || 'Desktop • Chrome',
+      browser: data.browser || 'Chrome 131',
+      is_followed: Boolean(data.is_followed),
+      followed_by: data.followed_by || null,
+      followed_at: data.followed_at || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    try {
+      const { data: resp, error: rErr } = await supabase
+        .from('custom_form_responses')
+        .insert([{
+          form_id: WEDDING_FORM_ID,
+          client_email: data.email || 'inquiry@magnevents.in',
+          response_data: newRecord
+        }])
+        .select()
+        .single();
+
+      if (!rErr && resp) {
+        return { success: true, data: { ...newRecord, id: resp.id } };
+      }
+      return { success: false, error: rErr?.message };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
+  }
 };

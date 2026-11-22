@@ -17,13 +17,28 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const res = await weddingInquiryService.createInquiry(body);
+    return NextResponse.json(res, { status: res.success ? 201 : 400 });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, id, status, artistId, artistName, note, author } = body;
+    const { action, id, status, artistId, artistName, note, author, followerName } = body;
 
     if (!id) {
       return NextResponse.json({ success: false, error: 'Inquiry ID is required' }, { status: 400 });
+    }
+
+    if (action === 'toggle_follow') {
+      const res = await weddingInquiryService.toggleFollow(id, followerName || 'Super Admin (Magnevents Director)');
+      return NextResponse.json(res);
     }
 
     if (action === 'status' && status) {
