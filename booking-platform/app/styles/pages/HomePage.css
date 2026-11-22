@@ -27,21 +27,19 @@
 .hp.hp-dj-night-theme {
   background-color: #0E0C10 !important;
   background-image:
-    /* 1. Rose Stone cyber dot matrix */
-    radial-gradient(rgba(216, 196, 183, 0.12) 1.2px, transparent 1.2px),
+    /* 1. Subtle Rose Stone cyber dot matrix */
+    radial-gradient(rgba(216, 196, 183, 0.08) 1.2px, transparent 1.2px),
     /* 2. Deep Velvet Wine Red / Maroon concert stage haze across right side */
-    radial-gradient(ellipse 75% 70% at 88% 28%, rgba(126, 48, 68, 0.45) 0%, rgba(66, 18, 30, 0.25) 50%, transparent 75%),
+    radial-gradient(ellipse 75% 70% at 88% 28%, rgba(126, 48, 68, 0.42) 0%, rgba(66, 18, 30, 0.22) 50%, transparent 75%),
     /* 3. Lower-right ambient wine red glow for seamless full-page continuity */
-    radial-gradient(ellipse 70% 60% at 85% 72%, rgba(126, 48, 68, 0.35) 0%, transparent 65%),
-    /* 4. Golden Marigold warmth highlight */
-    radial-gradient(circle at 72% 38%, rgba(232, 185, 67, 0.12) 0%, transparent 55%),
-    /* 5. Smooth horizontal fade: Pitch Black on left -> Glowing Maroon on right (User Screenshot Reference) */
-    linear-gradient(90deg, rgba(12, 10, 14, 0.98) 0%, rgba(18, 15, 20, 0.92) 35%, rgba(55, 18, 28, 0.65) 70%, rgba(126, 48, 68, 0.55) 100%),
-    /* 6. Celebratory concert gold confetti texture */
-    url('/posters/dj_concert_confetti_bg.jpg') !important;
-  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% auto !important;
-  background-position: 0 0, center, center, center, center, center top !important;
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat-y !important;
+    radial-gradient(ellipse 70% 60% at 85% 72%, rgba(126, 48, 68, 0.28) 0%, transparent 65%),
+    /* 4. Golden Marigold warmth highlight behind hero quote engine */
+    radial-gradient(circle at 72% 38%, rgba(232, 185, 67, 0.09) 0%, transparent 55%),
+    /* 5. Smooth horizontal fade: Pitch Black on left -> Glowing Maroon on right */
+    linear-gradient(90deg, rgba(12, 10, 14, 0.98) 0%, rgba(18, 15, 20, 0.92) 35%, rgba(55, 18, 28, 0.55) 70%, rgba(126, 48, 68, 0.42) 100%) !important;
+  background-size: 26px 26px, 100% 1200px, 100% 1800px, 100% 1000px, 100% 100% !important;
+  background-position: 0 0, top right, center right, top right, center !important;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat !important;
   background-attachment: scroll !important;
   color: var(--hp-ink);
   overflow-x: hidden;
@@ -50,7 +48,6 @@
 }
 
 .hp .seo-hero-root {
-  background: transparent !important;
   box-shadow: none !important;
 }
 

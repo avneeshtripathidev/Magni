@@ -74,6 +74,235 @@
 }
 
 /* --------------------------------------------------------------------------
+   Visual Highlights Grid (Show Don't Just Tell)
+   -------------------------------------------------------------------------- */
+.seo-visual-highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 28px 0 32px 0;
+}
+
+.seo-v-pill {
+  background: rgba(35, 24, 30, 0.75);
+  border: 1px solid rgba(216, 196, 183, 0.22);
+  border-radius: 18px;
+  padding: 18px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.seo-v-pill:hover {
+  transform: translateY(-4px);
+  border-color: rgba(232, 185, 67, 0.55);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(232, 185, 67, 0.15);
+  background: rgba(45, 28, 36, 0.85);
+}
+
+.seo-v-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(126, 48, 68, 0.35) 0%, rgba(228, 95, 96, 0.20) 100%);
+  border: 1px solid rgba(232, 185, 67, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #E8B943;
+}
+
+.seo-v-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seo-v-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #F5F0E9;
+  letter-spacing: -0.01em;
+}
+
+.seo-v-text span {
+  font-size: 12px;
+  color: rgba(245, 240, 233, 0.72);
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   3-Step Visual Booking Flow Diagram / Timeline
+   -------------------------------------------------------------------------- */
+.seo-visual-flow-card {
+  background: linear-gradient(155deg, rgba(32, 22, 28, 0.85) 0%, rgba(18, 14, 18, 0.95) 100%);
+  border: 1px solid rgba(216, 196, 183, 0.20);
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 32px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.seo-flow-header {
+  margin-bottom: 20px;
+}
+
+.seo-flow-badge {
+  display: inline-block;
+  background: rgba(232, 185, 67, 0.12);
+  border: 1px solid rgba(232, 185, 67, 0.35);
+  color: #E8B943;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.seo-flow-header h3 {
+  font-size: 1.25rem;
+  font-family: var(--font-display, "Playfair Display", serif);
+  font-weight: 700;
+  color: #F5F0E9;
+  margin: 0;
+}
+
+.seo-how-it-works-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.seo-flow-step {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(216, 196, 183, 0.15);
+  border-radius: 14px;
+  padding: 16px;
+  transition: all 0.25s ease;
+}
+
+.seo-flow-step:hover {
+  border-color: rgba(232, 185, 67, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.seo-flow-step-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.seo-flow-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E45F60, #7E3044);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(228, 95, 96, 0.4);
+}
+
+.seo-flow-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #F5F0E9;
+}
+
+.seo-flow-step p {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(245, 240, 233, 0.7);
+  margin: 0;
+}
+
+.seo-flow-divider {
+  color: #E8B943;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   Collapsible/Expandable Reading View for Guide Narrative
+   -------------------------------------------------------------------------- */
+.seo-overview-body-wrap {
+  position: relative;
+  max-height: 220px;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.seo-overview-body-wrap:not(.is-expanded)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(180deg, transparent 0%, rgba(28, 20, 25, 0.95) 85%, rgba(28, 20, 25, 1) 100%);
+  pointer-events: none;
+}
+
+.seo-overview-body-wrap.is-expanded {
+  max-height: 3500px;
+}
+
+.seo-overview-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(232, 185, 67, 0.12);
+  border: 1px solid rgba(232, 185, 67, 0.35);
+  color: #E8B943;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.seo-overview-toggle-btn:hover {
+  background: rgba(232, 185, 67, 0.22);
+  border-color: #E8B943;
+  color: #FFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(232, 185, 67, 0.25);
+}
+
+.seo-toggle-chevron {
+  transition: transform 0.25s ease;
+}
+
+.seo-toggle-chevron.is-rotated {
+  transform: rotate(180deg);
+}
+
+.seo-chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #E8B943;
+  box-shadow: 0 0 6px #E8B943;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* --------------------------------------------------------------------------
    2. Services Section
    -------------------------------------------------------------------------- */
 .seo-services-head {
@@ -368,6 +597,12 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
+@media (max-width: 1024px) {
+  .seo-visual-highlights-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .seo-dynamic-content {
     padding: 40px 14px 60px;
@@ -376,6 +611,29 @@
   .seo-overview-card {
     padding: 24px 18px;
     border-radius: 18px;
+  }
+
+  .seo-visual-highlights-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 20px 0 24px 0;
+  }
+
+  .seo-visual-flow-card {
+    padding: 20px 16px;
+    margin-bottom: 24px;
+  }
+
+  .seo-how-it-works-flow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .seo-flow-divider {
+    transform: rotate(90deg);
+    justify-content: center;
+    margin: -2px 0;
   }
 
   .seo-callout-card {

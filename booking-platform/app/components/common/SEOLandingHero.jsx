@@ -581,17 +581,19 @@ export default function SEOLandingHero({
 
   return (
     <section className={`seo-hero-root ${isDJ ? 'seo-hero-dj-theme' : ''}`}>
-      {isDJ && (
-        <div className="seo-dj-ambient-lights" aria-hidden="true">
-          <div className="seo-dj-laser-beam seo-dj-laser-left" />
-          <div className="seo-dj-laser-beam seo-dj-laser-right" />
-          <div className="seo-dj-strobe-glow" />
-          <div className="seo-dj-bass-aura" />
-        </div>
-      )}
-      <div className="seo-hero-backdrop-glow" aria-hidden="true" />
+      {/* 1. HERO MASTHEAD: Celebratory concert stage atmosphere, ambient lights, 5k proof & quote engine */}
+      <div className="seo-hero-masthead">
+        {isDJ && (
+          <div className="seo-dj-ambient-lights" aria-hidden="true">
+            <div className="seo-dj-laser-beam seo-dj-laser-left" />
+            <div className="seo-dj-laser-beam seo-dj-laser-right" />
+            <div className="seo-dj-strobe-glow" />
+            <div className="seo-dj-bass-aura" />
+          </div>
+        )}
+        <div className="seo-hero-backdrop-glow" aria-hidden="true" />
 
-      <div className="seo-hero-container">
+        <div className="seo-hero-container">
         {/* ==========================================================================
            1. Top Trust & Social Proof: 5,000+ Events Done Across India Banner
            ========================================================================== */}
@@ -1092,6 +1094,12 @@ export default function SEOLandingHero({
           )}
         </div>
         )}
+        </div>
+      </div>
+
+      {/* 2. MAIN CONTENT SECTIONS: Sit on seamless Velvet Obsidian background */}
+      <div className="seo-sections-body">
+        <div className="seo-hero-container">
 
         {/* ==========================================================================
            2. Top 5 Verified Artists Showcase Section OR Specialized DJ/Category Showcase
@@ -1811,6 +1819,7 @@ export default function SEOLandingHero({
         </div>
 
       </div>
+    </div>
 
 
 
