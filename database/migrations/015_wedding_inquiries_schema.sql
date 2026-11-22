@@ -38,20 +38,18 @@ CREATE INDEX IF NOT EXISTS idx_wedding_inquiries_created_at ON public.wedding_in
 CREATE INDEX IF NOT EXISTS idx_wedding_inquiries_inquiry_id ON public.wedding_inquiries(inquiry_id);
 
 -- 3. Trigger for updated_at
-DO $$
+CREATE OR REPLACE FUNCTION public.handle_wedding_inquiries_updated_at()
+RETURNS TRIGGER AS $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_wedding_inquiries_updated_at'
-  ) THEN
-    CREATE TRIGGER trg_wedding_inquiries_updated_at
-      BEFORE UPDATE ON public.wedding_inquiries
-      FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
-  END IF;
-EXCEPTION
-  WHEN undefined_function THEN
-    -- In case set_updated_at function does not exist in the target schema
-    NULL;
-END $$;
+  NEW.updated_at = timezone('utc'::text, now());
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_wedding_inquiries_updated_at ON public.wedding_inquiries;
+CREATE TRIGGER trg_wedding_inquiries_updated_at
+  BEFORE UPDATE ON public.wedding_inquiries
+  FOR EACH ROW EXECUTE FUNCTION public.handle_wedding_inquiries_updated_at();
 
 -- 4. Enable Row Level Security (RLS) & Grant Access
 ALTER TABLE public.wedding_inquiries ENABLE ROW LEVEL SECURITY;
