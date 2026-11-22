@@ -1,178 +1,27 @@
-"use client"
+import { redirect } from 'next/navigation';
 
-import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { AppShellWrapper } from '@/app/layouts/AppShellWrapper'
-import { bookingService } from '@/app/services/bookingService'
-import '@/app/styles/components/ContactModal.css'
-import '@/app/styles/pages/Register.css'
-
-import { validateName, validateEmail, validatePhone } from '@helpers/validation';
+export const metadata = {
+  title: 'Redirecting to Artist Registration | Magnevents',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function RegisterPage() {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-
-  const [formError, setFormError] = useState('')
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    category: '',
-    portfolio: '',
-    bio: ''
-  })
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setFormError('')
-    const submissionData = { ...formData }
-
-    const nameErr = validateName(submissionData.name);
-    if (nameErr) return setFormError(nameErr);
-    const emailErr = validateEmail(submissionData.email);
-    if (emailErr) return setFormError(emailErr);
-    const phoneErr = validatePhone(submissionData.phone);
-    if (phoneErr) return setFormError(phoneErr);
-
-    const res = bookingService.submitInstantRequest({
-      ...submissionData,
-      type: 'artist_registration',
-      formName: 'Generic Registration Page'
-    });
-
-    setSubmitted(true);
-    const refCode = res?.referenceCode || '';
-    router.push(`/thank-you${refCode ? `?ref=${refCode}` : ''}`);
-  }
+  redirect('https://artists.magnevents.in/register');
 
   return (
-    <main className="lux-page register-page">
-      <div className="lux-container">
-        <div className="register-card-container">
-          {submitted ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="registration-success-box"
-            >
-              <div className="success-icon">✓</div>
-              <h2>Application Received!</h2>
-              <p>Thank you for joining Magnevents. Our artist relations team will review your portfolio and contact you within 48 hours.</p>
-              <button onClick={() => window.location.href = '/'} className="return-home-btn">
-                Return to Home
-              </button>
-            </motion.div>
-          ) : (
-            <div className="lux-modal-content register is-page">
-              <div className="lux-modal-header">
-                <span className="accent-tag">JOIN THE ELITE</span>
-                <h2 className="lux-modal-title">Artist Registration</h2>
-                <p className="lux-modal-desc">Showcase your talent to the world. Join Magnevents and perform at premium venues.</p>
-              </div>
-
-              <form className="lux-modal-form" onSubmit={handleSubmit}>
-                {formError && (
-                  <div style={{ color: '#ff4d4f', background: 'rgba(255, 77, 79, 0.1)', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(255, 77, 79, 0.2)' }} role="alert">
-                    {formError}
-                  </div>
-                )}
-                <div className="lux-form-grid">
-                  <div className="lux-form-group">
-                    <label htmlFor="reg-name">FULL NAME</label>
-                    <input
-                      id="reg-name"
-                      name="name"
-                      type="text" required placeholder="e.g. Rahul Verma"
-                      value={formData.name}
-                      onChange={handleChange}
-                      autoComplete="name"
-                    />
-                  </div>
-                  <div className="lux-form-group">
-                    <label htmlFor="reg-phone">PHONE NUMBER</label>
-                    <input
-                      id="reg-phone"
-                      name="phone"
-                      type="tel" required placeholder="+91 9XXX-XXXXXX"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      autoComplete="tel"
-                    />
-                  </div>
-                </div>
-
-                <div className="lux-form-group">
-                  <label htmlFor="reg-email">EMAIL ADDRESS</label>
-                  <input
-                    id="reg-email"
-                    name="email"
-                    type="email" required placeholder="name@email.in"
-                    value={formData.email}
-                    onChange={handleChange}
-                    autoComplete="email"
-                  />
-                </div>
-
-                <div className="lux-form-grid">
-                  <div className="lux-form-group">
-                    <label htmlFor="reg-category">ARTIST CATEGORY</label>
-                    <select
-                      id="reg-category"
-                      name="category"
-                      required
-                      value={formData.category}
-                      onChange={handleChange}
-                    >
-                      <option value="" disabled>Select Type</option>
-                      <option value="singer">Solo Singer</option>
-                      <option value="band">Music Band</option>
-                      <option value="dj">DJ / Percussionist</option>
-                      <option value="instrumental">Instrumentalist</option>
-                      <option value="comedian">Standup Comedian</option>
-                      <option value="emcee">Anchor / Emcee</option>
-                    </select>
-                  </div>
-                  <div className="lux-form-group">
-                    <label htmlFor="reg-portfolio">PORTFOLIO / SOCIAL LINK</label>
-                    <input
-                      id="reg-portfolio"
-                      name="portfolio"
-                      type="url" required placeholder="Instagram, YouTube or Website"
-                      value={formData.portfolio}
-                      onChange={handleChange}
-                      autoComplete="url"
-                    />
-                  </div>
-                </div>
-
-                <div className="lux-form-group">
-                  <label htmlFor="reg-bio">BIO & EXPERIENCE</label>
-                  <textarea
-                    id="reg-bio"
-                    name="bio"
-                    rows="4" required
-                    placeholder="Briefly describe your performances, experience, and what makes you unique..."
-                    value={formData.bio}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <button type="submit" className="btn-submit-premium" disabled={isSubmitting}>
-                  {isSubmitting ? 'Processing...' : 'Register as Artist'}
-                </button>
-              </form>
-            </div>
-          )}
-        </div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0c', color: '#fff', fontFamily: 'sans-serif', textAlign: 'center', padding: '24px' }}>
+      <div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Redirecting to Artist Registration Portal...</h2>
+        <p style={{ marginTop: '12px', color: '#aaa', fontSize: '1rem' }}>
+          If you are not redirected automatically,{' '}
+          <a href="https://artists.magnevents.in/register" style={{ color: '#00d4ff', textDecoration: 'underline' }}>
+            click here to open the Artist Registration Portal
+          </a>.
+        </p>
       </div>
-    </main>
-  )
+    </div>
+  );
 }

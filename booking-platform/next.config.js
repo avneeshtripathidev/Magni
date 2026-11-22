@@ -180,6 +180,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/register',
+        destination: 'https://artists.magnevents.in/register',
+        permanent: true,
+      },
+      {
         source: '/artist-registration',
         destination: 'https://artists.magnevents.in/register',
         permanent: true,

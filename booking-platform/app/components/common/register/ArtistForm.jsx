@@ -4,6 +4,11 @@ import { validateName, validateEmail, validatePhone } from '@helpers/validation'
 import { getUserGeolocation, getCachedGeolocation, getSilentLocationIfGranted } from '@/app/utils/geolocation';
 
 export default function ArtistForm({ copyToClipboard, setSubmitted }) {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.location.replace('https://artists.magnevents.in/register');
+    }
+  }, []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
   const [selectedCity, setSelectedCity] = useState('');

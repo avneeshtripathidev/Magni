@@ -1,14 +1,10 @@
 export const metadata = {
-  title: 'Artist & Event Registration | Magnevents',
-  description: 'Join Magnevents as an artist or register your event to connect with top verified singers, bands, and performers in India.',
-  alternates: {
-    canonical: '/register',
+  title: 'Redirecting to Artist Registration | Magnevents',
+  description: 'Join Magnevents artist portal to connect with premium event hosts and weddings in India.',
+  robots: {
+    index: false,
+    follow: false,
   },
-  openGraph: {
-    title: 'Artist & Event Registration | Magnevents',
-    description: 'Join Magnevents as an artist or register your event to connect with top verified singers, bands, and performers in India.',
-    url: '/register',
-  }
 };
 
 export default function RegisterLayout({ children }) {

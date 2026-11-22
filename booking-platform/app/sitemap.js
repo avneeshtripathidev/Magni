@@ -63,8 +63,6 @@ export default async function sitemap() {
     { route: '/floral-wedding-invitations', priority: 0.90, changeFrequency: 'daily' },
     { route: '/caricature-wedding-invitations', priority: 0.90, changeFrequency: 'daily' },
     { route: '/budget-wedding-invitations', priority: 0.90, changeFrequency: 'daily' },
-    { route: '/register', priority: 0.75, changeFrequency: 'monthly' },
-    { route: '/register/artist', priority: 0.75, changeFrequency: 'monthly' },
     { route: '/register/event', priority: 0.75, changeFrequency: 'monthly' },
   ].map((item) => ({
     url: `${baseUrl}${item.route}`,

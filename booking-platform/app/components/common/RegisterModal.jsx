@@ -21,13 +21,19 @@ export default function RegisterModal() {
 
   useEffect(() => {
     const handleOpen = (e) => {
-      setIsOpen(true)
-      setSubmitted(false)
-      setView(e?.detail?.view || 'selection')
-    }
-    window.addEventListener('open-register-modal', handleOpen)
-    return () => window.removeEventListener('open-register-modal', handleOpen)
-  }, [])
+      if (e?.detail?.view === 'artist') {
+        if (typeof window !== 'undefined') {
+          window.location.href = 'https://artists.magnevents.in/register';
+        }
+        return;
+      }
+      setIsOpen(true);
+      setSubmitted(false);
+      setView(e?.detail?.view || 'selection');
+    };
+    window.addEventListener('open-register-modal', handleOpen);
+    return () => window.removeEventListener('open-register-modal', handleOpen);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
