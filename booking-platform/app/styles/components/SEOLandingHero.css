@@ -210,10 +210,14 @@
 }
 
 .seo-hero-dj-theme .seo-query-chip.active {
-  background: linear-gradient(135deg, rgba(126, 48, 68, 0.85) 0%, rgba(228, 95, 96, 0.85) 100%) !important;
-  border-color: rgba(232, 185, 67, 0.75) !important;
+  background: linear-gradient(135deg, rgba(126, 48, 68, 0.95) 0%, rgba(228, 95, 96, 0.95) 100%) !important;
+  border-color: rgba(232, 185, 67, 0.85) !important;
   color: #ffffff !important;
   box-shadow: 0 0 20px rgba(228, 95, 96, 0.45), inset 0 0 12px rgba(232, 185, 67, 0.25) !important;
+}
+
+.seo-hero-dj-theme .seo-query-chip.active span {
+  color: #ffffff !important;
 }
 
 /* DJ Theme Stats Bar */
@@ -559,7 +563,7 @@
 }
 
 .seo-query-chip {
-  background: rgba(36, 25, 30, 0.75) !important;
+  background: rgba(36, 25, 30, 0.75);
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
   border: 1px solid rgba(216, 196, 183, 0.25) !important;
@@ -585,11 +589,16 @@
 }
 
 .seo-query-chip.active {
-  background: var(--color-marigold, #E8B943);
-  border-color: #E8B943;
-  color: #29272A;
-  font-weight: 800;
-  box-shadow: 0 4px 20px rgba(232, 185, 67, 0.35);
+  background: linear-gradient(135deg, #FCE182 0%, #E8B943 100%) !important;
+  border-color: #FFE6A3 !important;
+  color: #121013 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 20px rgba(232, 185, 67, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.seo-query-chip.active span {
+  color: #121013 !important;
+  font-weight: 800 !important;
 }
 
 /* ==========================================================================
@@ -4105,11 +4114,16 @@ body.modal-open #unified-header {
   }
 
   .seo-query-pills-left .seo-query-chip.active {
-    background: var(--color-marigold, #E8B943) !important;
-    border-color: #E8B943 !important;
-    color: #29272A !important;
+    background: linear-gradient(135deg, #FCE182 0%, #E8B943 100%) !important;
+    border-color: #FFE6A3 !important;
+    color: #121013 !important;
     font-weight: 800 !important;
-    box-shadow: 0 4px 16px rgba(232, 185, 67, 0.35) !important;
+    box-shadow: 0 4px 16px rgba(232, 185, 67, 0.45) !important;
+  }
+
+  .seo-query-pills-left .seo-query-chip.active span {
+    color: #121013 !important;
+    font-weight: 800 !important;
   }
 
   /* 4. Remove redundant stats row on mobile (already covered by top 5k badge) */
