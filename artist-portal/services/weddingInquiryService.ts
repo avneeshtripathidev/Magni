@@ -575,5 +575,52 @@ export const weddingInquiryService = {
     } catch (err: any) {
       return { success: false, error: err.message };
     }
+  },
+
+  // Delete an inquiry permanently
+  async deleteInquiry(id: string): Promise<{ success: boolean; error?: string }> {
+    if (typeof window !== 'undefined') {
+      try {
+        const res = await fetch(`/api/wedding-inquiries?id=${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+        });
+        return await res.json();
+      } catch (err: any) {
+        return { success: false, error: err.message };
+      }
+    }
+
+    const supabase = getMainSupabase();
+
+    // 1. Delete from custom_form_responses
+    try {
+      const { error: cErr } = await supabase
+        .from('custom_form_responses')
+        .delete()
+        .eq('id', id);
+
+      if (!cErr) {
+        // Also clean up any matching in wedding_inquiries if exists
+        try {
+          await supabase.from('wedding_inquiries').delete().or(`id.eq.${id},inquiry_id.eq.${id}`);
+        } catch {}
+        return { success: true };
+      }
+    } catch (cErr: any) {
+      console.warn('[WeddingService] Error deleting from custom_form_responses:', cErr);
+    }
+
+    // 2. Delete from wedding_inquiries
+    try {
+      const { error } = await supabase
+        .from('wedding_inquiries')
+        .delete()
+        .or(`id.eq.${id},inquiry_id.eq.${id}`);
+
+      if (!error) return { success: true };
+      return { success: false, error: error.message };
+    } catch (wErr: any) {
+      return { success: false, error: wErr.message };
+    }
   }
 };

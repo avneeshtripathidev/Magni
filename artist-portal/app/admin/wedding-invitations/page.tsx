@@ -39,6 +39,7 @@ import {
   MapPin,
   Activity,
   ShieldCheck,
+  Trash2,
 } from 'lucide-react';
 
 export default function AdminWeddingInvitationsPage() {
@@ -51,6 +52,7 @@ export default function AdminWeddingInvitationsPage() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [creatingSample, setCreatingSample] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Inspection Drawer/Modal
   const [selectedInquiry, setSelectedInquiry] = useState<WeddingInquiryRecord | null>(null);
@@ -132,6 +134,37 @@ export default function AdminWeddingInvitationsPage() {
       }
     } catch {
       fetchInquiries();
+    }
+  };
+
+  // Permanently delete inquiry
+  const handleDeleteInquiry = async (id: string, name?: string) => {
+    const confirmMsg = name
+      ? `Are you sure you want to permanently delete the inquiry for "${name}"?`
+      : 'Are you sure you want to permanently delete this wedding inquiry?';
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeletingId(id);
+    // Optimistic UI update
+    setInquiries((prev) => prev.filter((i) => i.id !== id && i.inquiry_id !== id));
+    if (selectedInquiry?.id === id || selectedInquiry?.inquiry_id === id) {
+      setSelectedInquiry(null);
+    }
+
+    try {
+      const res = await weddingInquiryService.deleteInquiry(id);
+      if (res.success) {
+        showToast('Wedding inquiry permanently deleted');
+        fetchInquiries();
+      } else {
+        showToast(res.error || 'Failed to delete inquiry');
+        fetchInquiries();
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Error deleting inquiry');
+      fetchInquiries();
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -646,6 +679,17 @@ export default function AdminWeddingInvitationsPage() {
                       >
                         <Heart size={14} className={inq.is_followed ? 'fill-rose-500 text-rose-500' : ''} />
                       </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteInquiry(inq.id, inq.customer_name);
+                        }}
+                        disabled={deletingId === inq.id}
+                        className="p-1.5 rounded-xl border border-slate-200 bg-white text-slate-300 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-all"
+                        title="Delete Lead"
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </div>
 
@@ -899,12 +943,20 @@ export default function AdminWeddingInvitationsPage() {
                         {getStatusBadge(inq.status)}
                       </td>
                       <td className="py-4 px-5 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => setSelectedInquiry(inq)}
                             className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition-colors"
                           >
                             Details
+                          </button>
+                          <button
+                            onClick={() => handleDeleteInquiry(inq.id, inq.customer_name)}
+                            disabled={deletingId === inq.id}
+                            className="p-1.5 rounded-xl border border-slate-200 bg-white text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-all"
+                            title="Delete Lead"
+                          >
+                            <Trash2 size={13} />
                           </button>
                         </div>
                       </td>
@@ -951,21 +1003,38 @@ export default function AdminWeddingInvitationsPage() {
                   </p>
                 </div>
 
-                {/* Follow Lead Button */}
-                <button
-                  onClick={() => handleToggleFollow(selectedInquiry.id)}
-                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black transition-all shadow-sm active:scale-95 border flex-shrink-0 ${
-                    selectedInquiry.is_followed
-                      ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 shadow-rose-100'
-                      : 'bg-white border-slate-200 text-slate-700 hover:border-rose-300 hover:text-rose-600'
-                  }`}
-                >
-                  <Heart
-                    size={15}
-                    className={selectedInquiry.is_followed ? 'fill-rose-500 text-rose-500 animate-pulse' : 'text-slate-400'}
-                  />
-                  <span>{selectedInquiry.is_followed ? 'Following Lead' : 'Follow Lead'}</span>
-                </button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {/* Follow Lead Button */}
+                  <button
+                    onClick={() => handleToggleFollow(selectedInquiry.id)}
+                    className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black transition-all shadow-sm active:scale-95 border ${
+                      selectedInquiry.is_followed
+                        ? 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 shadow-rose-100'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-rose-300 hover:text-rose-600'
+                    }`}
+                  >
+                    <Heart
+                      size={15}
+                      className={selectedInquiry.is_followed ? 'fill-rose-500 text-rose-500 animate-pulse' : 'text-slate-400'}
+                    />
+                    <span>{selectedInquiry.is_followed ? 'Following Lead' : 'Follow Lead'}</span>
+                  </button>
+
+                  {/* Delete Lead Button */}
+                  <button
+                    onClick={() => handleDeleteInquiry(selectedInquiry.id, selectedInquiry.customer_name)}
+                    disabled={deletingId === selectedInquiry.id}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 border border-rose-200 shadow-xs active:scale-95 transition-all disabled:opacity-50"
+                    title="Delete Inquiry Permanently"
+                  >
+                    {deletingId === selectedInquiry.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={14} />
+                    )}
+                    <span>Delete</span>
+                  </button>
+                </div>
               </div>
 
               {selectedInquiry.is_followed && selectedInquiry.followed_by && (
@@ -1199,6 +1268,27 @@ export default function AdminWeddingInvitationsPage() {
                   </button>
                 </div>
               </form>
+            </div>
+
+            {/* Danger Zone: Delete Inquiry */}
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div>
+                <h5 className="text-xs font-bold text-slate-700">Delete Inquiry</h5>
+                <p className="text-[11px] text-slate-400">Permanently remove this inquiry from database.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleDeleteInquiry(selectedInquiry.id, selectedInquiry.customer_name)}
+                disabled={deletingId === selectedInquiry.id}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 border border-rose-200 transition-all shadow-xs disabled:opacity-50"
+              >
+                {deletingId === selectedInquiry.id ? (
+                  <Loader2 size={13} className="animate-spin" />
+                ) : (
+                  <Trash2 size={13} />
+                )}
+                Delete this Inquiry
+              </button>
             </div>
           </div>
         </div>

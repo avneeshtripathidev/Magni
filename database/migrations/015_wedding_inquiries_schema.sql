@@ -97,7 +97,6 @@ BEGIN
   END IF;
 END $$;
 
--- Grants
 GRANT ALL ON TABLE public.wedding_inquiries TO postgres, service_role;
 GRANT SELECT, INSERT ON TABLE public.wedding_inquiries TO anon;
 GRANT SELECT, UPDATE, INSERT ON TABLE public.wedding_inquiries TO authenticated;
