@@ -115,6 +115,9 @@ export default async function ArtistLayout({ children, params }) {
     ? (data.alias || data.name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
     : (id || '').toLowerCase();
 
+  const artistUrl = `https://www.magnevents.in/artist/${primarySlug || id}`;
+  const priceMin = (data?.price_min && Number(data.price_min) > 0) ? String(data.price_min) : "5999";
+
   const schemas = [
     {
       "@context": "https://schema.org",
@@ -123,22 +126,39 @@ export default async function ArtistLayout({ children, params }) {
       "description": bio,
       "image": image,
       "jobTitle": data?.category || "Live Performer",
-      "url": `https://www.magnevents.in/artist/${primarySlug || id}`,
+      "url": artistUrl,
       "address": {
         "@type": "PostalAddress",
         "addressLocality": data?.city || "Delhi NCR",
         "addressCountry": "IN"
-      },
-      ...(hasReviews ? {
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": rating.toFixed(1),
-          "reviewCount": reviewCount,
-          "bestRating": "5",
-          "worstRating": "1"
-        }
-      } : {})
+      }
     },
+    ...(hasReviews ? [{
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": `${name} - Live Performance & Event Booking`,
+      "description": bio,
+      "image": image,
+      "category": data?.category || "Live Entertainment",
+      "brand": {
+        "@type": "Brand",
+        "name": name
+      },
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "INR",
+        "price": priceMin,
+        "availability": "https://schema.org/InStock",
+        "url": artistUrl
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": rating.toFixed(1),
+        "reviewCount": reviewCount,
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    }] : []),
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
@@ -159,7 +179,7 @@ export default async function ArtistLayout({ children, params }) {
           "@type": "ListItem",
           "position": 3,
           "name": name,
-          "item": `https://www.magnevents.in/artist/${primarySlug || id}`
+          "item": artistUrl
         }
       ]
     }

@@ -227,11 +227,6 @@ export default function RootLayout({ children }) {
                 "opens": "09:00",
                 "closes": "23:00"
               },
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "reviewCount": "350"
-              },
               "contactPoint": [
                 {
                   "@type": "ContactPoint",
