@@ -21,11 +21,21 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, rgba(107, 29, 47, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 50% 70%, rgba(212, 175, 55, 0.06) 0%, transparent 60%),
-    linear-gradient(180deg, #120E10 0%, #1A1417 50%, #100C0E 100%);
+  background-color: #120E10;
+  background-image: 
+    /* 1. Rose Stone fine dot grid */
+    radial-gradient(rgba(216, 196, 183, 0.07) 1.2px, transparent 1.2px),
+    /* 2. Deep Velvet Wine Red / Maroon lighting on Right */
+    radial-gradient(ellipse 75% 70% at 88% 28%, rgba(126, 48, 68, 0.45) 0%, rgba(66, 18, 30, 0.22) 45%, transparent 75%),
+    /* 3. Center Golden Amber stage warm highlight */
+    radial-gradient(circle at 68% 36%, rgba(212, 175, 55, 0.12) 0%, transparent 55%),
+    /* 4. Left-side pure obsidian black soft fade */
+    radial-gradient(ellipse 65% 70% at 15% 35%, rgba(12, 10, 14, 0.88) 0%, transparent 80%),
+    /* 5. Smooth horizontal black-to-maroon fade */
+    linear-gradient(90deg, rgba(14, 11, 13, 0.96) 0%, rgba(20, 15, 18, 0.88) 35%, rgba(65, 20, 32, 0.45) 75%, rgba(126, 48, 68, 0.35) 100%),
+    /* 6. Base depth */
+    linear-gradient(180deg, #120E10 0%, #171114 50%, #100C0E 100%);
+  background-size: 26px 26px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   pointer-events: none;
   z-index: 0;
 }
@@ -95,11 +105,11 @@
 
 .wedding-hero-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 40px;
-  align-items: center;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 36px;
+  align-items: start;
   text-align: left;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .wedding-hero-actions {
@@ -155,99 +165,19 @@
   border-color: #D4AF37;
 }
 
-/* HERO MOCKUP CARD */
-.wedding-hero-mockup-wrapper {
+/* HERO LUXURY BOOKING CARD */
+.wedding-hero-booking-card {
   position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-.wedding-hero-phone-mockup {
-  position: relative;
-  width: 300px;
-  background: #1C171A;
-  border: 2px solid rgba(212, 175, 55, 0.45);
-  border-radius: 36px;
-  padding: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.2);
-  overflow: hidden;
-}
-
-.wedding-mockup-screen {
-  background: linear-gradient(160deg, #2A1720 0%, #150F13 100%);
-  border-radius: 24px;
-  padding: 24px 18px;
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  text-align: center;
-  position: relative;
-}
-
-.wedding-mockup-crest {
-  width: 52px;
-  height: 52px;
-  margin: 0 auto 12px;
-  background: rgba(212, 175, 55, 0.15);
-  border: 1px solid #D4AF37;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: #D4AF37;
-}
-
-.wedding-mockup-names {
-  font-family: var(--font-display, "Playfair Display", Georgia, serif);
-  font-size: 1.4rem;
-  color: #FAF7F2;
-  margin: 8px 0 4px;
-}
-
-.wedding-mockup-date {
-  font-size: 0.82rem;
-  color: #D4AF37;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  font-weight: 600;
-  margin-bottom: 14px;
-}
-
-.wedding-mockup-btn {
-  display: block;
-  background: #D4AF37;
-  color: #120E10;
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 8px;
-  border-radius: 8px;
-  margin-top: 14px;
-  text-decoration: none;
-}
-
-.wedding-hero-floating-pill {
-  position: absolute;
-  background: rgba(26, 20, 23, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  backdrop-filter: blur(10px);
-  padding: 8px 14px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #FAF7F2;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-}
-
-.wedding-floating-top-right {
-  top: 15px;
-  right: -15px;
-}
-
-.wedding-floating-bottom-left {
-  bottom: 25px;
-  left: -20px;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, rgba(34, 25, 30, 0.94) 0%, rgba(20, 15, 18, 0.98) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.45);
+  border-radius: 22px;
+  padding: 24px 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(212, 175, 55, 0.15);
+  backdrop-filter: blur(16px);
+  box-sizing: border-box;
 }
 
 /* CATEGORIES FILTER PILLS */
