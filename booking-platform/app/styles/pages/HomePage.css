@@ -39,10 +39,10 @@
     linear-gradient(90deg, rgba(12, 10, 14, 0.98) 0%, rgba(18, 15, 20, 0.92) 35%, rgba(55, 18, 28, 0.65) 70%, rgba(126, 48, 68, 0.55) 100%),
     /* 6. Celebratory concert gold confetti texture */
     url('/posters/dj_concert_confetti_bg.jpg') !important;
-  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, cover !important;
+  background-size: 24px 24px, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% auto !important;
   background-position: 0 0, center, center, center, center, center top !important;
   background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat-y !important;
-  background-attachment: scroll, scroll, scroll, scroll, scroll, fixed !important;
+  background-attachment: scroll !important;
   color: var(--hp-ink);
   overflow-x: hidden;
   position: relative;
