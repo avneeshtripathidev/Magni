@@ -11,7 +11,10 @@ import '@/app/styles/pages/PricingPage.css'
 export default function PricingPage() {
   const [plans, setPlans] = useState(PRICING_PLANS);
   const [loading, setLoading] = useState(true);
-  const [activePlanIndex, setActivePlanIndex] = useState(0);
+  const [activePlanIndex, setActivePlanIndex] = useState(() => {
+    const popIdx = PRICING_PLANS.findIndex(p => p.popular);
+    return popIdx >= 0 ? popIdx : 1;
+  });
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -35,6 +38,10 @@ export default function PricingPage() {
             popular: p.featured || false
           }));
           setPlans(formattedPlans);
+          const popIdx = formattedPlans.findIndex(p => p.popular);
+          if (popIdx >= 0) {
+            setActivePlanIndex(popIdx);
+          }
         }
       } catch (err) {
         console.error('Error fetching pricing plans:', err);
@@ -46,12 +53,59 @@ export default function PricingPage() {
     fetchPlans();
   }, []);
 
+  // Center the Most Popular plan on mount for mobile viewports
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const centerPopularCard = () => {
+      if (window.innerWidth > 768) return;
+      const popIdx = plans.findIndex(p => p.popular);
+      const targetIdx = popIdx >= 0 ? popIdx : 1;
+      const cards = container.querySelectorAll('.pricing-card');
+      const targetCard = cards[targetIdx] || container.querySelector('.pricing-card.is-popular');
+      if (targetCard) {
+        const cardCenter = targetCard.offsetLeft + (targetCard.offsetWidth / 2);
+        const targetScrollLeft = cardCenter - (container.clientWidth / 2);
+        container.scrollLeft = targetScrollLeft;
+        setActivePlanIndex(targetIdx);
+      }
+    };
+
+    centerPopularCard();
+    const t1 = setTimeout(centerPopularCard, 80);
+    const t2 = setTimeout(centerPopularCard, 250);
+    const t3 = setTimeout(centerPopularCard, 500);
+
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        centerPopularCard();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [plans, loading]);
+
   const scrollToCard = useCallback((index) => {
     setActivePlanIndex(index);
     if (!scrollRef.current) return;
-    const cards = scrollRef.current.querySelectorAll('.pricing-card');
+    const container = scrollRef.current;
+    const cards = container.querySelectorAll('.pricing-card');
     if (cards[index]) {
-      cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      const card = cards[index];
+      const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+      const targetScrollLeft = cardCenter - (container.clientWidth / 2);
+      container.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth'
+      });
     }
   }, []);
 
@@ -134,6 +188,7 @@ export default function PricingPage() {
                 key={plan.name}
                 plan={plan}
                 index={i}
+                isActive={activePlanIndex === i}
               />
             ))
           )}
@@ -149,7 +204,7 @@ export default function PricingPage() {
                   key={`dot-${p.name}`}
                   type="button"
                   aria-label={`Go to ${p.name}`}
-                  className={`pricing-dot ${activePlanIndex === idx ? 'is-active' : ''}`}
+                  className={`pricing-dot ${activePlanIndex === idx ? 'is-active' : ''} ${p.popular ? 'is-popular-dot' : ''}`}
                   onClick={() => scrollToCard(idx)}
                 />
               ))}

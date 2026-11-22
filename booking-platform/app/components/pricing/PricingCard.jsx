@@ -1,13 +1,13 @@
 "use client"
 import React from 'react'
 
-function PricingCard({ plan, index }) {
+function PricingCard({ plan, index, isActive }) {
   const isPopular = Boolean(plan.popular);
 
   return (
     <div
       id={typeof index === 'number' ? `pricing-plan-${index}` : undefined}
-      className={`pricing-card ${isPopular ? 'is-popular' : ''}`}
+      className={`pricing-card ${isPopular ? 'is-popular' : ''} ${isActive ? 'is-active-card' : ''}`}
     >
       {isPopular && (
         <div className="popular-badge">

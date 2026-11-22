@@ -388,7 +388,7 @@
 
 @media (max-width: 768px) {
   .pricing-pg {
-    padding-top: 86px;
+    padding-top: 10px; /* Removed heavy 86px padding so content begins directly below header */
     padding-bottom: 60px;
     padding-left: 0;
     padding-right: 0;
@@ -407,8 +407,8 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 6px 16px 12px;
-    margin: 0 auto 8px;
+    padding: 6px 14px 10px;
+    margin: 0 auto 4px;
     max-width: 440px;
     overflow-x: auto;
     scrollbar-width: none;
@@ -458,8 +458,9 @@
     line-height: 1;
   }
 
-  /* Horizontal Snap-Scroll Pricing Track */
+  /* Horizontal Snap-Scroll Pricing Track - Centered Popular Card with Peek Sides */
   .pricing-grid {
+    --pricing-card-w: clamp(270px, 78vw, 320px);
     display: flex;
     flex-direction: row;
     grid-template-columns: none;
@@ -468,11 +469,13 @@
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    gap: 16px;
-    padding: 14px 20px 24px 20px;
-    margin-top: 4px;
-    margin-bottom: 8px;
+    gap: 14px;
+    padding: 12px calc((100vw - var(--pricing-card-w)) / 2) 22px !important;
+    scroll-padding: 0 calc((100vw - var(--pricing-card-w)) / 2) !important;
+    margin-top: 2px;
+    margin-bottom: 6px;
     scrollbar-width: none;
+    box-sizing: border-box;
   }
 
   .pricing-grid::-webkit-scrollbar {
@@ -481,15 +484,21 @@
 
   /* Compact & Comfortable Horizontal Cards */
   .pricing-card {
-    flex: 0 0 88%;
-    max-width: 360px;
-    min-width: 295px;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
-    padding: 28px 22px 24px 22px;
-    border-radius: 24px;
+    flex: 0 0 clamp(270px, 78vw, 320px) !important;
+    width: clamp(270px, 78vw, 320px) !important;
+    min-width: clamp(270px, 78vw, 320px) !important;
+    max-width: 320px !important;
+    scroll-snap-align: center !important;
+    scroll-snap-stop: normal !important;
+    padding: 26px 20px 22px 20px !important;
+    border-radius: 22px !important;
     align-self: stretch;
+    box-sizing: border-box !important;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.28s ease,
+                opacity 0.28s ease !important;
   }
 
   .pricing-card:hover {
@@ -497,8 +506,13 @@
   }
 
   .pricing-card.is-popular {
+    transform: scale(1.02);
     border-color: rgba(232, 185, 67, 0.65);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 30px rgba(232, 185, 67, 0.18);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(232, 185, 67, 0.22);
+  }
+
+  .pricing-card:not(.is-active-card):not(.is-popular) {
+    opacity: 0.85;
   }
 
   .popular-badge {
@@ -591,5 +605,10 @@
     width: 24px;
     background: var(--color-marigold, #E8B943);
     box-shadow: 0 0 12px rgba(232, 185, 67, 0.6);
+  }
+
+  .pricing-dot.is-popular-dot.is-active {
+    background: linear-gradient(135deg, #E45F60 0%, #E8B943 100%);
+    box-shadow: 0 0 14px rgba(228, 95, 96, 0.6);
   }
 }
