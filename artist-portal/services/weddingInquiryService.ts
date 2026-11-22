@@ -1,11 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Connect to main production Supabase where bookings and wedding inquiries reside
+// Connect to main production Supabase where wedding inquiries reside
 const MAIN_DB_URL = 'https://ecwaqfsjajeidhslybdi.supabase.co';
 const MAIN_DB_KEY =
   process.env.MAIN_SUPABASE_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjd2FxZnNqYWplaWRoc2x5YmRpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjE3ODUyNiwiZXhwIjoyMDkxNzU0NTI2fQ.Pcanl1WQDZgXXXbpKdEqnK5xBQSBqFdWnegdVo9bV9Q';
+
+export const WEDDING_FORM_ID = '883d3cf1-e401-4bdb-9469-032cbd26c7d9';
 
 function getMainSupabase() {
   const url = process.env.MAIN_SUPABASE_URL || MAIN_DB_URL;
@@ -104,57 +106,47 @@ export const weddingInquiryService = {
         return result;
       }
     } catch (err) {
-      console.warn('[WeddingService] Error reading wedding_inquiries, checking bookings fallback:', err);
+      console.warn('[WeddingService] Error reading wedding_inquiries, checking custom_form_responses:', err);
     }
 
-    // 2. Fallback: Read from bookings table
+    // 2. Dedicated Storage: Read from public.custom_form_responses (Wedding Studio Inquiries)
+    // NOTE: We NEVER read or query public.bookings to guarantee 100% isolation from Performer Admin Portal
     try {
-      const { data: bData, error: bErr } = await supabase
-        .from('bookings')
+      const { data: cData, error: cErr } = await supabase
+        .from('custom_form_responses')
         .select('*')
-        .or('booking_source.eq.wedding_invitation_service,event_type.ilike.%Wedding Invitation%,source_form.eq.Wedding Invitation Studio')
-        .order('created_at', { ascending: false });
+        .eq('form_id', WEDDING_FORM_ID);
 
-      if (bErr || !bData) return [];
+      if (cErr || !cData) return [];
 
-      const mapped: WeddingInquiryRecord[] = bData.map((b: any) => {
-        let parsed: any = {};
-        try {
-          if (b.notes && b.notes.startsWith('{')) {
-            parsed = JSON.parse(b.notes);
-          }
-        } catch (e) {}
-
-        const statusMap: Record<string, any> = {
-          pending: 'NEW',
-          confirmed: 'COMPLETED',
-          completed: 'COMPLETED',
-          cancelled: 'CANCELLED',
-          rejected: 'CANCELLED',
-        };
-
+      const mapped: WeddingInquiryRecord[] = cData.map((row: any) => {
+        const resp = row.response_data || {};
         return {
-          id: b.id,
-          inquiry_id: parsed.inquiry_id || b.reference_code || `WED-${b.id.slice(0, 8)}`,
-          customer_name: b.client_name || 'Wedding Host',
-          phone: b.client_phone || '',
-          email: b.client_email || undefined,
-          whatsapp: parsed.whatsapp || b.client_phone || '',
-          wedding_date: b.event_date || undefined,
-          invitation_type: parsed.invitation_type || b.event_type || 'Digital Wedding Card',
-          design_category: parsed.design_category || 'Royal Wedding Invitations',
-          budget: parsed.budget || (b.budget ? `₹${b.budget}` : 'Standard Package'),
-          requirements: parsed.requirements || b.notes || '',
-          reference_url: parsed.reference_url || undefined,
-          status: (parsed.status || statusMap[b.status] || 'NEW') as any,
-          assigned_artist_id: b.artist_id || undefined,
-          assigned_artist_name: b.custom_artist_name || undefined,
-          admin_notes: parsed.admin_notes || undefined,
-          artist_notes: parsed.artist_notes || undefined,
-          created_at: b.created_at,
-          updated_at: b.updated_at || b.created_at,
+          id: row.id,
+          inquiry_id: resp.inquiry_id || `WED-${row.id.slice(0, 8)}`,
+          customer_name: resp.customer_name || 'Wedding Host',
+          phone: resp.phone || '',
+          email: resp.email || row.client_email || undefined,
+          whatsapp: resp.whatsapp || resp.phone || '',
+          wedding_date: resp.wedding_date || undefined,
+          invitation_type: resp.invitation_type || 'Digital Wedding Card',
+          design_category: resp.design_category || 'Royal Wedding Invitations',
+          budget: resp.budget || 'Standard Package',
+          requirements: resp.requirements || '',
+          reference_url: resp.reference_url || undefined,
+          reference_file: resp.reference_file || undefined,
+          status: (resp.status || 'NEW') as any,
+          assigned_artist_id: resp.assigned_artist_id || undefined,
+          assigned_artist_name: resp.assigned_artist_name || undefined,
+          admin_notes: resp.admin_notes || undefined,
+          artist_notes: resp.artist_notes || undefined,
+          created_at: resp.created_at || row.submitted_at || new Date().toISOString(),
+          updated_at: resp.updated_at || row.submitted_at || new Date().toISOString(),
         };
       });
+
+      // Sort newest first
+      mapped.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       let filtered = mapped;
       if (params?.status && params.status !== 'all') {
@@ -183,7 +175,7 @@ export const weddingInquiryService = {
 
       return filtered;
     } catch (fbErr) {
-      console.error('[WeddingService] Fallback read error:', fbErr);
+      console.error('[WeddingService] Custom form responses read error:', fbErr);
       return [];
     }
   },
@@ -228,26 +220,24 @@ export const weddingInquiryService = {
       }
     } catch {}
 
-    // 2. Try bookings fallback
+    // 2. Update custom_form_responses
     try {
-      const bookingStatus = status === 'COMPLETED' ? 'confirmed' : status === 'CANCELLED' ? 'cancelled' : 'pending';
-      const { data: bRecord } = await supabase.from('bookings').select('*').eq('id', id).single();
-      if (bRecord) {
-        let notesObj: any = {};
-        try {
-          if (bRecord.notes && bRecord.notes.startsWith('{')) {
-            notesObj = JSON.parse(bRecord.notes);
-          }
-        } catch {}
-        notesObj.status = status;
+      const { data: existing } = await supabase
+        .from('custom_form_responses')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (existing) {
+        const updatedData = {
+          ...existing.response_data,
+          status,
+          updated_at: new Date().toISOString()
+        };
 
         const { data, error } = await supabase
-          .from('bookings')
-          .update({
-            status: bookingStatus,
-            notes: JSON.stringify(notesObj, null, 2),
-            updated_at: new Date().toISOString(),
-          })
+          .from('custom_form_responses')
+          .update({ response_data: updatedData })
           .eq('id', id)
           .select()
           .single();
@@ -295,14 +285,26 @@ export const weddingInquiryService = {
     } catch {}
 
     try {
-      await supabase
-        .from('bookings')
-        .update({
-          artist_id: artistId,
-          custom_artist_name: artistName,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
+      const { data: existing } = await supabase
+        .from('custom_form_responses')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (existing) {
+        const updatedData = {
+          ...existing.response_data,
+          assigned_artist_id: artistId,
+          assigned_artist_name: artistName,
+          status: 'DESIGNING',
+          updated_at: new Date().toISOString()
+        };
+
+        await supabase
+          .from('custom_form_responses')
+          .update({ response_data: updatedData })
+          .eq('id', id);
+      }
     } catch {}
 
     return { success: true };
@@ -348,6 +350,29 @@ export const weddingInquiryService = {
             updated_at: new Date().toISOString(),
           })
           .or(`id.eq.${id},inquiry_id.eq.${id}`);
+      }
+    } catch {}
+
+    try {
+      const { data: existing } = await supabase
+        .from('custom_form_responses')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (existing) {
+        const field = author === 'admin' ? 'admin_notes' : 'artist_notes';
+        const currentNotes = existing.response_data?.[field] || '';
+        const updatedData = {
+          ...existing.response_data,
+          [field]: `${formattedNote}${currentNotes}`,
+          updated_at: new Date().toISOString()
+        };
+
+        await supabase
+          .from('custom_form_responses')
+          .update({ response_data: updatedData })
+          .eq('id', id);
       }
     } catch {}
 

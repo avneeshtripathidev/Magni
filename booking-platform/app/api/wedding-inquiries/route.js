@@ -175,6 +175,8 @@ export async function POST(req) {
 
     let insertedRecord = null;
 
+    const WEDDING_FORM_ID = '883d3cf1-e401-4bdb-9469-032cbd26c7d9';
+
     // 2. Try inserting into public.wedding_inquiries first
     try {
       const { data, error } = await supabase
@@ -186,56 +188,34 @@ export async function POST(req) {
       if (!error && data) {
         insertedRecord = data;
       } else if (error) {
-        console.warn('[WeddingInquiriesAPI] Primary table insert error, trying fallback:', error.message);
+        console.warn('[WeddingInquiriesAPI] Primary table insert error, trying custom_form_responses:', error.message);
       }
     } catch (insertErr) {
       console.warn('[WeddingInquiriesAPI] Direct table error:', insertErr);
     }
 
-    // 3. Fallback to public.bookings if wedding_inquiries table doesn't exist yet in Supabase
+    // 3. Dedicated storage: insert into public.custom_form_responses under Wedding Studio Inquiries
+    // NOTE: We NEVER insert into public.bookings so wedding card requests NEVER leak into the Performer Admin Portal!
     if (!insertedRecord) {
       try {
-        const fallbackBooking = {
-          client_name: customer_name,
-          client_phone: rawPhone,
-          client_email: email || 'inquiry@magnevents.in',
-          event_type: `Wedding Invitation - ${invitation_type}`,
-          event_date: newRecord.wedding_date || new Date().toISOString().split('T')[0],
-          venue: 'Digital / Pan-India Delivery',
-          city: 'Pan-India',
-          state: 'India',
-          budget: parseBudgetNumber(budget),
-          status: 'pending',
-          booking_source: 'wedding_invitation_service',
-          reference_code: inquiry_id,
-          source_form: 'Wedding Invitation Studio',
-          notes: JSON.stringify({
-            inquiry_id,
-            invitation_type,
-            design_category,
-            requirements: newRecord.requirements,
-            reference_url,
-            whatsapp,
-            budget,
-            metadata: newRecord.metadata,
-          }, null, 2)
-        };
-
-        const { data: bData, error: bErr } = await supabase
-          .from('bookings')
-          .insert([fallbackBooking])
+        const { data: resp, error: rErr } = await supabase
+          .from('custom_form_responses')
+          .insert([{
+            form_id: WEDDING_FORM_ID,
+            client_email: email || 'inquiry@magnevents.in',
+            response_data: newRecord
+          }])
           .select()
           .single();
 
-        if (!bErr && bData) {
-          insertedRecord = { ...newRecord, id: bData.id };
+        if (!rErr && resp) {
+          insertedRecord = { ...newRecord, id: resp.id };
         } else {
-          console.warn('[WeddingInquiriesAPI] Fallback booking error:', bErr?.message);
-          // Still assign id so user gets success confirmation
+          console.warn('[WeddingInquiriesAPI] custom_form_responses fallback error:', rErr?.message);
           insertedRecord = { ...newRecord, id: inquiry_id };
         }
       } catch (fbErr) {
-        console.error('[WeddingInquiriesAPI] Fallback execution error:', fbErr);
+        console.error('[WeddingInquiriesAPI] Storage execution error:', fbErr);
         insertedRecord = { ...newRecord, id: inquiry_id };
       }
     }
