@@ -17,7 +17,8 @@ import {
   IdCard,
   UserPlus,
   Lock,
-  MousePointerClick
+  MousePointerClick,
+  Send
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -46,6 +47,12 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
           name: 'Artist Registration',
           href: '/admin/register-artist',
           icon: UserPlus,
+        },
+        {
+          name: 'Artist Onboard',
+          href: '/admin/onboarding',
+          icon: Send,
+          badge: 18,
         },
         {
           name: 'Verification Queue',
