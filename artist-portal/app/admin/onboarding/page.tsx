@@ -366,10 +366,22 @@ export default function AdminArtistOnboardingPage() {
                       {artist.bio}
                     </p>
 
-                    {/* Email dispatched badge */}
-                    <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50/70 border border-emerald-100 px-2.5 py-1.5 rounded-lg">
-                      <Mail className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Email Dispatched (24 Nov)</span>
+                    {/* Email dispatched badge & Portal Link */}
+                    <div className="mt-3 flex items-center justify-between gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50/70 border border-emerald-100 px-2.5 py-1.5 rounded-lg">
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Email Sent</span>
+                      </div>
+                      <a
+                        href="https://artists.magnevents.in/register"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-amber-700 hover:text-amber-800 underline font-semibold flex items-center gap-1"
+                        title="Open Portal Link"
+                      >
+                        <span>Portal</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
                     </div>
                   </div>
 
@@ -378,11 +390,13 @@ export default function AdminArtistOnboardingPage() {
                     <div className="flex items-center gap-1.5">
                       {/* WhatsApp Button */}
                       <a
-                        href={`https://wa.me/91${artist.phone}?text=Hi%20${encodeURIComponent(artist.name)}!%20This%20is%20the%20Magnevents%20Talent%20Team.%20We%20sent%20you%20an%20official%20Artist%20Onboarding%20invitation%20email%20to%20complete%20your%20verified%20profile%20on%20our%20portal.`}
+                        href={`https://wa.me/91${artist.phone}?text=${encodeURIComponent(
+                          `Hi ${artist.name}! This is the Magnevents Talent Team. We sent you an official Artist Onboarding invitation email. Please complete your verified profile on our portal here: https://artists.magnevents.in/register`
+                        )}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-sm"
-                        title="Chat on WhatsApp"
+                        title="Chat on WhatsApp with Portal Link"
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
                         <span>WhatsApp</span>
@@ -507,11 +521,13 @@ export default function AdminArtistOnboardingPage() {
                       <td className="py-3.5 px-4 text-right">
                         <div className="inline-flex items-center gap-1.5">
                           <a
-                            href={`https://wa.me/91${artist.phone}?text=Hi%20${encodeURIComponent(artist.name)}!%20This%20is%20Magnevents.%20Please%20check%20your%20email%20for%20your%20Artist%20Portal%20onboarding%20invitation.`}
+                            href={`https://wa.me/91${artist.phone}?text=${encodeURIComponent(
+                              `Hi ${artist.name}! This is the Magnevents Talent Team. Please complete your verified artist profile on our portal here: https://artists.magnevents.in/register`
+                            )}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
-                            title="WhatsApp Chat"
+                            title="Chat on WhatsApp with Portal Link"
                           >
                             <MessageCircle className="w-3.5 h-3.5" />
                           </a>
@@ -670,11 +686,11 @@ export default function AdminArtistOnboardingPage() {
                   </h4>
                   <div className="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200 text-xs text-emerald-900 space-y-2">
                     <p className="italic">
-                      &quot;Namaste {selectedArtist.name}! This is Avneesh from Magnevents Concierge. We approved your application for {selectedArtist.category} in {selectedArtist.homeCity}. We just emailed you your portal onboarding link. Could you complete your profile so we can start locking direct gigs for you?&quot;
+                      &quot;Namaste {selectedArtist.name}! This is Avneesh from Magnevents Concierge. We approved your application for {selectedArtist.category} in {selectedArtist.homeCity}! Please complete your verified artist profile here: https://artists.magnevents.in/register to start receiving direct event bookings.&quot;
                     </p>
                     <button
                       onClick={() => {
-                        const msg = `Namaste ${selectedArtist.name}! This is Avneesh from Magnevents Concierge. We approved your application for ${selectedArtist.category} in ${selectedArtist.homeCity}. We just emailed you your portal onboarding link. Could you complete your profile at https://artists.magnevents.in/register so we can start locking direct gigs for you?`;
+                        const msg = `Namaste ${selectedArtist.name}! This is Avneesh from Magnevents Concierge. We approved your application for ${selectedArtist.category} in ${selectedArtist.homeCity}! Please complete your verified artist profile here: https://artists.magnevents.in/register to start receiving direct event bookings.`;
                         copyToClipboard(msg, 'wp_msg');
                       }}
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800"
@@ -690,7 +706,9 @@ export default function AdminArtistOnboardingPage() {
             {/* Drawer Bottom Actions */}
             <div className="p-6 bg-slate-50 border-t border-slate-200 flex items-center gap-3">
               <a
-                href={`https://wa.me/91${selectedArtist.phone}?text=Namaste%20${encodeURIComponent(selectedArtist.name)}!%20This%20is%20Avneesh%20from%20Magnevents%20Concierge.%20We%20approved%20your%20profile%20for%20${encodeURIComponent(selectedArtist.category)}%20in%20${encodeURIComponent(selectedArtist.homeCity)}.%20Please%20complete%20your%20listing%20at%20https://artists.magnevents.in/register%20to%20go%20live.`}
+                href={`https://wa.me/91${selectedArtist.phone}?text=${encodeURIComponent(
+                  `Namaste ${selectedArtist.name}! This is Avneesh from Magnevents Concierge. We approved your application for ${selectedArtist.category} in ${selectedArtist.homeCity}! Please complete your verified artist profile here: https://artists.magnevents.in/register to start receiving direct event bookings.`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
