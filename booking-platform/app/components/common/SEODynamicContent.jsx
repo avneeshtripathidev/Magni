@@ -107,11 +107,13 @@ export default function SEODynamicContent({ category, city, overviewHtml, faqs, 
             </div>
 
             {/* Guide Narrative (With Clean Magazine Layout) */}
-            <div className={`seo-overview-body-wrap ${isOverviewExpanded ? 'is-expanded' : ''}`}>
-              <div 
-                className="seo-overview-body"
-                dangerouslySetInnerHTML={{ __html: overviewHtml }} 
-              />
+            <div className="seo-overview-body-container">
+              <div className={`seo-overview-body-wrap ${isOverviewExpanded ? 'is-expanded' : ''}`}>
+                <div 
+                  className="seo-overview-body"
+                  dangerouslySetInnerHTML={{ __html: overviewHtml }} 
+                />
+              </div>
               <button
                 type="button"
                 onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
