@@ -74,31 +74,8 @@ export async function enqueueNotificationJobs({
     max_retries: 5,
   });
 
-  // 2. Client Confirmation Email Job (if valid email is provided)
-  const clientEmail = (data.email || '').trim();
-  const isValidClientEmail = clientEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail) && !clientEmail.includes('example.com') && !clientEmail.includes('test.com');
-  
-  if (isValidClientEmail) {
-    jobs.push({
-      booking_id: bookingId,
-      reference_code: referenceCode,
-      channel: 'email_customer',
-      recipient: clientEmail,
-      subject: `Booking Request Received: ${referenceCode} | Magnevents`,
-      payload: {
-        clientName: data.name || 'Client',
-        referenceCode,
-        eventType: isRegister ? 'Artist Registration' : (data.eventType || 'Event Booking'),
-        date: data.date || 'TBD',
-        location: data.location || data.city || 'Delhi NCR / India',
-        budget: data.budget || 'Quote on Request',
-        selectedArtist: typeof data.selectedArtist === 'object' ? data.selectedArtist?.name : (data.selectedArtist || ''),
-      },
-      status: 'pending',
-      retry_count: 0,
-      max_retries: 3,
-    });
-  }
+  // 2. Client Confirmation Email Job permanently disabled per user request
+  // (No automatic confirmation emails will be enqueued or dispatched to clients)
 
   // Persist into notifications_outbox (DB + Email only)
   try {
@@ -256,26 +233,9 @@ export async function processOutboxJob({ supabase, job }) {
       } catch (logErr) {}
 
     } else if (job.channel === 'email_customer') {
-      const htmlBody = buildCustomerConfirmationHtml(job.payload);
-
-      await transporter.sendMail({
-        from: `"Magnevents Concierge" <${process.env.EMAIL_USER}>`,
-        to: job.recipient,
-        subject: job.subject,
-        html: htmlBody,
-      });
-
-      try {
-        await supabase.from('emails').insert([{
-          booking_id: job.booking_id,
-          recipient_email: job.recipient,
-          subject: job.subject,
-          body: htmlBody,
-          email_type: 'customer_confirmation',
-          status: 'sent',
-          sent_at: new Date().toISOString()
-        }]);
-      } catch (logErr) {}
+      // Automatic client confirmation emails permanently stopped per user request
+      console.log(`[OutboxProcessor] Skipping automatic reply email for job ${job.id}`);
+      return { success: true, channel: 'email_customer', skipped: true };
 
     } else if (job.channel === 'whatsapp_admin') {
       const { data, bookingId, isRegister, isCallRequest, isOffer, dbArtistInfo } = job.payload;
