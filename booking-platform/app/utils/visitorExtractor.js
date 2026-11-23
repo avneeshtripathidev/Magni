@@ -76,7 +76,7 @@ export function extractClientIp(req, clientProvidedIp = '') {
  * from Edge CDN headers or IP Geolocation lookup
  */
 export async function extractLocality(req, ip, clientLocation = null) {
-  const headers = req.headers;
+  const headers = req?.headers || new Headers();
 
   // 1. Check Vercel Edge Headers (0ms latency, zero API rate limit)
   const vercelCity = headers.get('x-vercel-ip-city');

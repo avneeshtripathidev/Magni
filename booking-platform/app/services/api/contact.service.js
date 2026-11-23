@@ -102,7 +102,7 @@ export const buildEmailTemplate = (data, isRegister, isCallRequest, dbArtistInfo
       row('Phone', data.phone, true, `tel:${data.phone}`) +
       (deviceDisplay ? row('Device', deviceDisplay) : '') +
       row('Category', data.category) +
-      row('City', data.city) +
+      row('City / Location', (data.city || data.location) ? `${data.city || data.location}${data.ipAddress ? ` (IP: ${data.ipAddress})` : ''}` : (data.detectedLocation ? `${data.detectedLocation} (via IP${data.ipAddress ? ': ' + data.ipAddress : ''})` : (data.ipAddress ? `IP: ${data.ipAddress}` : 'Flexible / Pan-India'))) +
       row('Price', data.price ? '₹' + data.price : 'N/A')
     );
     contentSections += buildSection('🎵 Portfolio & Socials', row('Portfolio', data.portfolio, true, data.portfolio));
@@ -136,7 +136,7 @@ export const buildEmailTemplate = (data, isRegister, isCallRequest, dbArtistInfo
     contentSections += buildSection('📅 Event Details', 
       row('Event Type', data.eventType) +
       row('Event Date', data.date) +
-      row('Event Location', data.location) +
+      row('Event Location', (data.location || data.city) ? `${data.location || data.city}${data.ipAddress ? ` (IP: ${data.ipAddress})` : ''}` : (data.detectedLocation ? `${data.detectedLocation} (via IP${data.ipAddress ? ': ' + data.ipAddress : ''})` : (data.ipAddress ? `IP: ${data.ipAddress}` : 'Flexible / TBD'))) +
       row('Requested Artist', artistNameVal) +
       row('Requested Type', data.artistType && data.artistType.length > 0 ? (Array.isArray(data.artistType) ? data.artistType.join(', ') : data.artistType) : '') +
       row('Budget', data.budget)

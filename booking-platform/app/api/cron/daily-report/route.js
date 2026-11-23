@@ -1,9 +1,29 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import nodemailer from 'nodemailer';
+import { extractLocality, isPrivateIp } from '@/app/utils/visitorExtractor.js';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
+
+function isGenericLocation(loc) {
+  if (!loc) return true;
+  const s = String(loc).trim().toLowerCase();
+  return (
+    s === '' ||
+    s === 'flexible / pan-india' ||
+    s === 'pan-india' ||
+    s === 'flexible' ||
+    s === 'india' ||
+    s === 'all cities' ||
+    s === 'not specified' ||
+    s === 'delhi ncr / tbd' ||
+    s === 'unknown' ||
+    s === 'n/a' ||
+    s === 'null' ||
+    s === 'undefined'
+  );
+}
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -138,19 +158,52 @@ export async function GET(req) {
       }
     }
 
-    // 4. Query all submissions for this calendar day in IST
-    const { data: rawBookings, error } = await supabase
-      .from('bookings')
-      .select('id, client_name, client_phone, client_email, event_type, event_date, venue, city, state, budget, booking_source, source_form, notes, status, created_at')
-      .gte('created_at', startOfTodayUTC.toISOString())
-      .lte('created_at', endOfTodayUTC.toISOString())
-      .order('created_at', { ascending: false });
+    // 4. Query all submissions for this calendar day in IST (including bookings and wedding inquiries)
+    const [bookingsRes, weddingRes] = await Promise.all([
+      supabase
+        .from('bookings')
+        .select('id, client_name, client_phone, client_email, event_type, event_date, venue, city, state, budget, booking_source, source_form, notes, status, created_at, detected_location, ip_address')
+        .gte('created_at', startOfTodayUTC.toISOString())
+        .lte('created_at', endOfTodayUTC.toISOString())
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('wedding_inquiries')
+        .select('id, inquiry_id, customer_name, phone, email, invitation_type, design_category, budget, wedding_date, location, ip, status, created_at')
+        .gte('created_at', startOfTodayUTC.toISOString())
+        .lte('created_at', endOfTodayUTC.toISOString())
+        .order('created_at', { ascending: false })
+    ]);
 
-    if (error) {
-      throw error;
+    if (bookingsRes.error) {
+      throw bookingsRes.error;
     }
 
-    const bookings = rawBookings || [];
+    const rawBookings = bookingsRes.data || [];
+    const weddingInquiries = weddingRes.data || [];
+
+    const bookings = [
+      ...rawBookings,
+      ...weddingInquiries.map((w) => ({
+        id: w.id || w.inquiry_id,
+        client_name: w.customer_name || 'Wedding Host',
+        client_phone: w.phone || '',
+        client_email: w.email || '',
+        event_type: `Wedding Inv: ${w.invitation_type || 'Digital Card'}`,
+        event_date: w.wedding_date,
+        venue: w.location || '',
+        city: w.location || '',
+        state: '',
+        budget: w.budget ? Number(String(w.budget).replace(/\D/g, '')) || 0 : 0,
+        booking_source: `Wedding Studio (${w.design_category || 'Royal Suite'})`,
+        source_form: 'Wedding Invitations Page',
+        notes: `Inquiry ID: ${w.inquiry_id}`,
+        status: w.status,
+        created_at: w.created_at,
+        detected_location: w.location || null,
+        ip_address: w.ip || null,
+      })),
+    ];
+
     const rawTotalCount = bookings.length;
 
     // 5. Deduplicate submissions by phone number / client identity (Count strictly as a single lead)
@@ -165,6 +218,17 @@ export async function GET(req) {
             ? `email:${b.client_email.toLowerCase().trim()}`
             : `id:${b.id}`);
 
+      // Detect user-entered location
+      const userCity = !isGenericLocation(b.city) ? String(b.city).trim() : '';
+      const userVenue = !isGenericLocation(b.venue) ? String(b.venue).trim() : '';
+      const userState = !isGenericLocation(b.state) ? String(b.state).trim() : '';
+      const userEntered = userCity || userVenue || userState || '';
+
+      // Detect IP location & IP address
+      const detectedIpLoc = !isGenericLocation(b.detected_location) ? String(b.detected_location).trim() : '';
+      const rawIp = (b.ip_address || b.ip || '').trim();
+      const cleanIp = rawIp && !isPrivateIp(rawIp) && rawIp !== 'unknown' ? rawIp : '';
+
       if (!leadMap.has(key)) {
         leadMap.set(key, {
           id: b.id,
@@ -175,8 +239,9 @@ export async function GET(req) {
           event_type: b.event_type || 'Live Performance',
           event_date: b.event_date,
           venue: b.venue || '',
-          city: b.city || 'Flexible / Pan-India',
-          state: b.state || '',
+          userEnteredLocation: userEntered,
+          detectedLocation: detectedIpLoc,
+          ipAddress: cleanIp,
           budget: Number(b.budget) || 0,
           booking_source: b.booking_source || b.source_form || 'Website Inquiry',
           created_at: b.created_at,
@@ -199,9 +264,19 @@ export async function GET(req) {
           lead.client_name = b.client_name;
         }
 
-        // Prefer specific city over generic "India" or "All Cities"
-        if ((!lead.city || lead.city === 'India' || lead.city === 'All Cities') && b.city && b.city !== 'India' && b.city !== 'All Cities') {
-          lead.city = b.city;
+        // Prefer user-entered location
+        if (!lead.userEnteredLocation && userEntered) {
+          lead.userEnteredLocation = userEntered;
+        }
+
+        // Prefer detected IP location
+        if (!lead.detectedLocation && detectedIpLoc) {
+          lead.detectedLocation = detectedIpLoc;
+        }
+
+        // Keep valid IP address
+        if (!lead.ipAddress && cleanIp) {
+          lead.ipAddress = cleanIp;
         }
 
         // Keep most descriptive event type
@@ -214,7 +289,37 @@ export async function GET(req) {
     const uniqueLeads = Array.from(leadMap.values());
     const uniqueCount = uniqueLeads.length;
 
-    // 6. Aggregate Analytics strictly on unique deduplicated leads
+    // 6. Resolve final display location for all unique leads (User-entered first, IP address fallback)
+    for (const lead of uniqueLeads) {
+      if (lead.userEnteredLocation) {
+        lead.finalLocation = lead.userEnteredLocation;
+        lead.isIpFallback = false;
+      } else if (lead.detectedLocation) {
+        lead.finalLocation = lead.detectedLocation;
+        lead.isIpFallback = true;
+      } else if (lead.ipAddress) {
+        // Fallback: Resolve location directly from IP address
+        try {
+          const locality = await extractLocality(null, lead.ipAddress);
+          if (locality && (locality.city || locality.region)) {
+            const parts = [locality.city, locality.region].filter(Boolean);
+            lead.finalLocation = parts.join(', ');
+            lead.isIpFallback = true;
+          } else {
+            lead.finalLocation = `IP: ${lead.ipAddress}`;
+            lead.isIpFallback = true;
+          }
+        } catch {
+          lead.finalLocation = `IP: ${lead.ipAddress}`;
+          lead.isIpFallback = true;
+        }
+      } else {
+        lead.finalLocation = 'Pan-India';
+        lead.isIpFallback = false;
+      }
+    }
+
+    // 7. Aggregate Analytics strictly on unique deduplicated leads
     let totalPipelineBudget = 0;
     const cityCounts = {};
     const categoryCounts = {};
@@ -224,8 +329,8 @@ export async function GET(req) {
         totalPipelineBudget += lead.budget;
       }
 
-      const city = (lead.city || 'Flexible / Pan-India').trim();
-      cityCounts[city] = (cityCounts[city] || 0) + 1;
+      const cityKey = (lead.finalLocation || 'Pan-India').split(',')[0].replace(/^IP:\s*/, '').trim();
+      cityCounts[cityKey] = (cityCounts[cityKey] || 0) + 1;
 
       const category = (lead.event_type || 'General Live Act').trim();
       categoryCounts[category] = (categoryCounts[category] || 0) + 1;
@@ -242,12 +347,14 @@ export async function GET(req) {
     const uniqueCitiesCount = Object.keys(cityCounts).length;
     const topActName = topCategories[0] ? topCategories[0][0] : 'Live Music';
 
-    // 7. Build Deduplicated Lead Rows for HTML Email
+    // 8. Build Deduplicated Lead Rows for HTML Email
     const rowsHtml = uniqueLeads
       .map((lead, idx) => {
         const phone = lead.cleanPhone;
         const name = lead.client_name && lead.client_name !== 'Event Host' ? lead.client_name : 'Event Host';
-        const city = lead.city || 'Pan-India';
+        const displayCity = lead.finalLocation || 'Pan-India';
+        const cleanIp = lead.ipAddress || '';
+        const isIpFallback = lead.isIpFallback || false;
         const eventType = lead.event_type || 'Live Performance';
         const eventDate = lead.event_date
           ? new Date(lead.event_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -263,7 +370,7 @@ export async function GET(req) {
 
         const waLink = phone
           ? `https://wa.me/91${phone}?text=${encodeURIComponent(
-              `Hi ${name}, thank you for contacting Magnevents regarding your ${eventType} in ${city}!`
+              `Hi ${name}, thank you for contacting Magnevents regarding your ${eventType} in ${displayCity}!`
             )}`
           : null;
 
@@ -295,8 +402,13 @@ export async function GET(req) {
                     </div>`
                   : `<span style="color: #94a3b8;">No phone</span>`
               }
-              <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
-                📍 ${escapeHtml(city)}
+              <div style="font-size: 11.5px; color: #475569; margin-top: 3px; line-height: 1.4;">
+                📍 <strong style="color: #0f172a;">${escapeHtml(displayCity)}</strong>
+                ${
+                  cleanIp
+                    ? `<span style="display: inline-block; background-color: #f1f5f9; color: #64748b; padding: 1px 6px; border-radius: 4px; font-size: 9.5px; font-weight: 600; margin-left: 4px; border: 1px solid #e2e8f0;" title="User IP Address">${isIpFallback ? 'via IP: ' : 'IP: '}${escapeHtml(cleanIp)}</span>`
+                    : ''
+                }
               </div>
             </td>
             <td style="padding: 12px 14px; font-size: 13px; color: #1e293b;">
