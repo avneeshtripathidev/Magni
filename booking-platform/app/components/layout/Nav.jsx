@@ -10,6 +10,7 @@ import { AIIcon } from '@/app/components/icons/NavigationIcons';
 import { NAV_LINKS } from '@/app/constants';
 import { trackArtistCtaClick } from '@/app/utils/artistCtaTracker';
 import MobilePanel from './MobilePanel';
+import { resolveSearchQueryToRoute } from '@/app/utils/seoUrlParser';
 import '@/app/styles/components/Nav.css';
 
 const SearchOverlay = dynamic(() => import('./SearchOverlay'), { ssr: false });
@@ -67,7 +68,8 @@ export default function Nav() {
     const currentQuery = searchRef.current?.value || '';
     if (!currentQuery.trim()) return;
     setSearchOpen(false);
-    router.push(`/search?q=${encodeURIComponent(currentQuery.trim())}`);
+    const targetRoute = resolveSearchQueryToRoute(currentQuery.trim());
+    router.push(targetRoute);
     if (searchRef.current) searchRef.current.value = '';
   }
 

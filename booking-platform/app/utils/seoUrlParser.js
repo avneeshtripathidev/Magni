@@ -145,3 +145,57 @@ export function parseLocationSlug(rawSlug) {
   };
 }
 
+/**
+ * Resolves any user search query (e.g. "singer in gurgaon", "dj in delhi", "indore")
+ * to the optimal dynamic destination route.
+ * 
+ * - "singer in gurgaon" -> "/singer-in-gurgaon"
+ * - "dj in delhi"       -> "/dj-in-delhi"
+ * - "gurgaon singer"    -> "/singer-in-gurgaon"
+ * - "indore"            -> "/city/indore"
+ * - "Arijit Singh"      -> "/ai-search?q=Arijit%20Singh"
+ */
+export function resolveSearchQueryToRoute(query) {
+  if (!query || typeof query !== 'string') return '/ai-search';
+  const clean = query.trim().toLowerCase().replace(/[\s_]+/g, ' ');
+  const cleanSlug = clean.replace(/\s+/g, '-');
+
+  // 1. Direct match: e.g. 'singer in gurgaon', 'guitarist in indore', 'wedding band in delhi'
+  const inMatch = clean.match(/^([a-z0-9\s-]+)\s+(?:in|at|for|near)\s+([a-z0-9\s-]+)$/);
+  if (inMatch) {
+    const rawCategory = inMatch[1].trim().replace(/\s+/g, '-');
+    const rawCity = inMatch[2].trim().replace(/\s+/g, '-');
+    const hasKeyword = VALID_KEYWORDS.some(kw => rawCategory.includes(kw));
+    const hasCity = MAJOR_CITIES.includes(rawCity) || !!getCityBySlug(rawCity);
+    if (hasKeyword && hasCity) {
+      return `/${rawCategory}-in-${rawCity}`;
+    }
+  }
+
+  // 2. City-only search: e.g. 'gurgaon', 'delhi', 'mumbai'
+  if (MAJOR_CITIES.includes(cleanSlug) || !!getCityBySlug(cleanSlug)) {
+    return `/city/${cleanSlug}`;
+  }
+
+  // 3. Category + City inverted or without 'in': e.g. 'gurgaon singer' or 'indore guitarist'
+  for (const city of MAJOR_CITIES) {
+    const citySpace = city.replace(/-/g, ' ');
+    if (clean.includes(citySpace)) {
+      const remaining = clean.replace(citySpace, '').replace(/\b(in|at|for|near|best|top|hire|book)\b/g, '').trim().replace(/\s+/g, '-');
+      if (remaining && VALID_KEYWORDS.some(kw => remaining.includes(kw))) {
+        return `/${remaining}-in-${city}`;
+      }
+    }
+  }
+
+  // 4. Keyword only without city: e.g. 'singer', 'dj', 'band'
+  const isKeywordOnly = VALID_KEYWORDS.some(kw => cleanSlug === kw || cleanSlug === kw + 's');
+  if (isKeywordOnly) {
+    return `/${cleanSlug}`;
+  }
+
+  // 5. Fallback to AI Search with query
+  return `/ai-search?q=${encodeURIComponent(query.trim())}`;
+}
+
+
