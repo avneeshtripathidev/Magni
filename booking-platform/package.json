@@ -4,7 +4,9 @@
   "description": "Magnevents — Premium Live Artist Booking Platform",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/generate_sitemap_xml.mjs",
     "build": "next build",
+    "generate:sitemap": "node scripts/generate_sitemap_xml.mjs",
     "start": "next start",
     "lint": "next lint",
     "test": "node --test tests/*.test.js"

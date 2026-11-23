@@ -2,7 +2,7 @@ import { supabase } from '@database/connection/supabase';
 import { defaultBlogs } from '@/app/blog-post/data';
 import { INDIAN_CITIES_1063 } from '@/app/constants/indianCities1063';
 
-export const revalidate = 86400; // Cache at Edge for 24 hours
+export const revalidate = 3600; // Cache at Edge for 1 hour (auto-refreshes daily/hourly)
 
 export default async function sitemap() {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.magnevents.in').replace(/\/+$/, '');
@@ -12,7 +12,9 @@ export default async function sitemap() {
   const coreRoutes = [
     { route: '', priority: 1.0, changeFrequency: 'daily' },
     { route: '/ai-search', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/search', priority: 0.95, changeFrequency: 'daily' },
     { route: '/artists', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/book', priority: 0.90, changeFrequency: 'weekly' },
     { route: '/services', priority: 0.9, changeFrequency: 'weekly' },
     { route: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
     { route: '/how-to-book', priority: 0.85, changeFrequency: 'weekly' },

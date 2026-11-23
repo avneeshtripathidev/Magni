@@ -1,8 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 
+// Support running from either root or booking-platform directory
+const cwd = process.cwd();
+const citiesFilePath = fs.existsSync(path.join(cwd, 'app/constants/indianCities1063.js'))
+  ? path.join(cwd, 'app/constants/indianCities1063.js')
+  : path.join(cwd, 'booking-platform/app/constants/indianCities1063.js');
+
+const outDir = fs.existsSync(path.join(cwd, 'public'))
+  ? path.join(cwd, 'public/sitemaps')
+  : path.join(cwd, 'booking-platform/public/sitemaps');
+
 // Load Indian Cities
-const citiesFile = fs.readFileSync('booking-platform/app/constants/indianCities1063.js', 'utf-8');
+const citiesFile = fs.readFileSync(citiesFilePath, 'utf-8');
 const match = citiesFile.match(/export const INDIAN_CITIES_1063 = (\[[\s\S]*?\]);/);
 const INDIAN_CITIES_1063 = JSON.parse(match[1]);
 
@@ -13,7 +23,9 @@ const now = new Date().toISOString().split('T')[0]; // YYYY-MM-DD for sitemaps
 const coreRoutes = [
   { route: '', priority: 1.0, changeFrequency: 'daily' },
   { route: '/ai-search', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/search', priority: 0.95, changeFrequency: 'daily' },
   { route: '/artists', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/book', priority: 0.90, changeFrequency: 'weekly' },
   { route: '/services', priority: 0.9, changeFrequency: 'weekly' },
   { route: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
   { route: '/how-to-book', priority: 0.85, changeFrequency: 'weekly' },
@@ -21,8 +33,49 @@ const coreRoutes = [
   { route: '/gallery', priority: 0.8, changeFrequency: 'weekly' },
   { route: '/testimonials', priority: 0.8, changeFrequency: 'weekly' },
   { route: '/blog-post', priority: 0.85, changeFrequency: 'weekly' },
-  { route: '/register', priority: 0.75, changeFrequency: 'monthly' },
-  { route: '/register/artist', priority: 0.75, changeFrequency: 'monthly' },
+  // 40 High-Converting Wedding Invitation & Digital Card Keyword Routes
+  { route: '/wedding-invitations', priority: 1.0, changeFrequency: 'daily' },
+  { route: '/wedding-card-design', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/digital-wedding-cards', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/traditional-wedding-cards', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/animated-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/video-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/whatsapp-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/whatsapp-wedding-card-maker', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/digital-wedding-card-maker', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/wedding-invitation-video-maker', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/luxury-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/royal-wedding-card-design', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/interactive-wedding-cards', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/wedding-invitation-with-rsvp', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/wedding-card-with-google-maps', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/online-wedding-invitation-maker', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/indian-wedding-invitation-cards', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/hindu-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/muslim-wedding-card-design', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/sikh-wedding-invitations', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/south-indian-wedding-cards', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/shree-ganesh-wedding-cards', priority: 0.92, changeFrequency: 'daily' },
+  { route: '/scroll-wedding-invitations', priority: 0.92, changeFrequency: 'daily' },
+  { route: '/royal-rajput-wedding-card', priority: 0.92, changeFrequency: 'daily' },
+  { route: '/save-the-date-invitations', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/save-the-date-video-maker', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/engagement-invitations', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/ring-ceremony-invitation-card', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/haldi-mehendi-invitations', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/haldi-ceremony-invitation-card', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/mehendi-ceremony-invitation-card', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/sangeet-invitation-cards', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/cocktail-party-invitation-cards', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/reception-invitations', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/wedding-anniversary-invitation-cards', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/custom-wedding-invitation-design', priority: 0.92, changeFrequency: 'daily' },
+  { route: '/destination-wedding-invitations', priority: 0.92, changeFrequency: 'daily' },
+  { route: '/palace-wedding-invitations', priority: 0.92, changeFrequency: 'daily' },
+  { route: '/monogram-wedding-cards', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/floral-wedding-invitations', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/caricature-wedding-invitations', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/budget-wedding-invitations', priority: 0.90, changeFrequency: 'daily' },
   { route: '/register/event', priority: 0.75, changeFrequency: 'monthly' },
 ].map(item => ({
   url: `${baseUrl}${item.route}`,
@@ -96,6 +149,37 @@ for (const c of KEY_METROS) {
   }
 }
 
+// 3b. Focused Wedding City Pages
+const TOP_WEDDING_HUBS = [
+  'delhi', 'new-delhi', 'delhi-ncr', 'gurgaon', 'gurugram', 'noida', 'greater-noida', 'ghaziabad', 'faridabad',
+  'mumbai', 'navi-mumbai', 'thane', 'pune',
+  'lucknow', 'kanpur', 'varanasi', 'agra', 'prayagraj',
+  'jaipur', 'udaipur', 'jodhpur', 'goa', 'chandigarh', 'bangalore', 'bengaluru', 'hyderabad', 'kolkata', 'ahmedabad', 'surat', 'indore', 'dehradun', 'amritsar', 'ludhiana'
+];
+
+const WEDDING_CITY_PATTERNS = [
+  c => `/wedding-invitations-in-${c}`,
+  c => `/wedding-card-design-in-${c}`,
+  c => `/digital-wedding-cards-in-${c}`,
+  c => `/video-wedding-invitations-in-${c}`,
+  c => `/whatsapp-wedding-cards-in-${c}`,
+  c => `/luxury-wedding-invitations-in-${c}`,
+  c => `/animated-wedding-invitations-in-${c}`,
+  c => `/traditional-wedding-cards-in-${c}`,
+];
+
+const topWeddingCityPages = [];
+for (const city of TOP_WEDDING_HUBS) {
+  for (const pattern of WEDDING_CITY_PATTERNS) {
+    topWeddingCityPages.push({
+      url: `${baseUrl}${pattern(city)}`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.96
+    });
+  }
+}
+
 // 4. All 1,063 Indian Cities Hub Pages
 const cityHubPages = INDIAN_CITIES_1063.map(c => ({
   url: `${baseUrl}/city/${c.slug}`,
@@ -127,6 +211,7 @@ for (const c of INDIAN_CITIES_1063) {
 // 6. Combine & Deduplicate
 const allUrls = [
   ...coreRoutes,
+  ...topWeddingCityPages,
   ...nationalRoutes,
   ...metroPages,
   ...cityHubPages,
@@ -159,7 +244,6 @@ for (const entry of uniqueUrls) {
 
 xml += `</urlset>\n`;
 
-const outDir = 'booking-platform/public/sitemaps';
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
 }
