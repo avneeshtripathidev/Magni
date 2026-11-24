@@ -108,12 +108,6 @@ export default function HomePage() {
         <SectionDivider className="hp-section-divider--mobile-only" />
         <FeaturedArtistsSection />
         <SectionDivider className="hp-section-divider--mobile-only" />
-        <OccasionsSection />
-        <SectionDivider className="hp-section-divider--mobile-only" />
-        <CategoriesSection />
-        <SectionDivider className="hp-section-divider--mobile-only" />
-        <PopularCitiesSection />
-        <SectionDivider className="hp-section-divider--mobile-only" />
         <WhyChooseSection />
         <SectionDivider className="hp-section-divider--mobile-only" />
         <HowToBookSection />
@@ -123,6 +117,12 @@ export default function HomePage() {
         <FaqSection />
         <SectionDivider className="hp-section-divider--mobile-only" />
         <ContactSection />
+        <SectionDivider className="hp-section-divider--mobile-only" />
+        <OccasionsSection />
+        <SectionDivider className="hp-section-divider--mobile-only" />
+        <CategoriesSection />
+        <SectionDivider className="hp-section-divider--mobile-only" />
+        <PopularCitiesSection />
         <SectionDivider className="hp-section-divider--mobile-only" />
         <SeoCardsSection />
       </div>
