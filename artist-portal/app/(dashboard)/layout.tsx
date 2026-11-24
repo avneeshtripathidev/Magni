@@ -1,19 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useArtistAuth } from '../../lib/auth/authContext';
 import { Sidebar } from '../../components/dashboard/Sidebar';
 import { Topbar } from '../../components/dashboard/Topbar';
 import { BottomNav } from '../../components/dashboard/BottomNav';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading, isOnboardingComplete } = useArtistAuth();
+  const { user, loading, isOnboardingComplete, hasSkippedOnboarding, profileCompletion, onboardingStep } = useArtistAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -26,12 +27,12 @@ export default function DashboardLayout({
         } else {
           router.replace('/login');
         }
-      } else if (!isOnboardingComplete) {
-        // Strict guard: Incomplete artists must complete all 4 onboarding steps first
+      } else if (!isOnboardingComplete && !hasSkippedOnboarding) {
+        // Strict guard: Incomplete artists who haven't opted to skip must complete onboarding
         router.replace('/onboarding');
       }
     }
-  }, [user, loading, isOnboardingComplete, router]);
+  }, [user, loading, isOnboardingComplete, hasSkippedOnboarding, router]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -79,7 +80,7 @@ export default function DashboardLayout({
     );
   }
 
-  if (!isOnboardingComplete) {
+  if (!isOnboardingComplete && !hasSkippedOnboarding) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center gap-3 p-4 text-center font-sans">
         <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
@@ -128,7 +129,34 @@ export default function DashboardLayout({
         </div>
 
         {/* Main Content Canvas */}
-        <main className="p-4 sm:p-6 lg:p-8 xl:p-10 pb-24 lg:pb-10 max-w-7xl mx-auto w-full flex-1 min-w-0 overflow-x-hidden">
+        <main className="p-4 sm:p-6 lg:p-8 xl:p-10 pb-24 lg:pb-10 max-w-7xl mx-auto w-full flex-1 min-w-0 overflow-x-hidden space-y-6">
+          {!isOnboardingComplete && (
+            <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300/80 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 text-amber-800 flex items-center justify-center flex-shrink-0 font-black text-sm">
+                  {profileCompletion}%
+                </div>
+                <div>
+                  <h4 className="text-sm font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
+                    <span>Incomplete Artist Profile</span>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black uppercase tracking-wider">
+                      Pending Verification
+                    </span>
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Your profile is {profileCompletion}% complete. Complete all 4 onboarding steps to get verified by directors and go live for client bookings.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href={`/onboarding?step=${onboardingStep}`}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-xs shadow-md shadow-amber-500/20 flex items-center justify-center gap-2 whitespace-nowrap active:scale-[0.98] transition-all"
+              >
+                <span>Resume Onboarding (Step {onboardingStep})</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          )}
           {children}
         </main>
       </div>

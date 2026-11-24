@@ -18,8 +18,10 @@ interface AuthContextType {
   artist: ArtistProfile | null;
   loading: boolean;
   isOnboardingComplete: boolean;
+  hasSkippedOnboarding: boolean;
   onboardingStep: number;
   profileCompletion: number;
+  skipOnboarding: () => void;
   refreshArtist: () => Promise<void>;
   reloadProfile: () => Promise<void>;
   updateLocalArtist: (updates: Partial<ArtistProfile>) => void;
@@ -41,6 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasSkippedOnboarding, setHasSkippedOnboarding] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return document.cookie.includes('artist_onboarding_skipped=true') ||
+        localStorage.getItem('artist_onboarding_skipped') === 'true';
+    }
+    return false;
+  });
   const router = useRouter();
 
   const isOnboardingComplete = Boolean(
@@ -48,6 +57,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
   const onboardingStep = artist ? getHighestIncompleteStep(artist) : 1;
   const profileCompletion = artist ? calculateStrictCompletion(artist) : 0;
+
+  const skipOnboarding = () => {
+    if (typeof window !== 'undefined') {
+      document.cookie = 'artist_onboarding_skipped=true; path=/; max-age=604800; SameSite=Lax';
+      document.cookie = 'artist_session_active=true; path=/; max-age=604800; SameSite=Lax';
+      localStorage.setItem('artist_onboarding_skipped', 'true');
+    }
+    setHasSkippedOnboarding(true);
+  };
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -451,6 +469,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('magnevents_demo_artist');
         localStorage.removeItem('magnevents_registered_user');
         localStorage.removeItem('magnevents_registered_artist');
+        localStorage.removeItem('artist_onboarding_skipped');
         sessionStorage.clear();
       }
 
@@ -489,8 +508,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         artist,
         loading,
         isOnboardingComplete,
+        hasSkippedOnboarding,
         onboardingStep,
         profileCompletion,
+        skipOnboarding,
         refreshArtist,
         reloadProfile: refreshArtist,
         updateLocalArtist,

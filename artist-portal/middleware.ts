@@ -26,6 +26,7 @@ export function middleware(request: NextRequest) {
 
   const onboardingCookie = request.cookies.get('artist_onboarding_complete')?.value;
   const isOnboardingComplete = onboardingCookie === 'true';
+  const hasSkippedCookie = request.cookies.get('artist_onboarding_skipped')?.value === 'true';
 
   const isAuthRoute = 
     pathname === '/login' || 
@@ -76,6 +77,16 @@ export function middleware(request: NextRequest) {
 
   // Case 2: Authenticated + Incomplete Onboarding
   if (!isOnboardingComplete) {
+    // If the user opted to "Skip for all", allow access to the dashboard and home
+    if (hasSkippedCookie) {
+      if (isAuthRoute || isRootRoute) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
+      return NextResponse.next();
+    }
+
     // If attempting to access login or register, bounce back into onboarding
     if (isAuthRoute) {
       const url = request.nextUrl.clone();
@@ -83,7 +94,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // If attempting to access home or dashboard routes before 100% completion, force redirect to onboarding
+    // If attempting to access home or dashboard routes before 100% completion (and not skipped), force redirect to onboarding
     if (isDashboardRoute || isRootRoute) {
       const url = request.nextUrl.clone();
       url.pathname = '/onboarding';

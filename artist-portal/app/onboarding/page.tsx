@@ -118,11 +118,12 @@ const STEPS = [
 ];
 
 export default function ArtistOnboardingPage() {
-  const { user, artist, loading, isOnboardingComplete, refreshArtist, updateLocalArtist } = useArtistAuth();
+  const { user, artist, loading, isOnboardingComplete, skipOnboarding, refreshArtist, updateLocalArtist } = useArtistAuth();
   const router = useRouter();
 
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [skipping, setSkipping] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
@@ -549,10 +550,141 @@ export default function ArtistOnboardingPage() {
     }
   };
 
-    const handleNextStep = (e?: React.FormEvent) => {
+  // Auto-save whatever information has been entered so far directly into Supabase `artists` table
+  const persistPartialProfile = async (targetStep: number, isFinalComplete: boolean = false) => {
+    try {
+      const completionScore = isFinalComplete ? 100 : calculateStrictCompletion(formData);
+
+      const partialPayload: Record<string, any> = {
+        user_id: user?.id && !user.id.startsWith('local-') && !user.id.startsWith('demo-') ? user.id : null,
+        name: formData.name.trim() || user?.user_metadata?.full_name || 'New Artist',
+        stage_name: formData.stage_name.trim() || formData.name.trim() || 'Artist',
+        slug: (artist?.slug && !artist.slug.includes('undefined'))
+          ? artist.slug
+          : `${((formData.stage_name || formData.name || user?.user_metadata?.full_name || 'artist')).toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-5)}`,
+        email: formData.email.trim() || user?.email || null,
+        phone_no: formData.phone_no.trim() || user?.user_metadata?.phone || '',
+        category: formData.category || 'Solo Singer',
+        sub_category: formData.sub_category || '',
+        genres: formData.genres || [],
+        city: formData.city.trim() || '',
+        state: formData.state.trim() || '',
+        country: 'India',
+        languages: formData.languages.length > 0 ? formData.languages : ['Hindi', 'English'],
+        bio: formData.bio.trim() || '',
+        experience_years: Number(formData.experience_years) || 1,
+        rating: 5.0,
+        successful_bookings: 0,
+        price_min: Number(formData.starting_price) || 15000,
+        price_max: (Number(formData.starting_price) || 15000) * 3,
+        cover_image_url: formData.cover_image_url || '',
+        profile_image_url: formData.profile_image_url || formData.cover_image_url || '',
+        video_url: (formData.youtube_links && formData.youtube_links[0]) || '',
+        youtube_links: formData.youtube_links || [],
+        audio_samples: formData.audio_samples || [],
+        instagram_url: formData.instagram_url || '',
+        youtube_url: formData.youtube_url || '',
+        spotify_url: formData.spotify_url || '',
+        website_url: formData.website_url || '',
+        submitted_pricing: {
+          starting_price: Number(formData.starting_price) || 0,
+          solo_price: Number(formData.solo_price) || 0,
+          duo_price: Number(formData.duo_price) || 0,
+          band_price: Number(formData.band_price) || 0,
+          hourly_price: Number(formData.hourly_price) || 0,
+          travel_charges_policy: formData.travel_policy.trim(),
+        },
+        performance_details: {
+          min_duration_minutes: Number(formData.min_duration) || 60,
+          max_duration_minutes: Number(formData.max_duration) || 180,
+          sound_system_provided: formData.sound_system,
+          technical_requirements: formData.tech_requirements.trim(),
+          travel_readiness: formData.travel_readiness as any,
+          serviceable_cities: formData.serviceable_cities.length > 0 ? formData.serviceable_cities : [formData.city.trim()].filter(Boolean),
+          onboarding_step: targetStep,
+          is_onboarding_complete: isFinalComplete,
+        },
+        verification_documents: {
+          legal_name: formData.legal_name.trim() || formData.name.trim(),
+          id_type: formData.id_type as any,
+          id_number_masked: formData.id_number_masked.trim(),
+          pan_or_tax_id: formData.pan_or_tax_id.trim().toUpperCase(),
+          id_document_url: formData.id_document_url.trim(),
+          address_proof_url: formData.address_proof_url.trim(),
+        },
+        verification_status: 'pending',
+        profile_completion: completionScore,
+        profile_submitted_at: isFinalComplete ? new Date().toISOString() : undefined,
+        is_live: false,
+        is_featured: false,
+        updated_at: new Date().toISOString(),
+      };
+
+      let existingId = artist?.id && !artist.id.startsWith('local-') && !artist.id.startsWith('demo-') ? artist.id : null;
+
+      if (!existingId && partialPayload.email) {
+        const { data: found } = await supabase
+          .from('artists')
+          .select('id')
+          .eq('email', partialPayload.email)
+          .maybeSingle();
+        if (found?.id) existingId = found.id;
+      }
+
+      if (existingId) {
+        const { data: updated } = await supabase
+          .from('artists')
+          .update(partialPayload)
+          .eq('id', existingId)
+          .select('*')
+          .single();
+        if (updated) {
+          updateLocalArtist(updated as ArtistProfile);
+        }
+      } else {
+        const { data: inserted, error: insErr } = await supabase
+          .from('artists')
+          .insert([partialPayload])
+          .select('*')
+          .single();
+        if (inserted && !insErr) {
+          updateLocalArtist(inserted as ArtistProfile);
+        }
+      }
+    } catch (err) {
+      console.warn('Auto-save error:', err);
+    }
+  };
+
+  // "Skip for All" button handler: saves current details and sends artist to dashboard immediately
+  const handleSkipForAll = async () => {
+    try {
+      setSkipping(true);
+      setError(null);
+      await persistPartialProfile(step, false);
+      skipOnboarding();
+      if (typeof window !== 'undefined') {
+        document.cookie = 'artist_onboarding_skipped=true; path=/; max-age=604800; SameSite=Lax';
+        document.cookie = 'artist_session_active=true; path=/; max-age=604800; SameSite=Lax';
+        localStorage.setItem('artist_onboarding_skipped', 'true');
+      }
+      router.push('/dashboard');
+    } catch (err) {
+      console.warn('Error during skip for all:', err);
+      skipOnboarding();
+      router.push('/dashboard');
+    } finally {
+      setSkipping(false);
+    }
+  };
+
+  const handleNextStep = (e?: React.FormEvent) => {
     setError(null);
 
-    // STEP 1 VALIDATION: All fields mandatory
+    // Auto-save the current step to Supabase database so progress is never lost
+    persistPartialProfile(step, false);
+
+    // STEP 1 VALIDATION
     if (step === 1) {
       const s1 = validateStep1(formData);
       if (!s1.isValid) {
@@ -565,7 +697,7 @@ export default function ArtistOnboardingPage() {
       }
     }
 
-    // STEP 2 VALIDATION: All fields mandatory
+    // STEP 2 VALIDATION
     if (step === 2) {
       const s2 = validateStep2(formData);
       if (!s2.isValid) {
@@ -574,7 +706,7 @@ export default function ArtistOnboardingPage() {
       }
     }
 
-    // STEP 3 VALIDATION: All fields mandatory
+    // STEP 3 VALIDATION
     if (step === 3) {
       const s3 = validateStep3(formData);
       if (!s3.isValid) {
@@ -597,7 +729,9 @@ export default function ArtistOnboardingPage() {
     }
 
     if (step < 4) {
-      setStep(step + 1);
+      const nextStep = step + 1;
+      setStep(nextStep);
+      persistPartialProfile(nextStep, false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -884,19 +1018,26 @@ export default function ArtistOnboardingPage() {
                 {progress}%
               </span>
             </div>
-            {isOnboardingComplete ? (
-              <Link
-                href="/dashboard"
-                className="text-xs font-bold text-sky-600 hover:text-sky-700 px-3 py-1.5 rounded-xl hover:bg-sky-50 transition-colors flex items-center gap-1"
-              >
-                <span>Return to Dashboard →</span>
-              </Link>
-            ) : (
-              <div className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-2xs">
-                <Lock className="w-3.5 h-3.5 text-amber-600" />
-                <span>Mandatory 4-Step Registration</span>
-              </div>
-            )}
+            {/* Skip for All button */}
+            <button
+              type="button"
+              onClick={handleSkipForAll}
+              disabled={skipping || submitting}
+              className="px-3 py-1.5 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              title="Skip onboarding for now and enter your dashboard. Your entered information is saved."
+            >
+              {skipping ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-600" />
+                  <span>Skipping...</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Skip for all →</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </header>
@@ -2020,7 +2161,28 @@ export default function ArtistOnboardingPage() {
               )}
             </div>
 
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
+              {/* Skip for all button */}
+              <button
+                type="button"
+                onClick={handleSkipForAll}
+                disabled={skipping || submitting}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                title="Skip onboarding for now and enter your dashboard. Your entered information is saved."
+              >
+                {skipping ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-600" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Skip for all & Enter Dashboard</span>
+                  </>
+                )}
+              </button>
+
               {step < 4 ? (
                 <button
                   type="button"
