@@ -8,15 +8,17 @@ import { ALL_1063_SLUGS, getCityBySlug, INDIAN_CITIES_1063 } from '../constants/
 export { getCityBySlug, INDIAN_CITIES_1063 };
 
 export const VALID_KEYWORDS = [
-  'singer', 'band', 'dj', 'comedian', 'anchor', 'dancer', 'magician', 
-  'guitarist', 'violinist', 'saxophonist', 'flutist', 'pianist', 'dhol',
-  'emcee', 'standup', 'qawwali', 'bhajan', 'music', 'musician', 'artist', 
+  'singer', 'singers', 'band', 'bands', 'dj', 'djs', 'comedian', 'comedians', 
+  'anchor', 'anchors', 'emcee', 'emcees', 'dancer', 'dancers', 'magician', 'magicians', 
+  'guitarist', 'guitarists', 'violinist', 'violinists', 'saxophonist', 'flutist', 'pianist', 'dhol',
+  'standup', 'qawwali', 'bhajan', 'music', 'musician', 'musicians', 'artist', 'artists', 
   'performer', 'performers', 'instrumentalist', 'instrumentalists',
   'ghazal', 'gazal', 'sufi', 'gig', 'entertainment', 'packages', 'sangeet', 
-  'mehndi', 'haldi', 'acoustic', 'corporate', 'wedding', 'party', 'function', 
-  'reception', 'engagement', 'anniversary', 'birthday', 'house-party', 'chowki',
+  'mehndi', 'mehendi', 'haldi', 'acoustic', 'corporate', 'wedding', 'shaadi', 'party', 'parties', 
+  'function', 'reception', 'engagement', 'anniversary', 'birthday', 'house-party', 'chowki',
+  'cocktail', 'college', 'fest', 'rock', 'bachelor', 'terrace', 'group',
   'bollywood', 'punjabi', 'retro', 'classical', 'invitation', 'invitations',
-  'card', 'cards', 'patrika', 'best-wishes'
+  'card', 'cards', 'patrika', 'best-wishes', 'book', 'hire', 'live'
 ];
 
 const CORE_MAJOR_CITIES = [
@@ -108,10 +110,10 @@ export function parseLocationSlug(rawSlug) {
   if (cleanSlug.includes('ghazal') || cleanSlug.includes('gazal')) parsedSubCategory = 'Gazals';
   else if (cleanSlug.includes('sufi') || cleanSlug.includes('qawwali')) parsedSubCategory = 'Sufi';
   else if (cleanSlug.includes('sangeet')) parsedSubCategory = 'Sangeet';
-  else if (cleanSlug.includes('mehndi') || cleanSlug.includes('haldi')) parsedSubCategory = 'Mehndi';
+  else if (cleanSlug.includes('mehndi') || cleanSlug.includes('mehendi') || cleanSlug.includes('haldi')) parsedSubCategory = 'Mehndi';
   else if (cleanSlug.includes('corporate') || cleanSlug.includes('office') || cleanSlug.includes('gala') || cleanSlug.includes('function')) parsedSubCategory = 'Corporate';
   else if (cleanSlug.includes('acoustic')) parsedSubCategory = 'Acoustic';
-  else if (cleanSlug.includes('wedding') || cleanSlug.includes('reception') || cleanSlug.includes('engagement') || cleanSlug.includes('shaadi')) parsedSubCategory = 'Wedding';
+  else if (cleanSlug.includes('wedding') || cleanSlug.includes('reception') || cleanSlug.includes('engagement') || cleanSlug.includes('shaadi') || cleanSlug.includes('cocktail') || cleanSlug.includes('anniversary')) parsedSubCategory = 'Wedding';
   else if (cleanSlug.includes('retro')) parsedSubCategory = 'Retro';
   else if (cleanSlug.includes('punjabi')) parsedSubCategory = 'Punjabi';
   else if (cleanSlug.includes('bollywood')) parsedSubCategory = 'Bollywood';

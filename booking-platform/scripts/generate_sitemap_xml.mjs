@@ -11,13 +11,29 @@ const outDir = fs.existsSync(path.join(cwd, 'public'))
   ? path.join(cwd, 'public/sitemaps')
   : path.join(cwd, 'booking-platform/public/sitemaps');
 
-// Load Indian Cities
+// Load Indian Cities (all 1,063 cities)
 const citiesFile = fs.readFileSync(citiesFilePath, 'utf-8');
 const match = citiesFile.match(/export const INDIAN_CITIES_1063 = (\[[\s\S]*?\]);/);
 const INDIAN_CITIES_1063 = JSON.parse(match[1]);
 
 const baseUrl = 'https://www.magnevents.in';
-const now = new Date().toISOString().split('T')[0]; // YYYY-MM-DD for sitemaps
+const now = new Date().toISOString().split('T')[0]; // YYYY-MM-DD for search engine sitemaps
+
+// Helper to construct XML
+function buildSitemapXml(urls) {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  for (const entry of urls) {
+    xml += `  <url>\n`;
+    xml += `    <loc>${entry.url}</loc>\n`;
+    xml += `    <lastmod>${entry.lastModified || now}</lastmod>\n`;
+    xml += `    <changefreq>${entry.changeFrequency || 'daily'}</changefreq>\n`;
+    xml += `    <priority>${(entry.priority !== undefined ? entry.priority : 0.88).toFixed(2)}</priority>\n`;
+    xml += `  </url>\n`;
+  }
+  xml += `</urlset>\n`;
+  return xml;
+}
 
 // 1. Core Platform Routes (Hourly / Daily Crawl Frequency)
 const coreRoutes = [
@@ -84,72 +100,42 @@ const coreRoutes = [
   priority: item.priority
 }));
 
-// 2. High Intent National Routes
+// 2. High-Intent National Keyword Routes (Broad India Search)
 const nationalRoutes = [
-  '/singers-near-me', '/live-singers-near-me', '/singer-booking-near-me',
-  '/live-singer-for-party', '/professional-singer-booking', '/affordable-singer-for-wedding',
-  '/female-singer-booking', '/male-singer-booking', '/bollywood-singer-for-event',
-  '/sufi-singer-booking', '/acoustic-singer-booking', '/live-band-booking',
-  '/guitarist-for-private-party', '/celebrity-singer-booking', '/wedding-singer-booking',
-  '/live-band-for-wedding', '/sufi-night-for-wedding', '/mehndi-singer-booking',
+  '/book-singer-online', '/live-singer-booking', '/singer-for-events',
+  '/book-artists-for-events', '/live-music-booking', '/book-live-band',
+  '/hire-musicians-for-events', '/event-entertainment-booking', '/singer-for-wedding',
+  '/live-band-for-wedding', '/bollywood-singer-for-wedding', '/sufi-singer-for-wedding',
+  '/wedding-musician-booking', '/live-music-for-sangeet', '/wedding-dj-booking',
+  '/singer-for-birthday-party', '/singer-for-house-party', '/live-music-for-private-parties',
+  '/dj-for-birthday-party', '/acoustic-singer-for-private-events', '/ghazal-singer-for-private-party',
+  '/singer-for-corporate-events', '/live-band-for-corporate-events', '/corporate-event-entertainment',
+  '/musicians-for-corporate-parties', '/professional-event-performers', '/bollywood-singer-booking',
+  '/punjabi-singer-booking', '/sufi-singer-booking', '/ghazal-singer-booking',
+  '/live-band-booking', '/dj-booking-near-me', '/instrumentalist-booking',
+  '/event-anchor-booking', '/standup-comedian-booking', '/singers-near-me',
+  '/live-singers-near-me', '/singer-booking-near-me', '/live-singer-for-party',
+  '/professional-singer-booking', '/affordable-singer-for-wedding', '/female-singer-booking',
+  '/male-singer-booking', '/guitarist-for-private-party', '/celebrity-singer-booking',
+  '/wedding-singer-booking', '/sufi-night-for-wedding', '/mehndi-singer-booking',
   '/sangeet-singer-booking', '/haldi-ceremony-singer-booking', '/reception-live-music',
   '/engagement-party-singer', '/wedding-entertainment-packages', '/corporate-event-singer',
-  '/live-band-for-corporate-event', '/office-party-entertainment', '/corporate-gala-live-music',
-  '/annual-function-singer', '/product-launch-entertainment', '/singer-booking-price',
-  '/wedding-singer-cost', '/live-band-booking-price', '/sufi-singer-booking-price',
-  '/affordable-live-music-packages', '/singer-for-party-under-10000', '/singer-for-house-party',
-  '/live-singer-for-private-party', '/live-singer-for-house-party', '/house-gig',
-  '/book-singer-music-band', '/book-live-singer', '/book-singer-for-wedding',
-  '/dj-booking-near-me', '/wedding-dj-booking', '/house-party-dj-booking',
-  '/wedding-anchor-booking', '/corporate-event-anchor', '/standup-comedian-booking',
-  '/magician-booking-near-me', '/qawwali-group-booking', '/ghazal-singer-booking',
-  '/punjabi-singer-booking', '/bhajan-singer-booking', '/mata-ki-chowki-singer-booking'
+  '/office-party-entertainment', '/corporate-gala-live-music', '/annual-function-singer',
+  '/product-launch-entertainment', '/singer-booking-price', '/wedding-singer-cost',
+  '/live-band-booking-price', '/sufi-singer-booking-price', '/affordable-live-music-packages',
+  '/singer-for-party-under-10000', '/live-singer-for-private-party', '/live-singer-for-house-party',
+  '/house-gig', '/book-singer-music-band', '/book-live-singer',
+  '/book-singer-for-wedding', '/house-party-dj-booking', '/wedding-anchor-booking',
+  '/corporate-event-anchor', '/standup-comedian-booking', '/magician-booking-near-me',
+  '/qawwali-group-booking', '/bhajan-singer-booking', '/mata-ki-chowki-singer-booking'
 ].map(r => ({
   url: `${baseUrl}${r}`,
   lastModified: now,
   changeFrequency: 'daily',
-  priority: 0.94
+  priority: 0.95
 }));
 
-// 3. Metro Clusters
-const DELHI_NCR = ['delhi', 'new-delhi', 'noida', 'greater-noida', 'gurgaon', 'gurugram', 'faridabad', 'ghaziabad'];
-const MUMBAI_MMR = ['mumbai', 'navi-mumbai', 'thane', 'pune'];
-const KEY_METROS = ['bangalore', 'bengaluru', 'hyderabad', 'kolkata', 'chennai', 'ahmedabad', 'jaipur', 'chandigarh', 'lucknow', 'goa', 'indore', 'bhopal', 'surat', 'patna', 'varanasi', 'agra', 'kanpur'];
-
-const METRO_PATTERNS = [
-  c => `/singer-in-${c}`,
-  c => `/book-singer-in-${c}`,
-  c => `/live-singer-in-${c}`,
-  c => `/wedding-singer-in-${c}`,
-  c => `/singer-for-house-party-in-${c}`,
-  c => `/dj-in-${c}`,
-  c => `/wedding-dj-in-${c}`,
-  c => `/live-band-in-${c}`,
-  c => `/wedding-band-in-${c}`,
-  c => `/bollywood-singer-in-${c}`,
-  c => `/sufi-singer-in-${c}`,
-  c => `/guitarist-in-${c}`,
-  c => `/corporate-musician-in-${c}`
-];
-
-const metroPages = [];
-for (const c of DELHI_NCR) {
-  for (const p of METRO_PATTERNS) {
-    metroPages.push({ url: `${baseUrl}${p(c)}`, lastModified: now, changeFrequency: 'daily', priority: 0.98 });
-  }
-}
-for (const c of MUMBAI_MMR) {
-  for (const p of METRO_PATTERNS) {
-    metroPages.push({ url: `${baseUrl}${p(c)}`, lastModified: now, changeFrequency: 'daily', priority: 0.92 });
-  }
-}
-for (const c of KEY_METROS) {
-  for (const p of METRO_PATTERNS) {
-    metroPages.push({ url: `${baseUrl}${p(c)}`, lastModified: now, changeFrequency: 'daily', priority: 0.88 });
-  }
-}
-
-// 3b. Focused Wedding City Pages
+// 3. Focused Wedding Hub City Landing Pages
 const TOP_WEDDING_HUBS = [
   'delhi', 'new-delhi', 'delhi-ncr', 'gurgaon', 'gurugram', 'noida', 'greater-noida', 'ghaziabad', 'faridabad',
   'mumbai', 'navi-mumbai', 'thane', 'pune',
@@ -180,7 +166,7 @@ for (const city of TOP_WEDDING_HUBS) {
   }
 }
 
-// 4. All 1,063 Indian Cities Hub Pages (Daily Crawl, 0.90 Priority)
+// 4. All 1,063 Indian Cities Hub Pages (/city/[slug]) - Daily Crawl, 0.90 Priority
 const cityHubPages = INDIAN_CITIES_1063.map(c => ({
   url: `${baseUrl}/city/${c.slug}`,
   lastModified: now,
@@ -188,69 +174,155 @@ const cityHubPages = INDIAN_CITIES_1063.map(c => ({
   priority: 0.90
 }));
 
-// 5. All 1,063 Indian Cities High-Intent Core Keyword & Event Pages (Daily Crawl, 0.88 Priority)
+// 5. Complete Matrix of Event Types & Artist Combinations Across ALL 1,063 Indian Cities
+// Covering every occasion, act, genre, instrument, and booking intent!
 const PAN_PATTERNS = [
-  c => `/singer-in-${c}`,
-  c => `/wedding-singer-in-${c}`,
-  c => `/corporate-singer-in-${c}`,
-  c => `/house-party-singer-in-${c}`,
-  c => `/birthday-singer-in-${c}`,
-  c => `/sangeet-singer-in-${c}`,
-  c => `/dj-in-${c}`,
-  c => `/live-band-in-${c}`,
+  // --- A. Wedding & Ceremonial Celebrations ---
+  { pattern: c => `/wedding-singer-in-${c}`, priority: 0.92, category: 'wedding' },
+  { pattern: c => `/singer-for-wedding-in-${c}`, priority: 0.91, category: 'wedding' },
+  { pattern: c => `/wedding-band-in-${c}`, priority: 0.91, category: 'wedding' },
+  { pattern: c => `/wedding-dj-in-${c}`, priority: 0.91, category: 'wedding' },
+  { pattern: c => `/wedding-anchor-in-${c}`, priority: 0.89, category: 'wedding' },
+  { pattern: c => `/sangeet-singer-in-${c}`, priority: 0.90, category: 'wedding' },
+  { pattern: c => `/haldi-singer-in-${c}`, priority: 0.88, category: 'wedding' },
+  { pattern: c => `/mehendi-singer-in-${c}`, priority: 0.88, category: 'wedding' },
+  { pattern: c => `/reception-live-music-in-${c}`, priority: 0.89, category: 'wedding' },
+  { pattern: c => `/engagement-singer-in-${c}`, priority: 0.88, category: 'wedding' },
+  { pattern: c => `/anniversary-singer-in-${c}`, priority: 0.88, category: 'wedding' },
+  { pattern: c => `/cocktail-party-singer-in-${c}`, priority: 0.88, category: 'wedding' },
+
+  // --- B. Corporate & Formal Galas ---
+  { pattern: c => `/corporate-singer-in-${c}`, priority: 0.90, category: 'corporate' },
+  { pattern: c => `/corporate-event-singer-in-${c}`, priority: 0.90, category: 'corporate' },
+  { pattern: c => `/live-band-for-corporate-events-in-${c}`, priority: 0.90, category: 'corporate' },
+  { pattern: c => `/corporate-event-anchor-in-${c}`, priority: 0.88, category: 'corporate' },
+
+  // --- C. Private Parties, House Gigs & Birthdays ---
+  { pattern: c => `/singer-for-house-party-in-${c}`, priority: 0.90, category: 'party' },
+  { pattern: c => `/house-party-singer-in-${c}`, priority: 0.90, category: 'party' },
+  { pattern: c => `/house-party-dj-in-${c}`, priority: 0.88, category: 'party' },
+  { pattern: c => `/singer-for-birthday-party-in-${c}`, priority: 0.89, category: 'party' },
+  { pattern: c => `/birthday-singer-in-${c}`, priority: 0.89, category: 'party' },
+
+  // --- D. College Fests & Campus Shows ---
+  { pattern: c => `/college-fest-band-in-${c}`, priority: 0.88, category: 'college' },
+
+  // --- E. Core High-Intent Booking & Performance Roots ---
+  { pattern: c => `/singer-in-${c}`, priority: 0.93, category: 'artist' },
+  { pattern: c => `/book-singer-in-${c}`, priority: 0.92, category: 'artist' },
+  { pattern: c => `/live-singer-in-${c}`, priority: 0.91, category: 'artist' },
+
+  // --- F. Musical Genres & Vocal Styles ---
+  { pattern: c => `/bollywood-singer-in-${c}`, priority: 0.90, category: 'genre' },
+  { pattern: c => `/sufi-singer-in-${c}`, priority: 0.89, category: 'genre' },
+  { pattern: c => `/punjabi-singer-in-${c}`, priority: 0.89, category: 'genre' },
+  { pattern: c => `/ghazal-singer-in-${c}`, priority: 0.88, category: 'genre' },
+  { pattern: c => `/bhajan-singer-in-${c}`, priority: 0.87, category: 'genre' },
+
+  // --- G. Live Bands & Musical Ensembles ---
+  { pattern: c => `/live-band-in-${c}`, priority: 0.91, category: 'artist' },
+  { pattern: c => `/rock-band-in-${c}`, priority: 0.87, category: 'artist' },
+  { pattern: c => `/qawwali-group-in-${c}`, priority: 0.88, category: 'artist' },
+
+  // --- H. DJs, Stage Sound & Club Sets ---
+  { pattern: c => `/dj-in-${c}`, priority: 0.91, category: 'artist' },
+
+  // --- I. Solo Instrumentalists ---
+  { pattern: c => `/guitarist-in-${c}`, priority: 0.89, category: 'instrument' },
+  { pattern: c => `/violinist-in-${c}`, priority: 0.88, category: 'instrument' },
+
+  // --- J. Stand-up Comedians & Magicians ---
+  { pattern: c => `/standup-comedian-in-${c}`, priority: 0.88, category: 'entertainment' },
+  { pattern: c => `/magician-in-${c}`, priority: 0.88, category: 'entertainment' },
 ];
 
 const cityKeywordPages = [];
+const eventSpecificPages = [];
+const artistSpecificPages = [];
+
 for (const c of INDIAN_CITIES_1063) {
-  for (const p of PAN_PATTERNS) {
-    cityKeywordPages.push({
-      url: `${baseUrl}${p(c.slug)}`,
+  for (const item of PAN_PATTERNS) {
+    const pageUrl = `${baseUrl}${item.pattern(c.slug)}`;
+    const pageObj = {
+      url: pageUrl,
       lastModified: now,
       changeFrequency: 'daily',
-      priority: 0.88
-    });
+      priority: item.priority
+    };
+    cityKeywordPages.push(pageObj);
+
+    // Grouping for specialized sitemaps
+    if (['wedding', 'corporate', 'party', 'college'].includes(item.category)) {
+      eventSpecificPages.push(pageObj);
+    } else {
+      artistSpecificPages.push(pageObj);
+    }
   }
 }
 
-// 6. Combine & Deduplicate
+// 6. Combine & Deduplicate for Master 1,063 Cities Sitemap
 const allUrls = [
   ...coreRoutes,
   ...topWeddingCityPages,
   ...nationalRoutes,
-  ...metroPages,
   ...cityHubPages,
   ...cityKeywordPages
 ];
 
 const seen = new Set();
-const uniqueUrls = [];
+const uniqueMasterUrls = [];
 for (const item of allUrls) {
   if (!seen.has(item.url)) {
     seen.add(item.url);
-    uniqueUrls.push(item);
+    uniqueMasterUrls.push(item);
   }
 }
 
-console.log(`Total URLs to write in sitemap: ${uniqueUrls.length}`);
-
-// Generate XML
-let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-
-for (const entry of uniqueUrls) {
-  xml += `  <url>\n`;
-  xml += `    <loc>${entry.url}</loc>\n`;
-  xml += `    <lastmod>${entry.lastModified}</lastmod>\n`;
-  xml += `    <changefreq>${entry.changeFrequency}</changefreq>\n`;
-  xml += `    <priority>${entry.priority.toFixed(2)}</priority>\n`;
-  xml += `  </url>\n`;
-}
-
-xml += `</urlset>\n`;
+console.log(`[Sitemap Generator] Total Master URLs: ${uniqueMasterUrls.length}`);
+console.log(`[Sitemap Generator] Event-Specific URLs: ${eventSpecificPages.length}`);
+console.log(`[Sitemap Generator] Artist/Genre URLs: ${artistSpecificPages.length}`);
 
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
 }
-const outPath = path.join(outDir, 'all-1063-cities-sitemap.xml');
-fs.writeFileSync(outPath, xml, 'utf-8');
-console.log(`Successfully generated: ${outPath} (${(Buffer.byteLength(xml) / (1024 * 1024)).toFixed(2)} MB)`);
+
+// 7. Write Master All-1063-Cities Sitemap
+const masterXml = buildSitemapXml(uniqueMasterUrls);
+const masterPath = path.join(outDir, 'all-1063-cities-sitemap.xml');
+fs.writeFileSync(masterPath, masterXml, 'utf-8');
+console.log(`Successfully generated master: ${masterPath} (${(Buffer.byteLength(masterXml) / (1024 * 1024)).toFixed(2)} MB)`);
+
+// 8. Write Dedicated Events Sitemap (Weddings, Corporate, Birthdays, House Parties, College Fests)
+const eventsXml = buildSitemapXml(eventSpecificPages);
+const eventsPath = path.join(outDir, 'events-sitemap.xml');
+fs.writeFileSync(eventsPath, eventsXml, 'utf-8');
+console.log(`Successfully generated events: ${eventsPath} (${(Buffer.byteLength(eventsXml) / (1024 * 1024)).toFixed(2)} MB)`);
+
+// 9. Write Dedicated Artists & Categories Sitemap (Singers, Bands, DJs, Instrumentalists, Comedians, Magicians, Genres)
+const artistsXml = buildSitemapXml(artistSpecificPages);
+const artistsPath = path.join(outDir, 'artists-categories-sitemap.xml');
+fs.writeFileSync(artistsPath, artistsXml, 'utf-8');
+console.log(`Successfully generated artists: ${artistsPath} (${(Buffer.byteLength(artistsXml) / (1024 * 1024)).toFixed(2)} MB)`);
+
+// 10. Write Google-Compliant Sitemap Index linking all sitemaps
+let sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+sitemapIndexXml += `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+const sitemapFiles = [
+  `${baseUrl}/sitemap.xml`,
+  `${baseUrl}/sitemaps/all-1063-cities-sitemap.xml`,
+  `${baseUrl}/sitemaps/events-sitemap.xml`,
+  `${baseUrl}/sitemaps/artists-categories-sitemap.xml`,
+];
+
+for (const smUrl of sitemapFiles) {
+  sitemapIndexXml += `  <sitemap>\n`;
+  sitemapIndexXml += `    <loc>${smUrl}</loc>\n`;
+  sitemapIndexXml += `    <lastmod>${now}</lastmod>\n`;
+  sitemapIndexXml += `  </sitemap>\n`;
+}
+sitemapIndexXml += `</sitemapindex>\n`;
+
+const indexPath = path.join(outDir, 'sitemap-index.xml');
+fs.writeFileSync(indexPath, sitemapIndexXml, 'utf-8');
+console.log(`Successfully generated sitemap index: ${indexPath}`);

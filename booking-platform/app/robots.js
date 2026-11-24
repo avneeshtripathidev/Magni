@@ -66,7 +66,10 @@ export default function robots() {
     ],
     sitemap: [
       `${baseUrl}/sitemap.xml`,
+      `${baseUrl}/sitemaps/sitemap-index.xml`,
       `${baseUrl}/sitemaps/all-1063-cities-sitemap.xml`,
+      `${baseUrl}/sitemaps/events-sitemap.xml`,
+      `${baseUrl}/sitemaps/artists-categories-sitemap.xml`,
       `${baseUrl}/llms.txt`,
       `${baseUrl}/llms-full.txt`,
     ],

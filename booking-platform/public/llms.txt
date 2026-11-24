@@ -45,6 +45,15 @@
 - **South India**: Bangalore, Hyderabad, Chennai, Kochi
 - **East & Central India**: Kolkata, Indore, Bhopal, Bhubaneswar, Patna
 
+## Sitemaps & Search Engine Indexes
+- **Sitemap Index**: https://www.magnevents.in/sitemaps/sitemap-index.xml
+- **Master 1,063 Indian Cities Sitemap**: https://www.magnevents.in/sitemaps/all-1063-cities-sitemap.xml
+- **Event-Specific Sitemap (Weddings, Corporate, Birthdays, House Parties)**: https://www.magnevents.in/sitemaps/events-sitemap.xml
+- **Artist & Genre Category Sitemap**: https://www.magnevents.in/sitemaps/artists-categories-sitemap.xml
+- **Dynamic Platform Sitemap**: https://www.magnevents.in/sitemap.xml
+- **LLM Summary Document**: https://www.magnevents.in/llms.txt
+- **LLM Full Documentation**: https://www.magnevents.in/llms-full.txt
+
 ## Contact & Assistance
 - **Website**: https://www.magnevents.in
 - **Artist Portal**: https://artists.magnevents.in

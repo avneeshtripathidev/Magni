@@ -379,8 +379,16 @@ export default async function sitemap() {
   const PAN_INDIA_CORE_PATTERNS = [
     (c) => `/singer-in-${c}`,
     (c) => `/wedding-singer-in-${c}`,
+    (c) => `/corporate-singer-in-${c}`,
+    (c) => `/house-party-singer-in-${c}`,
+    (c) => `/birthday-singer-in-${c}`,
+    (c) => `/sangeet-singer-in-${c}`,
     (c) => `/dj-in-${c}`,
+    (c) => `/wedding-dj-in-${c}`,
     (c) => `/live-band-in-${c}`,
+    (c) => `/wedding-band-in-${c}`,
+    (c) => `/bollywood-singer-in-${c}`,
+    (c) => `/sufi-singer-in-${c}`,
   ];
 
   for (const city of INDIAN_CITIES_1063) {
