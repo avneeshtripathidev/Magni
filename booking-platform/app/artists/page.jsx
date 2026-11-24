@@ -71,6 +71,7 @@ export default function ArtistsPage() {
   return (
     <main className="artists-page">
       <div className="lux-container">
+        <h1 className="sr-only">Live Artists Directory — Book Singers, Bands &amp; DJs | Magnevents</h1>
 
         <div className="artists-top-bar">
           <div className="artists-filters" style={{ margin: 0, flex: 1 }}>
@@ -199,15 +200,6 @@ export default function ArtistsPage() {
             </div>
           </div>
         )}
-
-        <div className="artists-header" style={{ textAlign: 'center', marginTop: '3rem', marginBottom: '2rem', paddingTop: '2rem' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#fff' }}>
-            Magnevents — Premium Live Artist Booking
-          </h1>
-          <p style={{ color: 'var(--text-muted)', maxWidth: '800px', margin: '0 auto', fontSize: '1.1rem', lineHeight: '1.6' }}>
-            Welcome to Magnevents, Indi&apos; premier destination for booking top-tier live entertainment. Discover incredible live bands, soulful Sufi singers, and high-energy performers. Our artist-first booking platform connects you directly with the best musicians in the industry for your weddings, corporate galas, and private events.
-          </p>
-        </div>
 
       </div>
     </main>
