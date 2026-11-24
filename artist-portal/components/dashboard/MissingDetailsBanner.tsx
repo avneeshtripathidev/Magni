@@ -12,18 +12,12 @@ interface MissingDetailsBannerProps {
 }
 
 export function MissingDetailsBanner({ artist, currentPage }: MissingDetailsBannerProps) {
-  const [fromSubmit, setFromSubmit] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('complete') === '1') {
-        setFromSubmit(true);
-      }
-    }
-  }, []);
+  if (!artist || dismissed) return null;
 
-  if (!fromSubmit || !artist) return null;
+  // If artist is already approved, only show banner if explicitly coming from a review check
+  if (artist.verification_status === 'approved') return null;
 
   const missingSections = getMissingProfileSections(artist);
   const currentMissing = missingSections.find((s) => s.id === currentPage);
@@ -31,17 +25,19 @@ export function MissingDetailsBanner({ artist, currentPage }: MissingDetailsBann
 
   if (currentMissing) {
     return (
-      <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+      <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs animate-in fade-in">
         <div className="flex items-start gap-2.5 min-w-0">
           <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="text-xs text-amber-900 space-y-0.5">
-            <p className="font-bold">Complete these details before submitting for review:</p>
+            <p className="font-bold">Mandatory Details Required on this Page:</p>
             <p className="text-amber-800">{currentMissing.missingFields.join(' • ')}</p>
           </div>
         </div>
-        <span className="text-[11px] font-bold text-amber-700 bg-white/80 border border-amber-200 px-3 py-1 rounded-full self-start sm:self-center flex-shrink-0">
-          Fill &amp; Save Below
-        </span>
+        <div className="flex items-center gap-2 self-start sm:self-center flex-shrink-0">
+          <span className="text-[11px] font-bold text-amber-700 bg-white/80 border border-amber-200 px-3 py-1 rounded-full">
+            Required *
+          </span>
+        </div>
       </div>
     );
   }

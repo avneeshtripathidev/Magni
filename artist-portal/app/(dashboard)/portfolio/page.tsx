@@ -5,6 +5,7 @@ import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
 import { supabase } from '../../../lib/supabase/client';
 import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
+import { compressImageFile } from '../../../lib/imageCompressor';
 import {
   Film,
   Instagram,
@@ -154,30 +155,57 @@ export default function PortfolioPage() {
     }
   };
 
-  // Upload file to Cloudflare R2 (artist-basic-details/) via /api/upload
+  // Upload file to Cloudflare R2 (artist-basic-details/) via /api/upload with auto-compression
   const uploadToR2 = async (file: File, category: string): Promise<string> => {
+    // Automatically compress high-res phone/camera photos down to <= 1920px (< 1.5MB)
+    const fileToUpload = file.type.startsWith('image/')
+      ? await compressImageFile(file, { maxWidth: 1920, maxHeight: 1920, quality: 0.85 })
+      : file;
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', fileToUpload);
     formData.append('folder', 'basic');
     formData.append('category', category);
     formData.append('artistId', artist?.id || 'artist');
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await res.json();
+    let res: Response;
+    try {
+      res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    } catch (networkErr: any) {
+      // Safe base64 fallback for small images if network is offline / unreachable
+      if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
+        return await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error('Upload failed and preview could not be generated.'));
+          reader.readAsDataURL(fileToUpload);
+        });
+      }
+      throw new Error(networkErr.message || 'Network error while uploading file.');
+    }
+
+    let data: any = {};
+    try {
+      data = await res.json();
+    } catch {
+      // Non-JSON response (e.g. Vercel 413 or 502 HTML)
+      data = { error: `Server error (${res.status}). Please choose a smaller photo.` };
+    }
+
     if (res.ok && data.url) {
       return data.url as string;
     }
 
-    // Safe base64 fallback for small images if R2 is unreachable
-    if (file.type.startsWith('image/') && file.size < 4 * 1024 * 1024) {
+    // Safe base64 fallback for small images if R2 responds with error
+    if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
       return await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(String(reader.result));
         reader.onerror = () => reject(new Error(data.error || 'Upload failed'));
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileToUpload);
       });
     }
 

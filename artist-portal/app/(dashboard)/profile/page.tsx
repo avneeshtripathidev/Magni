@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
 import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
+import { compressImageFile } from '../../../lib/imageCompressor';
 import {
   User,
   Mic2,
@@ -16,6 +17,11 @@ import {
   AlertCircle,
   Loader2,
   Plus,
+  Camera,
+  Upload,
+  Trash2,
+  Image as ImageIcon,
+  Check,
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -101,6 +107,8 @@ export default function ProfilePage() {
     languages: ['Hindi', 'English'] as string[],
     serviceable_cities: ['Delhi NCR'] as string[],
     bio: '',
+    profile_image_url: '',
+    cover_image_url: '',
     starting_price: 15000,
     solo_price: 15000,
     duo_price: 25000,
@@ -116,6 +124,7 @@ export default function ProfilePage() {
 
   const [customLocation, setCustomLocation] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState<'profile' | 'cover' | null>(null);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,6 +147,8 @@ export default function ProfilePage() {
           ? artist.performance_details.serviceable_cities
           : [artist.city || 'Delhi NCR'],
         bio: artist.bio || '',
+        profile_image_url: artist.profile_image_url || '',
+        cover_image_url: artist.cover_image_url || '',
         starting_price: artist.submitted_pricing?.starting_price || artist.price_min || 15000,
         solo_price: artist.submitted_pricing?.solo_price || artist.price_min || 15000,
         duo_price: artist.submitted_pricing?.duo_price || 25000,
@@ -152,6 +163,79 @@ export default function ProfilePage() {
       });
     }
   }, [artist]);
+
+  // Handle Photo Upload with Automatic Client-Side Compression
+  const handlePhotoUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'profile' | 'cover'
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingPhoto(type);
+    setError(null);
+
+    try {
+      // Auto-compress large phone photos to max 1920x1920 (< 1.5MB)
+      const fileToUpload = await compressImageFile(file, {
+        maxWidth: type === 'cover' ? 1920 : 1080,
+        maxHeight: type === 'cover' ? 1080 : 1080,
+        quality: 0.85,
+      });
+
+      const body = new FormData();
+      body.append('file', fileToUpload);
+      body.append('folder', 'basic');
+      body.append('category', type);
+      body.append('artistId', artist?.id || formData.name || 'artist');
+
+      let res: Response;
+      try {
+        res = await fetch('/api/upload', { method: 'POST', body });
+      } catch (netErr: any) {
+        if (fileToUpload.size < 3 * 1024 * 1024) {
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.readAsDataURL(fileToUpload);
+          });
+          const key = type === 'profile' ? 'profile_image_url' : 'cover_image_url';
+          setFormData((prev) => ({ ...prev, [key]: base64 }));
+          return;
+        }
+        throw new Error(netErr.message || 'Upload failed due to network error.');
+      }
+
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server error (${res.status}).` };
+      }
+
+      if (!res.ok || !data.url) {
+        if (fileToUpload.size < 3 * 1024 * 1024) {
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.readAsDataURL(fileToUpload);
+          });
+          const key = type === 'profile' ? 'profile_image_url' : 'cover_image_url';
+          setFormData((prev) => ({ ...prev, [key]: base64 }));
+          return;
+        }
+        throw new Error(data.error || 'Photo upload failed');
+      }
+
+      const key = type === 'profile' ? 'profile_image_url' : 'cover_image_url';
+      setFormData((prev) => ({ ...prev, [key]: data.url }));
+    } catch (err: any) {
+      setError(err.message || 'Could not upload photo.');
+    } finally {
+      setUploadingPhoto(null);
+      e.target.value = '';
+    }
+  };
 
   const toggleGenre = (genre: string) => {
     setFormData((prev) => {
@@ -203,9 +287,28 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!artist?.id) return;
-    setSaving(true);
+
     setError(null);
     setSuccess(false);
+
+    // Mandatory validation check
+    const missing: string[] = [];
+    if (!formData.name.trim()) missing.push('Legal Name');
+    if (!formData.stage_name.trim()) missing.push('Stage / Act Name');
+    if (!formData.phone_no.trim() || formData.phone_no.replace(/\D/g, '').length < 7) missing.push('Contact Phone');
+    if (!formData.city.trim()) missing.push('Base City');
+    if (!formData.category.trim()) missing.push('Primary Category');
+    if (!formData.bio.trim() || formData.bio.trim().length < 20) missing.push('Artist Bio (min 20 characters)');
+    if (!formData.genres || formData.genres.length === 0) missing.push('at least 1 Musical Genre');
+    if (!formData.starting_price || formData.starting_price <= 0) missing.push('Solo / Starting Rate (₹)');
+
+    if (missing.length > 0) {
+      setError(`Mandatory fields required before saving: ${missing.join(', ')}.`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setSaving(true);
 
     try {
       const updates = {
@@ -221,6 +324,8 @@ export default function ProfilePage() {
         genres: formData.genres,
         languages: formData.languages,
         bio: formData.bio,
+        profile_image_url: formData.profile_image_url || undefined,
+        cover_image_url: formData.cover_image_url || undefined,
         price_min: Number(formData.starting_price),
         price_max: Number(formData.band_price),
         submitted_pricing: {
@@ -255,6 +360,21 @@ export default function ProfilePage() {
     }
   };
 
+  // Mandatory Status Flags
+  const hasBasicInfo = Boolean(
+    formData.name.trim() &&
+    formData.stage_name.trim() &&
+    formData.phone_no.replace(/\D/g, '').length >= 7 &&
+    formData.city.trim() &&
+    formData.category.trim()
+  );
+  const hasBioAndGenres = Boolean(
+    formData.bio.trim().length >= 20 &&
+    formData.genres.length > 0
+  );
+  const hasPricing = Boolean(formData.starting_price > 0);
+  const hasPhoto = Boolean(formData.profile_image_url || formData.cover_image_url);
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-8 font-sans">
       {/* Header */}
@@ -262,7 +382,7 @@ export default function ProfilePage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Profile & Logistics</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Stage identity, musical repertoire, and technical requirements.
+            Stage identity, photos, musical repertoire, and technical requirements.
           </p>
         </div>
 
@@ -290,6 +410,109 @@ export default function ProfilePage() {
 
       <MissingDetailsBanner artist={artist} currentPage="profile" />
 
+      {/* Live Requirement Checklist Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div
+          className={`p-3 rounded-2xl border flex items-center justify-between ${
+            hasBasicInfo
+              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
+              : 'bg-amber-50/70 border-amber-200 text-amber-900'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs ${
+                hasBasicInfo ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+              }`}
+            >
+              {hasBasicInfo ? <Check className="w-3.5 h-3.5" /> : <User className="w-3 h-3" />}
+            </div>
+            <div>
+              <div className="text-xs font-extrabold leading-tight">Basic Info *</div>
+              <div className="text-[10px] opacity-80">{hasBasicInfo ? 'Complete' : 'Required'}</div>
+            </div>
+          </div>
+          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-white/80">
+            {hasBasicInfo ? 'Done' : 'Req *'}
+          </span>
+        </div>
+
+        <div
+          className={`p-3 rounded-2xl border flex items-center justify-between ${
+            hasBioAndGenres
+              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
+              : 'bg-amber-50/70 border-amber-200 text-amber-900'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs ${
+                hasBioAndGenres ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+              }`}
+            >
+              {hasBioAndGenres ? <Check className="w-3.5 h-3.5" /> : <Mic2 className="w-3 h-3" />}
+            </div>
+            <div>
+              <div className="text-xs font-extrabold leading-tight">Bio &amp; Genre *</div>
+              <div className="text-[10px] opacity-80">{hasBioAndGenres ? 'Complete' : 'Required'}</div>
+            </div>
+          </div>
+          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-white/80">
+            {hasBioAndGenres ? 'Done' : 'Req *'}
+          </span>
+        </div>
+
+        <div
+          className={`p-3 rounded-2xl border flex items-center justify-between ${
+            hasPricing
+              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
+              : 'bg-amber-50/70 border-amber-200 text-amber-900'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs ${
+                hasPricing ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+              }`}
+            >
+              {hasPricing ? <Check className="w-3.5 h-3.5" /> : <CreditCard className="w-3 h-3" />}
+            </div>
+            <div>
+              <div className="text-xs font-extrabold leading-tight">Event Rates *</div>
+              <div className="text-[10px] opacity-80">{hasPricing ? `₹${Number(formData.starting_price).toLocaleString('en-IN')}` : 'Required'}</div>
+            </div>
+          </div>
+          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-white/80">
+            {hasPricing ? 'Done' : 'Req *'}
+          </span>
+        </div>
+
+        <div
+          className={`p-3 rounded-2xl border flex items-center justify-between ${
+            hasPhoto
+              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
+              : 'bg-amber-50/70 border-amber-200 text-amber-900'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs ${
+                hasPhoto ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'
+              }`}
+            >
+              {hasPhoto ? <Check className="w-3.5 h-3.5" /> : <Camera className="w-3 h-3" />}
+            </div>
+            <div>
+              <div className="text-xs font-extrabold leading-tight">Profile Photo *</div>
+              <div className="text-[10px] opacity-80">{hasPhoto ? 'Uploaded' : 'Recommended'}</div>
+            </div>
+          </div>
+          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-white/80">
+            {hasPhoto ? 'Done' : 'Add Photo'}
+          </span>
+        </div>
+      </div>
+
       {success && (
         <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 shadow-xs">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
@@ -305,6 +528,115 @@ export default function ProfilePage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Section 0: Profile Avatar & Cover Banner */}
+        <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <Camera className="w-4 h-4 text-sky-600" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                Photos &amp; Stage Banner
+              </h2>
+            </div>
+            <span className="text-[10px] font-bold text-slate-400">
+              Auto-compressed for fast loading
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Profile Avatar */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Profile Avatar / Headshot
+                  </label>
+                  <p className="text-[11px] text-slate-400">Circular photo shown on your profile card</p>
+                </div>
+                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition-all">
+                  {uploadingPhoto === 'profile' ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Upload className="w-3.5 h-3.5" />
+                  )}
+                  <span>Upload Avatar</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handlePhotoUpload(e, 'profile')}
+                  />
+                </label>
+              </div>
+
+              {formData.profile_image_url ? (
+                <div className="flex items-center gap-3">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
+                    <img src={formData.profile_image_url} alt="Profile" className="w-full h-full object-cover" />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, profile_image_url: '' })}
+                    className="p-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors text-xs flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Remove</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 text-slate-400 text-xs py-2">
+                  <div className="w-16 h-16 rounded-full bg-slate-200 border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 flex-shrink-0">
+                    <User className="w-6 h-6" />
+                  </div>
+                  <span>No avatar uploaded yet</span>
+                </div>
+              )}
+            </div>
+
+            {/* Cover Banner */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Cover Banner (16:9)
+                  </label>
+                  <p className="text-[11px] text-slate-400">Header photo on your public booking page</p>
+                </div>
+                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition-all">
+                  {uploadingPhoto === 'cover' ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Upload className="w-3.5 h-3.5" />
+                  )}
+                  <span>Upload Banner</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handlePhotoUpload(e, 'cover')}
+                  />
+                </label>
+              </div>
+
+              {formData.cover_image_url ? (
+                <div className="relative h-20 rounded-xl overflow-hidden border border-slate-200 shadow-xs group">
+                  <img src={formData.cover_image_url} alt="Cover Banner" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, cover_image_url: '' })}
+                    className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/60 hover:bg-rose-600 text-white transition-colors"
+                    title="Remove banner"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="h-20 rounded-xl bg-slate-200 border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">
+                  <span>No cover banner uploaded yet</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
         {/* Section 1: Basic Information */}
         <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">

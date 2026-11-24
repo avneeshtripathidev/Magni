@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useAdminAuth } from '../../../lib/auth/adminAuthContext';
 import { ArtistProfile } from '../../../types/artist';
+import { compressImageFile } from '../../../lib/imageCompressor';
 import {
   ARTIST_CATEGORIES,
   INDIAN_LANGUAGES,
@@ -177,21 +178,51 @@ export default function AdminArtistRegistrationPage() {
   // All language options (built-in + custom added)
   const allLanguageOptions = Array.from(new Set([...INDIAN_LANGUAGES, ...selectedLanguages]));
 
-  // Upload helper routed cleanly into R2 two-folder structure
+  // Upload helper routed cleanly into R2 two-folder structure with auto-compression
   const uploadToR2 = async (
     file: File,
     folder: 'basic' | 'private',
     categoryTag: string
   ): Promise<string> => {
+    const fileToUpload = file.type.startsWith('image/')
+      ? await compressImageFile(file, { maxWidth: 1920, maxHeight: 1920, quality: 0.85 })
+      : file;
+
     const fd = new FormData();
-    fd.append('file', file);
+    fd.append('file', fileToUpload);
     fd.append('folder', folder);
     fd.append('category', categoryTag);
     fd.append('artistId', slugify(fullName || stageName || 'new-artist'));
 
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
+    let res: Response;
+    try {
+      res = await fetch('/api/upload', { method: 'POST', body: fd });
+    } catch {
+      if (fileToUpload.size < 3 * 1024 * 1024) {
+        return await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.readAsDataURL(fileToUpload);
+        });
+      }
+      throw new Error('Upload failed due to connection error.');
+    }
+
+    let data: any = {};
+    try {
+      data = await res.json();
+    } catch {
+      data = { error: `Server error (${res.status}).` };
+    }
+
     if (!res.ok || !data.url) {
+      if (fileToUpload.size < 3 * 1024 * 1024) {
+        return await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.readAsDataURL(fileToUpload);
+        });
+      }
       throw new Error(data.error || 'Cloudflare R2 upload failed');
     }
     return data.url as string;

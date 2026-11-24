@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useArtistAuth } from '../../lib/auth/authContext';
 import { artistService } from '../../services/artistService';
 import { supabase } from '../../lib/supabase/client';
+import { compressImageFile } from '../../lib/imageCompressor';
 import {
   User,
   Mic2,
@@ -289,7 +290,7 @@ export default function ArtistOnboardingPage() {
     }));
   };
 
-  // Direct upload to Cloudflare R2 via /api/upload
+  // Direct upload to Cloudflare R2 via /api/upload with auto-compression
   // Basic profile/cover -> artist-basic-details/ ; Aadhaar/Address KYC -> artist-private-kyc/
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -302,6 +303,11 @@ export default function ArtistOnboardingPage() {
     setError(null);
 
     try {
+      // Auto-compress large images client-side before sending to server
+      const fileToUpload = file.type.startsWith('image/')
+        ? await compressImageFile(file, { maxWidth: 1920, maxHeight: 1920, quality: 0.85 })
+        : file;
+
       const isPrivateDoc = field === 'id_document_url' || field === 'address_proof_url';
       const category =
         field === 'profile_image_url'
@@ -313,18 +319,49 @@ export default function ArtistOnboardingPage() {
           : 'address-proof';
 
       const body = new FormData();
-      body.append('file', file);
+      body.append('file', fileToUpload);
       body.append('folder', isPrivateDoc ? 'private' : 'basic');
       body.append('category', category);
       body.append('artistId', artist?.id || formData.name || 'new-artist');
 
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body,
-      });
+      let res: Response;
+      try {
+        res = await fetch('/api/upload', {
+          method: 'POST',
+          body,
+        });
+      } catch (netErr: any) {
+        // Safe base64 fallback for small image preview if offline
+        if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.readAsDataURL(fileToUpload);
+          });
+          setFormData((prev) => ({ ...prev, [field]: base64 }));
+          return;
+        }
+        throw new Error(netErr.message || 'Upload failed due to connection error.');
+      }
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server error (${res.status}). Please choose a smaller photo.` };
+      }
+
       if (!res.ok || !data.url) {
+        // Safe fallback for small images
+        if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.readAsDataURL(fileToUpload);
+          });
+          setFormData((prev) => ({ ...prev, [field]: base64 }));
+          return;
+        }
         throw new Error(data.error || 'File upload failed');
       }
 
@@ -337,7 +374,7 @@ export default function ArtistOnboardingPage() {
     }
   };
 
-  // Multi-image gallery upload -> artist-basic-details/gallery/
+  // Multi-image gallery upload -> artist-basic-details/gallery/ with auto-compression
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -354,15 +391,52 @@ export default function ArtistOnboardingPage() {
     try {
       const uploaded: string[] = [];
       for (const file of files.slice(0, remaining)) {
+        const fileToUpload = file.type.startsWith('image/')
+          ? await compressImageFile(file, { maxWidth: 1920, maxHeight: 1920, quality: 0.85 })
+          : file;
+
         const body = new FormData();
-        body.append('file', file);
+        body.append('file', fileToUpload);
         body.append('folder', 'basic');
         body.append('category', 'gallery');
         body.append('artistId', artist?.id || formData.name || 'new-artist');
 
-        const res = await fetch('/api/upload', { method: 'POST', body });
-        const data = await res.json();
-        if (!res.ok || !data.url) throw new Error(data.error || 'Photo upload failed');
+        let res: Response;
+        try {
+          res = await fetch('/api/upload', { method: 'POST', body });
+        } catch {
+          // If network failed but file is small image, fallback to base64
+          if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(String(reader.result));
+              reader.readAsDataURL(fileToUpload);
+            });
+            uploaded.push(base64);
+            continue;
+          }
+          throw new Error('Photo upload failed. Please try again.');
+        }
+
+        let data: any = {};
+        try {
+          data = await res.json();
+        } catch {
+          data = { error: `Server error (${res.status})` };
+        }
+
+        if (!res.ok || !data.url) {
+          if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(String(reader.result));
+              reader.readAsDataURL(fileToUpload);
+            });
+            uploaded.push(base64);
+            continue;
+          }
+          throw new Error(data.error || 'Photo upload failed');
+        }
         uploaded.push(data.url);
       }
 

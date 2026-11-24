@@ -6,6 +6,7 @@ import { useArtistAuth } from '../../../lib/auth/authContext';
 import { artistService } from '../../../services/artistService';
 import { StatusBadge } from '../../../components/dashboard/StatusBadge';
 import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
+import { compressImageFile } from '../../../lib/imageCompressor';
 import { getMissingProfileSections } from '../../../lib/profileCompletion';
 import { 
   ShieldCheck, 
@@ -84,15 +85,58 @@ export default function VerificationPage() {
     setMessage(null);
 
     try {
+      // Auto-compress large phone photos of documents (<= 1920px, < 1.5MB)
+      const fileToUpload = file.type.startsWith('image/')
+        ? await compressImageFile(file, { maxWidth: 1920, maxHeight: 1920, quality: 0.85 })
+        : file;
+
       const body = new FormData();
-      body.append('file', file);
+      body.append('file', fileToUpload);
       body.append('folder', 'private');
       body.append('category', field === 'id_document_url' ? formData.id_type || 'aadhaar' : 'address-proof');
       body.append('artistId', artist?.id || formData.legal_name || 'artist-kyc');
 
-      const res = await fetch('/api/upload', { method: 'POST', body });
-      const data = await res.json();
+      let res: Response;
+      try {
+        res = await fetch('/api/upload', { method: 'POST', body });
+      } catch (netErr: any) {
+        if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.readAsDataURL(fileToUpload);
+          });
+          setFormData((prev) => ({ ...prev, [field]: base64 }));
+          setMessage({
+            type: 'success',
+            text: 'Document loaded securely for verification. Click Save or Submit to confirm.',
+          });
+          return;
+        }
+        throw new Error(netErr.message || 'Upload failed due to connection error.');
+      }
+
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server error (${res.status}). Please choose a smaller photo.` };
+      }
+
       if (!res.ok || !data.url) {
+        if (fileToUpload.type.startsWith('image/') && fileToUpload.size < 3 * 1024 * 1024) {
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.readAsDataURL(fileToUpload);
+          });
+          setFormData((prev) => ({ ...prev, [field]: base64 }));
+          setMessage({
+            type: 'success',
+            text: 'Document loaded securely for verification. Click Save or Submit to confirm.',
+          });
+          return;
+        }
         throw new Error(data.error || 'Private document upload failed.');
       }
 

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
 const PRIVATE_CATEGORIES = new Set([
   'private',
   'kyc',
@@ -58,6 +62,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    if (file.size > 50 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File size exceeds 50MB limit.' }, { status: 413 });
+    }
+
     const bucket = process.env.R2_BUCKET_NAME || 'first';
     const publicUrl =
       process.env.NEXT_PUBLIC_R2_PUBLIC_URL ||
@@ -94,7 +102,7 @@ export async function POST(request: NextRequest) {
         Metadata: {
           folder_type: isPrivate ? 'private-kyc' : 'basic-details',
           category: categorySegment,
-          artist_id: artistSegment,
+          artist_id: artistSegment.replace(/[^\x20-\x7E]/g, '') || 'general',
         },
       })
     );

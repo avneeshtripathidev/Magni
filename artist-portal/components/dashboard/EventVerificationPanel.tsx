@@ -25,6 +25,7 @@ import {
 } from '../../types/eventVerification';
 import { useArtistAuth } from '../../lib/auth/authContext';
 import { EventKYCModal } from './EventKYCModal';
+import { compressImageFile } from '../../lib/imageCompressor';
 
 interface EventVerificationPanelProps {
   event: EventVerificationRecord;
@@ -84,30 +85,54 @@ export function EventVerificationPanel({
     }
   };
 
-  // Upload helper using /api/upload (Cloudflare R2 -> artist-basic-details/) with safe base64 fallback for small images
+  // Upload helper using /api/upload (Cloudflare R2 -> artist-basic-details/) with auto-compression and safe fallback
   const uploadFileToStorage = async (file: File, category: string): Promise<string> => {
+    const fileToUpload = file.type.startsWith('image/')
+      ? await compressImageFile(file, { maxWidth: 1920, maxHeight: 1920, quality: 0.85 })
+      : file;
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', fileToUpload);
     formData.append('folder', 'basic');
     formData.append('category', category);
     formData.append('artistId', event.booking_id || event.artist_name || 'event');
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await res.json();
+    let res: Response;
+    try {
+      res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+    } catch {
+      if (fileToUpload.size < 3 * 1024 * 1024) {
+        return await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error('Upload failed'));
+          reader.readAsDataURL(fileToUpload);
+        });
+      }
+      throw new Error('Upload failed due to network error.');
+    }
+
+    let data: any = {};
+    try {
+      data = await res.json();
+    } catch {
+      data = { error: `Server error (${res.status})` };
+    }
+
     if (res.ok && data.url) {
       return data.url;
     }
 
-    // Fallback for local testing if R2 is unreachable and file is under 4MB
-    if (file.size < 4 * 1024 * 1024) {
+    // Fallback for local testing if R2 is unreachable and file is under 3MB
+    if (fileToUpload.size < 3 * 1024 * 1024) {
       return await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(String(reader.result));
         reader.onerror = () => reject(new Error(data.error || 'Upload failed'));
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileToUpload);
       });
     }
 
