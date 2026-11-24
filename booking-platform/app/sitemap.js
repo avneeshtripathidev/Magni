@@ -2,26 +2,26 @@ import { supabase } from '@database/connection/supabase';
 import { defaultBlogs } from '@/app/blog-post/data';
 import { INDIAN_CITIES_1063 } from '@/app/constants/indianCities1063';
 
-export const revalidate = 3600; // Cache at Edge for 1 hour (auto-refreshes daily/hourly)
+export const revalidate = 300; // Edge revalidation every 5 minutes for dynamic search crawlers
 
 export default async function sitemap() {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.magnevents.in').replace(/\/+$/, '');
   const now = new Date().toISOString();
 
-  // 1. Core High-Priority Platform Routes
+  // 1. Core High-Priority Platform Routes (Hourly/Daily Crawl Frequency)
   const coreRoutes = [
-    { route: '', priority: 1.0, changeFrequency: 'daily' },
-    { route: '/ai-search', priority: 0.95, changeFrequency: 'daily' },
-    { route: '/search', priority: 0.95, changeFrequency: 'daily' },
-    { route: '/artists', priority: 0.95, changeFrequency: 'daily' },
-    { route: '/book', priority: 0.90, changeFrequency: 'weekly' },
-    { route: '/services', priority: 0.9, changeFrequency: 'weekly' },
-    { route: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
-    { route: '/how-to-book', priority: 0.85, changeFrequency: 'weekly' },
-    { route: '/why-choose', priority: 0.85, changeFrequency: 'weekly' },
-    { route: '/gallery', priority: 0.8, changeFrequency: 'weekly' },
-    { route: '/testimonials', priority: 0.8, changeFrequency: 'weekly' },
-    { route: '/blog-post', priority: 0.85, changeFrequency: 'weekly' },
+    { route: '', priority: 1.0, changeFrequency: 'hourly' },
+    { route: '/artists', priority: 0.99, changeFrequency: 'hourly' },
+    { route: '/ai-search', priority: 0.95, changeFrequency: 'hourly' },
+    { route: '/search', priority: 0.95, changeFrequency: 'hourly' },
+    { route: '/book', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/services', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/pricing', priority: 0.95, changeFrequency: 'daily' },
+    { route: '/how-to-book', priority: 0.90, changeFrequency: 'daily' },
+    { route: '/why-choose', priority: 0.90, changeFrequency: 'daily' },
+    { route: '/gallery', priority: 0.88, changeFrequency: 'daily' },
+    { route: '/testimonials', priority: 0.88, changeFrequency: 'daily' },
+    { route: '/blog-post', priority: 0.90, changeFrequency: 'daily' },
     // 40 High-Converting Wedding Invitation & Digital Card Keyword Routes (Daily Crawl, 1.00 - 0.90 Priority)
     { route: '/wedding-invitations', priority: 1.0, changeFrequency: 'daily' },
     { route: '/wedding-card-design', priority: 0.95, changeFrequency: 'daily' },
@@ -354,27 +354,27 @@ export default async function sitemap() {
     }
   }
 
-  // All India Tier 2 / 3 (0.75 Priority, Weekly Crawl)
+  // All India Tier 2 / 3 (0.85 Priority, Daily Crawl)
   for (const city of ALL_INDIA_TIER2_TIER3_CITIES) {
     for (const pattern of TIER2_TIER3_PATTERNS) {
       otherIndiaLandingPages.push({
         url: `${baseUrl}${pattern(city)}`,
         lastModified: now,
-        changeFrequency: 'weekly',
-        priority: 0.75,
+        changeFrequency: 'daily',
+        priority: 0.85,
       });
     }
   }
 
-  // 5b. All 1,063 Indian Cities - Dedicated City Hub Landing Pages (/city/[slug])
+  // 5b. All 1,063 Indian Cities - Dedicated City Hub Landing Pages (/city/[slug]) - Daily Crawl
   const all1063CityHubPages = INDIAN_CITIES_1063.map((city) => ({
     url: `${baseUrl}/city/${city.slug}`,
     lastModified: now,
-    changeFrequency: 'weekly',
-    priority: 0.85,
+    changeFrequency: 'daily',
+    priority: 0.90,
   }));
 
-  // 5c. All 1,063 Indian Cities - High-Intent Core Keyword Landing Pages
+  // 5c. All 1,063 Indian Cities - High-Intent Core Keyword Landing Pages - Daily Crawl
   const all1063CityKeywordPages = [];
   const PAN_INDIA_CORE_PATTERNS = [
     (c) => `/singer-in-${c}`,
@@ -388,8 +388,8 @@ export default async function sitemap() {
       all1063CityKeywordPages.push({
         url: `${baseUrl}${pattern(city.slug)}`,
         lastModified: now,
-        changeFrequency: 'weekly',
-        priority: 0.80,
+        changeFrequency: 'daily',
+        priority: 0.88,
       });
     }
   }
@@ -399,10 +399,10 @@ export default async function sitemap() {
     url: `${baseUrl}${route}`,
     lastModified: now,
     changeFrequency: 'daily',
-    priority: 0.94,
+    priority: 0.95,
   }));
 
-  // 6. Dynamic Artist Profiles from Supabase
+  // 6. Dynamic Artist Profiles from Supabase - Daily Crawl
   let artistRoutes = [];
   try {
     const { data: artists } = await supabase
@@ -417,8 +417,8 @@ export default async function sitemap() {
         return {
           url: `${baseUrl}/artist/${slug || artist.id}`,
           lastModified: artist.updated_at ? new Date(artist.updated_at).toISOString() : now,
-          changeFrequency: 'weekly',
-          priority: 0.88,
+          changeFrequency: 'daily',
+          priority: 0.92,
         };
       });
     }
@@ -480,8 +480,8 @@ export default async function sitemap() {
         .map((b) => ({
           url: `${baseUrl}/blog-post/${b.slug}`,
           lastModified: b.updated_at ? new Date(b.updated_at).toISOString() : now,
-          changeFrequency: 'weekly',
-          priority: 0.78,
+          changeFrequency: 'daily',
+          priority: 0.85,
         }));
     }
 
@@ -489,8 +489,8 @@ export default async function sitemap() {
       const staticBlogUrls = defaultBlogs.map((b) => ({
         url: `${baseUrl}/blog-post/${b.slug}`,
         lastModified: now,
-        changeFrequency: 'weekly',
-        priority: 0.78,
+        changeFrequency: 'daily',
+        priority: 0.85,
       }));
       generalBlogRoutes = [...generalBlogRoutes, ...staticBlogUrls];
     }

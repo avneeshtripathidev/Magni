@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /onboarding
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /dashboard
+
+Sitemap: https://www.magnevents.in/sitemap.xml

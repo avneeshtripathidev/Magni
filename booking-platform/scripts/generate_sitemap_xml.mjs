@@ -19,20 +19,20 @@ const INDIAN_CITIES_1063 = JSON.parse(match[1]);
 const baseUrl = 'https://www.magnevents.in';
 const now = new Date().toISOString().split('T')[0]; // YYYY-MM-DD for sitemaps
 
-// 1. Core Platform Routes
+// 1. Core Platform Routes (Hourly / Daily Crawl Frequency)
 const coreRoutes = [
-  { route: '', priority: 1.0, changeFrequency: 'daily' },
-  { route: '/ai-search', priority: 0.95, changeFrequency: 'daily' },
-  { route: '/search', priority: 0.95, changeFrequency: 'daily' },
-  { route: '/artists', priority: 0.95, changeFrequency: 'daily' },
-  { route: '/book', priority: 0.90, changeFrequency: 'weekly' },
-  { route: '/services', priority: 0.9, changeFrequency: 'weekly' },
-  { route: '/pricing', priority: 0.9, changeFrequency: 'weekly' },
-  { route: '/how-to-book', priority: 0.85, changeFrequency: 'weekly' },
-  { route: '/why-choose', priority: 0.85, changeFrequency: 'weekly' },
-  { route: '/gallery', priority: 0.8, changeFrequency: 'weekly' },
-  { route: '/testimonials', priority: 0.8, changeFrequency: 'weekly' },
-  { route: '/blog-post', priority: 0.85, changeFrequency: 'weekly' },
+  { route: '', priority: 1.0, changeFrequency: 'hourly' },
+  { route: '/artists', priority: 0.99, changeFrequency: 'hourly' },
+  { route: '/ai-search', priority: 0.95, changeFrequency: 'hourly' },
+  { route: '/search', priority: 0.95, changeFrequency: 'hourly' },
+  { route: '/book', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/services', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/pricing', priority: 0.95, changeFrequency: 'daily' },
+  { route: '/how-to-book', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/why-choose', priority: 0.90, changeFrequency: 'daily' },
+  { route: '/gallery', priority: 0.88, changeFrequency: 'daily' },
+  { route: '/testimonials', priority: 0.88, changeFrequency: 'daily' },
+  { route: '/blog-post', priority: 0.90, changeFrequency: 'daily' },
   // 40 High-Converting Wedding Invitation & Digital Card Keyword Routes
   { route: '/wedding-invitations', priority: 1.0, changeFrequency: 'daily' },
   { route: '/wedding-card-design', priority: 0.95, changeFrequency: 'daily' },
@@ -180,18 +180,22 @@ for (const city of TOP_WEDDING_HUBS) {
   }
 }
 
-// 4. All 1,063 Indian Cities Hub Pages
+// 4. All 1,063 Indian Cities Hub Pages (Daily Crawl, 0.90 Priority)
 const cityHubPages = INDIAN_CITIES_1063.map(c => ({
   url: `${baseUrl}/city/${c.slug}`,
   lastModified: now,
-  changeFrequency: 'weekly',
-  priority: 0.85
+  changeFrequency: 'daily',
+  priority: 0.90
 }));
 
-// 5. All 1,063 Indian Cities High-Intent Core Keyword Pages
+// 5. All 1,063 Indian Cities High-Intent Core Keyword & Event Pages (Daily Crawl, 0.88 Priority)
 const PAN_PATTERNS = [
   c => `/singer-in-${c}`,
   c => `/wedding-singer-in-${c}`,
+  c => `/corporate-singer-in-${c}`,
+  c => `/house-party-singer-in-${c}`,
+  c => `/birthday-singer-in-${c}`,
+  c => `/sangeet-singer-in-${c}`,
   c => `/dj-in-${c}`,
   c => `/live-band-in-${c}`,
 ];
@@ -202,8 +206,8 @@ for (const c of INDIAN_CITIES_1063) {
     cityKeywordPages.push({
       url: `${baseUrl}${p(c.slug)}`,
       lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 0.80
+      changeFrequency: 'daily',
+      priority: 0.88
     });
   }
 }

@@ -22,7 +22,7 @@ export default function robots() {
     '/thank-you/*',
     '/f/*',
     '/_next/static/chunks/*',
-    // Block crawl loops and duplicate parameter URLs for Google Search Console
+    // Block crawl loops and duplicate parameter URLs for search crawlers
     '/ai-search?*',
     '/artists?*',
     '/*?*q=*',
@@ -38,7 +38,28 @@ export default function robots() {
         disallow: disallowList,
       },
       {
-        userAgent: 'Googlebot',
+        userAgent: [
+          'Googlebot',
+          'Googlebot-Image',
+          'Googlebot-Mobile',
+          'Bingbot',
+          'Slurp',
+          'DuckDuckBot',
+          'Baiduspider',
+          'YandexBot',
+          'Applebot',
+          'facebookexternalhit',
+          'Twitterbot',
+          'LinkedInBot',
+          'WhatsApp',
+          'GPTBot',
+          'ChatGPT-User',
+          'PerplexityBot',
+          'ClaudeBot',
+          'anthropic-ai',
+          'OAI-SearchBot',
+          'CCBot'
+        ],
         allow: '/',
         disallow: disallowList,
       },
@@ -46,6 +67,8 @@ export default function robots() {
     sitemap: [
       `${baseUrl}/sitemap.xml`,
       `${baseUrl}/sitemaps/all-1063-cities-sitemap.xml`,
+      `${baseUrl}/llms.txt`,
+      `${baseUrl}/llms-full.txt`,
     ],
     host: baseUrl,
   };
