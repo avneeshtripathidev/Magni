@@ -29,6 +29,42 @@ export const metadata = {
   title: 'Book a Singer for House Party, DJs, Live Bands & Private Events | Magnevents',
   description: 'Book verified live singers for house parties, DJs near you, live bands in Pune & Delhi-NCR, house gigs, weddings, and corporate events across India. Transparent direct pricing with 0% agency fees.',
   keywords: [
+    'Book Singer Online',
+    'Live Singer Booking',
+    'Singer for Events',
+    'Artist Booking Platform India',
+    'Book Artists for Events',
+    'Live Music Booking',
+    'Book Live Band',
+    'Hire Musicians for Events',
+    'Event Entertainment Booking',
+    'Singer for Wedding',
+    'Live Band for Wedding',
+    'Bollywood Singer for Wedding',
+    'Sufi Singer for Wedding',
+    'Wedding Musician Booking',
+    'Live Music for Sangeet',
+    'Wedding DJ Booking',
+    'Singer for Birthday Party',
+    'Singer for House Party',
+    'Live Music for Private Parties',
+    'DJ for Birthday Party',
+    'Acoustic Singer for Private Events',
+    'Ghazal Singer for Private Party',
+    'Singer for Corporate Events',
+    'Live Band for Corporate Events',
+    'Corporate Event Entertainment',
+    'Musicians for Corporate Parties',
+    'Professional Event Performers',
+    'Bollywood Singer Booking',
+    'Punjabi Singer Booking',
+    'Sufi Singer Booking',
+    'Ghazal Singer Booking',
+    'Live Band Booking',
+    'DJ Booking',
+    'Instrumentalist Booking',
+    'Event Anchor Booking',
+    'Stand-up Comedian Booking',
     'singers near me',
     'singer for house party',
     'live singer for private party',
@@ -255,25 +291,36 @@ export default function RootLayout({ children }) {
                     "@type": "OfferCatalog",
                     "name": "Live Singers & Vocalists",
                     "itemListElement": [
-                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Live Singer for House Party" } },
-                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Bollywood & Sufi Singers for Weddings" } },
-                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Acoustic Singers for Private Dinners" } }
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Book Singer Online" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Live Singer Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Bollywood Singer Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sufi Singer Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Punjabi Singer Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Ghazal Singer Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Singer for Wedding" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Singer for Birthday Party" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Singer for Corporate Events" } }
                     ]
                   },
                   {
                     "@type": "OfferCatalog",
                     "name": "Live Bands & Orchestras",
                     "itemListElement": [
-                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding Live Bands & Sangeet Orchestras" } },
-                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Corporate Event Live Bands" } }
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Book Live Band" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Live Band for Wedding" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Live Band for Corporate Events" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Live Music for Sangeet" } }
                     ]
                   },
                   {
                     "@type": "OfferCatalog",
                     "name": "DJs & Stage Artists",
                     "itemListElement": [
-                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding DJs & Club DJs" } },
-                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Event Anchors & Stand-up Comedians" } }
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "DJ Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Wedding DJ Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Instrumentalist Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Event Anchor Booking" } },
+                      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Stand-up Comedian Booking" } }
                     ]
                   }
                 ]

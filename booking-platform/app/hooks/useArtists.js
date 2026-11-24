@@ -147,6 +147,8 @@ export const useFeaturedArtists = (limit = 6) => {
         languages: artist.performing_language || (Array.isArray(artist.languages) ? artist.languages.join(', ') : (artist.languages || 'Hindi, English')),
         successful_bookings: artist.successful_bookings,
         rating: artist.rating,
+        bio: artist.bio || '',
+        description: artist.bio ? (artist.bio.length > 95 ? artist.bio.substring(0, 92) + '...' : artist.bio) : 'Verified live performer available for private and corporate event bookings.',
         img: artist.cover_image_url || artist.profile_image_url || artist.artist_images?.[0]?.image_url || null,
       }));
 

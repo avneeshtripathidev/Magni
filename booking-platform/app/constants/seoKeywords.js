@@ -229,3 +229,66 @@ export const footerSeoKeywords = [
   "live singer near me",
   "singer for house party in gurgaon"
 ];
+
+// ============================================================================
+// Master Keyword Clusters - Magnevents SEO Growth Matrix
+// ============================================================================
+
+export const primaryKeywords = [
+  "Book Singer Online",
+  "Live Singer Booking",
+  "Singer for Events",
+  "Artist Booking Platform India",
+  "Book Artists for Events",
+  "Live Music Booking",
+  "Book Live Band",
+  "Hire Musicians for Events",
+  "Event Entertainment Booking"
+];
+
+export const weddingKeywords = [
+  "Singer for Wedding",
+  "Live Band for Wedding",
+  "Bollywood Singer for Wedding",
+  "Sufi Singer for Wedding",
+  "Wedding Musician Booking",
+  "Live Music for Sangeet",
+  "Wedding DJ Booking"
+];
+
+export const partyKeywords = [
+  "Singer for Birthday Party",
+  "Singer for House Party",
+  "Live Music for Private Parties",
+  "DJ for Birthday Party",
+  "Acoustic Singer for Private Events",
+  "Ghazal Singer for Private Party"
+];
+
+export const corporateKeywords = [
+  "Singer for Corporate Events",
+  "Live Band for Corporate Events",
+  "Corporate Event Entertainment",
+  "Musicians for Corporate Parties",
+  "Professional Event Performers"
+];
+
+export const categoryKeywords = [
+  "Bollywood Singer Booking",
+  "Punjabi Singer Booking",
+  "Sufi Singer Booking",
+  "Ghazal Singer Booking",
+  "Live Band Booking",
+  "DJ Booking",
+  "Instrumentalist Booking",
+  "Event Anchor Booking",
+  "Stand-up Comedian Booking"
+];
+
+export const masterKeywordClusters = {
+  primary: primaryKeywords,
+  wedding: weddingKeywords,
+  party: partyKeywords,
+  corporate: corporateKeywords,
+  categories: categoryKeywords
+};

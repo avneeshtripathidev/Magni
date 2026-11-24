@@ -35,23 +35,28 @@ export const BOOKING_STEPS = [
 export const WHY_POINTS = [
   {
     icon: '✨',
-    title: 'AI-Powered Artist Search',
-    desc: 'Instantly find the perfect verified singer, band, or live musician using our cutting-edge AI matching system tailored to your exact budget, genre, language, and event date.',
+    title: 'Curated Artist Discovery',
+    desc: 'Instantly discover verified live singers, bands, and DJs using our AI matching system and artist concierge tailored to your budget, preferred genres, and event date.',
   },
   {
-    icon: '🎯',
-    title: 'Handpicked for You',
-    desc: 'When you book a singer for a house party, hire Sufi singers in Delhi, or need a live band for weddings, our artist experts help you choose the right talent. Every singer and band is carefully selected to match your unique event style and budget every single time.',
+    icon: '🎬',
+    title: 'Authentic Portfolio Exploration',
+    desc: 'Watch unedited stage showreels, high-fidelity audio samples, and real live gig videos before booking so you know exactly what your guests will experience.',
+  },
+  {
+    icon: '💎',
+    title: '100% Transparent Pricing',
+    desc: 'Direct artist booking with zero hidden agency markups or surprises. Compare clear upfront quotes and lock in confirmed dates with total financial transparency.',
   },
   {
     icon: '🤝',
-    title: 'Hassle-Free Booking',
-    desc: 'We make it simple to hire a live singer, band, or musician for any event. From your first call to the final song, our team takes care of every detail. Enjoy an easy, smooth musician booking service with Magnevents.',
+    title: 'Dedicated Booking Assistance',
+    desc: 'From sound rider management and technical coordination to real-time event day support, our team ensures 100% Artist Arrival Guarantee and seamless execution.',
   },
   {
-    icon: '🎵',
-    title: 'Complete Entertainment Setup',
-    desc: 'With Magnevents, you get more than just great artists. We provide a complete entertainment package — live singers, bands, professional sound engineers, and all sound equipment — so you can enjoy amazing live music for events without any extra hassle.',
+    icon: '🎉',
+    title: 'Event-Specific Artist Selection',
+    desc: 'Handpicked performers customized for weddings, private house parties, corporate galas, and college festivals across Delhi-NCR, Mumbai, Bangalore, and all major cities.',
   },
 ]
 
@@ -95,28 +100,36 @@ export const TESTIMONIALS = [
 
 export const FAQS = [
   {
-    q: 'How soon can I get artist options?',
-    a: 'Most requests receive curated options within 2 to 6 hours. For peak wedding dates or celebrity artists, it may take up to 24 hours to verify availability.'
+    q: 'How do I book a singer online or hire a live band on Magnevents?',
+    a: 'You can search verified artists by category, location, and event type. Explore video showreels, audio samples, and direct prices, then submit an inquiry or call our concierge. We verify availability, confirm your date, and issue a direct booking contract with 0% agency fees.'
   },
   {
-    q: 'Can I book multiple artist categories for one event?',
-    a: 'Yes. We specialize in "Full-Show Flow." You can combine a Sufi singer for welcoming, an Anchor for hosting, and a DJ for the after-party in one single booking.'
+    q: 'How soon can I get artist options and quotes?',
+    a: 'Most requests receive curated options and quotes within 2 to 6 hours. For peak wedding dates, festival weekends, or celebrity artists, verification typically takes between 6 and 24 hours.'
   },
   {
-    q: 'Do you handle sound and technical coordination?',
-    a: 'Yes. Most of our packages include professional sound engineers and equipment. We ensure the artist’s technical rider is met without you worrying about cables or mixers.'
+    q: 'Can I book multiple artist categories (e.g. Sufi singer, wedding DJ, and anchor) for one event?',
+    a: 'Yes. We specialize in complete event entertainment flow. You can book an acoustic guitarist or Sufi singer for welcoming, a live band or Bollywood vocalist for the main concert, an anchor for stage coordination, and a DJ for the after-party under one unified booking.'
   },
   {
-    q: 'What if an artist is unable to perform last minute?',
-    a: 'Peace of mind is our priority. In the rare case of a medical emergency, Magnevents guarantees a replacement of equal or higher caliber through our verified artist network.'
+    q: 'Are live singers and bands available in Delhi-NCR, Mumbai, Bangalore, and tier-2 cities?',
+    a: 'Yes. Magnevents features local verified rosters across Delhi NCR (including Noida, Gurgaon, Ghaziabad), Mumbai, Bangalore, Jaipur, Hyderabad, Pune, Chandigarh, Lucknow, Bareilly, and 1,000+ Indian cities with zero intercity travel markups.'
   },
   {
-    q: 'Can we request specific songs or a customized setlist?',
-    a: 'Absolutely. We encourage you to share your "Must-Play" list. Whether it’s a specific entry song for a bride or a corporate anthem, our artists will tailor their performance.'
+    q: 'Do you handle sound equipment and technical stage coordination?',
+    a: 'Yes. Most artist packages include full technical rider management, professional sound engineering, microphones, mixers, and stage audio setup so you do not need to manage technical coordination separately.'
   },
   {
-    q: 'How far in advance should I book my entertainment?',
-    a: 'For peak wedding seasons (Nov-Feb), we recommend booking 3-4 months in advance. For corporate mixers or house parties, 2-3 weeks is usually sufficient.'
+    q: 'What is the Magnevents 100% Artist Arrival Guarantee?',
+    a: 'Peace of mind is our utmost priority. Every booking is secured by our 100% Artist Arrival Guarantee. In the improbable case of a medical emergency or travel disruption, our dedicated concierge provides an immediate replacement of equal or higher caliber from our verified network.'
+  },
+  {
+    q: 'Can we request customized setlists and favorite songs?',
+    a: 'Absolutely. Whether you want a customized bridal entry track, Bollywood retro classics, soulful Sufi qawwalis, or a corporate anthem, our artists coordinate your must-play setlist prior to the performance.'
+  },
+  {
+    q: 'How far in advance should I book live artists for weddings or private parties?',
+    a: 'For wedding season dates (October through March) and major corporate year-end events, we recommend booking 2 to 4 months in advance. For private house parties, birthdays, and acoustic gigs, 1 to 2 weeks is usually sufficient.'
   },
 ]
 

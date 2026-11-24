@@ -198,7 +198,7 @@ function FeaturedArtistsSection() {
       <div className="hp-feat-head-v2">
         <div className="hp-section-head" style={{ marginBottom: 0, alignItems: 'flex-start' }}>
           <h2 className="hp-display-title" style={{ textAlign: 'left', margin: 0 }}>
-            Featured <span>Artists</span>
+            Popular <span>Artist Bookings</span>
           </h2>
         </div>
 
@@ -306,6 +306,21 @@ function FeaturedArtistsSection() {
                           {[artist.city, artist.state].filter(Boolean).join(", ") || "India"}
                         </span>
 
+                        {artist.description && (
+                          <p className="hp-feat-desc-v2" style={{
+                            fontSize: '12px',
+                            color: 'rgba(245, 240, 233, 0.72)',
+                            margin: '8px 0 10px',
+                            lineHeight: 1.4,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden'
+                          }}>
+                            {artist.description}
+                          </p>
+                        )}
+
                         <div className="hp-feat-rating-v2">
                           <Stars count={Math.round(Number(artist.rating || 0))} />
                           <span className="hp-feat-score-v2">
@@ -314,6 +329,54 @@ function FeaturedArtistsSection() {
                             {artist.successful_bookings || 0}
                             {" bookings"}
                           </span>
+                        </div>
+
+                        <div className="hp-feat-card-actions" style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          marginTop: '12px'
+                        }}>
+                          <span className="hp-feat-btn-portfolio" style={{
+                            flex: 1,
+                            textAlign: 'center',
+                            fontSize: '11.5px',
+                            fontWeight: '600',
+                            padding: '6px 8px',
+                            borderRadius: '6px',
+                            background: 'rgba(255, 255, 255, 0.06)',
+                            color: '#FAF7F2',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                          }}>
+                            Portfolio
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('open-contact-modal', { 
+                                  detail: { type: 'booking', artistName: artist.name } 
+                                }));
+                              }
+                            }}
+                            className="hp-feat-btn-book"
+                            style={{
+                              flex: 1,
+                              textAlign: 'center',
+                              fontSize: '11.5px',
+                              fontWeight: '700',
+                              padding: '6px 8px',
+                              borderRadius: '6px',
+                              background: 'linear-gradient(135deg, #E8B943, #D49E28)',
+                              color: '#120F12',
+                              border: 'none',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Book Artist
+                          </button>
                         </div>
                       </div>
                     </div>

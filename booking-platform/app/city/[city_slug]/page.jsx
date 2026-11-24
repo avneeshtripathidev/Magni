@@ -10,6 +10,9 @@ import '../../seo-pages.css';
 
 const DIRECTORY_CITIES = [
   { name: 'Delhi NCR', slug: 'delhi' },
+  { name: 'Noida', slug: 'noida' },
+  { name: 'Gurgaon', slug: 'gurgaon' },
+  { name: 'Ghaziabad', slug: 'ghaziabad' },
   { name: 'Mumbai', slug: 'mumbai' },
   { name: 'Bengaluru', slug: 'bangalore' },
   { name: 'Hyderabad', slug: 'hyderabad' },
@@ -21,6 +24,7 @@ const DIRECTORY_CITIES = [
   { name: 'Udaipur', slug: 'udaipur' },
   { name: 'Chandigarh', slug: 'chandigarh' },
   { name: 'Lucknow', slug: 'lucknow' },
+  { name: 'Bareilly', slug: 'bareilly' },
   { name: 'Goa', slug: 'goa' },
   { name: 'Indore', slug: 'indore' },
   { name: 'Bhopal', slug: 'bhopal' },
@@ -176,7 +180,35 @@ export default async function CityLandingPage({ params }) {
   ]);
   const blogs = blogsResult?.data || [];
 
-  // 3. Schema Markup
+  // 3. City FAQs & Schema Markup
+  const cityFaqs = [
+    {
+      q: `How much does it cost to book a live singer or band in ${city.name}?`,
+      a: `Verified solo singers and acoustic guitarists in ${city.name} typically start from ₹5,999 to ₹15,000 for house parties. Full 4-piece to 6-piece live bands and wedding orchestras range between ₹25,000 and ₹1,50,000+, depending on duration and stage production rider.`
+    },
+    {
+      q: `How does artist arrival and sound setup work in ${city.name}?`,
+      a: `Every booking in ${city.name} is covered by our 100% Artist Arrival Guarantee. Performers arrive 90 to 120 minutes prior to showtime for thorough soundchecks. Full sound engineering and acoustic management are coordinated directly with your venue.`
+    },
+    {
+      q: `Can I book Bollywood singers, Sufi ensembles, and wedding DJs in ${city.name}?`,
+      a: `Yes! Magnevents manages a curated local roster in ${city.name} spanning Bollywood playback vocalists, soulful Sufi qawwals, Punjabi folk singers, wedding DJs, corporate anchors, and instrumentalists.`
+    },
+    {
+      q: `How do I confirm a booking for my event in ${city.name}?`,
+      a: `Search available artists in ${city.name}, listen to showreels, review transparent prices, and submit your event date. Our concierge confirms availability within 2-6 hours and issues a direct booking agreement with 0% agency fees.`
+    }
+  ];
+
+  const cityCategoryLinks = [
+    { label: `Bollywood Singers in ${city.name}`, href: `/bollywood-singer-in-${city.slug}` },
+    { label: `Sufi Singers in ${city.name}`, href: `/sufi-singer-in-${city.slug}` },
+    { label: `Live Bands in ${city.name}`, href: `/live-band-in-${city.slug}` },
+    { label: `Wedding DJs in ${city.name}`, href: `/wedding-dj-in-${city.slug}` },
+    { label: `House Party Singers in ${city.name}`, href: `/singer-for-house-party-in-${city.slug}` },
+    { label: `Corporate Musicians in ${city.name}`, href: `/corporate-musician-in-${city.slug}` },
+  ];
+
   const schema = [
     {
       '@context': 'https://schema.org',
@@ -205,6 +237,18 @@ export default async function CityLandingPage({ params }) {
         price: '5999',
         availability: 'https://schema.org/InStock',
       },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: cityFaqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.a,
+        },
+      })),
     },
     {
       '@context': 'https://schema.org',
@@ -378,6 +422,79 @@ export default async function CityLandingPage({ params }) {
               </div>
             </section>
           )}
+
+          {/* Popular Categories in this City */}
+          <section className="city-categories-section" style={{ margin: '40px 0' }}>
+            <div className="city-section-heading">
+              <div>
+                <h2>Popular artist categories in {city.name}</h2>
+                <p className="city-section-sub">
+                  Find specialized live singers, Bollywood bands, and wedding DJs performing locally in {city.name}.
+                </p>
+              </div>
+            </div>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+              marginTop: '16px'
+            }}>
+              {cityCategoryLinks.map((cat, idx) => (
+                <Link
+                  key={idx}
+                  href={cat.href}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '100px',
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#FAF7F2',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <span>{cat.label}</span>
+                  <span style={{ color: '#E8B943' }}>→</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          {/* City FAQs with rich question & answer layout */}
+          <section className="city-faqs-section" style={{ margin: '48px 0' }}>
+            <div className="city-section-heading">
+              <div>
+                <h2>Frequently asked questions about booking in {city.name}</h2>
+                <p className="city-section-sub">
+                  Essential booking details, pricing transparency, and artist logistics for events in {city.name}.
+                </p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '20px' }}>
+              {cityFaqs.map((faq, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '18px 20px',
+                    borderRadius: '12px',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)'
+                  }}
+                >
+                  <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#FAF7F2', margin: '0 0 8px' }}>
+                    {faq.q}
+                  </h3>
+                  <p style={{ fontSize: '13.5px', color: 'rgba(245, 240, 233, 0.72)', lineHeight: 1.5, margin: 0 }}>
+                    {faq.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
 
           {/* 5. Other Cities Directory (clean, understated link grid) */}
           <section className="city-directory-section" aria-label="Other Indian cities">
