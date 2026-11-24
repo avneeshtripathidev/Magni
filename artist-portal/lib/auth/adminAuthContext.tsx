@@ -36,6 +36,7 @@ interface AdminAuthContextType {
     newStatus: 'approved' | 'rejected' | 'under_review' | 'pending', 
     reason?: string
   ) => Promise<void>;
+  toggleArtistLive: (artistId: string, makeLive: boolean) => Promise<void>;
   addArtist: (
     artist: ArtistProfile,
     galleryImages?: string[]
@@ -307,6 +308,76 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const toggleArtistLive = async (artistId: string, makeLive: boolean) => {
+    // 1. Immediately update memory state for instantaneous UI reaction
+    setArtists((prev) =>
+      prev.map((a) => {
+        if (a.id === artistId) {
+          return {
+            ...a,
+            is_live: makeLive,
+            verification_status: makeLive ? 'approved' : a.verification_status,
+            verified_at: makeLive ? (a.verified_at || new Date().toISOString()) : a.verified_at,
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return a;
+      })
+    );
+
+    // 2. Sync to local storage caches if cached locally
+    if (typeof window !== 'undefined') {
+      try {
+        const existingRaw = localStorage.getItem('artist_admin_registered_artists');
+        if (existingRaw) {
+          const existing: ArtistProfile[] = JSON.parse(existingRaw);
+          const updated = existing.map((a) =>
+            a.id === artistId
+              ? {
+                  ...a,
+                  is_live: makeLive,
+                  verification_status: makeLive ? 'approved' : a.verification_status,
+                  verified_at: makeLive ? (a.verified_at || new Date().toISOString()) : a.verified_at,
+                  updated_at: new Date().toISOString(),
+                }
+              : a
+          );
+          localStorage.setItem('artist_admin_registered_artists', JSON.stringify(updated));
+        }
+        const savedReg = localStorage.getItem('magnevents_registered_artist');
+        if (savedReg) {
+          const parsed = JSON.parse(savedReg);
+          if (parsed.id === artistId) {
+            parsed.is_live = makeLive;
+            if (makeLive) {
+              parsed.verification_status = 'approved';
+              parsed.verified_at = parsed.verified_at || new Date().toISOString();
+            }
+            parsed.updated_at = new Date().toISOString();
+            localStorage.setItem('magnevents_registered_artist', JSON.stringify(parsed));
+          }
+        }
+      } catch (err) {
+        console.warn('Local storage toggle live error:', err);
+      }
+    }
+
+    // 3. Persist to Supabase
+    try {
+      const updates: Record<string, any> = {
+        is_live: makeLive,
+        updated_at: new Date().toISOString(),
+      };
+      if (makeLive) {
+        updates.verification_status = 'approved';
+        updates.verified_at = new Date().toISOString();
+      }
+      await supabase.from('artists').update(updates).eq('id', artistId);
+    } catch (e) {
+      console.warn('Supabase toggleArtistLive error:', e);
+    }
+  };
+
   const persistLocalRegistered = (newItems: ArtistProfile[]) => {
     try {
       const existingRaw = localStorage.getItem('artist_admin_registered_artists');
@@ -476,6 +547,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         signInAdminWithGoogle,
         logoutAdmin,
         updateArtistStatus,
+        toggleArtistLive,
         addArtist,
         bulkAddArtists,
         deleteArtist,

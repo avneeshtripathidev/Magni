@@ -16,6 +16,7 @@ import {
   Clock,
   AlertCircle,
   Eye,
+  EyeOff,
   Music,
   Sparkles,
   Phone,
@@ -49,7 +50,7 @@ interface ArtistDetailModalProps {
 }
 
 export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
-  const { artists, updateArtistStatus, deleteArtist } = useAdminAuth();
+  const { artists, updateArtistStatus, deleteArtist, toggleArtistLive } = useAdminAuth();
   const [modalTab, setModalTab] = useState<'overview' | 'pricing' | 'media' | 'kyc'>('overview');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [rejectionModalOpen, setRejectionModalOpen] = useState(false);
@@ -59,44 +60,58 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
 
   if (!artist) return null;
 
+  const currentArtist = artists.find((a) => a.id === artist.id) || artist;
+
   const rankMap = getArtistRankMap(artists);
-  const userRank = rankMap[artist.id] || {
+  const userRank = rankMap[currentArtist.id] || {
     rank: 1,
-    totalCompleted: artist.successful_bookings || 0,
+    totalCompleted: currentArtist.successful_bookings || 0,
   };
   const userTier = getArtistTierProgress(userRank.totalCompleted);
-  const isUserApproved = artist.verification_status === 'approved';
-  const isUserRejected = artist.verification_status === 'rejected';
-  const isUserReviewing = artist.verification_status === 'under_review';
+  const isUserApproved = currentArtist.verification_status === 'approved';
+  const isUserRejected = currentArtist.verification_status === 'rejected';
+  const isUserReviewing = currentArtist.verification_status === 'under_review';
   const startingRate =
-    artist.submitted_pricing?.starting_price ||
-    artist.submitted_pricing?.solo_price ||
-    artist.price_min ||
+    currentArtist.submitted_pricing?.starting_price ||
+    currentArtist.submitted_pricing?.solo_price ||
+    currentArtist.price_min ||
     15000;
 
+  const handleTakeOffLive = async () => {
+    await toggleArtistLive(currentArtist.id, false);
+    setActionNotice(`"${currentArtist.stage_name || currentArtist.name}" has been taken off live from main website.`);
+    setTimeout(() => setActionNotice(null), 4000);
+  };
+
+  const handleMakeLive = async () => {
+    await toggleArtistLive(currentArtist.id, true);
+    setActionNotice(`"${currentArtist.stage_name || currentArtist.name}" is now live on main website!`);
+    setTimeout(() => setActionNotice(null), 4000);
+  };
+
   const handleQuickApprove = async () => {
-    await updateArtistStatus(artist.id, 'approved');
-    setActionNotice(`Approved ${artist.name}! Profile is now live.`);
+    await toggleArtistLive(currentArtist.id, true);
+    setActionNotice(`Approved ${currentArtist.name}! Profile is now live on main website.`);
     setTimeout(() => setActionNotice(null), 4000);
   };
 
   const handleQuickRequestChanges = async () => {
     await updateArtistStatus(
-      artist.id,
+      currentArtist.id,
       'under_review',
       'Please upload higher resolution performance videos and KYC proof.'
     );
-    setActionNotice(`Marked ${artist.name} as Under Review.`);
+    setActionNotice(`Marked ${currentArtist.name} as Under Review.`);
     setTimeout(() => setActionNotice(null), 4000);
   };
 
   const handleConfirmReject = async () => {
     await updateArtistStatus(
-      artist.id,
+      currentArtist.id,
       'rejected',
       rejectionReason || 'Information does not satisfy platform requirements.'
     );
-    setActionNotice(`Rejected application for ${artist.name}. Feedback sent.`);
+    setActionNotice(`Rejected application for ${currentArtist.name}. Feedback sent.`);
     setRejectionModalOpen(false);
     setRejectionReason('');
     setTimeout(() => setActionNotice(null), 4000);
@@ -105,7 +120,7 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
   const handleDeleteProfile = async () => {
     setDeleting(true);
     try {
-      await deleteArtist(artist.id);
+      await deleteArtist(currentArtist.id);
       setDeleteConfirmOpen(false);
       onClose();
     } catch (err) {
@@ -149,7 +164,7 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
               <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-lg sm:text-2xl font-black text-white tracking-tight leading-none truncate">
-                    {artist.name}
+                    {currentArtist.name}
                   </h2>
                   <span
                     className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
@@ -162,7 +177,27 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
                         : 'bg-amber-500/20 text-amber-300 border border-amber-400/30'
                     }`}
                   >
-                    {artist.verification_status?.replace('_', ' ') || 'Pending'}
+                    {currentArtist.verification_status?.replace('_', ' ') || 'Pending'}
+                  </span>
+
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                      currentArtist.is_live
+                        ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-400/40'
+                        : 'bg-white/10 text-slate-300 border border-white/20'
+                    }`}
+                  >
+                    {currentArtist.is_live ? (
+                      <>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>Live on Website</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3 h-3 text-slate-400" />
+                        <span>Not Live</span>
+                      </>
+                    )}
                   </span>
                 </div>
 
@@ -761,12 +796,29 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
         {/* D. Sticky Action Footer */}
         <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
           <div className="flex items-center justify-between w-full sm:w-auto gap-3">
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-2 text-xs flex-wrap">
               <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
                 Status:
               </span>
               <span className="font-black text-slate-800 capitalize">
-                {artist.verification_status?.replace('_', ' ') || 'Pending'}
+                {currentArtist.verification_status?.replace('_', ' ') || 'Pending'}
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
+                Website:
+              </span>
+              <span className={`font-bold text-xs flex items-center gap-1 ${currentArtist.is_live ? 'text-emerald-600' : 'text-slate-500'}`}>
+                {currentArtist.is_live ? (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Live</span>
+                  </>
+                ) : (
+                  <>
+                    <EyeOff className="w-3 h-3 text-slate-400" />
+                    <span>Not Live</span>
+                  </>
+                )}
               </span>
             </div>
 
@@ -796,13 +848,27 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
               Request Changes
             </button>
 
-            <button
-              onClick={handleQuickApprove}
-              className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 border border-emerald-400 text-white font-black text-xs py-2.5 px-5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
-            >
-              <Check className="w-4 h-4 stroke-[3]" />
-              <span>Approve &amp; Go Live</span>
-            </button>
+            {currentArtist.is_live ? (
+              <button
+                type="button"
+                onClick={handleTakeOffLive}
+                className="flex-1 sm:flex-none bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                title="Click to take this artist off live from the main website (magnevents.in)"
+              >
+                <EyeOff className="w-4 h-4 text-rose-600" />
+                <span>Take Off Live (Hide from Website)</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleMakeLive}
+                className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 border border-emerald-500 text-white font-black text-xs py-2.5 px-5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                title="Click to publish this artist live to the main website (magnevents.in)"
+              >
+                <Globe className="w-4 h-4 text-white" />
+                <span>Make Live on Website</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

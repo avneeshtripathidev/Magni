@@ -17,6 +17,8 @@ import {
   Clock, 
   AlertCircle,
   Eye,
+  EyeOff,
+  Globe,
   Music,
   MapPin,
   Sparkles,
@@ -26,24 +28,47 @@ import {
 } from 'lucide-react';
 
 export default function AdminArtistsDirectoryPage() {
-  const { artists, updateArtistStatus, loading } = useAdminAuth();
+  const { artists, updateArtistStatus, toggleArtistLive, loading } = useAdminAuth();
   const [selectedArtist, setSelectedArtist] = useState<ArtistProfile | null>(null);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
+  const [liveStatusTab, setLiveStatusTab] = useState<'live' | 'offline' | 'all'>('live');
+  const [toastNotice, setToastNotice] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastNotice(msg);
+    setTimeout(() => setToastNotice(null), 3500);
+  };
 
   const categories = ['all', 'Singer', 'Band', 'DJ'];
 
   const rankMap = getArtistRankMap(artists);
 
+  const liveArtists = artists.filter((a) => Boolean(a.is_live) && a.verification_status === 'approved');
+  const offlineArtists = artists.filter((a) => !a.is_live || a.verification_status !== 'approved');
+  const inReviewCount = artists.filter((a) => a.verification_status === 'pending' || a.verification_status === 'under_review').length;
+
   const filtered = artists
     .filter((a) => {
+      // 1. Live Status Tab filter: 'live' shows ONLY approved & live artists on website
+      if (liveStatusTab === 'live') {
+        if (!a.is_live || a.verification_status !== 'approved') return false;
+      } else if (liveStatusTab === 'offline') {
+        if (a.is_live && a.verification_status === 'approved') return false;
+      }
+
+      // 2. Category filter
       if (categoryFilter !== 'all' && !a.category?.toLowerCase().includes(categoryFilter.toLowerCase())) {
         return false;
       }
+
+      // 3. Location filter
       if (!matchesLocationFilter(locationFilter, a.city, a.state)) {
         return false;
       }
+
+      // 4. Search query
       if (search.trim()) {
         const q = search.toLowerCase();
         return (
@@ -59,24 +84,106 @@ export default function AdminArtistsDirectoryPage() {
 
   return (
     <div className="space-y-6 font-sans">
+      {/* Toast Notification */}
+      {toastNotice && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <span>{toastNotice}</span>
+        </div>
+      )}
+
       {/* 1. Header Actions */}
-      <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-200">
-        <Link
-          href="/admin/register-artist"
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs inline-flex items-center gap-1.5"
-        >
-          <span>+ Register Artist</span>
-        </Link>
-        <Link
-          href="/admin/verification"
-          className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-md shadow-sky-500/20 inline-flex items-center gap-2 transition-all"
-        >
-          <span>Pending Verifications</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/register-artist"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs inline-flex items-center gap-1.5"
+          >
+            <span>+ Register Artist</span>
+          </Link>
+          <Link
+            href="/admin/verification"
+            className="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-md shadow-sky-500/20 inline-flex items-center gap-2 transition-all"
+          >
+            <span>Pending Verifications</span>
+            {inReviewCount > 0 && (
+              <span className="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded-full font-black">
+                {inReviewCount}
+              </span>
+            )}
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {inReviewCount > 0 && (
+          <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200/80 px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-medium">
+            <Clock className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+            <span>{inReviewCount} performer{inReviewCount > 1 ? 's' : ''} awaiting approval in Verification Queue</span>
+          </div>
+        )}
       </div>
 
-      {/* 2. Controls */}
+      {/* 2. Live Status Filter Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setLiveStatusTab('live')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              liveStatusTab === 'live'
+                ? 'bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-500'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+            <span>Live on Website</span>
+            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${liveStatusTab === 'live' ? 'bg-emerald-700/90 text-white' : 'bg-slate-200 text-slate-700'}`}>
+              {liveArtists.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setLiveStatusTab('offline')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              liveStatusTab === 'offline'
+                ? 'bg-slate-900 text-white shadow-sm ring-1 ring-slate-800'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
+            }`}
+          >
+            <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+            <span>Not Live / Offline</span>
+            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${liveStatusTab === 'offline' ? 'bg-slate-800 text-slate-200' : 'bg-slate-200 text-slate-700'}`}>
+              {offlineArtists.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setLiveStatusTab('all')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              liveStatusTab === 'all'
+                ? 'bg-indigo-600 text-white shadow-sm ring-1 ring-indigo-500'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
+            }`}
+          >
+            <span>All Performers</span>
+            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${liveStatusTab === 'all' ? 'bg-indigo-700/90 text-white' : 'bg-slate-200 text-slate-700'}`}>
+              {artists.length}
+            </span>
+          </button>
+        </div>
+
+        <div className="text-xs text-slate-500 font-medium px-2 hidden md:block">
+          {liveStatusTab === 'live'
+            ? 'Showing only approved & live artists on main website'
+            : liveStatusTab === 'offline'
+            ? 'Artists hidden from main website search'
+            : 'Complete performer registry'}
+        </div>
+      </div>
+
+      {/* 3. Controls (Categories, Location & Search) */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1 sm:pb-0">
           {categories.map((cat) => {
@@ -124,16 +231,39 @@ export default function AdminArtistsDirectoryPage() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-16 text-center p-8 bg-white rounded-2xl border border-dashed border-slate-200 space-y-2">
+        <div className="py-16 text-center p-8 bg-white rounded-2xl border border-dashed border-slate-200 space-y-3">
           <Users className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-bold text-slate-700">No performers found</h3>
-          <p className="text-xs text-slate-400">Try adjusting your search query, location, or act category.</p>
+          <h3 className="text-sm font-bold text-slate-800">
+            {liveStatusTab === 'live'
+              ? 'No Live Performers Match Filters'
+              : liveStatusTab === 'offline'
+              ? 'No Offline Performers Match Filters'
+              : 'No Performers Found'}
+          </h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            {liveStatusTab === 'live'
+              ? 'Currently showing only approved & live artists on the main website. Click "Not Live / Offline" to view and publish hidden artists, or visit the Verification Queue.'
+              : 'Try adjusting your search query, location filter, or act category.'}
+          </p>
+          {liveStatusTab === 'live' && offlineArtists.length > 0 && (
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setLiveStatusTab('offline')}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shadow-xs"
+              >
+                <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                <span>View {offlineArtists.length} Offline Performer{offlineArtists.length > 1 ? 's' : ''}</span>
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 md:gap-4">
           {filtered.map((artist) => {
             const isApproved = artist.verification_status === 'approved';
             const isRejected = artist.verification_status === 'rejected';
+            const isLiveOnWebsite = Boolean(artist.is_live && isApproved);
             const rankInfo = rankMap[artist.id] || { rank: 1, totalCompleted: artist.successful_bookings || 0 };
             const heroImg = artist.cover_image_url || artist.profile_image_url || '';
 
@@ -172,15 +302,31 @@ export default function AdminArtistsDirectoryPage() {
                       />
                     </div>
                     <span
-                      className={`px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs ${
-                        isApproved
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs flex items-center gap-1 ${
+                        isLiveOnWebsite
+                          ? 'bg-emerald-500 text-white border-emerald-400'
+                          : !artist.is_live
+                          ? 'bg-slate-900/80 text-slate-200 border-white/20 backdrop-blur-sm'
                           : isRejected
-                          ? 'bg-rose-50 text-rose-700 border-rose-200'
-                          : 'bg-amber-50 text-amber-700 border-amber-200'
+                          ? 'bg-rose-500 text-white border-rose-400'
+                          : 'bg-amber-500 text-white border-amber-400'
                       }`}
                     >
-                      {isApproved ? 'Live' : isRejected ? 'Rejected' : 'Review'}
+                      {isLiveOnWebsite ? (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                          <span>Live</span>
+                        </>
+                      ) : !artist.is_live ? (
+                        <>
+                          <EyeOff className="w-2.5 h-2.5 text-slate-300" />
+                          <span>Not Live</span>
+                        </>
+                      ) : isRejected ? (
+                        'Rejected'
+                      ) : (
+                        'Review'
+                      )}
                     </span>
                   </div>
                 </div>
@@ -217,9 +363,19 @@ export default function AdminArtistsDirectoryPage() {
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-1">
-                        <span className="text-slate-400">Status</span>
-                        <span className={`font-bold ${artist.is_live ? 'text-emerald-600' : 'text-slate-400'}`}>
-                          {artist.is_live ? 'Active' : 'Hidden'}
+                        <span className="text-slate-400">Website</span>
+                        <span className={`font-bold flex items-center gap-1 ${isLiveOnWebsite ? 'text-emerald-600' : 'text-slate-400'}`}>
+                          {isLiveOnWebsite ? (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Live</span>
+                            </>
+                          ) : (
+                            <>
+                              <EyeOff className="w-3 h-3 text-slate-400" />
+                              <span>Not Live</span>
+                            </>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -253,24 +409,31 @@ export default function AdminArtistsDirectoryPage() {
 
                       {artist.is_live ? (
                         <button
-                          onClick={(e) => {
+                          type="button"
+                          onClick={async (e) => {
                             e.stopPropagation();
-                            updateArtistStatus(artist.id, 'under_review');
+                            await toggleArtistLive(artist.id, false);
+                            showToast(`"${artist.stage_name || artist.name}" has been taken off live from main website.`);
                           }}
-                          className="h-7 sm:h-8 px-1 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center w-full transition-all"
-                          title="Hide from public search"
+                          className="h-7 sm:h-8 px-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 border border-rose-200 hover:border-rose-300 text-[10px] sm:text-xs font-bold inline-flex items-center justify-center gap-1 w-full transition-all shadow-xs"
+                          title="Click to take this artist off live from the main website (magnevents.in)"
                         >
-                          Hide
+                          <EyeOff className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-600 flex-shrink-0" />
+                          <span className="truncate">Take Off Live</span>
                         </button>
                       ) : (
                         <button
-                          onClick={(e) => {
+                          type="button"
+                          onClick={async (e) => {
                             e.stopPropagation();
-                            updateArtistStatus(artist.id, 'approved');
+                            await toggleArtistLive(artist.id, true);
+                            showToast(`"${artist.stage_name || artist.name}" is now live on main website!`);
                           }}
-                          className="h-7 sm:h-8 px-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold inline-flex items-center justify-center w-full transition-all"
+                          className="h-7 sm:h-8 px-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold inline-flex items-center justify-center gap-1 w-full transition-all shadow-xs"
+                          title="Click to publish this artist live to the main website (magnevents.in)"
                         >
-                          Publish
+                          <Globe className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" />
+                          <span className="truncate">Make Live</span>
                         </button>
                       )}
                     </div>
