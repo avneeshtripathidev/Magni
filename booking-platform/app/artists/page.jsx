@@ -71,8 +71,6 @@ export default function ArtistsPage() {
   return (
     <main className="artists-page">
       <div className="lux-container">
-        <h1 className="sr-only">Live Artists Directory — Book Singers, Bands &amp; DJs | Magnevents</h1>
-
         <div className="artists-top-bar">
           <div className="artists-filters" style={{ margin: 0, flex: 1 }}>
             {ARTISTS_CAT_FILTER.map((cat, idx) => (
