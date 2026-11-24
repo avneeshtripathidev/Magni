@@ -202,6 +202,19 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
 
         if (mounted) {
           setArtists(currentArtists);
+          // Background sync any approved & live artists to the Main DB (magnevents.in)
+          const liveToSync = currentArtists.filter(a => a.is_live && a.verification_status === 'approved');
+          for (const art of liveToSync) {
+            fetch('/api/admin/artists/sync-live', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                artistId: art.id,
+                makeLive: true,
+                artist: art,
+              }),
+            }).catch(() => {});
+          }
         }
       } catch (e) {
         console.warn('Could not sync live artists from Supabase:', e);
@@ -306,6 +319,22 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.warn('Supabase update failed, kept in local state:', e);
     }
+
+    // 3. Sync live state to Main Production Database (magnevents.in)
+    try {
+      const artObj = artists.find((a) => a.id === artistId);
+      fetch('/api/admin/artists/sync-live', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artistId,
+          makeLive: newStatus === 'approved',
+          artist: artObj ? { ...artObj, verification_status: newStatus, is_live: newStatus === 'approved' } : undefined,
+        }),
+      }).catch(() => {});
+    } catch (err) {
+      // non-blocking
+    }
   };
 
   const toggleArtistLive = async (artistId: string, makeLive: boolean) => {
@@ -405,6 +434,22 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (e) {
       console.warn('Supabase toggleArtistLive error:', e);
+    }
+
+    // 5. Sync live state to Main Production Database (magnevents.in)
+    try {
+      const artObj = artists.find((a) => a.id === artistId);
+      fetch('/api/admin/artists/sync-live', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artistId,
+          makeLive,
+          artist: artObj ? { ...artObj, is_live: makeLive, verification_status: makeLive ? 'approved' : artObj.verification_status } : undefined,
+        }),
+      }).catch(() => {});
+    } catch (err) {
+      // non-blocking
     }
   };
 
