@@ -37,14 +37,18 @@ const STEPS = [
 ];
 
 export default function HomePage() {
-  const { user, loading, signInWithGoogle } = useArtistAuth();
+  const { user, loading, isOnboardingComplete, signInWithGoogle } = useArtistAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/dashboard');
+      if (isOnboardingComplete) {
+        router.push('/dashboard');
+      } else {
+        router.push('/onboarding');
+      }
     }
-  }, [user, loading, router]);
+  }, [user, loading, isOnboardingComplete, router]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col relative overflow-x-hidden font-sans">

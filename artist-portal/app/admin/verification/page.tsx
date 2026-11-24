@@ -9,6 +9,13 @@ import { LocationFilter, matchesLocationFilter } from '../../../components/share
 import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
 import { ModalPortal } from '../../../components/shared/ModalPortal';
 import { getArtistRankMap } from '../../../lib/artistTiers';
+import {
+  validateStep1,
+  validateStep2,
+  validateStep3,
+  validateStep4,
+  calculateStrictCompletion,
+} from '../../../lib/onboardingValidation';
 import { 
   ShieldCheck, 
   Clock, 
@@ -489,6 +496,13 @@ function AdminVerificationQueueContent() {
         const pricing = selectedArtist.submitted_pricing;
         const perf = selectedArtist.performance_details;
 
+        // Dynamic validation across all 4 mandatory steps
+        const s1Val = validateStep1(selectedArtist);
+        const s2Val = validateStep2(selectedArtist);
+        const s3Val = validateStep3(selectedArtist);
+        const s4Val = validateStep4(selectedArtist);
+        const strictCompletion = calculateStrictCompletion(selectedArtist);
+
         return (
           <ModalPortal isOpen={true} onClose={() => setSelectedArtist(null)}>
             <div className="w-full max-w-6xl max-h-[92vh] bg-[#F8FAFC] rounded-2xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden font-sans overscroll-contain">
@@ -545,8 +559,14 @@ function AdminVerificationQueueContent() {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-white/50">
                       Profile Completion
                     </span>
-                    <span className="text-sm font-black text-emerald-300">
-                      {selectedArtist.profile_completion || 85}%
+                    <span className={`text-sm font-black ${
+                      strictCompletion === 100
+                        ? 'text-emerald-400'
+                        : strictCompletion >= 50
+                        ? 'text-amber-400'
+                        : 'text-rose-400'
+                    }`}>
+                      {strictCompletion}%
                     </span>
                   </div>
 
@@ -597,7 +617,7 @@ function AdminVerificationQueueContent() {
                   >
                     <span className="w-4 h-4 rounded-full bg-black/10 flex items-center justify-center text-[10px] font-black">1</span>
                     <span>Step 1: Identity &amp; Act</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Step 1 Completed" />
+                    <span className={`w-1.5 h-1.5 rounded-full ${s1Val.isValid ? 'bg-emerald-500' : 'bg-amber-400'}`} title={s1Val.isValid ? 'Step 1 Complete' : `Missing: ${s1Val.missing.join(', ')}`} />
                   </button>
 
                   {/* Step 2: Repertoire & Bio */}
@@ -612,7 +632,7 @@ function AdminVerificationQueueContent() {
                   >
                     <span className="w-4 h-4 rounded-full bg-black/10 flex items-center justify-center text-[10px] font-black">2</span>
                     <span>Step 2: Repertoire &amp; Bio</span>
-                    <span className={`w-1.5 h-1.5 rounded-full ${selectedArtist.bio ? 'bg-emerald-500' : 'bg-amber-400'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${s2Val.isValid ? 'bg-emerald-500' : 'bg-amber-400'}`} title={s2Val.isValid ? 'Step 2 Complete' : `Missing: ${s2Val.missing.join(', ')}`} />
                   </button>
 
                   {/* Step 3: Pricing & Logistics */}
@@ -627,7 +647,7 @@ function AdminVerificationQueueContent() {
                   >
                     <span className="w-4 h-4 rounded-full bg-black/10 flex items-center justify-center text-[10px] font-black">3</span>
                     <span>Step 3: Pricing &amp; Logistics</span>
-                    <span className={`w-1.5 h-1.5 rounded-full ${(pricing?.solo_price || selectedArtist.price_min) ? 'bg-emerald-500' : 'bg-amber-400'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${s3Val.isValid ? 'bg-emerald-500' : 'bg-amber-400'}`} title={s3Val.isValid ? 'Step 3 Complete' : `Missing: ${s3Val.missing.join(', ')}`} />
                   </button>
 
                   {/* Step 4: Portfolio & Media */}
@@ -642,7 +662,7 @@ function AdminVerificationQueueContent() {
                   >
                     <span className="w-4 h-4 rounded-full bg-black/10 flex items-center justify-center text-[10px] font-black">4</span>
                     <span>Step 4: Portfolio &amp; Media</span>
-                    <span className={`w-1.5 h-1.5 rounded-full ${(selectedArtist.youtube_links?.length || selectedArtist.profile_image_url) ? 'bg-emerald-500' : 'bg-amber-400'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${s4Val.isValid ? 'bg-emerald-500' : 'bg-rose-500'}`} title={s4Val.isValid ? 'Media Assets Complete' : `Missing: ${s4Val.missing.join(', ')}`} />
                   </button>
 
                   <div className="h-4 w-px bg-slate-300 mx-1" />
@@ -684,8 +704,12 @@ function AdminVerificationQueueContent() {
                             <div>
                               <div className="flex items-center gap-2">
                                 <h3 className="text-sm font-extrabold text-slate-900">Step 1: Identity &amp; Act</h3>
-                                <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
-                                  Verified Input
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  s1Val.isValid 
+                                    ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' 
+                                    : 'bg-amber-50 border border-amber-200 text-amber-700'
+                                }`}>
+                                  {s1Val.isValid ? 'Verified Input' : 'Incomplete Input'}
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-500">Legal credentials, stage name &amp; performance categorization</p>
@@ -816,8 +840,12 @@ function AdminVerificationQueueContent() {
                             <div>
                               <div className="flex items-center gap-2">
                                 <h3 className="text-sm font-extrabold text-slate-900">Step 4: Portfolio, Media &amp; Socials</h3>
-                                <span className="px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-bold">
-                                  {selectedArtist.youtube_links?.length || 0} Video Reels
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  s4Val.isValid
+                                    ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+                                    : 'bg-rose-50 border border-rose-200 text-rose-700'
+                                }`}>
+                                  {s4Val.isValid ? `${selectedArtist.youtube_links?.length || 0} Video Reels` : 'Media Incomplete'}
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-500">Live stage footage, studio audio tracks &amp; streaming handles</p>
@@ -938,8 +966,12 @@ function AdminVerificationQueueContent() {
                             <div>
                               <div className="flex items-center gap-2">
                                 <h3 className="text-sm font-extrabold text-slate-900">Step 3: Pricing &amp; Logistics</h3>
-                                <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
-                                  ₹{(pricing?.solo_price || selectedArtist.price_min || 15000).toLocaleString('en-IN')} Base
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  s3Val.isValid
+                                    ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+                                    : 'bg-amber-50 border border-amber-200 text-amber-700'
+                                }`}>
+                                  {s3Val.isValid ? `₹${(pricing?.solo_price || selectedArtist.price_min || 15000).toLocaleString('en-IN')} Base` : 'Pricing Incomplete'}
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-500">Live booking quotes, set times &amp; technical logistics</p>
@@ -1134,10 +1166,17 @@ function AdminVerificationQueueContent() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="text-base font-extrabold text-slate-900">Step 1 of 4: Identity &amp; Act</h3>
-                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Step 1 Completed</span>
-                            </span>
+                            {s1Val.isValid ? (
+                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>Step 1 Completed</span>
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold flex items-center gap-1" title={s1Val.missing.join(', ')}>
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                <span>Step 1 Incomplete ({s1Val.missing.length} missing)</span>
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-slate-500">Legal performer registration details, contact info, and stage positioning</p>
                         </div>
@@ -1239,10 +1278,17 @@ function AdminVerificationQueueContent() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="text-base font-extrabold text-slate-900">Step 2 of 4: Repertoire, Coverage &amp; Bio</h3>
-                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Step 2 Completed</span>
-                            </span>
+                            {s2Val.isValid ? (
+                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>Step 2 Completed</span>
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold flex items-center gap-1" title={s2Val.missing.join(', ')}>
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                <span>Step 2 Incomplete ({s2Val.missing.length} missing)</span>
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-slate-500">Artist biography story, musical genre capabilities, languages spoken, and coverage territory</p>
                         </div>
@@ -1388,10 +1434,17 @@ function AdminVerificationQueueContent() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="text-base font-extrabold text-slate-900">Step 3 of 4: Pricing &amp; Event Logistics</h3>
-                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Pricing Rates Defined</span>
-                            </span>
+                            {s3Val.isValid ? (
+                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>Pricing Rates Defined</span>
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold flex items-center gap-1" title={s3Val.missing.join(', ')}>
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                <span>Pricing Incomplete ({s3Val.missing.length} missing)</span>
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-slate-500">Live booking pricing structures, stage durations, travel policies, and sound equipment rider</p>
                         </div>
@@ -1506,10 +1559,17 @@ function AdminVerificationQueueContent() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="text-base font-extrabold text-slate-900">Step 4 of 4: Portfolio, Media &amp; Socials</h3>
-                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Media Assets Submitted</span>
-                            </span>
+                            {s4Val.isValid ? (
+                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>Media Assets Submitted</span>
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold flex items-center gap-1" title={s4Val.missing.join(', ')}>
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                <span>Media Assets Incomplete ({s4Val.missing.length} missing)</span>
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-slate-500">Public profile imagery, cover banner, live stage video reels, and audio samples</p>
                         </div>

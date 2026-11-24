@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { Mic2, Lock, Mail, Loader2, ArrowRight, AlertCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
-  const { signInWithEmail, signInWithGoogle, loginAsDemoArtist } = useArtistAuth();
+  const { user, loading: authLoading, isOnboardingComplete, signInWithEmail, signInWithGoogle, loginAsDemoArtist } = useArtistAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +15,16 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (isOnboardingComplete) {
+        router.replace('/dashboard');
+      } else {
+        router.replace('/onboarding');
+      }
+    }
+  }, [user, authLoading, isOnboardingComplete, router]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +36,7 @@ export default function LoginPage() {
       if (loginErr) {
         setError(loginErr.message || 'Invalid email or password.');
       } else {
-        router.push('/dashboard');
+        // Will be redirected automatically by useEffect based on onboarding status
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred during sign in.');

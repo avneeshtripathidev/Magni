@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useArtistAuth } from '../../lib/auth/authContext';
 import {
   LayoutDashboard,
   CalendarCheck,
@@ -18,6 +19,7 @@ interface BottomNavProps {
 
 export function BottomNav({ onOpenMenu, pendingBookingsCount = 0 }: BottomNavProps) {
   const pathname = usePathname();
+  const { isOnboardingComplete } = useArtistAuth();
 
   const navItems = [
     {
@@ -58,7 +60,7 @@ export function BottomNav({ onOpenMenu, pendingBookingsCount = 0 }: BottomNavPro
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={isOnboardingComplete ? item.href : '/onboarding'}
               className={`flex flex-col items-center justify-center h-full relative transition-colors active:scale-95 touch-manipulation min-h-[48px] ${
                 item.isActive ? 'text-sky-600' : 'text-slate-500 hover:text-slate-900'
               }`}

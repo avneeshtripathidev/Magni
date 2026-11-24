@@ -54,16 +54,9 @@ export function getStatusColor(status: string) {
   }
 }
 
+import { calculateStrictCompletion } from './onboardingValidation';
+
 export function calculateCompletion(artist: any): number {
   if (!artist) return 0;
-  let score = 20; // Base registration
-
-  if (artist.bio && artist.bio.length > 25) score += 15;
-  if (artist.category && artist.genres && artist.genres.length > 0) score += 15;
-  if (artist.profile_image_url || artist.cover_image_url) score += 15;
-  if (artist.youtube_links && artist.youtube_links.length > 0) score += 15;
-  if (artist.submitted_pricing && artist.submitted_pricing.starting_price > 0) score += 10;
-  if (artist.verification_documents && artist.verification_documents.id_document_url) score += 10;
-
-  return Math.min(score, 100);
+  return calculateStrictCompletion(artist);
 }

@@ -8,6 +8,15 @@ import { artistService } from '../../services/artistService';
 import { supabase } from '../../lib/supabase/client';
 import { compressImageFile } from '../../lib/imageCompressor';
 import {
+  validateStep1,
+  validateStep2,
+  validateStep3,
+  validateStep4,
+  calculateStrictCompletion,
+  getHighestIncompleteStep,
+  isDefaultAvatar,
+} from '../../lib/onboardingValidation';
+import {
   User,
   Mic2,
   Music,
@@ -32,6 +41,7 @@ import {
   ExternalLink,
   Video,
   MapPin,
+  Lock,
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -107,7 +117,7 @@ const STEPS = [
 ];
 
 export default function ArtistOnboardingPage() {
-  const { user, artist, loading, refreshArtist, updateLocalArtist } = useArtistAuth();
+  const { user, artist, loading, isOnboardingComplete, refreshArtist, updateLocalArtist } = useArtistAuth();
   const router = useRouter();
 
   const [step, setStep] = useState(1);
@@ -177,44 +187,86 @@ export default function ArtistOnboardingPage() {
     upi_id: '',
   });
 
-  // Pre-fill from newly registered user: ONLY Name and Gmail!
-  // All other fields start empty so the user fills them himself.
+  // Strict route guard for Onboarding:
+  // - If unauthenticated, redirect to /login.
+  // - If authenticated and already 100% completed, redirect to /dashboard (unless in edit mode).
+  // - If authenticated and INCOMPLETE, DO NOT REDIRECT! Allow user to finish onboarding.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const stepParam = parseInt(urlParams.get('step') || '', 10);
-      if (stepParam >= 1 && stepParam <= 4) {
-        setStep(stepParam);
+    if (!loading) {
+      if (!user) {
+        router.replace('/login?redirect=/onboarding');
+      } else if (isOnboardingComplete) {
+        if (typeof window !== 'undefined') {
+          const urlParams = new URLSearchParams(window.location.search);
+          const isEditMode = urlParams.get('edit') === '1' || urlParams.get('review') === '1';
+          if (!isEditMode) {
+            router.replace('/dashboard');
+          }
+        }
       }
     }
+  }, [user, loading, isOnboardingComplete, router]);
 
-    const initialName =
-      artist?.name ||
-      user?.user_metadata?.full_name ||
-      '';
+  // Pre-fill from existing artist profile or newly registered user
+  useEffect(() => {
+    const initialName = artist?.name || user?.user_metadata?.full_name || '';
     const initialEmail = artist?.email || user?.email || '';
 
-    setFormData((prev) => ({
-      ...prev,
-      name: prev.name || initialName,
-      email: prev.email || initialEmail,
-      legal_name: prev.legal_name || initialName,
-      // Keep everything else user-driven!
-    }));
+    setFormData((prev) => {
+      const merged = {
+        ...prev,
+        name: prev.name || artist?.name || initialName,
+        stage_name: prev.stage_name || artist?.stage_name || '',
+        phone_no: prev.phone_no || artist?.phone_no || '',
+        email: prev.email || artist?.email || initialEmail,
+        city: prev.city || artist?.city || '',
+        state: prev.state || artist?.state || '',
+        experience_years: prev.experience_years !== '' ? prev.experience_years : (artist?.experience_years ?? ''),
+        category: prev.category || artist?.category || '',
+        sub_category: prev.sub_category || artist?.sub_category || '',
+        genres: prev.genres.length > 0 ? prev.genres : (artist?.genres || []),
+        languages: prev.languages.length > 0 ? prev.languages : (artist?.languages || []),
+        serviceable_cities: prev.serviceable_cities.length > 0 ? prev.serviceable_cities : (artist?.performance_details?.serviceable_cities || []),
+        bio: prev.bio || artist?.bio || '',
+        starting_price: prev.starting_price !== '' ? prev.starting_price : (artist?.submitted_pricing?.starting_price || artist?.price_min || ''),
+        solo_price: prev.solo_price !== '' ? prev.solo_price : (artist?.submitted_pricing?.solo_price || artist?.price_min || ''),
+        duo_price: prev.duo_price !== '' ? prev.duo_price : (artist?.submitted_pricing?.duo_price || ''),
+        band_price: prev.band_price !== '' ? prev.band_price : (artist?.submitted_pricing?.band_price || artist?.price_max || ''),
+        hourly_price: prev.hourly_price !== '' ? prev.hourly_price : (artist?.submitted_pricing?.hourly_price || ''),
+        travel_policy: prev.travel_policy || artist?.submitted_pricing?.travel_charges_policy || '',
+        min_duration: prev.min_duration !== '' ? prev.min_duration : (artist?.performance_details?.min_duration_minutes || ''),
+        max_duration: prev.max_duration !== '' ? prev.max_duration : (artist?.performance_details?.max_duration_minutes || ''),
+        sound_system: prev.sound_system || artist?.performance_details?.sound_system_provided || false,
+        tech_requirements: prev.tech_requirements || artist?.performance_details?.technical_requirements || '',
+        profile_image_url: prev.profile_image_url || (!isDefaultAvatar(artist?.profile_image_url) ? (artist?.profile_image_url || '') : ''),
+        cover_image_url: prev.cover_image_url || artist?.cover_image_url || '',
+        gallery_images: prev.gallery_images.length > 0 ? prev.gallery_images : (artist?.gallery_images || []),
+        youtube_links: prev.youtube_links.length > 0 ? prev.youtube_links : (artist?.youtube_links || (artist?.video_url ? [artist.video_url] : [])),
+        audio_samples: prev.audio_samples.length > 0 ? prev.audio_samples : (artist?.audio_samples || []),
+        instagram_url: prev.instagram_url || artist?.instagram_url || '',
+        youtube_url: prev.youtube_url || artist?.youtube_url || '',
+        spotify_url: prev.spotify_url || artist?.spotify_url || '',
+        website_url: prev.website_url || artist?.website_url || '',
+      };
+
+      // Step Clamping: Prevent skipping steps via tabs or ?step= query parameters
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const stepParam = parseInt(urlParams.get('step') || '', 10);
+        const highestStep = getHighestIncompleteStep(merged);
+        if (stepParam && stepParam >= 1 && stepParam <= 4) {
+          setStep(Math.min(stepParam, highestStep));
+        } else {
+          setStep(highestStep);
+        }
+      }
+
+      return merged;
+    });
   }, [artist, user]);
 
-  // Calculate live progress %
-  const calculateLiveProgress = () => {
-    let score = 20; // Account created
-    if (formData.name && formData.stage_name && formData.city && formData.category) score += 20;
-    if (formData.genres.length > 0 && formData.bio.trim().length >= 15) score += 15;
-    if (formData.starting_price > 0) score += 15;
-    if (formData.profile_image_url || formData.youtube_links.length > 0) score += 15;
-    if (formData.legal_name && (formData.id_document_url || formData.id_number_masked)) score += 15;
-    return Math.min(100, score);
-  };
-
-  const progress = calculateLiveProgress();
+  // Strict live profile completion percentage (0%, 25%, 50%, 75%, 100%)
+  const progress = calculateStrictCompletion(formData);
 
   const toggleGenre = (genre: string) => {
     setFormData((prev) => ({
@@ -501,92 +553,40 @@ export default function ArtistOnboardingPage() {
 
     // STEP 1 VALIDATION: All fields mandatory
     if (step === 1) {
-      const missingStep1: string[] = [];
-      if (!formData.name.trim()) missingStep1.push('Legal Full Name');
-      if (!formData.stage_name.trim()) {
-        missingStep1.push('Stage / Act Name');
-      } else if (formData.name.trim() && formData.stage_name.trim().toLowerCase() === formData.name.trim().toLowerCase()) {
+      const s1 = validateStep1(formData);
+      if (!s1.isValid) {
+        setError(`All Step 1 fields are mandatory. Please provide: ${s1.missing.join(', ')}.`);
+        return;
+      }
+      if (formData.name.trim() && formData.stage_name.trim().toLowerCase() === formData.name.trim().toLowerCase()) {
         setError('Stage / Act Name must be different from your Legal Full Name. Please enter your stage persona, DJ title, or band moniker (e.g. DJ Aarav, The Acoustic Project, etc.).');
-        return;
-      }
-      if (!formData.phone_no.trim()) missingStep1.push('Contact Phone / WhatsApp');
-      if (!formData.email.trim()) missingStep1.push('Email Address');
-      if (!formData.category.trim()) missingStep1.push('Primary Category');
-      if (!formData.sub_category.trim()) missingStep1.push('Specialty / Sub-Category');
-      if (!formData.city.trim()) missingStep1.push('Base City');
-      if (!formData.state.trim()) missingStep1.push('State / Region');
-      if (formData.experience_years === undefined || formData.experience_years === null || formData.experience_years < 0) {
-        missingStep1.push('Years of Experience');
-      }
-
-      if (missingStep1.length > 0) {
-        setError(`All fields are mandatory. Please provide: ${missingStep1.join(', ')}.`);
-        return;
-      }
-
-      // Phone validation (at least 10 digits)
-      const digitsOnly = formData.phone_no.replace(/\D/g, '');
-      if (digitsOnly.length < 10) {
-        setError('Please enter a valid 10-digit mobile number for Contact Phone / WhatsApp.');
-        return;
-      }
-
-      // Email validation
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-        setError('Please enter a valid email address.');
         return;
       }
     }
 
     // STEP 2 VALIDATION: All fields mandatory
     if (step === 2) {
-      const missingStep2: string[] = [];
-      if (!formData.genres || formData.genres.length === 0) missingStep2.push('at least 1 Musical Genre');
-      if (!formData.languages || formData.languages.length === 0) missingStep2.push('at least 1 Performance Language');
-      if (!formData.serviceable_cities || formData.serviceable_cities.length === 0) missingStep2.push('at least 1 Performance Coverage Area');
-      if (!formData.bio.trim() || formData.bio.trim().length < 20) missingStep2.push('Artist Biography (minimum 20 characters)');
-
-      if (missingStep2.length > 0) {
-        setError(`All fields are mandatory. Please complete: ${missingStep2.join(', ')}.`);
+      const s2 = validateStep2(formData);
+      if (!s2.isValid) {
+        setError(`All Step 2 fields are mandatory. Please complete: ${s2.missing.join(', ')}.`);
         return;
       }
     }
 
     // STEP 3 VALIDATION: All fields mandatory
     if (step === 3) {
-      const missingStep3: string[] = [];
-      if (!formData.starting_price || formData.starting_price <= 0) missingStep3.push('Solo / Starting Rate (₹)');
-      if (!formData.duo_price || formData.duo_price <= 0) missingStep3.push('Duo Act Rate (₹)');
-      if (!formData.band_price || formData.band_price <= 0) missingStep3.push('Full Band Show Rate (₹)');
-      if (!formData.hourly_price || formData.hourly_price <= 0) missingStep3.push('Hourly Overtime Rate (₹)');
-      if (!formData.min_duration || formData.min_duration <= 0) missingStep3.push('Min Set Duration');
-      if (!formData.max_duration || formData.max_duration <= 0) missingStep3.push('Max Set Duration');
-      if (!formData.tech_requirements.trim()) missingStep3.push('Technical Stage Rider');
-      if (!formData.travel_policy.trim()) missingStep3.push('Travel & Hospitality Policy');
-
-      if (missingStep3.length > 0) {
-        setError(`All fields are mandatory. Please provide: ${missingStep3.join(', ')}.`);
-        return;
-      }
-
-      if (Number(formData.max_duration) < Number(formData.min_duration)) {
-        setError('Max Set Duration must be greater than or equal to Min Set Duration.');
+      const s3 = validateStep3(formData);
+      if (!s3.isValid) {
+        setError(`All Step 3 fields are mandatory. Please provide: ${s3.missing.join(', ')}.`);
         return;
       }
     }
 
-    // STEP 4 VALIDATION: Exactly 1 Cover Photo and 1 Video are mandatory
+    // STEP 4 VALIDATION: Strictly requires genuine Profile Photo, Cover Banner, and Video Showreel
     if (step === 4) {
-      const missingStep4: string[] = [];
-      if (!formData.cover_image_url.trim() && !formData.profile_image_url.trim()) {
-        missingStep4.push('Cover Banner Photo (Mandatory)');
-      }
-      if (!formData.youtube_links || formData.youtube_links.length < 1) {
-        missingStep4.push('at least 1 Performance Video or Reel (Mandatory)');
-      }
-
-      if (missingStep4.length > 0) {
-        setError(`Please provide mandatory media: ${missingStep4.join(', ')}.`);
+      const s4 = validateStep4(formData);
+      if (!s4.isValid) {
+        setError(`Mandatory media required: ${s4.missing.join(', ')}.`);
         return;
       }
 
@@ -602,8 +602,35 @@ export default function ArtistOnboardingPage() {
   };
 
   const handleFinalSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setError(null);
+
+    // Strict 100% completion check across all 4 steps
+    const v1 = validateStep1(formData);
+    if (!v1.isValid) {
+      setError(`Step 1 Incomplete: Please provide ${v1.missing.join(', ')}.`);
+      setStep(1);
+      return;
+    }
+    const v2 = validateStep2(formData);
+    if (!v2.isValid) {
+      setError(`Step 2 Incomplete: Please complete ${v2.missing.join(', ')}.`);
+      setStep(2);
+      return;
+    }
+    const v3 = validateStep3(formData);
+    if (!v3.isValid) {
+      setError(`Step 3 Incomplete: Please provide ${v3.missing.join(', ')}.`);
+      setStep(3);
+      return;
+    }
+    const v4 = validateStep4(formData);
+    if (!v4.isValid) {
+      setError(`Step 4 Incomplete: Please provide ${v4.missing.join(', ')}.`);
+      setStep(4);
+      return;
+    }
+
     setSubmitting(true);
 
     const updates: any = {
@@ -661,8 +688,11 @@ export default function ArtistOnboardingPage() {
         id_document_url: formData.id_document_url.trim(),
         address_proof_url: formData.address_proof_url.trim(),
       },
-      profile_completion: progress,
+      profile_completion: 100,
+      is_onboarding_complete: true,
+      onboarding_step: 4,
       verification_status: 'pending',
+      profile_submitted_at: new Date().toISOString(),
     };
 
     try {
@@ -684,7 +714,9 @@ export default function ArtistOnboardingPage() {
             upi_id: formData.upi_id,
           })
         );
-        document.cookie = 'artist_session_active=true; path=/; max-age=604800';
+        // Synchronize auth and onboarding cookies so route middleware allows dashboard immediately
+        document.cookie = 'artist_onboarding_complete=true; path=/; max-age=604800; SameSite=Lax';
+        document.cookie = 'artist_session_active=true; path=/; max-age=604800; SameSite=Lax';
       }
 
       // Immediately update local auth state so dashboard reflects all entered details
@@ -770,14 +802,23 @@ export default function ArtistOnboardingPage() {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 Profile Strength
               </span>
-              <span className="text-xs font-black text-sky-600">{progress}%</span>
+              <span className={`text-xs font-black ${progress === 100 ? 'text-emerald-600' : 'text-sky-600'}`}>
+                {progress}%
+              </span>
             </div>
-            <Link
-              href="/dashboard"
-              className="text-xs font-bold text-slate-500 hover:text-slate-900 px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors"
-            >
-              Skip for now →
-            </Link>
+            {isOnboardingComplete ? (
+              <Link
+                href="/dashboard"
+                className="text-xs font-bold text-sky-600 hover:text-sky-700 px-3 py-1.5 rounded-xl hover:bg-sky-50 transition-colors flex items-center gap-1"
+              >
+                <span>Return to Dashboard →</span>
+              </Link>
+            ) : (
+              <div className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200/80 px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-2xs">
+                <Lock className="w-3.5 h-3.5 text-amber-600" />
+                <span>Mandatory 4-Step Registration</span>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -806,7 +847,7 @@ export default function ArtistOnboardingPage() {
           </div>
         </div>
 
-        {/* Interactive 5-Step Pill Stepper (Admin Portal Pill Style) */}
+        {/* Interactive 4-Step Pill Stepper with Strict Sequential Locking */}
         <div className="flex p-1.5 bg-slate-200/60 backdrop-blur-md rounded-[22px] border border-white items-center overflow-x-auto max-w-full gap-1 mb-6 shadow-xs">
           {STEPS.map((s) => {
             const Icon = s.icon;
@@ -822,7 +863,32 @@ export default function ArtistOnboardingPage() {
                     setError(null);
                     setStep(s.id);
                   } else if (s.id > step) {
-                    handleNextStep();
+                    if (s.id >= 2) {
+                      const v1 = validateStep1(formData);
+                      if (!v1.isValid) {
+                        setError(`Please complete Step 1 first: ${v1.missing.join(', ')}.`);
+                        setStep(1);
+                        return;
+                      }
+                    }
+                    if (s.id >= 3) {
+                      const v2 = validateStep2(formData);
+                      if (!v2.isValid) {
+                        setError(`Please complete Step 2 first: ${v2.missing.join(', ')}.`);
+                        setStep(2);
+                        return;
+                      }
+                    }
+                    if (s.id >= 4) {
+                      const v3 = validateStep3(formData);
+                      if (!v3.isValid) {
+                        setError(`Please complete Step 3 first: ${v3.missing.join(', ')}.`);
+                        setStep(3);
+                        return;
+                      }
+                    }
+                    setError(null);
+                    setStep(s.id);
                   }
                 }}
                 className={`flex-1 min-w-[130px] px-3.5 py-2.5 rounded-[16px] text-[11px] font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
@@ -1512,13 +1578,19 @@ export default function ArtistOnboardingPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <label className="form-label mb-0 text-slate-900 font-bold">
-                          Profile Avatar
+                          Primary Profile Photo <span className="text-rose-500 font-bold">*</span>
                         </label>
-                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
-                          Optional
-                        </span>
+                        {(!formData.profile_image_url.trim() || isDefaultAvatar(formData.profile_image_url)) ? (
+                          <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                            1 Required *
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            ✓ Added
+                          </span>
+                        )}
                       </div>
-                      <p className="text-[11px] text-slate-400">Headshot or stage avatar (falls back to Cover Banner)</p>
+                      <p className="text-[11px] text-slate-400">Upload a genuine performer photo or headshot (default avatars rejected)</p>
                     </div>
                     <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-sky-400 text-xs font-bold text-slate-700 shadow-xs transition-all">
                       {uploadingField === 'profile_image_url' ? (

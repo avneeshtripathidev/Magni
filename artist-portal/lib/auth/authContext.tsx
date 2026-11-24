@@ -6,12 +6,20 @@ import { supabase } from '../supabase/client';
 import { ArtistProfile } from '../../types/artist';
 import { useRouter } from 'next/navigation';
 import { isAuthorizedAdminEmail } from './adminWhitelist';
+import {
+  calculateStrictCompletion,
+  checkIsOnboardingComplete,
+  getHighestIncompleteStep,
+} from '../onboardingValidation';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   artist: ArtistProfile | null;
   loading: boolean;
+  isOnboardingComplete: boolean;
+  onboardingStep: number;
+  profileCompletion: number;
   refreshArtist: () => Promise<void>;
   reloadProfile: () => Promise<void>;
   updateLocalArtist: (updates: Partial<ArtistProfile>) => void;
@@ -34,6 +42,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const isOnboardingComplete = Boolean(
+    artist && (artist.is_onboarding_complete === true || checkIsOnboardingComplete(artist))
+  );
+  const onboardingStep = artist ? getHighestIncompleteStep(artist) : 1;
+  const profileCompletion = artist ? calculateStrictCompletion(artist) : 0;
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (user && artist) {
+        if (isOnboardingComplete) {
+          document.cookie = 'artist_onboarding_complete=true; path=/; max-age=604800; SameSite=Lax';
+        } else {
+          document.cookie = 'artist_onboarding_complete=false; path=/; max-age=604800; SameSite=Lax';
+        }
+      } else if (!user) {
+        document.cookie = 'artist_onboarding_complete=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0; SameSite=Lax';
+      }
+    }
+  }, [user, artist, isOnboardingComplete]);
 
   const syncOrCreateArtist = async (currentUser: User) => {
     const syncKey = currentUser.id || currentUser.email || '';
@@ -98,9 +126,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           country: "India",
           languages: [], // User fills this
           genres: [], // User fills this
-          verification_status: "pending",
+          verification_status: "draft",
+          is_onboarding_complete: false,
           is_live: false,
-          profile_completion: 15,
+          profile_completion: 0,
           submitted_pricing: {
             starting_price: 0,
             solo_price: 0,
@@ -458,6 +487,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         session,
         artist,
         loading,
+        isOnboardingComplete,
+        onboardingStep,
+        profileCompletion,
         refreshArtist,
         reloadProfile: refreshArtist,
         updateLocalArtist,

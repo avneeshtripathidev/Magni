@@ -57,6 +57,7 @@ export interface ArtistProfile {
   price_max: number;
   cover_image_url?: string;
   profile_image_url?: string;
+  gallery_images?: string[];
   video_url?: string;
   cloudflare_video_url?: string;
   youtube_links: string[];
@@ -70,6 +71,8 @@ export interface ArtistProfile {
   verification_documents: VerificationDocuments;
   verification_status: VerificationStatus;
   rejection_reason?: string;
+  is_onboarding_complete?: boolean;
+  onboarding_step?: number;
   profile_completion: number;
   profile_submitted_at?: string;
   verified_at?: string;

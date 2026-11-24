@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function RegisterPage() {
-  const { signUpWithEmail, signInWithGoogle, loginAsDemoArtist } = useArtistAuth();
+  const { user, loading: authLoading, isOnboardingComplete, signUpWithEmail, signInWithGoogle, loginAsDemoArtist } = useArtistAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -41,6 +41,17 @@ export default function RegisterPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // If already logged in, redirect based on onboarding completion status
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (isOnboardingComplete) {
+        router.replace('/dashboard');
+      } else {
+        router.replace('/onboarding');
+      }
+    }
+  }, [user, authLoading, isOnboardingComplete, router]);
 
   // Track landing page visit & visitor IP
   useEffect(() => {

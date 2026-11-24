@@ -13,20 +13,25 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useArtistAuth();
+  const { user, loading, isOnboardingComplete } = useArtistAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && !user) {
-      if (typeof window !== 'undefined') {
-        window.location.replace('/login?logged_out=true');
-      } else {
-        router.replace('/login');
+    if (!loading) {
+      if (!user) {
+        if (typeof window !== 'undefined') {
+          window.location.replace('/login?logged_out=true');
+        } else {
+          router.replace('/login');
+        }
+      } else if (!isOnboardingComplete) {
+        // Strict guard: Incomplete artists must complete all 4 onboarding steps first
+        router.replace('/onboarding');
       }
     }
-  }, [user, loading, router]);
+  }, [user, loading, isOnboardingComplete, router]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -69,6 +74,17 @@ export default function DashboardLayout({
         <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
         <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
           Redirecting to Sign In...
+        </span>
+      </div>
+    );
+  }
+
+  if (!isOnboardingComplete) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center gap-3 p-4 text-center font-sans">
+        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
+          Redirecting to Complete Onboarding...
         </span>
       </div>
     );

@@ -20,6 +20,7 @@ import {
   ChevronDown,
   Activity,
   CheckCircle2,
+  Lock,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -28,7 +29,7 @@ interface SidebarProps {
 
 export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname();
-  const { artist, signOut } = useArtistAuth();
+  const { artist, signOut, isOnboardingComplete } = useArtistAuth();
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     Profile: true,
@@ -115,6 +116,23 @@ export function Sidebar({ onClose }: SidebarProps) {
 
       {/* 2. Navigation Sections (exact Admin Portal nav styling) */}
       <nav className="px-3 space-y-6 flex-1 pt-4 pb-6">
+        {!isOnboardingComplete && (
+          <div className="mx-1 mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+            <div className="flex items-center gap-1.5 font-bold mb-1">
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Onboarding Required</span>
+            </div>
+            <p className="text-[11px] text-amber-200/80 mb-2">Complete all 4 steps to unlock dashboard features.</p>
+            <Link
+              href="/onboarding"
+              onClick={onClose}
+              className="inline-block px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-lg text-[10px] uppercase tracking-wider transition-colors"
+            >
+              Finish Onboarding →
+            </Link>
+          </div>
+        )}
+
         {navSections.map((section, idx) => (
           <div key={idx} className="space-y-1">
             <div className="px-3 mb-2">
@@ -127,11 +145,12 @@ export function Sidebar({ onClose }: SidebarProps) {
               {section.items.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
+                const itemHref = isOnboardingComplete ? item.href : '/onboarding';
 
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
+                    href={itemHref}
                     onClick={onClose}
                     className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] transition-all group ${
                       isActive
@@ -153,6 +172,10 @@ export function Sidebar({ onClose }: SidebarProps) {
                       />
                       <span className="truncate">{item.name}</span>
                     </div>
+
+                    {!isOnboardingComplete && (
+                      <Lock className="w-3.5 h-3.5 text-white/30 group-hover:text-amber-400/80 flex-shrink-0" />
+                    )}
                   </Link>
                 );
               })}

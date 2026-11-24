@@ -2,10 +2,19 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
-  // Read Supabase auth session token from cookies
-  // Supabase stores tokens in cookies like sb-<project-ref>-auth-token or sb-access-token
+  // Never intercept static assets, internal paths, API routes, or admin portal
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/admin') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next();
+  }
+
+  // Read Supabase auth session token and onboarding completion from cookies
   const cookies = request.cookies.getAll();
   const hasAuthToken = cookies.some((c) => 
     c.name.includes('-auth-token') || 
@@ -15,10 +24,15 @@ export function middleware(request: NextRequest) {
     c.name === 'artist_session_active'
   );
 
+  const onboardingCookie = request.cookies.get('artist_onboarding_complete')?.value;
+  const isOnboardingComplete = onboardingCookie === 'true';
+
   const isAuthRoute = 
-    pathname.startsWith('/login') || 
-    pathname.startsWith('/register') || 
-    pathname.startsWith('/forgot-password');
+    pathname === '/login' || 
+    pathname === '/register' || 
+    pathname === '/forgot-password';
+
+  const isOnboardingRoute = pathname === '/onboarding';
 
   const isDashboardRoute =
     pathname.startsWith('/dashboard') ||
@@ -28,24 +42,88 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/bookings') ||
     pathname.startsWith('/payments') ||
     pathname.startsWith('/verification') ||
-    pathname.startsWith('/settings');
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/calendar') ||
+    pathname.startsWith('/home');
 
-  // If visiting dashboard routes without token, redirect to login
-  if (isDashboardRoute && !hasAuthToken) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    url.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(url);
+  const isRootRoute = pathname === '/';
+
+  // =========================================================================
+  // STRICT ROUTE GUARD & REDIRECT STATE MACHINE:
+  // 1. Unauthenticated (!user)
+  //    - /login, /register, / -> Allow
+  //    - /onboarding, /dashboard/* -> Redirect to /login
+  // 2. Authenticated + Incomplete (user && !user.isOnboardingComplete)
+  //    - /login, /register -> Redirect to /onboarding
+  //    - /onboarding -> ALLOW (NEVER auto-redirect to /home or /dashboard)
+  //    - /dashboard/*, / -> Force Redirect to /onboarding
+  // 3. Authenticated + Complete (user && user.isOnboardingComplete)
+  //    - /login, /register, / -> Redirect to /dashboard
+  //    - /onboarding -> Redirect to /dashboard (unless ?edit=1 or ?review=1)
+  //    - /dashboard/* -> Allow
+  // =========================================================================
+
+  // Case 1: Unauthenticated
+  if (!hasAuthToken) {
+    if (isDashboardRoute || isOnboardingRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
   }
 
-  // Allow auth routes (/login, /register, etc.) to always render cleanly.
-  // Never redirect away from /login in edge middleware based on raw cookie presence,
-  // which causes infinite redirect loops if tokens are expired, revoked, or signed out on other devices.
+  // Case 2: Authenticated + Incomplete Onboarding
+  if (!isOnboardingComplete) {
+    // If attempting to access login or register, bounce back into onboarding
+    if (isAuthRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/onboarding';
+      return NextResponse.redirect(url);
+    }
+
+    // If attempting to access home or dashboard routes before 100% completion, force redirect to onboarding
+    if (isDashboardRoute || isRootRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/onboarding';
+      return NextResponse.redirect(url);
+    }
+
+    // Crucial: Allow accessing /onboarding!
+    if (isOnboardingRoute) {
+      return NextResponse.next();
+    }
+  }
+
+  // Case 3: Authenticated + Complete Onboarding
+  if (isOnboardingComplete) {
+    // Redirect away from login / register / root to dashboard
+    if (isAuthRoute || isRootRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
+
+    // Allow re-visiting onboarding only if explicitly requested for editing
+    if (isOnboardingRoute) {
+      const isEditing = searchParams.get('edit') === '1' || searchParams.get('review') === '1';
+      if (!isEditing) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/dashboard';
+        return NextResponse.redirect(url);
+      }
+    }
+
+    return NextResponse.next();
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
+    '/',
     '/dashboard/:path*',
     '/profile/:path*',
     '/portfolio/:path*',
@@ -54,6 +132,9 @@ export const config = {
     '/payments/:path*',
     '/verification/:path*',
     '/settings/:path*',
+    '/calendar/:path*',
+    '/home/:path*',
+    '/onboarding',
     '/login',
     '/register',
     '/forgot-password',
