@@ -34,6 +34,10 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
     (a) => a.verification_status === 'pending' || a.verification_status === 'under_review'
   ).length;
 
+  const liveCount = artists.filter(
+    (a) => Boolean(a.is_live) && a.verification_status === 'approved'
+  ).length;
+
   const navSections = [
     {
       title: 'Performer Oversight',
@@ -70,7 +74,7 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
           name: 'Performer Directory',
           href: '/admin/artists',
           icon: Users,
-          count: artists.length,
+          count: liveCount,
         },
         {
           name: 'Performer Profiles',

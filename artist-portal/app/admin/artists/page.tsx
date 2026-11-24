@@ -43,8 +43,6 @@ export default function AdminArtistsDirectoryPage() {
 
   const categories = ['all', 'Singer', 'Band', 'DJ'];
 
-  const rankMap = getArtistRankMap(artists);
-
   const liveArtists = artists.filter((a) => Boolean(a.is_live) && a.verification_status === 'approved');
   const offlineArtists = artists.filter((a) => !a.is_live || a.verification_status !== 'approved');
   const inReviewCount = artists.filter((a) => a.verification_status === 'pending' || a.verification_status === 'under_review').length;
@@ -80,7 +78,19 @@ export default function AdminArtistsDirectoryPage() {
       }
       return true;
     })
-    .sort((a, b) => (b.successful_bookings || 0) - (a.successful_bookings || 0));
+    .sort((a, b) => {
+      // 1. Live & approved performers first
+      const aLive = a.is_live && a.verification_status === 'approved' ? 1 : 0;
+      const bLive = b.is_live && b.verification_status === 'approved' ? 1 : 0;
+      if (bLive !== aLive) return bLive - aLive;
+      // 2. Highest bookings
+      const diff = (b.successful_bookings || 0) - (a.successful_bookings || 0);
+      if (diff !== 0) return diff;
+      // 3. Alphabetical tie breaker
+      return (a.stage_name || a.name || '').localeCompare(b.stage_name || b.name || '');
+    });
+
+  const rankMap = getArtistRankMap(filtered);
 
   return (
     <div className="space-y-6 font-sans">

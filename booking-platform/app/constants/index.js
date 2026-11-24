@@ -1,4 +1,4 @@
-﻿export const HERO_STATS = [
+export const HERO_STATS = [
   { value: 2500, suffix: '+', label: 'Events Celebrated' },
   { value: 1500, suffix: '+', label: 'Verified Artists' },
   { value: 24,   suffix: '/7', label: 'Human Support' },
