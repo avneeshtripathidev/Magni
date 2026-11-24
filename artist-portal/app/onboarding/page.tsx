@@ -117,11 +117,93 @@ const STEPS = [
   { id: 4, title: 'Portfolio & Media', icon: Film },
 ];
 
+const INITIAL_FORM_DATA = {
+  // Step 1: Identity & Act
+  name: '',
+  stage_name: '',
+  phone_no: '',
+  email: '',
+  city: '',
+  state: '',
+  country: 'India',
+  experience_years: '' as any,
+  category: '',
+  sub_category: '',
+
+  // Step 2: Repertoire, Coverage Area & Bio
+  genres: [] as string[],
+  languages: [] as string[],
+  serviceable_cities: [] as string[],
+  bio: '',
+
+  // Step 3: Pricing & Logistics
+  starting_price: '' as any,
+  solo_price: '' as any,
+  duo_price: '' as any,
+  band_price: '' as any,
+  hourly_price: '' as any,
+  travel_policy: '',
+  min_duration: '' as any,
+  max_duration: '' as any,
+  travel_readiness: 'pan_india',
+  sound_system: false,
+  tech_requirements: '',
+
+  // Step 4: Portfolio, Media & Socials
+  profile_image_url: '',
+  cover_image_url: '',
+  gallery_images: [] as string[],
+  youtube_links: [] as string[],
+  audio_samples: [] as string[],
+  instagram_url: '',
+  youtube_url: '',
+  spotify_url: '',
+  website_url: '',
+
+  // Step 5: KYC & Settlement Bank
+  legal_name: '',
+  id_type: '',
+  id_number_masked: '',
+  pan_or_tax_id: '',
+  id_document_url: '',
+  address_proof_url: '',
+  bank_holder: '',
+  bank_name: '',
+  account_number: '',
+  ifsc_code: '',
+  upi_id: '',
+};
+
+function readSavedOnboardingDraft(): typeof INITIAL_FORM_DATA {
+  if (typeof window === 'undefined') return INITIAL_FORM_DATA;
+  try {
+    const raw = localStorage.getItem('magnevents_onboarding_draft');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return { ...INITIAL_FORM_DATA, ...parsed };
+    }
+  } catch (e) {}
+  return INITIAL_FORM_DATA;
+}
+
+function readSavedOnboardingStep(): number {
+  if (typeof window === 'undefined') return 1;
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const stepParam = parseInt(urlParams.get('step') || '', 10);
+    if (stepParam >= 1 && stepParam <= 4) return stepParam;
+
+    const saved = parseInt(localStorage.getItem('magnevents_onboarding_step') || '', 10);
+    if (saved >= 1 && saved <= 4) return saved;
+  } catch (e) {}
+  return 1;
+}
+
 export default function ArtistOnboardingPage() {
   const { user, artist, loading, isOnboardingComplete, skipOnboarding, refreshArtist, updateLocalArtist } = useArtistAuth();
   const router = useRouter();
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(readSavedOnboardingStep);
   const [submitting, setSubmitting] = useState(false);
   const [skipping, setSkipping] = useState(false);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
@@ -132,62 +214,31 @@ export default function ArtistOnboardingPage() {
   const [newAudioUrl, setNewAudioUrl] = useState('');
   const [customLocation, setCustomLocation] = useState('');
 
-  const [formData, setFormData] = useState({
-    // Step 1: Identity & Act (Only name and email will be prefilled; all other fields are blank for user to fill)
-    name: '',
-    stage_name: '',
-    phone_no: '',
-    email: '',
-    city: '',
-    state: '',
-    country: 'India',
-    experience_years: '' as any,
-    category: '',
-    sub_category: '',
+  const [formData, setFormData] = useState<typeof INITIAL_FORM_DATA>(readSavedOnboardingDraft);
 
-    // Step 2: Repertoire, Coverage Area & Bio (Blank for user to choose)
-    genres: [] as string[],
-    languages: [] as string[],
-    serviceable_cities: [] as string[],
-    bio: '',
+  // 1. Whenever step changes, persist to localStorage and sync URL query param without reload
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('magnevents_onboarding_step', String(step));
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('step') !== String(step)) {
+        url.searchParams.set('step', String(step));
+        window.history.replaceState(null, '', url.pathname + url.search);
+      }
+    }
+  }, [step]);
 
-    // Step 3: Pricing & Logistics (Blank for user to fill)
-    starting_price: '' as any,
-    solo_price: '' as any,
-    duo_price: '' as any,
-    band_price: '' as any,
-    hourly_price: '' as any,
-    travel_policy: '',
-    min_duration: '' as any,
-    max_duration: '' as any,
-    travel_readiness: 'pan_india',
-    sound_system: false,
-    tech_requirements: '',
-
-    // Step 4: Portfolio, Media & Socials
-    profile_image_url: '',
-    cover_image_url: '',
-    gallery_images: [] as string[],
-    youtube_links: [] as string[],
-    audio_samples: [] as string[],
-    instagram_url: '',
-    youtube_url: '',
-    spotify_url: '',
-    website_url: '',
-
-    // Step 5: KYC & Settlement Bank
-    legal_name: '',
-    id_type: '',
-    id_number_masked: '',
-    pan_or_tax_id: '',
-    id_document_url: '',
-    address_proof_url: '',
-    bank_holder: '',
-    bank_name: '',
-    account_number: '',
-    ifsc_code: '',
-    upi_id: '',
-  });
+  // 2. Whenever formData changes, persist draft to localStorage so refresh never loses data
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('magnevents_onboarding_draft', JSON.stringify(formData));
+        if (user?.id) {
+          localStorage.setItem(`magnevents_onboarding_draft_${user.id}`, JSON.stringify(formData));
+        }
+      } catch (e) {}
+    }
+  }, [formData, user?.id]);
 
   // Strict route guard for Onboarding:
   // - If unauthenticated, redirect to /login.
@@ -209,62 +260,78 @@ export default function ArtistOnboardingPage() {
     }
   }, [user, loading, isOnboardingComplete, router]);
 
-  // Pre-fill from existing artist profile or newly registered user
+  // Pre-fill from existing artist profile or newly registered user while protecting local draft
   useEffect(() => {
     const initialName = artist?.name || user?.user_metadata?.full_name || '';
     const initialEmail = artist?.email || user?.email || '';
 
     setFormData((prev) => {
+      let localDraft: any = {};
+      if (typeof window !== 'undefined') {
+        try {
+          const draftRaw = (user?.id && localStorage.getItem(`magnevents_onboarding_draft_${user.id}`)) ||
+            localStorage.getItem('magnevents_onboarding_draft');
+          if (draftRaw) localDraft = JSON.parse(draftRaw);
+        } catch (e) {}
+      }
+
       const merged = {
         ...prev,
-        name: prev.name || artist?.name || initialName,
-        stage_name: prev.stage_name || artist?.stage_name || '',
-        phone_no: prev.phone_no || artist?.phone_no || '',
-        email: prev.email || artist?.email || initialEmail,
-        city: prev.city || artist?.city || '',
-        state: prev.state || artist?.state || '',
-        experience_years: prev.experience_years !== '' ? prev.experience_years : (artist?.experience_years ?? ''),
-        category: prev.category || artist?.category || '',
-        sub_category: prev.sub_category || artist?.sub_category || '',
-        genres: prev.genres.length > 0 ? prev.genres : (artist?.genres || []),
-        languages: prev.languages.length > 0 ? prev.languages : (artist?.languages || []),
-        serviceable_cities: prev.serviceable_cities.length > 0 ? prev.serviceable_cities : (artist?.performance_details?.serviceable_cities || []),
-        bio: prev.bio || artist?.bio || '',
-        starting_price: prev.starting_price !== '' ? prev.starting_price : (artist?.submitted_pricing?.starting_price || artist?.price_min || ''),
-        solo_price: prev.solo_price !== '' ? prev.solo_price : (artist?.submitted_pricing?.solo_price || artist?.price_min || ''),
-        duo_price: prev.duo_price !== '' ? prev.duo_price : (artist?.submitted_pricing?.duo_price || ''),
-        band_price: prev.band_price !== '' ? prev.band_price : (artist?.submitted_pricing?.band_price || artist?.price_max || ''),
-        hourly_price: prev.hourly_price !== '' ? prev.hourly_price : (artist?.submitted_pricing?.hourly_price || ''),
-        travel_policy: prev.travel_policy || artist?.submitted_pricing?.travel_charges_policy || '',
-        min_duration: prev.min_duration !== '' ? prev.min_duration : (artist?.performance_details?.min_duration_minutes || ''),
-        max_duration: prev.max_duration !== '' ? prev.max_duration : (artist?.performance_details?.max_duration_minutes || ''),
-        sound_system: prev.sound_system || artist?.performance_details?.sound_system_provided || false,
-        tech_requirements: prev.tech_requirements || artist?.performance_details?.technical_requirements || '',
-        profile_image_url: prev.profile_image_url || (!isDefaultAvatar(artist?.profile_image_url) ? (artist?.profile_image_url || '') : ''),
-        cover_image_url: prev.cover_image_url || artist?.cover_image_url || '',
-        gallery_images: prev.gallery_images.length > 0 ? prev.gallery_images : (artist?.gallery_images || []),
-        youtube_links: prev.youtube_links.length > 0 ? prev.youtube_links : (artist?.youtube_links || (artist?.video_url ? [artist.video_url] : [])),
-        audio_samples: prev.audio_samples.length > 0 ? prev.audio_samples : (artist?.audio_samples || []),
-        instagram_url: prev.instagram_url || artist?.instagram_url || '',
-        youtube_url: prev.youtube_url || artist?.youtube_url || '',
-        spotify_url: prev.spotify_url || artist?.spotify_url || '',
-        website_url: prev.website_url || artist?.website_url || '',
+        name: prev.name || localDraft.name || artist?.name || initialName,
+        stage_name: prev.stage_name || localDraft.stage_name || artist?.stage_name || '',
+        phone_no: prev.phone_no || localDraft.phone_no || artist?.phone_no || user?.user_metadata?.phone || '',
+        email: prev.email || localDraft.email || artist?.email || initialEmail,
+        city: prev.city || localDraft.city || artist?.city || '',
+        state: prev.state || localDraft.state || artist?.state || '',
+        country: prev.country || localDraft.country || artist?.country || 'India',
+        experience_years: prev.experience_years !== '' ? prev.experience_years : (localDraft.experience_years !== undefined && localDraft.experience_years !== '' ? localDraft.experience_years : (artist?.experience_years ?? '')),
+        category: prev.category || localDraft.category || artist?.category || '',
+        sub_category: prev.sub_category || localDraft.sub_category || artist?.sub_category || '',
+        genres: prev.genres.length > 0 ? prev.genres : (localDraft.genres?.length > 0 ? localDraft.genres : (artist?.genres || [])),
+        languages: prev.languages.length > 0 ? prev.languages : (localDraft.languages?.length > 0 ? localDraft.languages : (artist?.languages || [])),
+        serviceable_cities: prev.serviceable_cities.length > 0 ? prev.serviceable_cities : (localDraft.serviceable_cities?.length > 0 ? localDraft.serviceable_cities : (artist?.performance_details?.serviceable_cities || [])),
+        bio: prev.bio || localDraft.bio || artist?.bio || '',
+        starting_price: prev.starting_price !== '' ? prev.starting_price : (localDraft.starting_price !== undefined && localDraft.starting_price !== '' ? localDraft.starting_price : (artist?.submitted_pricing?.starting_price || artist?.price_min || '')),
+        solo_price: prev.solo_price !== '' ? prev.solo_price : (localDraft.solo_price !== undefined && localDraft.solo_price !== '' ? localDraft.solo_price : (artist?.submitted_pricing?.solo_price || artist?.price_min || '')),
+        duo_price: prev.duo_price !== '' ? prev.duo_price : (localDraft.duo_price !== undefined && localDraft.duo_price !== '' ? localDraft.duo_price : (artist?.submitted_pricing?.duo_price || '')),
+        band_price: prev.band_price !== '' ? prev.band_price : (localDraft.band_price !== undefined && localDraft.band_price !== '' ? localDraft.band_price : (artist?.submitted_pricing?.band_price || artist?.price_max || '')),
+        hourly_price: prev.hourly_price !== '' ? prev.hourly_price : (localDraft.hourly_price !== undefined && localDraft.hourly_price !== '' ? localDraft.hourly_price : (artist?.submitted_pricing?.hourly_price || '')),
+        travel_policy: prev.travel_policy || localDraft.travel_policy || artist?.submitted_pricing?.travel_charges_policy || '',
+        min_duration: prev.min_duration !== '' ? prev.min_duration : (localDraft.min_duration !== undefined && localDraft.min_duration !== '' ? localDraft.min_duration : (artist?.performance_details?.min_duration_minutes || '')),
+        max_duration: prev.max_duration !== '' ? prev.max_duration : (localDraft.max_duration !== undefined && localDraft.max_duration !== '' ? localDraft.max_duration : (artist?.performance_details?.max_duration_minutes || '')),
+        sound_system: prev.sound_system || localDraft.sound_system || artist?.performance_details?.sound_system_provided || false,
+        tech_requirements: prev.tech_requirements || localDraft.tech_requirements || artist?.performance_details?.technical_requirements || '',
+        profile_image_url: prev.profile_image_url || localDraft.profile_image_url || (!isDefaultAvatar(artist?.profile_image_url) ? (artist?.profile_image_url || '') : ''),
+        cover_image_url: prev.cover_image_url || localDraft.cover_image_url || artist?.cover_image_url || '',
+        gallery_images: prev.gallery_images.length > 0 ? prev.gallery_images : (localDraft.gallery_images?.length > 0 ? localDraft.gallery_images : (artist?.gallery_images || [])),
+        youtube_links: prev.youtube_links.length > 0 ? prev.youtube_links : (localDraft.youtube_links?.length > 0 ? localDraft.youtube_links : (artist?.youtube_links || (artist?.video_url ? [artist.video_url] : []))),
+        audio_samples: prev.audio_samples.length > 0 ? prev.audio_samples : (localDraft.audio_samples?.length > 0 ? localDraft.audio_samples : (artist?.audio_samples || [])),
+        instagram_url: prev.instagram_url || localDraft.instagram_url || artist?.instagram_url || '',
+        youtube_url: prev.youtube_url || localDraft.youtube_url || artist?.youtube_url || '',
+        spotify_url: prev.spotify_url || localDraft.spotify_url || artist?.spotify_url || '',
+        website_url: prev.website_url || localDraft.website_url || artist?.website_url || '',
       };
-
-      // Step Clamping: Prevent skipping steps via tabs or ?step= query parameters
-      if (typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search);
-        const stepParam = parseInt(urlParams.get('step') || '', 10);
-        const highestStep = getHighestIncompleteStep(merged);
-        if (stepParam && stepParam >= 1 && stepParam <= 4) {
-          setStep(Math.min(stepParam, highestStep));
-        } else {
-          setStep(highestStep);
-        }
-      }
 
       return merged;
     });
+
+    // Step restoration: prioritize URL parameter ?step=, then localStorage, then database onboarding_step
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const stepParam = parseInt(urlParams.get('step') || '', 10);
+      const savedStep = parseInt(localStorage.getItem('magnevents_onboarding_step') || '', 10);
+      const dbStep = artist?.performance_details?.onboarding_step;
+
+      const restoredStep = (stepParam >= 1 && stepParam <= 4)
+        ? stepParam
+        : (savedStep >= 1 && savedStep <= 4)
+          ? savedStep
+          : (dbStep && dbStep >= 1 && dbStep <= 4)
+            ? dbStep
+            : 1;
+
+      setStep(restoredStep);
+    }
   }, [artist, user]);
 
   // Strict live profile completion percentage (0%, 25%, 50%, 75%, 100%)
@@ -953,6 +1020,15 @@ export default function ArtistOnboardingPage() {
           await refreshArtist();
         } catch (dbErr) {
           console.warn('Supabase sync deferred (saved locally):', dbErr);
+        }
+      }
+
+      // Clear draft since onboarding is officially complete
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('magnevents_onboarding_draft');
+        localStorage.removeItem('magnevents_onboarding_step');
+        if (user?.id) {
+          localStorage.removeItem(`magnevents_onboarding_draft_${user.id}`);
         }
       }
 
