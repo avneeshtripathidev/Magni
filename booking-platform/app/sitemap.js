@@ -382,13 +382,13 @@ export default async function sitemap() {
   try {
     const { data: artists } = await supabase
       .from('artists')
-      .select('id, name, alias, is_live, updated_at')
+      .select('id, name, alias, stage_name, slug, is_live, updated_at')
       .eq('is_live', true);
 
     if (artists && artists.length > 0) {
       artistRoutes = artists.map((artist) => {
-        const rawName = artist.alias || artist.name || artist.id;
-        const slug = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        const rawName = artist.stage_name || artist.alias || artist.name || artist.id;
+        const slug = artist.slug || rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         return {
           url: `${baseUrl}/artist/${slug || artist.id}`,
           lastModified: artist.updated_at ? new Date(artist.updated_at).toISOString() : now,

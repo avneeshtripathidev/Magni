@@ -58,14 +58,15 @@ function TopPerformerSection() {
           }
 
           const parsedArtist = {
-            name: topArtist.alias || topArtist.name,
-            alias: topArtist.alias,
-            image: topArtist.artist_images?.[0]?.image_url || '/placeholder.png',
+            name: topArtist.stage_name || topArtist.alias || topArtist.name,
+            alias: topArtist.stage_name || topArtist.alias,
+            image: topArtist.cover_image_url || topArtist.profile_image_url || topArtist.artist_images?.[0]?.image_url || '/placeholder.png',
             genres: genres,
             originalPrice: topArtist.original_price || topArtist.price_max || 0,
             exclusivePrice: topArtist.exclusive_price || topArtist.price_min || 0,
             rating: topArtist.rating || 0,
             bookings: topArtist.successful_bookings || 0,
+            slug: topArtist.slug || (topArtist.stage_name || topArtist.alias || topArtist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           };
 
           cachedArtistOfMonth = parsedArtist;

@@ -5,6 +5,7 @@ const CLOUDFLARE_BASE = process.env.NEXT_PUBLIC_CLOUDFLARE_BASE_URL || 'https://
 
 const clientArtistsCache = new Map();
 const featuredCache = new Map();
+const CACHE_TTL_MS = 30 * 1000; // 30s TTL so newly approved and live artists appear quickly
 
 const constructCloudflareUrl = (url) => {
   if (!url) return '';
@@ -21,7 +22,7 @@ export const useArtists = (itemsPerPage = 15) => {
   const fetchArtists = useCallback(async (page = 1, category = 'All', city = 'All Cities') => {
     const cacheKey = `${page}_${category}_${city}_${itemsPerPage}`.toLowerCase();
     const cached = clientArtistsCache.get(cacheKey);
-    if (cached) {
+    if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
       setArtists(cached.artists);
       setTotalPages(cached.totalPages);
       setLoading(false);
@@ -66,12 +67,13 @@ export const useArtists = (itemsPerPage = 15) => {
         const formattedArtists = data.map(artist => ({
           id: artist.id,
           artist_no: artist.artist_no,
-          name: artist.alias || artist.name,
+          name: artist.stage_name || artist.alias || artist.name,
+          slug: artist.slug || (artist.stage_name || artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
           category: artist.category,
           subCategory: artist.sub_category,
           city: artist.city,
           state: artist.state,
-          languages: artist.performing_language,
+          languages: artist.performing_language || (Array.isArray(artist.languages) ? artist.languages.join(', ') : (artist.languages || 'Hindi, English')),
           priceMin: artist.price_min,
           priceMax: artist.price_max,
           originalPrice: artist.original_price,
@@ -79,8 +81,12 @@ export const useArtists = (itemsPerPage = 15) => {
           price: artist.price_min,
           successful_bookings: artist.successful_bookings,
           rating: artist.rating,
-          img: artist.artist_images?.[0]?.image_url || null,
-          galleryImages: artist.artist_images?.map(img => img.image_url).filter(Boolean) || [],
+          img: artist.cover_image_url || artist.profile_image_url || artist.artist_images?.[0]?.image_url || null,
+          galleryImages: [
+            ...(artist.cover_image_url ? [artist.cover_image_url] : []),
+            ...(artist.profile_image_url && artist.profile_image_url !== artist.cover_image_url ? [artist.profile_image_url] : []),
+            ...(artist.artist_images?.map(img => img.image_url).filter(Boolean) || [])
+          ],
           cloudflareVideoUrls: artist.cloudflare_video_url ? artist.cloudflare_video_url.split(',').map(url => constructCloudflareUrl(url.trim())).filter(Boolean) : [],
           videoUrls: artist.video_url ? artist.video_url.split(',').map(url => url.trim()).filter(Boolean) : [],
           quote: artist.bio || '',
@@ -88,7 +94,7 @@ export const useArtists = (itemsPerPage = 15) => {
         setArtists(formattedArtists);
         const total = Math.ceil((count || 0) / itemsPerPage);
         setTotalPages(total);
-        clientArtistsCache.set(cacheKey, { artists: formattedArtists, totalPages: total });
+        clientArtistsCache.set(cacheKey, { artists: formattedArtists, totalPages: total, timestamp: Date.now() });
       }
     } catch (err) {
       console.error('Error fetching artists:', err);
@@ -109,8 +115,8 @@ export const useFeaturedArtists = (limit = 6) => {
 
   const fetchFeatured = useCallback(async () => {
     const cached = featuredCache.get(limit);
-    if (cached) {
-      setFeaturedArtists(cached);
+    if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+      setFeaturedArtists(cached.data);
       setLoading(false);
       return;
     }
@@ -132,21 +138,22 @@ export const useFeaturedArtists = (limit = 6) => {
       const formatArtistData = (artists) => artists.map(artist => ({
         id: artist.id,
         artist_no: artist.artist_no,
-        name: artist.alias || artist.name,
+        name: artist.stage_name || artist.alias || artist.name,
+        slug: artist.slug || (artist.stage_name || artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
         category: artist.category,
         subCategory: artist.sub_category,
         city: artist.city,
         state: artist.state,
-        languages: artist.performing_language,
+        languages: artist.performing_language || (Array.isArray(artist.languages) ? artist.languages.join(', ') : (artist.languages || 'Hindi, English')),
         successful_bookings: artist.successful_bookings,
         rating: artist.rating,
-        img: artist.artist_images?.[0]?.image_url || null,
+        img: artist.cover_image_url || artist.profile_image_url || artist.artist_images?.[0]?.image_url || null,
       }));
 
       if (data && data.length > 0) {
         const formatted = formatArtistData(data);
         setFeaturedArtists(formatted);
-        featuredCache.set(limit, formatted);
+        featuredCache.set(limit, { data: formatted, timestamp: Date.now() });
       } else {
         const { data: anyData } = await supabase
           .from('artists')
@@ -157,7 +164,7 @@ export const useFeaturedArtists = (limit = 6) => {
         if (anyData && anyData.length > 0) {
           const formatted = formatArtistData(anyData);
           setFeaturedArtists(formatted);
-          featuredCache.set(limit, formatted);
+          featuredCache.set(limit, { data: formatted, timestamp: Date.now() });
         } else {
           setFeaturedArtists([]);
         }

@@ -119,7 +119,7 @@ export async function POST(req) {
     try {
       const { data: artistsData, error: dbError } = await supabase
         .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, price_min, price_max, rating, successful_bookings, bio, artist_images(image_url)')
+        .select('id, artist_no, name, alias, stage_name, slug, category, sub_category, city, state, price_min, price_max, rating, successful_bookings, bio, cover_image_url, profile_image_url, artist_images(image_url)')
         .eq('is_live', true)
         .order('rating', { ascending: false })
         .limit(30);
@@ -128,9 +128,10 @@ export async function POST(req) {
         candidateArtists = artistsData.map(a => {
           const alias = a.alias ? a.alias.trim() : '';
           const name = a.name ? a.name.trim() : '';
-          const displayName = alias || name;
-          const slug = (alias || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-          const img = a.artist_images?.[0]?.image_url || null;
+          const stageName = a.stage_name ? a.stage_name.trim() : '';
+          const displayName = stageName || alias || name;
+          const slug = a.slug || (stageName || alias || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+          const img = a.cover_image_url || a.profile_image_url || a.artist_images?.[0]?.image_url || null;
 
           return {
             id: a.id,

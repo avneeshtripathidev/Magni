@@ -44,7 +44,7 @@ const ArtistCard = forwardRef(({ artist }, ref) => {
     ? 'https://pub-1802bb19214743ffa99aa227f25e7ede.r2.dev/assets/lux-singer-session.webp'
     : artist.img
 
-  const artistSlug = encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
+  const artistSlug = encodeURIComponent((artist.slug || artist.stage_name || artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
 
   return (
     <motion.div

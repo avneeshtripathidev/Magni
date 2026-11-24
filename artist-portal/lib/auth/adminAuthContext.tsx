@@ -368,11 +368,41 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         is_live: makeLive,
         updated_at: new Date().toISOString(),
       };
+      const currentA = artists.find((a) => a.id === artistId);
       if (makeLive) {
         updates.verification_status = 'approved';
         updates.verified_at = new Date().toISOString();
+        if (currentA && (currentA.stage_name || currentA.name)) {
+          updates.alias = currentA.stage_name || currentA.name;
+        }
       }
       await supabase.from('artists').update(updates).eq('id', artistId);
+
+      // 4. Ensure artist_images has a primary entry for backward compatibility
+      if (makeLive && currentA) {
+        const photoUrl = currentA.cover_image_url || currentA.profile_image_url;
+        if (photoUrl) {
+          try {
+            const { data: existingImgs } = await supabase
+              .from('artist_images')
+              .select('id')
+              .eq('artist_id', artistId)
+              .limit(1);
+            if (!existingImgs || existingImgs.length === 0) {
+              await supabase.from('artist_images').insert([
+                {
+                  artist_id: artistId,
+                  image_url: photoUrl,
+                  is_primary: true,
+                  display_order: 1,
+                },
+              ]);
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+      }
     } catch (e) {
       console.warn('Supabase toggleArtistLive error:', e);
     }

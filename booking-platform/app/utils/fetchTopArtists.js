@@ -25,10 +25,15 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
     const formatArtist = (artist, isFromCity = false) => {
       const alias = artist.alias ? artist.alias.trim() : '';
       const name = artist.name ? artist.name.trim() : '';
-      const displayName = alias || name;
-      const slug = (alias || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-      const img = artist.artist_images?.[0]?.image_url || null;
-      const galleryImages = (artist.artist_images || []).map(i => i.image_url).filter(Boolean);
+      const stageName = artist.stage_name ? artist.stage_name.trim() : '';
+      const displayName = stageName || alias || name;
+      const slug = artist.slug || (displayName).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const img = artist.cover_image_url || artist.profile_image_url || artist.artist_images?.[0]?.image_url || null;
+      const galleryImages = [
+        ...(artist.cover_image_url ? [artist.cover_image_url] : []),
+        ...(artist.profile_image_url && artist.profile_image_url !== artist.cover_image_url ? [artist.profile_image_url] : []),
+        ...((artist.artist_images || []).map(i => i.image_url).filter(Boolean))
+      ];
 
       return {
         id: artist.id,
@@ -36,6 +41,7 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
         name: displayName,
         rawName: name,
         alias: alias,
+        stage_name: stageName,
         category: artist.category || 'Performer',
         subCategory: artist.sub_category || '',
         city: artist.city || 'India',
@@ -73,12 +79,12 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
     if (city && city !== 'All Cities') {
       let q = supabase
         .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, artist_images(image_url)')
+        .select('id, artist_no, name, alias, stage_name, slug, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, profile_image_url, artist_images(image_url)')
         .eq('is_live', true)
         .ilike('city', `%${city}%`);
 
       if (filterTerm) {
-        q = q.or(`category.ilike.%${filterTerm}%,sub_category.ilike.%${filterTerm}%,name.ilike.%${filterTerm}%,alias.ilike.%${filterTerm}%`);
+        q = q.or(`category.ilike.%${filterTerm}%,sub_category.ilike.%${filterTerm}%,name.ilike.%${filterTerm}%,alias.ilike.%${filterTerm}%,stage_name.ilike.%${filterTerm}%,slug.ilike.%${filterTerm}%`);
       }
 
       const { data } = await q.order('rating', { ascending: false }).limit(limit);
@@ -92,7 +98,7 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
       const existingIds = artists.map(a => a.id);
       let q = supabase
         .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, artist_images(image_url)')
+        .select('id, artist_no, name, alias, stage_name, slug, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, profile_image_url, artist_images(image_url)')
         .eq('is_live', true)
         .ilike('sub_category', `%${subCategory}%`);
 
@@ -111,10 +117,10 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
       const existingIds = artists.map(a => a.id);
       let q = supabase
         .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, artist_images(image_url)')
+        .select('id, artist_no, name, alias, stage_name, slug, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, profile_image_url, artist_images(image_url)')
         .eq('is_live', true);
 
-      q = q.or(`category.ilike.%${filterTerm}%,sub_category.ilike.%${filterTerm}%,name.ilike.%${filterTerm}%,alias.ilike.%${filterTerm}%`);
+      q = q.or(`category.ilike.%${filterTerm}%,sub_category.ilike.%${filterTerm}%,name.ilike.%${filterTerm}%,alias.ilike.%${filterTerm}%,stage_name.ilike.%${filterTerm}%,slug.ilike.%${filterTerm}%`);
 
       if (existingIds.length > 0) {
         q = q.not('id', 'in', `(${existingIds.join(',')})`);
@@ -131,7 +137,7 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
       const existingIds = artists.map(a => a.id);
       let q = supabase
         .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, artist_images(image_url)')
+        .select('id, artist_no, name, alias, stage_name, slug, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, profile_image_url, artist_images(image_url)')
         .eq('is_live', true);
 
       if (existingIds.length > 0) {

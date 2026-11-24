@@ -303,11 +303,11 @@ export default function ArtistProfilePage({ params }) {
     return null;
   }
 
-  const name = artist.alias || artist.name;
+  const name = artist.stage_name || artist.alias || artist.name;
   const categories = [artist.category, artist.sub_category, artist.genre, artist.genres, artist.tags].filter(Boolean).join(', ');
-  const coverImage = artist.artist_images && artist.artist_images.length > 0 
+  const coverImage = artist.cover_image_url || artist.profile_image_url || (artist.artist_images && artist.artist_images.length > 0 
     ? artist.artist_images[0].image_url 
-    : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop'; 
+    : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop'); 
 
   return (
     <main className="artist-profile-wrapper">
@@ -440,18 +440,28 @@ export default function ArtistProfilePage({ params }) {
 
           <ExpandableBio bio={artist.bio} />
         </section>
-        {artist.artist_images && artist.artist_images.length > 0 && (
-          <section className="info-section">
-            <h2 className="section-title">Photo Gallery</h2>
-            <div className="gallery-grid">
-              {artist.artist_images.map((img, idx) => (
-                <div key={idx} className="gallery-item" onClick={() => setSelectedImage(img.image_url)} style={{ cursor: 'pointer', aspectRatio: '1/1', position: 'relative' }}>
-                  <Image src={img.image_url} alt={`${name} gallery ${idx + 1}`} fill sizes="(max-width: 768px) 50vw, 25vw" style={{objectFit: 'cover'}} className="gallery-image" />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {(() => {
+          const galleryList = [
+            ...(artist.cover_image_url ? [{ image_url: artist.cover_image_url }] : []),
+            ...(artist.profile_image_url && artist.profile_image_url !== artist.cover_image_url ? [{ image_url: artist.profile_image_url }] : []),
+            ...(artist.artist_images || [])
+          ].filter((img, idx, arr) => img.image_url && arr.findIndex(x => x.image_url === img.image_url) === idx);
+
+          if (galleryList.length === 0) return null;
+
+          return (
+            <section className="info-section">
+              <h2 className="section-title">Photo Gallery</h2>
+              <div className="gallery-grid">
+                {galleryList.map((img, idx) => (
+                  <div key={idx} className="gallery-item" onClick={() => setSelectedImage(img.image_url)} style={{ cursor: 'pointer', aspectRatio: '1/1', position: 'relative' }}>
+                    <Image src={img.image_url} alt={`${name} gallery ${idx + 1}`} fill sizes="(max-width: 768px) 50vw, 25vw" style={{objectFit: 'cover'}} className="gallery-image" />
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
 
 
         {/* SHARE ARTIST ON WHATSAPP & CLIENT PITCH */}

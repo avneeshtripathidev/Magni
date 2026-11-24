@@ -44,7 +44,7 @@ export async function findArtistBySlugOrId(customSupabase, rawId, selectFields =
     .from('artists')
     .select(selectFields)
     .eq('is_live', true)
-    .or(`alias.ilike.%${spaceSearch}%,name.ilike.%${spaceSearch}%`)
+    .or(`alias.ilike.%${spaceSearch}%,name.ilike.%${spaceSearch}%,stage_name.ilike.%${spaceSearch}%,slug.ilike.%${targetSlug}%`)
     .limit(1)
     .maybeSingle();
 
@@ -56,7 +56,7 @@ export async function findArtistBySlugOrId(customSupabase, rawId, selectFields =
       .from('artists')
       .select(selectFields)
       .eq('is_live', true)
-      .or(`alias.ilike.%${spaceSearchStripped}%,name.ilike.%${spaceSearchStripped}%`)
+      .or(`alias.ilike.%${spaceSearchStripped}%,name.ilike.%${spaceSearchStripped}%,stage_name.ilike.%${spaceSearchStripped}%,slug.ilike.%${strippedSlug}%`)
       .limit(1)
       .maybeSingle();
 
@@ -70,12 +70,12 @@ export async function findArtistBySlugOrId(customSupabase, rawId, selectFields =
       .from('artists')
       .select(selectFields)
       .eq('is_live', true)
-      .or(`alias.ilike.%${primaryToken}%,name.ilike.%${primaryToken}%`);
+      .or(`alias.ilike.%${primaryToken}%,name.ilike.%${primaryToken}%,stage_name.ilike.%${primaryToken}%,slug.ilike.%${primaryToken}%`);
 
     if (candidates && candidates.length > 0) {
       const slugMatched = candidates.find(artist => {
-        const artistName = artist.alias || artist.name || '';
-        const artistSlug = artistName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        const artistName = artist.stage_name || artist.alias || artist.name || '';
+        const artistSlug = (artist.slug || artistName).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         const artistSlugStripped = artistSlug.replace(suffixPattern, '');
 
         return (
