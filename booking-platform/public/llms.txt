@@ -1,0 +1,53 @@
+# Magnevents
+
+> Magnevents (https://www.magnevents.in) is India's premier live entertainment and artist booking platform, connecting event hosts directly with verified live singers, bands, DJs, comedians, anchors, and instrumentalists for weddings, corporate galas, and private events with 0% agency fees.
+
+## Core Capabilities & Value Proposition
+- **Direct Artist Booking**: Connect directly with verified artists across India with transparent pricing and zero middleman markup.
+- **Verified Artist Profiles**: Every artist profile features real live performance videos, verified repertoire, genre tags, starting prices, and genuine client reviews.
+- **Fast Date Availability**: Real-time calendar availability check and instant booking assistance via WhatsApp and phone.
+- **Pan-India Coverage**: Top artists available across Delhi NCR, Mumbai, Bangalore, Pune, Hyderabad, Jaipur, Lucknow, Chandigarh, and 1,000+ tier-1, tier-2, and tier-3 cities.
+- **Artist Management Portal**: Dedicated portal (https://artists.magnevents.in) for performers to manage bookings, track earnings, update availability, and get verified.
+
+## Primary Sections & URLs
+
+- [Homepage](https://www.magnevents.in/): Overview of curated live entertainment, featured acts, occasion-based booking, and client trust pillars.
+- [Live Artists Directory](https://www.magnevents.in/artists): Public catalog of verified live singers, Bollywood artists, acoustic acts, DJs, and bands.
+- [AI Artist Search](https://www.magnevents.in/ai-search): Natural language search to find the perfect performer for any event budget, genre, or vibe.
+- [Services & Repertoire](https://www.magnevents.in/services): Breakdown of performance categories including Bollywood vocalists, Sufi singers, Punjabi performers, and instrumentalists.
+- [Pricing & Packages](https://www.magnevents.in/pricing): Transparent pricing tiers for solo acoustic singers, duos, full live bands, and celebrity acts.
+- [Direct Booking Form](https://www.magnevents.in/book): Fast event booking inquiry form with date, city, and artist selection.
+- [Artist Registration & Portal](https://artists.magnevents.in): Onboarding and login portal for artists, musicians, and performers to join the Magnevents verified roster.
+- [How to Book Guide](https://www.magnevents.in/how-to-book): Step-by-step walkthrough of finding, vetting, and securing an artist for an event.
+
+## Performer Categories
+
+- **Live Singers**: Bollywood playback vocalists, retro 70s-90s singers, Sufi & Qawwali artists, Punjabi high-energy singers, Western pop, and indie acoustic singers.
+- **Live Bands**: Rock bands, Bollywood fusion ensembles, Sufi-rock bands, jazz & blues bands, and acoustic unplugged setups.
+- **DJs & Stage Artists**: Wedding DJs, club & commercial EDM DJs, Bollywood Punjabi video DJs, and silent disco specialists.
+- **Instrumentalists**: Violinists, flautists, saxophone players, guitarists, percussionists, tabla & dhol masters.
+- **Anchors & Emcees**: Bilingual corporate emcees, energetic wedding anchors, and celebrity hosts.
+- **Stand-up Comedians**: Corporate-clean comics, Hindi/English stand-up performers, and roast masters.
+
+## Occasions & Event Types
+
+- **Weddings & Receptions**: Grand wedding entries, Sufi nights, live cocktail music, and high-energy reception bands.
+- **Sangeet & Haldi**: Electrifying Punjabi dance singers, dhol players, and celebratory music.
+- **Corporate Events**: Annual company days, leadership summits, gala dinners, product launches, and offsite retreats.
+- **Private & House Parties**: Living-room acoustic gigs, terrace parties, birthdays, and anniversary celebrations.
+- **College & Campus Fests**: Youth festival headliners, battle of bands, and celebrity concerts.
+
+## Key Supported Cities
+
+- **Delhi NCR**: New Delhi, Noida, Gurgaon, Ghaziabad, Faridabad
+- **North India**: Jaipur, Lucknow, Chandigarh, Bareilly, Agra, Dehradun, Kanpur
+- **West India**: Mumbai, Pune, Ahmedabad, Surat, Goa
+- **South India**: Bangalore, Hyderabad, Chennai, Kochi
+- **East & Central India**: Kolkata, Indore, Bhopal, Bhubaneswar, Patna
+
+## Contact & Assistance
+- **Website**: https://www.magnevents.in
+- **Artist Portal**: https://artists.magnevents.in
+- **Email**: magneventsdotin@gmail.com
+- **WhatsApp & Phone**: +91 80765 15257
+- **Operating Hours**: Monday – Sunday, 9:00 AM – 10:00 PM IST

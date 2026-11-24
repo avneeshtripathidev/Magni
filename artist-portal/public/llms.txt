@@ -1,0 +1,32 @@
+# Magnevents Artist Portal
+
+> Magnevents Artist Portal (https://artists.magnevents.in) is the official onboarding, profile management, and direct booking management portal for live musicians, singers, bands, DJs, anchors, and performers across India.
+
+## Purpose & Overview
+The Magnevents Artist Portal empowers artists to:
+- Create and maintain a verified public artist profile on https://www.magnevents.in/artists.
+- Set upfront performance pricing (solo, duo, full band, hourly, and outstation rates).
+- Upload live performance videos, YouTube showreels, and verified repertoire.
+- Complete government-verified identity and KYC checks for trusted booking.
+- Manage calendar availability (block dates, mark weekends free/busy) to avoid double-bookings.
+- Receive direct event booking inquiries from clients for weddings, corporate galas, and private events with 0% agency deductions.
+
+## Key URLs & Sections
+- [Artist Portal Home](https://artists.magnevents.in): Overview of artist benefits, verification standards, and login.
+- [Artist Registration](https://artists.magnevents.in/register): Direct registration for solo singers, bands, DJs, and instrumentalists.
+- [Artist Login](https://artists.magnevents.in/login): Sign-in for registered artists to access their management dashboard.
+- [Onboarding Guide](https://artists.magnevents.in/onboarding): 4-step onboarding flow covering profile details, pricing, media showreels, and KYC verification.
+- [Main Booking Platform](https://www.magnevents.in): Public-facing client platform showcasing verified live artists.
+- [Live Artists Directory](https://www.magnevents.in/artists): Public catalog where approved artists are featured.
+
+## Verification & Trust Requirements
+To ensure high-quality live experiences for event hosts, every artist profile is reviewed by human Artist Directors:
+1. Genuine live performance video clips (not audio-dubbed studio recordings).
+2. Transparent base rates and technical rider specifications.
+3. Accurate location and pan-India travel willingness.
+4. Professional communication and verified contact information.
+
+## Contact & Performer Support
+- **Portal**: https://artists.magnevents.in
+- **Email**: magneventsdotin@gmail.com
+- **WhatsApp Support**: +91 80765 15257

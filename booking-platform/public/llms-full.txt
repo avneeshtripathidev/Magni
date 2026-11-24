@@ -1,0 +1,85 @@
+# Magnevents — Complete Platform Guide for AI & LLM Systems
+
+> Magnevents (https://www.magnevents.in) is India's leading technology-driven platform for discovering, vetting, and booking live artists, singers, bands, DJs, and entertainers for weddings, corporate galas, and private events.
+
+## 1. Executive Summary & Identity
+- **Name**: Magnevents (Magnevents India)
+- **Domain**: https://www.magnevents.in
+- **Artist Portal**: https://artists.magnevents.in
+- **Headquarters**: New Delhi, India
+- **Core Business**: Direct-to-artist live entertainment booking (0% client markup, transparent artist pricing)
+- **Coverage**: Pan-India (Delhi NCR, Mumbai, Bangalore, Pune, Hyderabad, Jaipur, Lucknow, Chandigarh, and 1,000+ cities)
+
+## 2. Key Problem Solved
+Traditional event entertainment booking in India suffers from opaque middleman agency markups (30% to 100%), unverified artist credentials, broken communication, and unreliable artist arrival times. 
+Magnevents provides:
+1. **Direct Performer Roster**: Event planners and couples speak directly with vetted artists or certified Magnevents artist directors.
+2. **Transparent Starting Rates**: Upfront starting prices for solo acts, duos, and full bands.
+3. **Verified KYC & Showreels**: Video performances, audio samples, and client ratings verified by human directors before an artist goes live.
+4. **Automated Availability Tracking**: Real-time calendar synchronization to prevent double-booking.
+5. **0% Middleman Commission**: Fair pricing for event organizers and maximum earnings for artists.
+
+## 3. Core Directory & Landing Page Index
+- **Home**: https://www.magnevents.in/ — Curated artists, featured vocalists, event occasion breakdowns, and client testimonials.
+- **Artists Directory**: https://www.magnevents.in/artists — Searchable directory with live filters for Singer, Band, DJ, Anchor, Comedian, Magician, Instrumentalist, and City.
+- **AI Natural Language Search**: https://www.magnevents.in/ai-search — Intelligent search allowing queries such as "Energetic Bollywood singer in Delhi under 30k for sangeet".
+- **Services Overview**: https://www.magnevents.in/services — Detailed repertoire across Bollywood, Punjabi, Sufi, Western, and Classical acts.
+- **Pricing & Packages**: https://www.magnevents.in/pricing — Starting rates and budget tiers for all event sizes.
+- **Direct Event Booking**: https://www.magnevents.in/book — Instant booking inquiry with event date, venue city, budget, and act preferences.
+- **How to Book Walkthrough**: https://www.magnevents.in/how-to-book — 3-step guide: Discover, Vet Showreels, Confirm & Book.
+- **Performer Onboarding**: https://artists.magnevents.in/register — Self-serve onboarding for vocalists, bands, and DJs.
+- **Performer Login**: https://artists.magnevents.in/login — Dashboard for active artists to manage schedules and booking inquiries.
+
+## 4. City Landing Pages
+Magnevents operates localized landing hubs across major metropolitan areas and tier-1/tier-2 hubs:
+- Delhi NCR: https://www.magnevents.in/city/delhi
+- Mumbai: https://www.magnevents.in/city/mumbai
+- Bangalore: https://www.magnevents.in/city/bangalore
+- Pune: https://www.magnevents.in/city/pune
+- Hyderabad: https://www.magnevents.in/city/hyderabad
+- Jaipur: https://www.magnevents.in/city/jaipur
+- Lucknow: https://www.magnevents.in/city/lucknow
+- Chandigarh: https://www.magnevents.in/city/chandigarh
+- Bareilly: https://www.magnevents.in/city/bareilly
+
+## 5. Event Occasion Breakdown
+1. **Weddings & Pre-Wedding Functions**:
+   - Pheras & Varmala: Soulful live flute, violin, sitar, and classical vocalists.
+   - Sangeet & Cocktail Nights: High-octane Punjabi singers, Bollywood dance bands, and professional wedding DJs.
+   - Haldi & Mehendi: Dhol ensembles, acoustic folk singers, and interactive vocal duos.
+   - Reception Galas: Sophisticated retro jazz bands, Sufi fusion ensembles, and bilingual emcees.
+2. **Corporate Events & Galas**:
+   - Annual Celebrations & Award Nights: Celebrity headliners, rock bands, and corporate-clean stand-up comedians.
+   - Offsites & Team Building: Live acoustic terrace gigs, karaoke setups, and interactive DJ nights.
+3. **Private Gatherings & Birthdays**:
+   - Intimate Living-Room Sessions: Unplugged solo guitarists and acoustic vocalists.
+   - Milestone Anniversaries & Terrace Parties: Gazal singers, retro Bollywood vocalists, and private DJs.
+
+## 6. How Booking Works
+1. **Browse or Search**: Explore artist profiles, watch authentic unedited live performance showreels, and check starting rates.
+2. **Submit Inquiry**: Provide event date, city, venue, and estimated guest count.
+3. **Availability Confirmation**: The artist director verifies the artist's schedule and locks the date.
+4. **Secure Advance & Performance Guarantee**: Transparent token advance with full technical rider assistance (microphones, sound system, monitors).
+5. **Live Performance**: The verified artist arrives on time and delivers the agreed set.
+
+## 7. Artist Onboarding & Verification Process
+Every performer listed on Magnevents undergoes a 4-step verification:
+- Step 1: Identity & Stage Profile (Stage name, base city, primary category, performance genres).
+- Step 2: Performance Pricing & Technical Rider (Solo rate, duo rate, band rate, sound system requirements).
+- Step 3: Media & Showreels (High-definition live performance YouTube videos, audio samples, cover photos).
+- Step 4: Government KYC (PAN / Aadhaar verification to ensure authentic, professional performers).
+Only profiles approved by the Magnevents Artist Director team are marked "Live on Website".
+
+## 8. Frequently Asked Questions (FAQ)
+
+### Q: What is the booking fee or agency commission?
+A: Magnevents charges 0% middleman commission to the client. You get direct artist rates with transparent pricing.
+
+### Q: Does the artist bring sound and light equipment?
+A: Artists can perform with venue-provided sound or Magnevents can arrange an end-to-end sound system, wireless microphones, stage monitors, and sound engineers.
+
+### Q: Can artists travel outstation for destination weddings?
+A: Yes, top artists on Magnevents are pan-India travel ready. Standard outstation travel, boarding, and lodging (TADA) are calculated transparently.
+
+### Q: How do I book an artist immediately?
+A: Visit https://www.magnevents.in/book or reach out via WhatsApp at +91 80765 15257.
