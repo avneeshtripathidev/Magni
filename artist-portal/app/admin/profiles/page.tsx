@@ -53,7 +53,7 @@ export default function AdminProfileCardsPage() {
   const { artists, updateArtistStatus, deleteArtist } = useAdminAuth();
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('approved');
   const [locationFilter, setLocationFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState<ArtistProfile | null>(null);
   const [modalTab, setModalTab] = useState<'overview' | 'pricing' | 'media' | 'kyc' | 'schedule'>('overview');
@@ -73,15 +73,19 @@ export default function AdminProfileCardsPage() {
   const CARDS_PER_PAGE = 8;
 
   const categories = ['all', 'Singer', 'Live Band', 'DJ', 'Instrumentalist'];
-  const statuses = [
-    { id: 'all', label: 'All Statuses' },
-    { id: 'approved', label: 'Live & Verified' },
-    { id: 'pending', label: 'Pending Review' },
-    { id: 'under_review', label: 'Under Review' },
-    { id: 'rejected', label: 'Needs Updates' },
-  ];
 
-  const rankMap = getArtistRankMap(artists);
+  const liveCount = artists.filter((a) => Boolean(a.is_live) && a.verification_status === 'approved').length;
+  const offlineCount = artists.filter((a) => !a.is_live || a.verification_status !== 'approved').length;
+  const pendingCount = artists.filter((a) => a.verification_status === 'pending').length;
+  const underReviewCount = artists.filter((a) => a.verification_status === 'under_review').length;
+
+  const statuses = [
+    { id: 'approved', label: 'Live on Website', count: liveCount },
+    { id: 'offline', label: 'Not Live / Offline', count: offlineCount },
+    { id: 'all', label: 'All Profiles', count: artists.length },
+    { id: 'pending', label: 'Pending Review', count: pendingCount },
+    { id: 'under_review', label: 'Under Review', count: underReviewCount },
+  ];
 
   const filteredArtists = artists
     .filter((a) => {
@@ -90,12 +94,17 @@ export default function AdminProfileCardsPage() {
         return false;
       }
 
-      // 2. Status Filter
-      if (statusFilter !== 'all') {
-        if (statusFilter === 'pending' && a.verification_status !== 'pending') return false;
-        if (statusFilter === 'approved' && a.verification_status !== 'approved') return false;
-        if (statusFilter === 'under_review' && a.verification_status !== 'under_review') return false;
-        if (statusFilter === 'rejected' && a.verification_status !== 'rejected') return false;
+      // 2. Status Filter: 'approved' shows ONLY live performers
+      if (statusFilter === 'approved') {
+        if (!a.is_live || a.verification_status !== 'approved') return false;
+      } else if (statusFilter === 'offline') {
+        if (a.is_live && a.verification_status === 'approved') return false;
+      } else if (statusFilter === 'pending') {
+        if (a.verification_status !== 'pending') return false;
+      } else if (statusFilter === 'under_review') {
+        if (a.verification_status !== 'under_review') return false;
+      } else if (statusFilter === 'rejected') {
+        if (a.verification_status !== 'rejected') return false;
       }
 
       // 2B. Location Filter
@@ -118,7 +127,16 @@ export default function AdminProfileCardsPage() {
       }
       return true;
     })
-    .sort((a, b) => (b.successful_bookings || 0) - (a.successful_bookings || 0));
+    .sort((a, b) => {
+      const aLive = a.is_live && a.verification_status === 'approved' ? 1 : 0;
+      const bLive = b.is_live && b.verification_status === 'approved' ? 1 : 0;
+      if (bLive !== aLive) return bLive - aLive;
+      const diff = (b.successful_bookings || 0) - (a.successful_bookings || 0);
+      if (diff !== 0) return diff;
+      return (a.stage_name || a.name || '').localeCompare(b.stage_name || b.name || '');
+    });
+
+  const rankMap = getArtistRankMap(filteredArtists);
 
   const handleQuickApprove = async (artist: ArtistProfile) => {
     await updateArtistStatus(artist.id, 'approved');
@@ -441,13 +459,16 @@ export default function AdminProfileCardsPage() {
                     setStatusFilter(st.id);
                     setCurrentPage(1);
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5 ${
                     isSelected
                       ? 'bg-white text-sky-600 shadow-xs border border-slate-100'
                       : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  {st.label}
+                  <span>{st.label}</span>
+                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-sky-100 text-sky-700' : 'bg-slate-200/80 text-slate-600'}`}>
+                    {st.count}
+                  </span>
                 </button>
               );
             })}
