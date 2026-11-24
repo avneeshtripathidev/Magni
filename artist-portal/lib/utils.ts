@@ -60,3 +60,33 @@ export function calculateCompletion(artist: any): number {
   if (!artist) return 0;
   return calculateStrictCompletion(artist);
 }
+
+/**
+ * Generates the full public live URL for an artist on magnevents.in
+ */
+export function getLiveArtistProfileUrl(artist: {
+  slug?: string | null;
+  stage_name?: string | null;
+  alias?: string | null;
+  name?: string | null;
+  id?: string | null;
+} | null | undefined): string {
+  if (!artist) return 'https://www.magnevents.in/artists';
+  const isLocal =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const baseOrigin = isLocal
+    ? (process.env.NEXT_PUBLIC_MAIN_SITE_URL || 'http://localhost:3000')
+    : 'https://www.magnevents.in';
+
+  const rawSlug = artist.slug ? String(artist.slug).trim() : '';
+  const fallback = artist.stage_name || artist.alias || artist.name || artist.id || '';
+  const target = rawSlug || fallback;
+
+  const cleanSlug = encodeURIComponent(
+    String(target).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || String(artist.id || '')
+  );
+
+  return `${baseOrigin}/artist/${cleanSlug}`;
+}
+

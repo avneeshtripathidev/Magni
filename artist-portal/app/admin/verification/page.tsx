@@ -9,6 +9,7 @@ import { LocationFilter, matchesLocationFilter } from '../../../components/share
 import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
 import { ModalPortal } from '../../../components/shared/ModalPortal';
 import { getArtistRankMap } from '../../../lib/artistTiers';
+import { getLiveArtistProfileUrl } from '../../../lib/utils';
 import {
   validateStep1,
   validateStep2,
@@ -569,6 +570,17 @@ function AdminVerificationQueueContent() {
                       {strictCompletion}%
                     </span>
                   </div>
+
+                  <a
+                    href={getLiveArtistProfileUrl(selectedArtist)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/40 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-sm active:scale-95 group"
+                    title="Open live public profile on magnevents.in in a new tab"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-emerald-200 group-hover:scale-110 transition-transform" />
+                    <span>Live Website Page</span>
+                  </a>
 
                   <WhatsAppShareActions
                     artist={selectedArtist}

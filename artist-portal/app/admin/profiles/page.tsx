@@ -9,6 +9,7 @@ import { LocationFilter, matchesLocationFilter } from '../../../components/share
 import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
 import { ModalPortal } from '../../../components/shared/ModalPortal';
 import { getArtistRankMap, getArtistTierProgress } from '../../../lib/artistTiers';
+import { getLiveArtistProfileUrl } from '../../../lib/utils';
 import { 
   Users, 
   Search, 
@@ -600,12 +601,24 @@ export default function AdminProfileCardsPage() {
                           {startingFee > 0 && <span className="text-[9px] text-white/70 font-medium">/event</span>}
                         </div>
 
-                        <span className={`inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-xs ${
-                          artist.is_live ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/30' : 'bg-slate-900/60 text-slate-300 border border-white/10'
-                        }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${artist.is_live ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
-                          <span>{artist.is_live ? 'Live' : 'Hidden'}</span>
-                        </span>
+                        {artist.is_live ? (
+                          <a
+                            href={getLiveArtistProfileUrl(artist)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs bg-emerald-500/35 hover:bg-emerald-500/50 text-emerald-200 border border-emerald-400/50 transition-all hover:scale-105 shadow-2xs"
+                            title="Open live public profile on magnevents.in in a new tab"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span>Live ↗</span>
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-xs bg-slate-900/60 text-slate-300 border border-white/10">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                            <span>Hidden</span>
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -682,16 +695,29 @@ export default function AdminProfileCardsPage() {
                           variant="grid"
                         />
 
-                        <button
-                          type="button"
-                          onClick={openProfileModal}
-                          className="w-full h-7 sm:h-8 px-2 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200/80 text-sky-700 text-[10px] sm:text-[11px] font-bold inline-flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] group/btn"
-                          title="Open full profile credentials, pricing, and KYC"
-                        >
-                          <Eye className="w-3 h-3 text-sky-600" />
-                          <span>Inspect Profile</span>
-                          <ChevronRight className="w-3 h-3 text-sky-500 group-hover/btn:translate-x-0.5 transition-transform" />
-                        </button>
+                        <div className="grid grid-cols-2 gap-1 w-full">
+                          <button
+                            type="button"
+                            onClick={openProfileModal}
+                            className="h-7 sm:h-8 px-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200/80 text-sky-700 text-[10px] sm:text-[11px] font-bold inline-flex items-center justify-center gap-1 transition-all active:scale-[0.98] group/btn"
+                            title="Open full profile credentials, pricing, and KYC"
+                          >
+                            <Eye className="w-3 h-3 text-sky-600" />
+                            <span>Inspect</span>
+                          </button>
+
+                          <a
+                            href={getLiveArtistProfileUrl(artist)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="h-7 sm:h-8 px-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-700 hover:text-emerald-800 text-[10px] sm:text-[11px] font-bold inline-flex items-center justify-center gap-1 transition-all shadow-2xs"
+                            title="Open live public profile on magnevents.in in a new tab"
+                          >
+                            <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-600" />
+                            <span>Live Page ↗</span>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -800,6 +826,24 @@ export default function AdminProfileCardsPage() {
                         >
                           {selectedUser.verification_status.replace('_', ' ')}
                         </span>
+
+                        {selectedUser.is_live ? (
+                          <a
+                            href={getLiveArtistProfileUrl(selectedUser)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-200 border border-emerald-400/40 transition-all hover:scale-105 shadow-xs cursor-pointer group"
+                            title="Click to view live public page on magnevents.in"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span>Live on Website</span>
+                            <ArrowUpRight className="w-3 h-3 text-emerald-300 opacity-70 group-hover:opacity-100 transition-opacity" />
+                          </a>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 bg-white/10 text-slate-300 border border-white/20">
+                            <span>Not Live</span>
+                          </span>
+                        )}
                       </div>
 
                       <p className="text-xs sm:text-sm font-medium text-slate-300 truncate">
@@ -826,6 +870,16 @@ export default function AdminProfileCardsPage() {
                   {/* Right: Quick Contact + WhatsApp Copy/Send + Profile Completion + Close */}
                   <div className="flex items-center justify-between sm:justify-end gap-2.5 flex-shrink-0 flex-wrap">
                     <div className="flex items-center gap-1.5">
+                      <a
+                        href={getLiveArtistProfileUrl(selectedUser)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/40 text-white text-xs font-black inline-flex items-center gap-1.5 transition-all shadow-md active:scale-95 group"
+                        title="Open live public profile on magnevents.in in a new tab"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5 text-emerald-200 group-hover:scale-110 transition-transform" />
+                        <span>Live Website Page</span>
+                      </a>
                       <WhatsAppShareActions
                         artist={selectedUser}
                         rank={userRank.rank}
@@ -931,14 +985,21 @@ export default function AdminProfileCardsPage() {
                   })}
                 </div>
 
-                <span className="hidden lg:inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-400 whitespace-nowrap">
+                <a
+                  href={getLiveArtistProfileUrl(selectedUser)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 transition-all whitespace-nowrap shadow-2xs group"
+                  title="Open live public profile on magnevents.in in a new tab"
+                >
                   <span
                     className={`w-2 h-2 rounded-full ${
                       selectedUser.is_live ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'
                     }`}
                   />
-                  {selectedUser.is_live ? 'Visible on magnevents.in' : 'Hidden from public catalog'}
-                </span>
+                  <span>{selectedUser.is_live ? 'Visible on magnevents.in' : 'View on magnevents.in'}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
               </div>
 
               {/* C. Airy Tabbed Body */}
@@ -1783,6 +1844,17 @@ export default function AdminProfileCardsPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  <a
+                    href={getLiveArtistProfileUrl(selectedUser)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 transition-all shadow-xs active:scale-95"
+                    title="Open public profile on magnevents.in in a new tab"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>View Live Website Page</span>
+                  </a>
+
                   <button
                     onClick={() => setRejectionModalOpen(true)}
                     className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs transition-all"

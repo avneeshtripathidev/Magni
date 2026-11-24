@@ -9,6 +9,7 @@ import { LocationFilter, matchesLocationFilter } from '../../../components/share
 import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareActions';
 import { ArtistDetailModal } from '../../../components/admin/ArtistDetailModal';
 import { getArtistRankMap } from '../../../lib/artistTiers';
+import { getLiveArtistProfileUrl } from '../../../lib/utils';
 import { 
   Search, 
   Filter, 
@@ -311,33 +312,40 @@ export default function AdminArtistsDirectoryPage() {
                         showCount={false}
                       />
                     </div>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs flex items-center gap-1 ${
-                        isLiveOnWebsite
-                          ? 'bg-emerald-500 text-white border-emerald-400'
-                          : !artist.is_live
-                          ? 'bg-slate-900/80 text-slate-200 border-white/20 backdrop-blur-sm'
-                          : isRejected
-                          ? 'bg-rose-500 text-white border-rose-400'
-                          : 'bg-amber-500 text-white border-amber-400'
-                      }`}
-                    >
-                      {isLiveOnWebsite ? (
-                        <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                          <span>Live</span>
-                        </>
-                      ) : !artist.is_live ? (
-                        <>
-                          <EyeOff className="w-2.5 h-2.5 text-slate-300" />
-                          <span>Not Live</span>
-                        </>
-                      ) : isRejected ? (
-                        'Rejected'
-                      ) : (
-                        'Review'
-                      )}
-                    </span>
+                    {isLiveOnWebsite ? (
+                      <a
+                        href={getLiveArtistProfileUrl(artist)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-400 transition-all cursor-pointer group/live hover:scale-105"
+                        title="Click to view live public page on magnevents.in"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        <span>Live ↗</span>
+                      </a>
+                    ) : (
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wide border flex-shrink-0 shadow-xs flex items-center gap-1 ${
+                          !artist.is_live
+                            ? 'bg-slate-900/80 text-slate-200 border-white/20 backdrop-blur-sm'
+                            : isRejected
+                            ? 'bg-rose-500 text-white border-rose-400'
+                            : 'bg-amber-500 text-white border-amber-400'
+                        }`}
+                      >
+                        {!artist.is_live ? (
+                          <>
+                            <EyeOff className="w-2.5 h-2.5 text-slate-300" />
+                            <span>Not Live</span>
+                          </>
+                        ) : isRejected ? (
+                          'Rejected'
+                        ) : (
+                          'Review'
+                        )}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -374,19 +382,24 @@ export default function AdminArtistsDirectoryPage() {
                       </div>
                       <div className="flex items-center justify-between gap-1">
                         <span className="text-slate-400">Website</span>
-                        <span className={`font-bold flex items-center gap-1 ${isLiveOnWebsite ? 'text-emerald-600' : 'text-slate-400'}`}>
-                          {isLiveOnWebsite ? (
-                            <>
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              <span>Live</span>
-                            </>
-                          ) : (
-                            <>
-                              <EyeOff className="w-3 h-3 text-slate-400" />
-                              <span>Not Live</span>
-                            </>
-                          )}
-                        </span>
+                        {isLiveOnWebsite ? (
+                          <a
+                            href={getLiveArtistProfileUrl(artist)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="font-bold flex items-center gap-1 text-emerald-600 hover:text-emerald-700 underline decoration-dotted transition-colors"
+                            title="Open live public profile on magnevents.in in a new tab"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>Live ↗</span>
+                          </a>
+                        ) : (
+                          <span className="font-bold flex items-center gap-1 text-slate-400">
+                            <EyeOff className="w-3 h-3 text-slate-400" />
+                            <span>Not Live</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -403,19 +416,33 @@ export default function AdminArtistsDirectoryPage() {
                       variant="grid"
                     />
 
-                    <div className="grid grid-cols-2 gap-1 sm:gap-1.5 w-full">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedArtist(artist);
-                        }}
-                        className="h-7 sm:h-8 px-1 rounded-lg border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-700 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center gap-1 w-full transition-all"
-                        title="Inspect full profile credentials and KYC"
-                      >
-                        <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-sky-600" />
-                        <span>Details</span>
-                      </button>
+                    <div className="space-y-1 w-full">
+                      <div className="grid grid-cols-2 gap-1 sm:gap-1.5 w-full">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedArtist(artist);
+                          }}
+                          className="h-7 sm:h-8 px-1 rounded-lg border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-700 text-[10px] sm:text-xs font-semibold inline-flex items-center justify-center gap-1 w-full transition-all"
+                          title="Inspect full profile credentials and KYC"
+                        >
+                          <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-sky-600" />
+                          <span>Details</span>
+                        </button>
+
+                        <a
+                          href={getLiveArtistProfileUrl(artist)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-7 sm:h-8 px-1 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 text-[10px] sm:text-xs font-bold inline-flex items-center justify-center gap-1 w-full transition-all shadow-xs"
+                          title="Open live profile on magnevents.in in a new tab"
+                        >
+                          <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-600" />
+                          <span>Live Page ↗</span>
+                        </a>
+                      </div>
 
                       {artist.is_live ? (
                         <button
@@ -425,10 +452,10 @@ export default function AdminArtistsDirectoryPage() {
                             await toggleArtistLive(artist.id, false);
                             showToast(`"${artist.stage_name || artist.name}" has been taken off live from main website.`);
                           }}
-                          className="h-7 sm:h-8 px-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 border border-rose-200 hover:border-rose-300 text-[10px] sm:text-xs font-bold inline-flex items-center justify-center gap-1 w-full transition-all shadow-xs"
+                          className="w-full h-6 px-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 border border-rose-200 text-[9px] sm:text-[10px] font-bold inline-flex items-center justify-center gap-1 transition-all"
                           title="Click to take this artist off live from the main website (magnevents.in)"
                         >
-                          <EyeOff className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-600 flex-shrink-0" />
+                          <EyeOff className="w-2.5 h-2.5 text-rose-600 flex-shrink-0" />
                           <span className="truncate">Take Off Live</span>
                         </button>
                       ) : (
@@ -439,11 +466,11 @@ export default function AdminArtistsDirectoryPage() {
                             await toggleArtistLive(artist.id, true);
                             showToast(`"${artist.stage_name || artist.name}" is now live on main website!`);
                           }}
-                          className="h-7 sm:h-8 px-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] sm:text-xs font-bold inline-flex items-center justify-center gap-1 w-full transition-all shadow-xs"
+                          className="w-full h-6 px-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] sm:text-[10px] font-bold inline-flex items-center justify-center gap-1 transition-all shadow-xs"
                           title="Click to publish this artist live to the main website (magnevents.in)"
                         >
-                          <Globe className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" />
-                          <span className="truncate">Make Live</span>
+                          <Globe className="w-2.5 h-2.5 text-white flex-shrink-0" />
+                          <span className="truncate">Publish Live</span>
                         </button>
                       )}
                     </div>
