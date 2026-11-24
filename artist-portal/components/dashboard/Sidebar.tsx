@@ -10,6 +10,7 @@ import {
   Film,
   Music2,
   CalendarCheck,
+  Calendar,
   CreditCard,
   ShieldCheck,
   Settings,
@@ -17,7 +18,6 @@ import {
   X,
   ExternalLink,
   ChevronDown,
-  Sparkles,
   Activity,
   CheckCircle2,
 } from 'lucide-react';
@@ -44,7 +44,7 @@ export function Sidebar({ onClose }: SidebarProps) {
       items: [
         { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Live Bookings', href: '/bookings', icon: CalendarCheck },
-        { name: 'Wedding Inquiries', href: '/wedding-invitations', icon: Sparkles },
+        { name: 'Manage Calendar', href: '/calendar', icon: Calendar },
         { name: 'Payouts & Earnings', href: '/payments', icon: CreditCard },
       ],
     },

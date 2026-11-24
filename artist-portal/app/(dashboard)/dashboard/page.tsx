@@ -413,6 +413,13 @@ export default function ArtistDashboardPage() {
             </p>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
+            <Link
+              href="/calendar"
+              className="btn-secondary py-1.5 px-3 text-xs inline-flex items-center gap-1 font-bold text-emerald-800 bg-white border border-emerald-300 hover:bg-emerald-50"
+            >
+              <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Manage Calendar</span>
+            </Link>
             <Link href="/profile" className="btn-secondary py-1.5 px-3 text-xs">
               Edit Rates
             </Link>
@@ -501,6 +508,37 @@ export default function ArtistDashboardPage() {
             {completedEventsCount} completed {completedEventsCount === 1 ? 'event' : 'events'}
           </span>
         </div>
+      </div>
+
+      {/* 3B. Manage Calendar & Availability Quick Action Banner */}
+      <div className="p-5 rounded-[22px] bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-sky-500/10 border border-emerald-300 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center shadow-md shadow-emerald-600/20 flex-shrink-0">
+            <Calendar className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-black text-slate-900">
+                Manage Calendar &amp; Availability
+              </h3>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[10px] font-black uppercase">
+                Live Sync
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 mt-0.5">
+              Click dates to tick Free (<strong className="text-green-700">✓</strong>) or cross Booked (<strong className="text-red-600">✗</strong>) so clients know when you can perform.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/calendar"
+          className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-black text-xs uppercase tracking-wider shadow-sm flex items-center justify-center gap-2 flex-shrink-0 transition-all active:scale-95 self-start sm:self-auto"
+        >
+          <Calendar className="w-4 h-4 text-emerald-400" />
+          <span>Open Calendar</span>
+          <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+        </Link>
       </div>
 
       {/* 4. Search and Filter Bar (exact admin.magnevents.in styling) */}

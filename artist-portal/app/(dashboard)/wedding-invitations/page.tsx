@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useArtistAuth } from '../../../lib/auth/authContext';
 import { weddingInquiryService, WeddingInquiryRecord } from '../../../services/weddingInquiryService';
 import {
@@ -33,7 +34,12 @@ import {
 } from 'lucide-react';
 
 export default function ArtistWeddingInvitationsPage() {
+  const router = useRouter();
   const { artist } = useArtistAuth();
+
+  useEffect(() => {
+    router.replace('/calendar');
+  }, [router]);
   const [inquiries, setInquiries] = useState<WeddingInquiryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'new' | 'in_progress' | 'completed'>('all');

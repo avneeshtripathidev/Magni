@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import TiltCard from '@/app/components/common/TiltCard'
 import Stars from '@/app/components/common/Stars'
 import ImageWithLoader from '@/app/components/common/ImageWithLoader'
+import ArtistAvailabilityModal from '@/app/components/artists/ArtistAvailabilityModal'
 import '@/app/styles/pages/Artists.css'
 
 function parseJsonArray(val, fallbackStr) {
@@ -26,6 +27,7 @@ function parseJsonArray(val, fallbackStr) {
 
 const ArtistCard = forwardRef(({ artist }, ref) => {
   const [imageError, setImageError] = useState(false)
+  const [showAvailability, setShowAvailability] = useState(false)
 
   const bookings = Number(artist.successful_bookings) || 0;
   const subCats = parseJsonArray(artist.subCategory, artist.subCategory);
@@ -82,25 +84,70 @@ const ArtistCard = forwardRef(({ artist }, ref) => {
               <span className="modern-location-text">{location}</span>
             </div>
 
-            <div className="modern-footer-row">
+            <div className="modern-footer-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
               <div className="modern-rating-box">
                 <Stars count={Math.round(Number(rating))} />
                 <span className="modern-rating-val">{rating}</span>
               </div>
-              {bookings > 0 && (
-                <div className="modern-booking-badge">
-                  <div className="modern-booking-icon-wrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span>{bookings} Successful Bookings</span>
-                </div>
-              )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowAvailability(true);
+                }}
+                className="modern-calendar-quick-btn"
+                style={{
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  color: '#6ee7b7',
+                  padding: '3px 8px',
+                  borderRadius: '100px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+                title="Check live free and booked dates"
+              >
+                <span>📅 Free Dates</span>
+              </button>
             </div>
+            {bookings > 0 && (
+              <div className="modern-booking-badge" style={{ marginTop: '6px' }}>
+                <div className="modern-booking-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span>{bookings} Successful Bookings</span>
+              </div>
+            )}
           </div>
         </TiltCard>
       </Link>
+
+      {/* Read-Only Availability Calendar Modal */}
+      {showAvailability && (
+        <ArtistAvailabilityModal
+          isOpen={showAvailability}
+          onClose={() => setShowAvailability(false)}
+          artist={artist}
+          onSelectDate={(selectedDate) => {
+            window.dispatchEvent(
+              new CustomEvent('open-contact-modal', {
+                detail: {
+                  type: 'booking',
+                  artist: { name: artist.alias || artist.name, category: artist.category },
+                  preferredDate: selectedDate,
+                },
+              })
+            );
+          }}
+        />
+      )}
     </motion.div>
   )
 })

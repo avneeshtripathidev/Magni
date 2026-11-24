@@ -7,6 +7,7 @@ import { supabase } from '@database/connection/supabase';
 import Image from 'next/image';
 import '@/app/styles/pages/ArtistProfile.css';
 import { findArtistBySlugOrId } from '@/app/utils/artistLookup';
+import ArtistAvailabilityModal from '@/app/components/artists/ArtistAvailabilityModal';
 
 const CLOUDFLARE_BASE = process.env.NEXT_PUBLIC_CLOUDFLARE_BASE_URL || 'https://customer-placeholder.cloudflarestream.com/';
 
@@ -154,6 +155,7 @@ export default function ArtistProfilePage({ params }) {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
   const [copiedType, setCopiedType] = useState(null);
+  const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
 
   const rawId = params?.id || (typeof React.use === 'function' && params ? React.use(params)?.id : params?.id) || '';
   const decodedId = decodeURIComponent(rawId);
@@ -335,6 +337,14 @@ export default function ArtistProfilePage({ params }) {
               <div className="hero-actions">
                 <button className="btn-primary-elegant" onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'booking', artist: { name } } }))}>
                   Book Performance
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary-elegant"
+                  style={{ borderColor: 'rgba(52, 211, 153, 0.5)', color: '#34d399', background: 'rgba(52, 211, 153, 0.08)' }}
+                  onClick={() => setShowAvailabilityModal(true)}
+                >
+                  📅 Check Free Dates
                 </button>
                 <button className="btn-secondary-elegant" onClick={() => window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'booking', artist: { name } } }))}>
                   Contact Now
@@ -689,6 +699,25 @@ export default function ArtistProfilePage({ params }) {
         </div>,
         document.body
       )}
+
+      {/* Read-Only Availability Calendar Modal */}
+      <ArtistAvailabilityModal
+        isOpen={showAvailabilityModal}
+        onClose={() => setShowAvailabilityModal(false)}
+        artist={artist}
+        onSelectDate={(selectedDate) => {
+          const aName = artist?.alias || artist?.name || 'Artist';
+          window.dispatchEvent(
+            new CustomEvent('open-contact-modal', {
+              detail: {
+                type: 'booking',
+                artist: { name: aName, category: artist?.category },
+                preferredDate: selectedDate,
+              },
+            })
+          );
+        }}
+      />
     </main>
   );
 }
