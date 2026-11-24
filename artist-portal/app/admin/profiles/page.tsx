@@ -54,7 +54,7 @@ export default function AdminProfileCardsPage() {
   const { artists, updateArtistStatus, deleteArtist } = useAdminAuth();
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('approved');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState<ArtistProfile | null>(null);
   const [modalTab, setModalTab] = useState<'overview' | 'pricing' | 'media' | 'kyc' | 'schedule'>('overview');
@@ -81,9 +81,9 @@ export default function AdminProfileCardsPage() {
   const underReviewCount = artists.filter((a) => a.verification_status === 'under_review').length;
 
   const statuses = [
+    { id: 'all', label: 'All Profiles', count: artists.length },
     { id: 'approved', label: 'Live on Website', count: liveCount },
     { id: 'offline', label: 'Not Live / Offline', count: offlineCount },
-    { id: 'all', label: 'All Profiles', count: artists.length },
     { id: 'pending', label: 'Pending Review', count: pendingCount },
     { id: 'under_review', label: 'Under Review', count: underReviewCount },
   ];

@@ -80,7 +80,7 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
           name: 'Performer Profiles',
           href: '/admin/profiles',
           icon: IdCard,
-          count: liveCount,
+          count: artists.length,
         },
         {
           name: 'Booking Inquiries',
