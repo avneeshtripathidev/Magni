@@ -134,6 +134,8 @@ export function buildNewArtistRecord(input: {
       serviceable_cities: [],
       blocked_dates: [],
       _auth_hash: input.passwordHash,
+      is_onboarding_complete: false,
+      onboarding_step: 1,
     },
     verification_documents: {
       legal_name: cleanName,
@@ -143,8 +145,7 @@ export function buildNewArtistRecord(input: {
       address_proof_url: '',
       pan_or_tax_id: '',
     },
-    verification_status: 'draft',
-    is_onboarding_complete: false,
+    verification_status: 'pending',
     profile_completion: 0,
     is_live: false,
     is_featured: false,

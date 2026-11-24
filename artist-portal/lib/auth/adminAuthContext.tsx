@@ -47,6 +47,103 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
+// Helper to automatically recover & sync any submitted local artists to Supabase
+async function syncPendingLocalArtists(existingDbArtists: ArtistProfile[]): Promise<ArtistProfile[]> {
+  if (typeof window === 'undefined') return [];
+  const syncedList: ArtistProfile[] = [];
+
+  const candidates: any[] = [];
+  try {
+    const regArtistRaw = localStorage.getItem('magnevents_registered_artist');
+    if (regArtistRaw) {
+      candidates.push(JSON.parse(regArtistRaw));
+    }
+  } catch (e) {}
+
+  try {
+    const adminArtistsRaw = localStorage.getItem('artist_admin_registered_artists');
+    if (adminArtistsRaw) {
+      const parsed = JSON.parse(adminArtistsRaw);
+      if (Array.isArray(parsed)) candidates.push(...parsed);
+    }
+  } catch (e) {}
+
+  for (const cand of candidates) {
+    if (!cand || (!cand.name && !cand.stage_name)) continue;
+
+    const candEmail = cand.email ? String(cand.email).toLowerCase().trim() : '';
+    const candSlug = cand.slug ? String(cand.slug).toLowerCase().trim() : '';
+
+    const alreadyInDb = existingDbArtists.some((a) => {
+      if (cand.id && !String(cand.id).startsWith('local-') && !String(cand.id).startsWith('demo-') && a.id === cand.id) return true;
+      if (candEmail && a.email && a.email.toLowerCase().trim() === candEmail) return true;
+      if (candSlug && a.slug && a.slug.toLowerCase().trim() === candSlug) return true;
+      return false;
+    });
+
+    if (alreadyInDb) continue;
+
+    // Must be synced to Supabase
+    try {
+      const cleanSlug = candSlug || `${(cand.stage_name || cand.name || 'artist').toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-5)}`;
+      const syncPayload: Record<string, any> = {
+        name: cand.name || cand.stage_name || 'Artist',
+        stage_name: cand.stage_name || cand.name || '',
+        slug: cleanSlug,
+        email: cand.email || null,
+        phone_no: cand.phone_no || '',
+        category: cand.category || 'Performer',
+        sub_category: cand.sub_category || '',
+        genres: Array.isArray(cand.genres) ? cand.genres : [],
+        city: cand.city || 'India',
+        state: cand.state || '',
+        country: 'India',
+        languages: Array.isArray(cand.languages) && cand.languages.length > 0 ? cand.languages : ['Hindi', 'English'],
+        bio: cand.bio || '',
+        experience_years: Number(cand.experience_years) || 1,
+        rating: 5.0,
+        successful_bookings: 0,
+        price_min: Number(cand.price_min) || Number(cand.submitted_pricing?.starting_price) || 15000,
+        price_max: Number(cand.price_max) || (Number(cand.price_min) || 15000) * 3,
+        cover_image_url: cand.cover_image_url || '',
+        profile_image_url: cand.profile_image_url || cand.cover_image_url || '',
+        video_url: cand.video_url || '',
+        youtube_links: Array.isArray(cand.youtube_links) ? cand.youtube_links : [],
+        audio_samples: Array.isArray(cand.audio_samples) ? cand.audio_samples : [],
+        submitted_pricing: cand.submitted_pricing || {},
+        performance_details: {
+          ...(cand.performance_details || {}),
+          is_onboarding_complete: true,
+          onboarding_step: 4,
+        },
+        verification_documents: cand.verification_documents || {},
+        verification_status: (cand.verification_status === 'approved' || cand.verification_status === 'under_review' || cand.verification_status === 'rejected') ? cand.verification_status : 'pending',
+        profile_completion: Number(cand.profile_completion) || 100,
+        profile_submitted_at: cand.profile_submitted_at || new Date().toISOString(),
+        is_live: false,
+        is_featured: false,
+      };
+
+      const { data: inserted, error: insertErr } = await supabase
+        .from('artists')
+        .insert([syncPayload])
+        .select('*')
+        .single();
+
+      if (!insertErr && inserted) {
+        syncedList.push(inserted as ArtistProfile);
+        localStorage.setItem('magnevents_registered_artist', JSON.stringify(inserted));
+      } else if (insertErr) {
+        console.warn('Sync pending local artist error:', insertErr.message);
+      }
+    } catch (e) {
+      console.warn('Failed auto-sync for artist candidate:', e);
+    }
+  }
+
+  return syncedList;
+}
+
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,17 +184,23 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         if (mounted) setAllowedAdminEmails(getAllowedAdminEmails());
       }
 
-      // Fetch real artists strictly from Supabase
+      // Fetch real artists strictly from Supabase + auto-sync any pending local submissions
       try {
         const { data: dbArtists, error } = await supabase
           .from('artists')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (!error && Array.isArray(dbArtists)) {
-          if (mounted) setArtists(dbArtists as ArtistProfile[]);
-        } else if (mounted) {
-          setArtists([]);
+        let currentArtists: ArtistProfile[] = (!error && Array.isArray(dbArtists)) ? (dbArtists as ArtistProfile[]) : [];
+
+        // Check if there are un-synced artists in local storage that need insertion into Supabase
+        const newlySynced = await syncPendingLocalArtists(currentArtists);
+        if (newlySynced.length > 0) {
+          currentArtists = [...newlySynced, ...currentArtists];
+        }
+
+        if (mounted) {
+          setArtists(currentArtists);
         }
       } catch (e) {
         console.warn('Could not sync live artists from Supabase:', e);
@@ -348,9 +451,13 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && Array.isArray(dbArtists)) {
-        setArtists(dbArtists as ArtistProfile[]);
+      let currentArtists: ArtistProfile[] = (!error && Array.isArray(dbArtists)) ? (dbArtists as ArtistProfile[]) : [];
+      const newlySynced = await syncPendingLocalArtists(currentArtists);
+      if (newlySynced.length > 0) {
+        currentArtists = [...newlySynced, ...currentArtists];
       }
+
+      setArtists(currentArtists);
     } catch (e) {
       // ignore
     }

@@ -126,8 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           country: "India",
           languages: [], // User fills this
           genres: [], // User fills this
-          verification_status: "draft",
-          is_onboarding_complete: false,
+          verification_status: "pending",
           is_live: false,
           profile_completion: 0,
           submitted_pricing: {
@@ -144,7 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             sound_system_provided: false,
             technical_requirements: "",
             travel_readiness: "pan_india",
-            serviceable_cities: []
+            serviceable_cities: [],
+            is_onboarding_complete: false,
+            onboarding_step: 1
           },
           verification_documents: {
             legal_name: rawName,

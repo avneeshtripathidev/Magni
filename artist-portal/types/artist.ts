@@ -22,6 +22,9 @@ export interface PerformanceDetails {
   travel_readiness: 'local_only' | 'state_wide' | 'pan_india' | 'international';
   serviceable_cities: string[];
   blocked_dates?: string[];
+  is_onboarding_complete?: boolean;
+  onboarding_step?: number;
+  _auth_hash?: string;
 }
 
 export interface VerificationDocuments {

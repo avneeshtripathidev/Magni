@@ -8,11 +8,32 @@ export const artistService = {
     // Recalculate profile completion
     const newCompletion = calculateCompletion(updates);
 
-    const payload = {
-      ...updates,
+    // Strip top-level fields that do not exist as columns on public.artists table
+    const {
+      is_onboarding_complete,
+      onboarding_step,
+      ...sanitized
+    } = updates as any;
+
+    const existingPerf = (sanitized.performance_details && typeof sanitized.performance_details === 'object') 
+      ? sanitized.performance_details 
+      : {};
+
+    const perfDetails = {
+      ...existingPerf,
+      ...(is_onboarding_complete !== undefined ? { is_onboarding_complete } : {}),
+      ...(onboarding_step !== undefined ? { onboarding_step } : {}),
+    };
+
+    const payload: Record<string, any> = {
+      ...sanitized,
       profile_completion: newCompletion,
       updated_at: new Date().toISOString(),
     };
+
+    if (Object.keys(perfDetails).length > 0) {
+      payload.performance_details = perfDetails;
+    }
 
     const { data, error } = await supabase
       .from('artists')
@@ -46,7 +67,7 @@ export const artistService = {
       await supabase.from('artist_verification_history').insert([
         {
           artist_id: artistId,
-          previous_status: 'draft',
+          previous_status: 'pending',
           new_status: 'pending',
           reason: 'Artist submitted profile for initial admin verification review',
         },

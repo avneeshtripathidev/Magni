@@ -7,6 +7,7 @@ import { useArtistAuth } from '../../lib/auth/authContext';
 import { artistService } from '../../services/artistService';
 import { supabase } from '../../lib/supabase/client';
 import { compressImageFile } from '../../lib/imageCompressor';
+import { ArtistProfile } from '../../types/artist';
 import {
   validateStep1,
   validateStep2,
@@ -722,22 +723,99 @@ export default function ArtistOnboardingPage() {
       // Immediately update local auth state so dashboard reflects all entered details
       updateLocalArtist(updates);
 
-      // Sync to Supabase if we have a real DB artist ID
-      if (artist?.id && !artist.id.startsWith('local-') && !artist.id.startsWith('demo-')) {
+      // Persist to Supabase:
+      let dbArtistId = artist?.id;
+      const isLocalOrMissing = !dbArtistId || dbArtistId.startsWith('local-') || dbArtistId.startsWith('demo-');
+
+      if (isLocalOrMissing) {
+        // Full insert into Supabase `artists` table for new / local-fallback registrations
         try {
-          await artistService.updateProfile(artist.id, updates);
+          const insertPayload: Record<string, any> = {
+            user_id: user?.id && !user.id.startsWith('local-') && !user.id.startsWith('demo-') ? user.id : null,
+            name: formData.name.trim(),
+            stage_name: formData.stage_name.trim() || formData.name.trim(),
+            slug: (artist?.slug && !artist.slug.includes('undefined'))
+              ? artist.slug
+              : `${(formData.stage_name || formData.name).toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-5)}`,
+            email: formData.email.trim() || user?.email || null,
+            phone_no: formData.phone_no.trim(),
+            category: formData.category,
+            sub_category: formData.sub_category || '',
+            genres: formData.genres || [],
+            city: formData.city.trim(),
+            state: formData.state.trim(),
+            country: 'India',
+            languages: formData.languages || ['Hindi', 'English'],
+            bio: formData.bio.trim(),
+            experience_years: Number(formData.experience_years) || 1,
+            rating: 5.0,
+            successful_bookings: 0,
+            price_min: Number(formData.starting_price) || 15000,
+            price_max: (Number(formData.starting_price) || 15000) * 3,
+            cover_image_url: formData.cover_image_url || '',
+            profile_image_url: formData.profile_image_url || formData.cover_image_url || '',
+            video_url: (formData.youtube_links && formData.youtube_links[0]) || '',
+            youtube_links: formData.youtube_links || [],
+            audio_samples: formData.audio_samples || [],
+            instagram_url: formData.instagram_url || '',
+            youtube_url: formData.youtube_url || '',
+            spotify_url: formData.spotify_url || '',
+            website_url: formData.website_url || '',
+            submitted_pricing: updates.submitted_pricing,
+            performance_details: {
+              ...updates.performance_details,
+              is_onboarding_complete: true,
+              onboarding_step: 4,
+            },
+            verification_documents: updates.verification_documents,
+            verification_status: 'pending',
+            profile_completion: 100,
+            profile_submitted_at: new Date().toISOString(),
+            is_live: false,
+            is_featured: false,
+          };
+
+          const { data: inserted, error: insertErr } = await supabase
+            .from('artists')
+            .insert([insertPayload])
+            .select('*')
+            .single();
+
+          if (!insertErr && inserted) {
+            dbArtistId = inserted.id;
+            updateLocalArtist(inserted as ArtistProfile);
+            if (formData.gallery_images.length > 0) {
+              await supabase.from('artist_images').insert(
+                formData.gallery_images.map((url, idx) => ({
+                  artist_id: inserted.id,
+                  image_url: url,
+                  is_primary: idx === 0,
+                  display_order: idx + 1,
+                }))
+              );
+            }
+          } else if (insertErr) {
+            console.error('Supabase artist insert error:', insertErr);
+          }
+        } catch (insertEx) {
+          console.warn('Failed to insert new artist into Supabase:', insertEx);
+        }
+      } else {
+        // Real DB ID exists: perform update and mark pending
+        try {
+          await artistService.updateProfile(dbArtistId!, updates);
           if (formData.gallery_images.length > 0) {
-            await supabase.from('artist_images').delete().eq('artist_id', artist.id);
+            await supabase.from('artist_images').delete().eq('artist_id', dbArtistId!);
             await supabase.from('artist_images').insert(
               formData.gallery_images.map((url, idx) => ({
-                artist_id: artist.id,
+                artist_id: dbArtistId!,
                 image_url: url,
                 is_primary: idx === 0,
                 display_order: idx + 1,
               }))
             );
           }
-          await artistService.submitForVerification(artist.id);
+          await artistService.submitForVerification(dbArtistId!);
           await refreshArtist();
         } catch (dbErr) {
           console.warn('Supabase sync deferred (saved locally):', dbErr);

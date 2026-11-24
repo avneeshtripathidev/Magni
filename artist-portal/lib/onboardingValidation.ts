@@ -194,7 +194,9 @@ export function calculateStrictCompletion(data: any): number {
  */
 export function checkIsOnboardingComplete(data: any): boolean {
   if (!data) return false;
-  if (data.is_onboarding_complete === true) return true;
+  if (data.is_onboarding_complete === true || data.performance_details?.is_onboarding_complete === true) {
+    return true;
+  }
   return calculateStrictCompletion(data) === 100;
 }
 
