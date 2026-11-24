@@ -18,7 +18,8 @@ import {
   UserPlus,
   Lock,
   MousePointerClick,
-  Send
+  Send,
+  Globe
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -91,6 +92,12 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
           name: 'Wedding Inquiries',
           href: '/admin/wedding-invitations',
           icon: Sparkles,
+        },
+        {
+          name: 'Crawler & SEO Hub',
+          href: '/admin/crawler',
+          icon: Globe,
+          badge: '41k',
         },
         {
           name: 'Admin Access (3 Max)',
