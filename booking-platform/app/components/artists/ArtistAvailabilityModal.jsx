@@ -15,8 +15,6 @@ export default function ArtistAvailabilityModal({
   });
   const [selectedDate, setSelectedDate] = useState(null);
 
-  if (!isOpen || !artist) return null;
-
   const calYear = currentMonth.getFullYear();
   const calMonthIdx = currentMonth.getMonth();
 
@@ -28,9 +26,9 @@ export default function ArtistAvailabilityModal({
   // Extract blocked dates
   const blockedDates = useMemo(() => {
     const raw =
-      artist.blocked_dates ||
-      artist.performance_details?.blocked_dates ||
-      artist.availability?.blocked_dates ||
+      artist?.blocked_dates ||
+      artist?.performance_details?.blocked_dates ||
+      artist?.availability?.blocked_dates ||
       [];
     return Array.isArray(raw) ? raw : [];
   }, [artist]);
