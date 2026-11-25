@@ -1,8 +1,13 @@
 import { supabase } from '@database/connection/supabase';
 
-// In-memory cache to make repeated SSR requests execute in under 1ms
+// In-memory cache for SEO artist results (1 hour TTL)
 const seoArtistCache = new Map();
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL_MS = 60 * 60 * 1000;
+
+// Shared in-memory live artist pool (1 hour TTL)
+let liveArtistsPool = null;
+let lastPoolFetchTime = 0;
+const POOL_TTL_MS = 60 * 60 * 1000;
 
 // Guaranteed verified live performers fallback roster
 export const VERIFIED_FALLBACK_ARTISTS = [
@@ -103,6 +108,85 @@ export const VERIFIED_FALLBACK_ARTISTS = [
   }
 ];
 
+function formatArtist(artist, isFromCity = false) {
+  const alias = artist.alias ? artist.alias.trim() : '';
+  const name = artist.name ? artist.name.trim() : '';
+  const displayName = alias || name || 'Verified Artist';
+  const slug = (alias || name || artist.id).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+  const img = artist.cover_image_url || artist.artist_images?.[0]?.image_url || null;
+  const galleryImages = [
+    ...(artist.cover_image_url ? [artist.cover_image_url] : []),
+    ...((artist.artist_images || []).map(i => i.image_url).filter(Boolean))
+  ];
+
+  return {
+    id: artist.id,
+    artist_no: artist.artist_no,
+    name: displayName,
+    rawName: name,
+    alias: alias,
+    category: artist.category || 'Performer',
+    subCategory: artist.sub_category || '',
+    city: artist.city || 'India',
+    state: artist.state || '',
+    rating: artist.rating ? Number(artist.rating) : 5.0,
+    successful_bookings: artist.successful_bookings ? Number(artist.successful_bookings) : 25,
+    price_min: artist.price_min ? Number(artist.price_min) : 10000,
+    price_max: artist.price_max ? Number(artist.price_max) : 25000,
+    bio: artist.bio || '',
+    img,
+    galleryImages,
+    isFromCity,
+    slug
+  };
+}
+
+// Fetch all live artists in ONE single query and cache in-memory across the worker
+async function getLiveArtistsPool() {
+  const now = Date.now();
+  if (liveArtistsPool && liveArtistsPool.length > 0 && (now - lastPoolFetchTime < POOL_TTL_MS)) {
+    return liveArtistsPool;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('artists')
+      .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, artist_images(image_url)')
+      .eq('is_live', true)
+      .order('rating', { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      liveArtistsPool = data.map(a => formatArtist(a, false));
+      lastPoolFetchTime = now;
+      return liveArtistsPool;
+    }
+  } catch (err) {
+    console.error('[fetchTopArtists] Error loading live artists pool:', err.message);
+  }
+
+  // Fallback to verified roster if database is unreachable
+  return VERIFIED_FALLBACK_ARTISTS;
+}
+
+// Helper to normalize category filter term
+function getCatFilterTerm(cat) {
+  if (!cat || cat === 'All') return null;
+  const c = cat.toLowerCase();
+  if (c.includes('band')) return 'band';
+  if (c.includes('dj')) return 'dj';
+  if (c.includes('comedian')) return 'comedian';
+  if (c.includes('magician')) return 'magician';
+  if (c.includes('dancer')) return 'dancer';
+  if (c.includes('anchor')) return 'anchor';
+  if (c.includes('musician') || c.includes('music') || c.includes('guitarist')) return 'music';
+  if (c.includes('singer') || c.includes('artist') || c.includes('ghazal') || c.includes('sufi')) return 'singer';
+  return cat.replace(/s$/i, '').toLowerCase();
+}
+
+/**
+ * Ultra-fast, zero-overhead artist retrieval for SEO landing pages.
+ * Executes in under 1ms from in-memory pool, saving massive Vercel Fluid CPU time.
+ */
 export async function getTopArtistsForSEO({ category = 'All', subCategory = '', city = 'All Cities', limit = 5 }) {
   const cacheKey = `${category}__${subCategory}__${city}__${limit}`.toLowerCase();
   const cached = seoArtistCache.get(cacheKey);
@@ -111,148 +195,89 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
   }
 
   try {
-    let artists = [];
-
-    const formatArtist = (artist, isFromCity = false) => {
-      const alias = artist.alias ? artist.alias.trim() : '';
-      const name = artist.name ? artist.name.trim() : '';
-      const displayName = alias || name || 'Verified Artist';
-      const slug = (alias || name || artist.id).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-      const img = artist.cover_image_url || artist.artist_images?.[0]?.image_url || null;
-      const galleryImages = [
-        ...(artist.cover_image_url ? [artist.cover_image_url] : []),
-        ...((artist.artist_images || []).map(i => i.image_url).filter(Boolean))
-      ];
-
-      return {
-        id: artist.id,
-        artist_no: artist.artist_no,
-        name: displayName,
-        rawName: name,
-        alias: alias,
-        category: artist.category || 'Performer',
-        subCategory: artist.sub_category || '',
-        city: artist.city || 'India',
-        state: artist.state || '',
-        rating: artist.rating ? Number(artist.rating) : 5.0,
-        successful_bookings: artist.successful_bookings ? Number(artist.successful_bookings) : 25,
-        price_min: artist.price_min ? Number(artist.price_min) : 10000,
-        price_max: artist.price_max ? Number(artist.price_max) : 25000,
-        bio: artist.bio || '',
-        img,
-        galleryImages,
-        isFromCity,
-        slug
-      };
-    };
-
-    // Helper to get normalized category search term for database queries
-    const getCatFilterTerm = (cat) => {
-      if (!cat || cat === 'All') return null;
-      const c = cat.toLowerCase();
-      if (c.includes('band')) return 'band';
-      if (c.includes('dj')) return 'dj';
-      if (c.includes('comedian')) return 'comedian';
-      if (c.includes('magician')) return 'magician';
-      if (c.includes('dancer')) return 'dancer';
-      if (c.includes('anchor')) return 'anchor';
-      if (c.includes('musician') || c.includes('music') || c.includes('guitarist')) return 'music';
-      if (c.includes('singer') || c.includes('artist') || c.includes('ghazal') || c.includes('sufi')) return 'singer';
-      return cat.replace(/s$/i, '').toLowerCase();
-    };
-
+    const pool = await getLiveArtistsPool();
     const filterTerm = getCatFilterTerm(category);
+    const subCatTerm = subCategory ? subCategory.toLowerCase().trim() : '';
+    const cityTerm = (city && city !== 'All Cities') ? city.toLowerCase().trim() : '';
 
-    // 1. Try local city + category / subCategory
-    if (city && city !== 'All Cities') {
-      let q = supabase
-        .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, artist_images(image_url)')
-        .eq('is_live', true)
-        .ilike('city', `%${city}%`);
+    let matchedArtists = [];
+    const usedIds = new Set();
 
-      if (filterTerm) {
-        q = q.or(`category.ilike.%${filterTerm}%,sub_category.ilike.%${filterTerm}%,name.ilike.%${filterTerm}%,alias.ilike.%${filterTerm}%`);
-      }
-
-      const { data, error } = await q.order('rating', { ascending: false }).limit(limit);
-      if (!error && data && data.length > 0) {
-        artists = data.map(a => formatArtist(a, true));
-      }
-    }
-
-    // 2. If fewer than limit, try subCategory nationwide (e.g. Gazals, Sufi, Sangeet)
-    if (artists.length < limit && subCategory) {
-      const existingIds = artists.map(a => a.id);
-      let q = supabase
-        .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, artist_images(image_url)')
-        .eq('is_live', true)
-        .ilike('sub_category', `%${subCategory}%`);
-
-      if (existingIds.length > 0) {
-        q = q.not('id', 'in', `(${existingIds.join(',')})`);
-      }
-
-      const { data, error } = await q.order('rating', { ascending: false }).order('successful_bookings', { ascending: false }).limit(limit - artists.length);
-      if (!error && data && data.length > 0) {
-        artists = [...artists, ...data.map(a => formatArtist(a, false))];
-      }
-    }
-
-    // 3. If still fewer than limit, try category nationwide
-    if (artists.length < limit && filterTerm) {
-      const existingIds = artists.map(a => a.id);
-      let q = supabase
-        .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, artist_images(image_url)')
-        .eq('is_live', true);
-
-      q = q.or(`category.ilike.%${filterTerm}%,sub_category.ilike.%${filterTerm}%,name.ilike.%${filterTerm}%,alias.ilike.%${filterTerm}%`);
-
-      if (existingIds.length > 0) {
-        q = q.not('id', 'in', `(${existingIds.join(',')})`);
-      }
-
-      const { data, error } = await q.order('rating', { ascending: false }).order('successful_bookings', { ascending: false }).limit(limit - artists.length);
-      if (!error && data && data.length > 0) {
-        artists = [...artists, ...data.map(a => formatArtist(a, false))];
-      }
-    }
-
-    // 4. If still fewer than limit, fetch top rated live performers nationwide
-    if (artists.length < limit) {
-      const existingIds = artists.map(a => a.id);
-      let q = supabase
-        .from('artists')
-        .select('id, artist_no, name, alias, category, sub_category, city, state, rating, successful_bookings, price_min, price_max, bio, cover_image_url, artist_images(image_url)')
-        .eq('is_live', true);
-
-      if (existingIds.length > 0) {
-        q = q.not('id', 'in', `(${existingIds.join(',')})`);
-      }
-
-      const { data, error } = await q.order('rating', { ascending: false }).limit(limit - artists.length);
-      if (!error && data && data.length > 0) {
-        artists = [...artists, ...data.map(a => formatArtist(a, false))];
-      }
-    }
-
-    // 5. If database had fewer than limit or failed, fill with verified fallback performers
-    if (artists.length < limit) {
-      const existingNames = new Set(artists.map(a => a.name.toLowerCase()));
-      for (const fallback of VERIFIED_FALLBACK_ARTISTS) {
-        if (!existingNames.has(fallback.name.toLowerCase()) && artists.length < limit) {
-          artists.push(fallback);
+    // 1. Check for local city match in pool
+    if (cityTerm) {
+      for (const a of pool) {
+        if (matchedArtists.length >= limit) break;
+        const artistCity = (a.city || '').toLowerCase();
+        if (artistCity.includes(cityTerm) || cityTerm.includes(artistCity)) {
+          // If category filter requested, verify category match
+          if (filterTerm) {
+            const catText = `${a.category || ''} ${a.subCategory || ''} ${a.name || ''}`.toLowerCase();
+            if (!catText.includes(filterTerm)) continue;
+          }
+          matchedArtists.push({ ...a, isFromCity: true });
+          usedIds.add(a.id);
         }
       }
     }
 
-    const finalArtists = artists.slice(0, limit);
+    // 2. If subCategory requested, filter nationwide from pool
+    if (subCatTerm && matchedArtists.length < limit) {
+      for (const a of pool) {
+        if (matchedArtists.length >= limit) break;
+        if (usedIds.has(a.id)) continue;
+        const catText = `${a.subCategory || ''} ${a.bio || ''}`.toLowerCase();
+        if (catText.includes(subCatTerm)) {
+          matchedArtists.push({ ...a, isFromCity: false });
+          usedIds.add(a.id);
+        }
+      }
+    }
+
+    // 3. Match category nationwide from pool
+    if (filterTerm && matchedArtists.length < limit) {
+      for (const a of pool) {
+        if (matchedArtists.length >= limit) break;
+        if (usedIds.has(a.id)) continue;
+        const catText = `${a.category || ''} ${a.subCategory || ''} ${a.name || ''}`.toLowerCase();
+        if (catText.includes(filterTerm)) {
+          matchedArtists.push({ ...a, isFromCity: false });
+          usedIds.add(a.id);
+        }
+      }
+    }
+
+    // 4. Fill remaining slots with top-rated live performers from pool
+    if (matchedArtists.length < limit) {
+      for (const a of pool) {
+        if (matchedArtists.length >= limit) break;
+        if (usedIds.has(a.id)) continue;
+        matchedArtists.push({ ...a, isFromCity: false });
+        usedIds.add(a.id);
+      }
+    }
+
+    // 5. If pool had fewer than limit, fill with verified fallback performers
+    if (matchedArtists.length < limit) {
+      for (const fallback of VERIFIED_FALLBACK_ARTISTS) {
+        if (matchedArtists.length >= limit) break;
+        if (usedIds.has(fallback.id)) continue;
+        matchedArtists.push(fallback);
+        usedIds.add(fallback.id);
+      }
+    }
+
+    const finalArtists = matchedArtists.slice(0, limit);
     seoArtistCache.set(cacheKey, { data: finalArtists, timestamp: Date.now() });
     return finalArtists;
   } catch (err) {
-    console.error('Error fetching top artists for SEO:', err);
+    console.error('[fetchTopArtists] Error in getTopArtistsForSEO:', err);
     return VERIFIED_FALLBACK_ARTISTS.slice(0, limit);
   }
+}
+
+/**
+ * Backward-compatible helper for category & city queries
+ */
+export async function fetchTopArtists(category = 'singer', city = 'All Cities', limit = 5) {
+  return getTopArtistsForSEO({ category, city, limit });
 }

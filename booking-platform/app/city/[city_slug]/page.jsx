@@ -55,6 +55,11 @@ function slugToName(slug) {
 
 export const revalidate = 86400; // Cache at Edge CDN for 24 hours
 
+// Prerender all directory city hub pages at build time (0ms serverless function CPU)
+export async function generateStaticParams() {
+  return DIRECTORY_CITIES.map(c => ({ city_slug: c.slug }));
+}
+
 export async function generateMetadata({ params }) {
   const awaitedParams = await params;
   const { city_slug } = awaitedParams;

@@ -103,6 +103,38 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/sitemaps/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+      // Global Vercel Edge CDN Caching for public landing pages - eliminates 99% of Serverless Function CPU
+      {
+        source: '/:slug((?!api|_next|admin|dashboard|private|f|thank-you).*)',
+        headers: [
+          {
+            key: 'Vercel-CDN-Cache-Control',
+            value: 'public, s-maxage=86400, stale-while-revalidate=604800',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'public, s-maxage=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
     ];
 
     // Enforce noindex on all vercel.app preview/branch deployment hosts

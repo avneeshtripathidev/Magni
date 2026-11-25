@@ -8,6 +8,32 @@ import { parseLocationSlug, MAJOR_CITIES } from '@/app/utils/seoUrlParser';
 
 export const revalidate = 86400; // Cache at Edge CDN for 24 hours - instant 5ms loading
 
+// Prerender top high-traffic pages at build time to eliminate serverless function execution
+export async function generateStaticParams() {
+  return [
+    { location_slug: 'singer-in-delhi' },
+    { location_slug: 'singer-in-mumbai' },
+    { location_slug: 'singer-in-bengaluru' },
+    { location_slug: 'singer-in-lucknow' },
+    { location_slug: 'singer-in-jaipur' },
+    { location_slug: 'singer-in-chandigarh' },
+    { location_slug: 'singer-in-varanasi' },
+    { location_slug: 'singer-in-noida' },
+    { location_slug: 'singer-in-gurgaon' },
+    { location_slug: 'singer-in-pune' },
+    { location_slug: 'wedding-singer-in-delhi' },
+    { location_slug: 'wedding-singer-in-mumbai' },
+    { location_slug: 'wedding-singer-in-lucknow' },
+    { location_slug: 'dj-in-delhi' },
+    { location_slug: 'dj-in-mumbai' },
+    { location_slug: 'wedding-dj-in-delhi' },
+    { location_slug: 'live-band-in-delhi' },
+    { location_slug: 'live-band-in-mumbai' },
+    { location_slug: 'wedding-invitations' },
+    { location_slug: 'digital-wedding-cards' },
+  ];
+}
+
 function isWeddingInviteQuery(slug) {
   const s = (slug || '').toLowerCase();
   return (

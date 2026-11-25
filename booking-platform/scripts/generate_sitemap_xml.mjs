@@ -309,7 +309,6 @@ let sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
 sitemapIndexXml += `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
 const sitemapFiles = [
-  `${baseUrl}/sitemap.xml`,
   `${baseUrl}/sitemaps/all-1063-cities-sitemap.xml`,
   `${baseUrl}/sitemaps/events-sitemap.xml`,
   `${baseUrl}/sitemaps/artists-categories-sitemap.xml`,
@@ -326,3 +325,8 @@ sitemapIndexXml += `</sitemapindex>\n`;
 const indexPath = path.join(outDir, 'sitemap-index.xml');
 fs.writeFileSync(indexPath, sitemapIndexXml, 'utf-8');
 console.log(`Successfully generated sitemap index: ${indexPath}`);
+
+// Also write root public/sitemap.xml for 100% static Edge CDN delivery (0ms serverless function CPU)
+const rootSitemapPath = path.join(outDir, '../sitemap.xml');
+fs.writeFileSync(rootSitemapPath, sitemapIndexXml, 'utf-8');
+console.log(`Successfully generated static root sitemap: ${rootSitemapPath}`);

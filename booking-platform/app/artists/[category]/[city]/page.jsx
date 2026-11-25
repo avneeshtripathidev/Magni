@@ -5,6 +5,22 @@ import { getCityBySlug } from '@/app/constants/indianCities1063.js';
 
 export const revalidate = 86400; // Cache at Edge CDN for 24 hours
 
+// Prerender primary category & city hubs at build time
+export async function generateStaticParams() {
+  return [
+    { category: 'singers', city: 'delhi' },
+    { category: 'djs', city: 'delhi' },
+    { category: 'live-bands', city: 'delhi' },
+    { category: 'singers', city: 'mumbai' },
+    { category: 'djs', city: 'mumbai' },
+    { category: 'live-bands', city: 'mumbai' },
+    { category: 'singers', city: 'bengaluru' },
+    { category: 'singers', city: 'lucknow' },
+    { category: 'singers', city: 'chandigarh' },
+    { category: 'singers', city: 'jaipur' },
+  ];
+}
+
 function formatCategory(rawCategory) {
   const cat = (rawCategory || '').toLowerCase();
   if (cat.includes('dj')) return 'Dj';
