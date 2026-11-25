@@ -269,7 +269,7 @@ export default function AdminArtistOnboardingPage() {
               <Filter className="w-3.5 h-3.5" />
               Category:
             </span>
-            {['all', 'singer', 'live band', 'musician', 'comedian', 'anchor'].map((cat) => (
+            {['all', 'singer', 'live band', 'hip-hop / rap', 'musician', 'comedian', 'anchor'].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(cat)}

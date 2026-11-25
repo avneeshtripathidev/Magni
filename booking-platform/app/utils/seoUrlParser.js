@@ -11,6 +11,7 @@ export const VALID_KEYWORDS = [
   'singer', 'singers', 'band', 'bands', 'dj', 'djs', 'comedian', 'comedians', 
   'anchor', 'anchors', 'emcee', 'emcees', 'dancer', 'dancers', 'magician', 'magicians', 
   'guitarist', 'guitarists', 'violinist', 'violinists', 'saxophonist', 'flutist', 'pianist', 'dhol',
+  'rapper', 'rappers', 'hip-hop', 'hiphop', 'rap',
   'standup', 'qawwali', 'bhajan', 'music', 'musician', 'musicians', 'artist', 'artists', 
   'performer', 'performers', 'instrumentalist', 'instrumentalists',
   'ghazal', 'gazal', 'sufi', 'gig', 'entertainment', 'packages', 'sangeet', 

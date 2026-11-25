@@ -29,6 +29,7 @@ const CATEGORIES = [
   'Live Band',
   'Acoustic Duo',
   'DJ',
+  'Rapper / Hip-Hop',
   'Instrumentalist',
   'Sufi Singer',
   'Classical Musician',
@@ -40,6 +41,7 @@ const CATEGORIES = [
 const GENRES = [
   'Bollywood',
   'Bollywood Retro',
+  'Hip-Hop / Rap',
   'Sufi',
   'Punjabi Pop',
   'Western Pop',

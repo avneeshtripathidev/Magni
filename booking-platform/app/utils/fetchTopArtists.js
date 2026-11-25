@@ -178,6 +178,7 @@ function getCatFilterTerm(cat) {
   if (c.includes('magician')) return 'magician';
   if (c.includes('dancer')) return 'dancer';
   if (c.includes('anchor')) return 'anchor';
+  if (c.includes('rap') || c.includes('hip-hop') || c.includes('hiphop')) return 'rap';
   if (c.includes('musician') || c.includes('music') || c.includes('guitarist')) return 'music';
   if (c.includes('singer') || c.includes('artist') || c.includes('ghazal') || c.includes('sufi')) return 'singer';
   return cat.replace(/s$/i, '').toLowerCase();
