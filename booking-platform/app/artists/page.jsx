@@ -66,7 +66,7 @@ export default function ArtistsPage() {
   const [canScrollRight, setCanScrollRight] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   
-  const { artists, loading, totalPages, fetchArtists } = useArtists(15)
+  const { artists, loading, totalPages, fetchArtists, fallbackNotice } = useArtists(15)
 
   const checkScroll = useCallback(() => {
     if (!trackRef.current) return
@@ -267,6 +267,27 @@ export default function ArtistsPage() {
             </AnimatePresence>
           </div>
         </div>
+
+        {/* Dynamic Nearby & Travel-Ready Notice Banner */}
+        {fallbackNotice && (
+          <motion.div 
+            className="luxury-proximity-banner"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <div className="luxury-proximity-banner-left">
+              <span className="luxury-proximity-pulse-dot" />
+              <div className="luxury-proximity-text-group">
+                <span className="luxury-proximity-badge-tag">✈️ TRAVEL-READY ARTISTS</span>
+                <p className="luxury-proximity-banner-text">{fallbackNotice}</p>
+              </div>
+            </div>
+            <div className="luxury-proximity-guarantee-pill">
+              <span>🛡️ 100% Artist Arrival Guarantee</span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Artists Grid */}
         <div className="artists-grid">

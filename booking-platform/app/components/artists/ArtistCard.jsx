@@ -84,6 +84,18 @@ const ArtistCard = forwardRef(({ artist }, ref) => {
               <span className="modern-location-text">{location}</span>
             </div>
 
+            {artist.isNearby && (
+              <div className="modern-proximity-tag nearby">
+                <span>📍 Nearby (~100km)</span>
+              </div>
+            )}
+
+            {artist.isTravelReady && (
+              <div className="modern-proximity-tag travel-ready">
+                <span>✈️ Travel-Ready</span>
+              </div>
+            )}
+
             <div className="modern-footer-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
               <div className="modern-rating-box">
                 <Stars count={Math.round(Number(rating))} />

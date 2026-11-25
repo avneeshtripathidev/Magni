@@ -1,4 +1,5 @@
 import { supabase } from '@database/connection/supabase';
+import { isNearbyLocation } from '@/app/utils/cityProximity';
 
 // In-memory cache for SEO artist results (1 hour TTL)
 const seoArtistCache = new Map();
@@ -204,15 +205,15 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
     let matchedArtists = [];
     const usedIds = new Set();
 
-    // 1. Check for local city match in pool
+    // 1. Check for local city match and ~100km nearby locations in pool
     if (cityTerm) {
       for (const a of pool) {
         if (matchedArtists.length >= limit) break;
         const artistCity = (a.city || '').toLowerCase();
-        if (artistCity.includes(cityTerm) || cityTerm.includes(artistCity)) {
+        if (artistCity.includes(cityTerm) || cityTerm.includes(artistCity) || isNearbyLocation(cityTerm, artistCity)) {
           // If category filter requested, verify category match
           if (filterTerm) {
-            const catText = `${a.category || ''} ${a.subCategory || ''} ${a.name || ''}`.toLowerCase();
+            const catText = `${a.category || ''} ${a.subCategory || ''} ${a.name || ''} ${a.alias || ''}`.toLowerCase();
             if (!catText.includes(filterTerm)) continue;
           }
           matchedArtists.push({ ...a, isFromCity: true });
@@ -226,7 +227,7 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
       for (const a of pool) {
         if (matchedArtists.length >= limit) break;
         if (usedIds.has(a.id)) continue;
-        const catText = `${a.subCategory || ''} ${a.bio || ''}`.toLowerCase();
+        const catText = `${a.subCategory || ''} ${a.bio || ''} ${a.name || ''} ${a.alias || ''}`.toLowerCase();
         if (catText.includes(subCatTerm)) {
           matchedArtists.push({ ...a, isFromCity: false });
           usedIds.add(a.id);
@@ -234,12 +235,12 @@ export async function getTopArtistsForSEO({ category = 'All', subCategory = '', 
       }
     }
 
-    // 3. Match category nationwide from pool
+    // 3. Match category nationwide from pool (Travel-ready performers)
     if (filterTerm && matchedArtists.length < limit) {
       for (const a of pool) {
         if (matchedArtists.length >= limit) break;
         if (usedIds.has(a.id)) continue;
-        const catText = `${a.category || ''} ${a.subCategory || ''} ${a.name || ''}`.toLowerCase();
+        const catText = `${a.category || ''} ${a.subCategory || ''} ${a.name || ''} ${a.alias || ''}`.toLowerCase();
         if (catText.includes(filterTerm)) {
           matchedArtists.push({ ...a, isFromCity: false });
           usedIds.add(a.id);
