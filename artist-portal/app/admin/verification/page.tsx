@@ -10,6 +10,7 @@ import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareAc
 import { ModalPortal } from '../../../components/shared/ModalPortal';
 import { getArtistRankMap } from '../../../lib/artistTiers';
 import { getLiveArtistProfileUrl } from '../../../lib/utils';
+import { getSecureKycUrl } from '../../../lib/security/kycEncryption';
 import {
   validateStep1,
   validateStep2,
@@ -1134,7 +1135,7 @@ function AdminVerificationQueueContent() {
                         <div className="flex flex-wrap gap-2 pt-1">
                           {docs?.id_document_url ? (
                             <a
-                              href={docs.id_document_url}
+                              href={getSecureKycUrl(docs.id_document_url)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex-1 px-3 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold text-xs inline-flex items-center justify-center gap-1.5"
@@ -1786,7 +1787,7 @@ function AdminVerificationQueueContent() {
                       <div className="flex flex-wrap gap-3">
                         {docs?.id_document_url ? (
                           <a
-                            href={docs.id_document_url}
+                            href={getSecureKycUrl(docs.id_document_url)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs inline-flex items-center gap-2 shadow-xs"

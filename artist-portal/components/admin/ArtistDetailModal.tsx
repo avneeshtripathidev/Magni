@@ -8,6 +8,7 @@ import { WhatsAppShareActions } from '../shared/WhatsAppShareActions';
 import { ModalPortal } from '../shared/ModalPortal';
 import { getArtistRankMap, getArtistTierProgress } from '../../lib/artistTiers';
 import { getLiveArtistProfileUrl } from '../../lib/utils';
+import { getSecureKycUrl } from '../../lib/security/kycEncryption';
 import {
   Users,
   Search,
@@ -704,7 +705,7 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
                 <div className="flex flex-wrap items-center gap-2.5 pt-2">
                   {artist.verification_documents?.id_document_url ? (
                     <a
-                      href={artist.verification_documents.id_document_url}
+                      href={getSecureKycUrl(artist.verification_documents.id_document_url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs inline-flex items-center gap-2 shadow-sm transition-all"
@@ -718,7 +719,7 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
                   )}
                   {artist.verification_documents?.address_proof_url && (
                     <a
-                      href={artist.verification_documents.address_proof_url}
+                      href={getSecureKycUrl(artist.verification_documents.address_proof_url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold text-xs inline-flex items-center gap-2 shadow-xs transition-all"

@@ -8,6 +8,7 @@ import { StatusBadge } from '../../../components/dashboard/StatusBadge';
 import { MissingDetailsBanner } from '../../../components/dashboard/MissingDetailsBanner';
 import { compressImageFile } from '../../../lib/imageCompressor';
 import { getMissingProfileSections } from '../../../lib/profileCompletion';
+import { getSecureKycUrl } from '../../../lib/security/kycEncryption';
 import { 
   ShieldCheck, 
   AlertTriangle, 
@@ -532,7 +533,7 @@ export default function VerificationPage() {
                 />
                 {formData.id_document_url && (
                   <a
-                    href={formData.id_document_url}
+                    href={getSecureKycUrl(formData.id_document_url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-900"
@@ -577,7 +578,7 @@ export default function VerificationPage() {
                 />
                 {formData.address_proof_url && (
                   <a
-                    href={formData.address_proof_url}
+                    href={getSecureKycUrl(formData.address_proof_url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-900"

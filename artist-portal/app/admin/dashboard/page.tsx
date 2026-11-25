@@ -8,6 +8,7 @@ import { WhatsAppShareActions } from '../../../components/shared/WhatsAppShareAc
 import { ArtistTierBadge } from '../../../components/shared/ArtistTierBadge';
 import { ModalPortal } from '../../../components/shared/ModalPortal';
 import { getArtistRankMap } from '../../../lib/artistTiers';
+import { getSecureKycUrl } from '../../../lib/security/kycEncryption';
 import {
   Users,
   ShieldCheck,
@@ -543,7 +544,7 @@ export default function AdminDashboardPage() {
                     <div className="flex flex-wrap gap-2 pt-2">
                       {docs?.id_document_url ? (
                         <a
-                          href={docs.id_document_url}
+                          href={getSecureKycUrl(docs.id_document_url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold inline-flex items-center gap-1.5"
@@ -557,7 +558,7 @@ export default function AdminDashboardPage() {
                       )}
                       {docs?.address_proof_url && (
                         <a
-                          href={docs.address_proof_url}
+                          href={getSecureKycUrl(docs.address_proof_url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold inline-flex items-center gap-1.5"

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
+import { encryptKycBuffer } from '@/lib/security/kycEncryption';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -92,23 +93,30 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    // If private KYC document, encrypt buffer using AES-256-GCM before storing in Cloudflare R2
+    const finalBuffer = isPrivate ? encryptKycBuffer(buffer) : buffer;
+
     const s3 = getS3Client();
     await s3.send(
       new PutObjectCommand({
         Bucket: bucket,
         Key: key,
-        Body: buffer,
-        ContentType: file.type || 'application/octet-stream',
+        Body: finalBuffer,
+        ContentType: isPrivate ? 'application/octet-stream' : (file.type || 'application/octet-stream'),
         Metadata: {
           folder_type: isPrivate ? 'private-kyc' : 'basic-details',
           category: categorySegment,
           artist_id: artistSegment.replace(/[^\x20-\x7E]/g, '') || 'general',
+          encrypted: isPrivate ? 'true' : 'false',
         },
       })
     );
 
     const baseUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
-    const url = `${baseUrl}/${key}`;
+    // Private KYC documents route through the authenticated admin proxy; public media uses CDN
+    const url = isPrivate
+      ? `/api/admin/kyc-document?key=${encodeURIComponent(key)}`
+      : `${baseUrl}/${key}`;
 
     return NextResponse.json(
       {
