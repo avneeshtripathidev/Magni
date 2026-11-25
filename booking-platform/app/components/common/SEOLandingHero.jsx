@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { bookingService } from '@/app/services/bookingService';
 import VideoGridSection from '@/app/components/home/VideoGridSection';
+import { VERIFIED_FALLBACK_ARTISTS } from '@/app/utils/fetchTopArtists';
 import '@/app/styles/components/SEOLandingHero.css';
 import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
@@ -59,6 +60,8 @@ export default function SEOLandingHero({
   const phoneInputRef = useRef(null);
   const mobPhoneInputRef = useRef(null);
   const [tokenCopied, setTokenCopied] = useState(false);
+
+  const displayArtists = (topArtists && topArtists.length > 0) ? topArtists : VERIFIED_FALLBACK_ARTISTS;
 
   const isDJ =
     (category || '').toLowerCase().includes('dj') ||
@@ -1188,7 +1191,7 @@ export default function SEOLandingHero({
         {/* ==========================================================================
            2. Top 5 Verified Artists Showcase Section OR Specialized DJ/Category Showcase
            ========================================================================== */}
-        {topArtists && topArtists.length > 0 ? (
+        {displayArtists && displayArtists.length > 0 ? (
           <div className="seo-top-artists-section">
             <div className="seo-section-head-v2">
               <div>
@@ -1204,7 +1207,7 @@ export default function SEOLandingHero({
 
             {/* 5 Cards Grid with Images */}
             <div className="seo-artists-cards-grid">
-              {topArtists.map((artist, idx) => {
+              {displayArtists.map((artist, idx) => {
                 const isSelected = selectedArtist?.id === artist.id;
                 const imgSrc = (imageErrors[artist.id] || !artist.img)
                   ? DEFAULT_FALLBACK_IMAGE
