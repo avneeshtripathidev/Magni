@@ -143,6 +143,7 @@ export const NAV_LINKS = [
       { label: 'All', path: '/artists' },
       { label: 'Singer', path: '/artists?category=Singer' },
       { label: 'Music band', path: '/artists?category=Band' },
+      { label: 'Rapper / Hip-Hop', path: '/artists?category=Rapper%20%2F%20Hip-Hop' },
       { label: 'Dj', path: '/artists?category=Dj' },
       { label: 'Musician', path: '/artists?category=Musician' },
       { label: 'Comedian', path: '/artists?category=Comedian' },

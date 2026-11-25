@@ -206,7 +206,7 @@ export default function EventRegistrationPage() {
                   <div className="lux-form-group full-width">
                     <label style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>ARTIST TYPE (Multiple allowed)</label>
                     <div className="artist-type-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {['Singer', 'Music Band', 'DJ', 'Musician', 'Comedian', 'Anchor', 'Dancer', 'Magician'].map(type => (
+                      {['Singer', 'Music Band', 'DJ', 'Rapper / Hip-Hop', 'Musician', 'Comedian', 'Anchor', 'Dancer', 'Magician'].map(type => (
                         <button
                           key={type}
                           type="button"

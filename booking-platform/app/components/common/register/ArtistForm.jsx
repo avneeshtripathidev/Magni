@@ -153,6 +153,8 @@ export default function ArtistForm({ copyToClipboard, setSubmitted }) {
               <option value="singer">Singer</option>
               <option value="band">Music Band</option>
               <option value="dj">DJ</option>
+              <option value="rapper">Rapper / Hip-Hop</option>
+              <option value="hiphop">Hip-Hop Artist</option>
               <option value="musician">Musician</option>
               <option value="comedian">Comedian</option>
               <option value="anchor">Anchor</option>

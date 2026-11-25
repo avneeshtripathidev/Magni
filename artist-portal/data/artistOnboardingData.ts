@@ -2,7 +2,7 @@ export interface ArtistOnboardingRecord {
   id: string;
   name: string;
   stageName: string;
-  category: 'Singer' | 'Live Band' | 'Musician' | 'Comedian' | 'Anchor' | 'Performer' | 'Rapper' | 'Hip-Hop';
+  category: 'Singer' | 'Live Band' | 'Musician' | 'Comedian' | 'Anchor' | 'Performer' | 'Rapper' | 'Hip-Hop' | 'Rapper / Hip-Hop' | 'Hip-Hop Artist' | 'DJ' | 'Djs';
   region: string;
   homeCity: string;
   phone: string;

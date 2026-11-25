@@ -334,7 +334,7 @@ function InnerContactForm({ formType, initialArtist, initialPlan, initialService
             <div className="lux-form-group full-width">
               <label>Artist Type (Multiple allowed)</label>
               <div className="artist-type-grid">
-                {['Singer', 'Music Band', 'DJ', 'Musician', 'Comedian', 'Anchor', 'Dancer', 'Magician'].map(type => (
+                {['Singer', 'Music Band', 'DJ', 'Rapper / Hip-Hop', 'Musician', 'Comedian', 'Anchor', 'Dancer', 'Magician'].map(type => (
                   <button key={type} type="button" className={`artist-chip ${selectedArtistTypes.includes(type) ? 'active' : ''}`} onClick={() => { setSelectedArtistTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]) }}>{type}</button>
                 ))}
               </div>

@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { bookingService } from '@/app/services/bookingService';
 import { validateName, validateEmail, validatePhone } from '@helpers/validation';
@@ -200,7 +200,7 @@ export default function EventForm({ copyToClipboard, setSubmitted }) {
           <div className="lux-form-group full-width">
             <label>ARTIST TYPE (Multiple allowed)</label>
             <div className="artist-type-grid">
-              {['Singer', 'Music Band', 'DJ', 'Musician', 'Comedian', 'Anchor', 'Dancer', 'Magician'].map(type => (
+              {['Singer', 'Music Band', 'DJ', 'Rapper / Hip-Hop', 'Musician', 'Comedian', 'Anchor', 'Dancer', 'Magician'].map(type => (
                 <button
                   key={type}
                   type="button"

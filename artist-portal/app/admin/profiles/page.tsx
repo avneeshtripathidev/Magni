@@ -74,7 +74,7 @@ export default function AdminProfileCardsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const CARDS_PER_PAGE = 8;
 
-  const categories = ['all', 'Singer', 'Live Band', 'DJ', 'Instrumentalist'];
+  const categories = ['all', 'Singer', 'Live Band', 'DJ', 'Rapper / Hip-Hop', 'Instrumentalist'];
 
   const liveCount = artists.filter((a) => Boolean(a.is_live) && a.verification_status === 'approved').length;
   const offlineCount = artists.filter((a) => !a.is_live || a.verification_status !== 'approved').length;

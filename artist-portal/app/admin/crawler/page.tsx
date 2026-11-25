@@ -499,6 +499,7 @@ export default function AdminCrawlerDashboardPage() {
                 <option value="Singer">Singer</option>
                 <option value="Live band">Live band</option>
                 <option value="Dj">DJ</option>
+                <option value="Rapper / Hip-Hop">Rapper / Hip-Hop</option>
                 <option value="Anchor">Anchor</option>
               </select>
             </div>
