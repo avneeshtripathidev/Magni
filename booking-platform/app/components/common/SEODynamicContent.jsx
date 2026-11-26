@@ -137,11 +137,14 @@ export default function SEODynamicContent({ category, city, overviewHtml, faqs, 
                 Frequently Asked Questions about {category}s in {city}
               </h2>
             </div>
-            <div className="seo-faqs-list">
+            <div className="seo-faqs-list" itemScope itemType="https://schema.org/FAQPage">
               {faqs.map((faq, idx) => (
                 <div 
                   key={idx} 
                   className={`seo-faq-item ${openFaq === idx ? 'is-open' : ''}`}
+                  itemScope 
+                  itemProp="mainEntity" 
+                  itemType="https://schema.org/Question"
                 >
                   <button
                     type="button"
@@ -149,23 +152,19 @@ export default function SEODynamicContent({ category, city, overviewHtml, faqs, 
                     className="seo-faq-trigger"
                     aria-expanded={openFaq === idx}
                   >
-                    <span>{faq.question}</span>
+                    <span itemProp="name">{faq.question}</span>
                     <ChevronDown size={20} className="seo-faq-chevron" />
                   </button>
-                  <AnimatePresence>
-                    {openFaq === idx && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                      >
-                        <div className="seo-faq-content">
-                          {faq.answer}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <div 
+                    itemScope 
+                    itemProp="acceptedAnswer" 
+                    itemType="https://schema.org/Answer"
+                    style={{ display: openFaq === idx ? 'block' : 'none' }}
+                  >
+                    <div className="seo-faq-content" itemProp="text">
+                      {faq.answer}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

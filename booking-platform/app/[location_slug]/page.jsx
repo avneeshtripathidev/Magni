@@ -98,26 +98,62 @@ export default async function LocationServicePage({ params }) {
   const schema = [
     {
       "@context": "https://schema.org",
+      "@type": "EntertainmentBusiness",
+      "name": "Magnevents",
+      "legalName": "Magnevents India",
+      "url": "https://www.magnevents.in",
+      "logo": "https://www.magnevents.in/logo.png",
+      "image": "https://www.magnevents.in/og-image.jpg",
+      "telephone": "+91 80765 15257",
+      "email": "magneventsdotin@gmail.com",
+      "priceRange": "₹4,999 - ₹1,50,000+",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "addressCountry": "IN"
+      },
+      "areaServed": [
+        "Delhi NCR",
+        "New Delhi",
+        "Noida",
+        "Gurugram",
+        "Faridabad",
+        "Ghaziabad",
+        "Mumbai",
+        "Bengaluru",
+        "India"
+      ],
+      "sameAs": [
+        "https://www.instagram.com/magnevents.in"
+      ]
+    },
+    {
+      "@context": "https://schema.org",
       "@type": "CollectionPage",
       "name": `Best ${parsed.formattedTitle}`,
-      "description": `Book verified ${parsed.formattedTitle} for your next event.`,
+      "description": `Book verified ${parsed.formattedTitle} directly with 0% agency fees and 100% Artist Arrival Guarantee across ${parsed.parsedCity}.`,
       "url": `https://www.magnevents.in/${parsed.slug}`
     },
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      "name": parsed.formattedTitle,
+      "name": `Book ${parsed.formattedTitle}`,
       "serviceType": parsed.parsedCategory,
+      "description": `Direct artist booking marketplace for verified ${parsed.formattedTitle.toLowerCase()} with 0% middleman fees and guaranteed on-time performance.`,
       "provider": {
         "@type": "EntertainmentBusiness",
         "name": "Magnevents",
-        "url": "https://www.magnevents.in"
+        "url": "https://www.magnevents.in",
+        "telephone": "+91 80765 15257"
       },
       "areaServed": parsed.parsedCity === 'All Cities' ? 'India' : parsed.parsedCity,
       "offers": {
-        "@type": "Offer",
+        "@type": "AggregateOffer",
         "priceCurrency": "INR",
-        "price": "5999",
+        "lowPrice": "4999",
+        "highPrice": "150000",
+        "offerCount": "250",
         "availability": "https://schema.org/InStock"
       }
     },

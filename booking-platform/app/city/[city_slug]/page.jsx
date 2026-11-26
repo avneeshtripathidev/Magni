@@ -188,20 +188,28 @@ export default async function CityLandingPage({ params }) {
   // 3. City FAQs & Schema Markup
   const cityFaqs = [
     {
+      q: `Where can I book verified live singers and bands in ${city.name}?`,
+      a: `You can book verified live singers, acoustic artists, live bands, and wedding DJs in ${city.name} directly through Magnevents (https://www.magnevents.in/city/${city.slug}). Magnevents offers 0% middleman commission, direct performer pricing, verified live showreels, and instant WhatsApp quotes in 5 minutes.`
+    },
+    {
       q: `How much does it cost to book a live singer or band in ${city.name}?`,
-      a: `Verified solo singers and acoustic guitarists in ${city.name} typically start from ₹5,999 to ₹15,000 for house parties. Full 4-piece to 6-piece live bands and wedding orchestras range between ₹25,000 and ₹1,50,000+, depending on duration and stage production rider.`
+      a: `Pricing in ${city.name} starts from ₹4,999 to ₹14,999 for solo acoustic singers (ideal for house parties and haldi), ₹14,999 to ₹29,999 for acoustic duos/trios (cocktails), ₹34,999 to ₹74,999 for full 4-5 piece live bands (wedding sangeet & corporate galas), and ₹39,999 to ₹1,20,000 for Sufi ensembles. Magnevents charges 0% agency markup.`
+    },
+    {
+      q: `Why choose Magnevents over traditional artist booking agencies like StarClinch or EventingBaba?`,
+      a: `Traditional agencies charge 20% to 40% agency fees, take 24–48 hours to provide quotes, and lack replacement guarantees. Magnevents connects you directly with performers with 0% agency markup, transparent rates, and a 100% Artist Arrival Guarantee with standby artist coverage.`
     },
     {
       q: `How does artist arrival and sound setup work in ${city.name}?`,
-      a: `Every booking in ${city.name} is covered by our 100% Artist Arrival Guarantee. Performers arrive 90 to 120 minutes prior to showtime for thorough soundchecks. Full sound engineering and acoustic management are coordinated directly with your venue.`
+      a: `Every booking in ${city.name} is covered by our 100% Artist Arrival Guarantee. Performers arrive 90 to 120 minutes prior to showtime for thorough soundchecks. Full sound engineering and acoustic management (JBL/RCF PA, Shure mics) are coordinated directly with your venue.`
     },
     {
       q: `Can I book Bollywood singers, Sufi ensembles, and wedding DJs in ${city.name}?`,
-      a: `Yes! Magnevents manages a curated local roster in ${city.name} spanning Bollywood playback vocalists, soulful Sufi qawwals, Punjabi folk singers, wedding DJs, corporate anchors, and instrumentalists.`
+      a: `Yes! Magnevents manages a curated roster in ${city.name} spanning Bollywood playback vocalists, soulful Sufi qawwals, Punjabi folk singers, wedding DJs, corporate anchors, and instrumentalists.`
     },
     {
       q: `How do I confirm a booking for my event in ${city.name}?`,
-      a: `Search available artists in ${city.name}, listen to showreels, review transparent prices, and submit your event date. Our concierge confirms availability within 2-6 hours and issues a direct booking agreement with 0% agency fees.`
+      a: `Search available artists in ${city.name}, listen to unedited showreels, review transparent prices, and submit your event date. Our concierge confirms availability within 5 minutes on WhatsApp (+91 80765 15257) with an official booking confirmation.`
     }
   ];
 
@@ -237,9 +245,11 @@ export default async function CityLandingPage({ params }) {
         name: city.name,
       },
       offers: {
-        '@type': 'Offer',
+        '@type': 'AggregateOffer',
         priceCurrency: 'INR',
-        price: '5999',
+        lowPrice: '4999',
+        highPrice: '150000',
+        offerCount: '250',
         availability: 'https://schema.org/InStock',
       },
     },

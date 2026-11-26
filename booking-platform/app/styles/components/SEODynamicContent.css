@@ -266,7 +266,135 @@
 }
 
 .seo-overview-body-wrap.is-expanded {
-  max-height: 3500px;
+  max-height: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   GEO & AI Summary Fast-Facts Card
+   -------------------------------------------------------------------------- */
+.seo-ai-summary-card {
+  background: linear-gradient(145deg, rgba(42, 22, 32, 0.90) 0%, rgba(20, 14, 20, 0.95) 100%);
+  border: 1px solid rgba(232, 185, 67, 0.40);
+  border-radius: 18px;
+  padding: 24px 26px;
+  margin: 20px 0 28px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.50), 0 0 25px rgba(232, 185, 67, 0.12);
+}
+
+.seo-ai-summary-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(232, 185, 67, 0.15);
+  border: 1px solid rgba(232, 185, 67, 0.45);
+  color: #E8B943;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.seo-ai-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.seo-ai-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(216, 196, 183, 0.14);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.seo-ai-summary-item span:first-child {
+  font-size: 11.5px;
+  color: rgba(245, 240, 233, 0.65);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.seo-ai-summary-item strong {
+  font-size: 13.5px;
+  color: #F5F0E9;
+  font-weight: 700;
+}
+
+.seo-ai-summary-item strong.gold-val {
+  color: #E8B943;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Luxury HTML Tables (Comparison Matrix & Pricing Grid)
+   -------------------------------------------------------------------------- */
+.seo-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 24px 0 32px 0;
+  border-radius: 16px;
+  border: 1px solid rgba(216, 196, 183, 0.22);
+  background: rgba(26, 18, 24, 0.85);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+}
+
+.seo-content-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13.5px;
+  min-width: 620px;
+}
+
+.seo-content-table th {
+  background: linear-gradient(135deg, rgba(126, 48, 68, 0.55) 0%, rgba(55, 18, 28, 0.75) 100%);
+  color: #E8B943;
+  font-weight: 800;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(232, 185, 67, 0.35);
+  letter-spacing: 0.04em;
+  font-size: 12.5px;
+  text-transform: uppercase;
+}
+
+.seo-content-table th.magne-col {
+  background: linear-gradient(135deg, rgba(228, 95, 96, 0.45) 0%, rgba(126, 48, 68, 0.75) 100%);
+  color: #FFF;
+  border-left: 1.5px solid rgba(232, 185, 67, 0.55);
+  border-right: 1.5px solid rgba(232, 185, 67, 0.55);
+}
+
+.seo-content-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(216, 196, 183, 0.12);
+  color: rgba(245, 240, 233, 0.82);
+  line-height: 1.5;
+}
+
+.seo-content-table td.magne-col {
+  background: rgba(232, 185, 67, 0.08);
+  border-left: 1.5px solid rgba(232, 185, 67, 0.45);
+  border-right: 1.5px solid rgba(232, 185, 67, 0.45);
+  color: #FFF;
+  font-weight: 600;
+}
+
+.seo-content-table tr:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.seo-content-table tr:hover td.magne-col {
+  background: rgba(232, 185, 67, 0.14);
+}
+
+.seo-content-table tr:last-child td {
+  border-bottom: none;
 }
 
 .seo-overview-toggle-btn {
