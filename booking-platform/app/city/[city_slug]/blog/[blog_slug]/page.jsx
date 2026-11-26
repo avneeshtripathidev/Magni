@@ -84,19 +84,19 @@ export async function generateMetadata({ params }) {
   }
 
   const cityName = blog.seo_cities?.name || slugToName(normalizedCitySlug);
-  const canonicalPath = `/city/${normalizedCitySlug}/blog/${blog.slug || normalizedBlogSlug}`;
+  const canonicalUrl = `https://www.magnevents.in/city/${normalizedCitySlug}/blog/${blog.slug || normalizedBlogSlug}`;
 
   return {
     title: blog.seo_title || `${blog.title} | Magnevents ${cityName}`,
     description: blog.meta_description || `Guide and tips for ${blog.title}. Hire verified live singers & performers in ${cityName} directly with 0% commission.`,
     alternates: {
-      canonical: canonicalPath,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title: blog.seo_title || blog.title,
       description: blog.meta_description,
       images: blog.featured_image_url ? [{ url: blog.featured_image_url }] : [],
-      url: canonicalPath,
+      url: canonicalUrl,
     }
   };
 }

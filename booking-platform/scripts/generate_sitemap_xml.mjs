@@ -30,13 +30,11 @@ function buildSitemapXml(urls) {
   return xml;
 }
 
-// 1. Core Platform Pages
+// 1. Core Platform Pages (Only 200 OK, canonical, indexable pages - NO redirects)
 const coreRoutes = [
   { route: '', priority: 1.0, changeFrequency: 'daily' },
   { route: '/artists', priority: 0.98, changeFrequency: 'daily' },
   { route: '/ai-search', priority: 0.90, changeFrequency: 'weekly' },
-  { route: '/search', priority: 0.90, changeFrequency: 'weekly' },
-  { route: '/book', priority: 0.90, changeFrequency: 'weekly' },
   { route: '/services', priority: 0.88, changeFrequency: 'weekly' },
   { route: '/pricing', priority: 0.88, changeFrequency: 'weekly' },
   { route: '/how-to-book', priority: 0.85, changeFrequency: 'weekly' },
@@ -44,7 +42,6 @@ const coreRoutes = [
   { route: '/gallery', priority: 0.80, changeFrequency: 'weekly' },
   { route: '/testimonials', priority: 0.80, changeFrequency: 'weekly' },
   { route: '/blog-post', priority: 0.85, changeFrequency: 'weekly' },
-  { route: '/register/event', priority: 0.75, changeFrequency: 'monthly' },
 ].map(item => ({
   url: `${baseUrl}${item.route}`,
   lastModified: now,
@@ -52,7 +49,7 @@ const coreRoutes = [
   priority: item.priority
 }));
 
-// 2. High-Intent National Performance Keywords
+// 2. High-Intent National Performance Keywords (Unique intents only)
 const nationalRoutes = [
   '/singers-near-me', '/live-singers-near-me', '/singer-booking-near-me',
   '/live-singer-for-party', '/professional-singer-booking', '/affordable-singer-for-wedding',
@@ -66,8 +63,6 @@ const nationalRoutes = [
   '/annual-function-singer', '/product-launch-entertainment', '/singer-booking-price',
   '/wedding-singer-cost', '/live-band-booking-price', '/sufi-singer-booking-price',
   '/affordable-live-music-packages', '/singer-for-party-under-10000', '/singer-for-house-party',
-  '/live-singer-for-private-party', '/live-singer-for-house-party', '/house-gig',
-  '/book-singer-music-band', '/book-live-singer', '/book-singer-for-wedding',
   '/dj-booking-near-me', '/wedding-dj-booking', '/house-party-dj-booking',
   '/wedding-anchor-booking', '/corporate-event-anchor', '/standup-comedian-booking',
   '/magician-booking-near-me', '/qawwali-group-booking', '/ghazal-singer-booking',
@@ -88,10 +83,9 @@ const TOP_METROS = [
   'bhopal', 'surat', 'patna', 'agra', 'kanpur', 'dehradun', 'amritsar'
 ];
 
+// Distinct, non-duplicate metro landing page patterns
 const METRO_PATTERNS = [
   c => `/singer-in-${c}`,
-  c => `/book-singer-in-${c}`,
-  c => `/live-singer-in-${c}`,
   c => `/wedding-singer-in-${c}`,
   c => `/dj-in-${c}`,
   c => `/wedding-dj-in-${c}`,

@@ -2,12 +2,12 @@ export const metadata = {
   title: 'How To Book An Artist | Magnevents',
   description: 'Learn how to easily book a live singer, band, or artist for your next event through Magnevents in three simple steps. Transparent pricing & 0% markup.',
   alternates: {
-    canonical: '/how-to-book',
+    canonical: 'https://www.magnevents.in/how-to-book',
   },
   openGraph: {
     title: 'How To Book An Artist | Magnevents',
     description: 'Learn how to easily book a live singer, band, or artist for your next event through Magnevents in three simple steps. Transparent pricing & 0% markup.',
-    url: '/how-to-book',
+    url: 'https://www.magnevents.in/how-to-book',
     siteName: 'Magnevents',
     locale: 'en_IN',
     type: 'website',

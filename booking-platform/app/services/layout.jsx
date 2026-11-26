@@ -16,12 +16,12 @@ export const metadata = {
     'corporate entertainment services'
   ],
   alternates: {
-    canonical: '/services',
+    canonical: 'https://www.magnevents.in/services',
   },
   openGraph: {
     title: 'Our Services | Live Entertainment & Artist Booking | Magnevents',
     description: 'Explore our services including live bands, solo singers, DJs, and performers for weddings, corporate events, and private house parties.',
-    url: '/services',
+    url: 'https://www.magnevents.in/services',
     siteName: 'Magnevents',
     locale: 'en_IN',
     type: 'website',

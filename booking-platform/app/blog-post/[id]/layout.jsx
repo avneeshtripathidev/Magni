@@ -13,13 +13,13 @@ export async function generateMetadata({ params }) {
       title: `${staticBlog.title} | Magnevents`,
       description: staticBlog.subtitle || 'Read the latest insights and artist news from Magnevents.',
       alternates: {
-        canonical: `/blog-post/${staticBlog.slug || normalizedId}`,
+        canonical: `https://www.magnevents.in/blog-post/${staticBlog.slug || normalizedId}`,
       },
       openGraph: {
         title: `${staticBlog.title} | Magnevents`,
         description: staticBlog.subtitle,
         images: [staticBlog.img || '/icon-512.png'],
-        url: `/blog-post/${staticBlog.slug || normalizedId}`,
+        url: `https://www.magnevents.in/blog-post/${staticBlog.slug || normalizedId}`,
       },
       twitter: {
         card: 'summary_large_image',
@@ -66,13 +66,13 @@ export async function generateMetadata({ params }) {
       title,
       description,
       alternates: {
-        canonical: `/blog-post/${canonicalSlug}`,
+        canonical: `https://www.magnevents.in/blog-post/${canonicalSlug}`,
       },
       openGraph: {
         title,
         description,
         images: [image],
-        url: `/blog-post/${canonicalSlug}`,
+        url: `https://www.magnevents.in/blog-post/${canonicalSlug}`,
       },
       twitter: {
         card: 'summary_large_image',

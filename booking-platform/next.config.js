@@ -200,10 +200,53 @@ const nextConfig = {
         has: [
           {
             type: 'host',
-            value: '^magnevents\\.in$',
+            value: 'magnevents.in',
           },
         ],
         destination: 'https://www.magnevents.in/:path*',
+        permanent: true,
+      },
+      // 3. Consolidate legacy/duplicate category paths to canonical programmatic routes
+      {
+        source: '/artists/singers/:city',
+        destination: '/singer-in-:city',
+        permanent: true,
+      },
+      {
+        source: '/artists/djs/:city',
+        destination: '/dj-in-:city',
+        permanent: true,
+      },
+      {
+        source: '/artists/live-bands/:city',
+        destination: '/live-band-in-:city',
+        permanent: true,
+      },
+      // 4. Consolidate prefix variants to master canonical routes
+      {
+        source: '/book-singer-in-:city',
+        destination: '/singer-in-:city',
+        permanent: true,
+      },
+      {
+        source: '/live-singer-in-:city',
+        destination: '/singer-in-:city',
+        permanent: true,
+      },
+      // 5. Clean up old removed wedding invitation routes (permanently redirect to home)
+      {
+        source: '/wedding-invitations/:path*',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/wedding-invitation/:path*',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/invitation-maker/:path*',
+        destination: '/',
         permanent: true,
       },
       {
@@ -259,11 +302,6 @@ const nextConfig = {
       {
         source: '/mobile-home',
         destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/about',
-        destination: '/blog-post',
         permanent: true,
       },
       {

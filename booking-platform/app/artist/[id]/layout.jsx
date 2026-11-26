@@ -44,13 +44,13 @@ export async function generateMetadata({ params }) {
       title: `${name} | Book Live Singer & Performer | Magnevents`,
       description,
       alternates: {
-        canonical: `/artist/${primarySlug || id}`,
+        canonical: `https://www.magnevents.in/artist/${primarySlug || id}`,
       },
       openGraph: {
         title: `${name} | Book Live Singer & Performer | Magnevents`,
         description,
         images: [image],
-        url: `/artist/${primarySlug || id}`,
+        url: `https://www.magnevents.in/artist/${primarySlug || id}`,
       },
       twitter: {
         card: 'summary_large_image',

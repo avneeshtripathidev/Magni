@@ -29,7 +29,7 @@ export default function DashboardLayout({
           router.replace('/login');
         }
       } else if (!isOnboardingComplete && !hasSkippedOnboarding) {
-        // Strict guard: Incomplete artists who haven't opted to skip must complete onboarding
+
         router.replace('/onboarding');
       }
     }

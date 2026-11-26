@@ -2,12 +2,12 @@ export const metadata = {
   title: 'Client Testimonials & Reviews | Magnevents',
   description: 'Read reviews and testimonials from our happy clients who booked live singers and bands through Magnevents for their special events.',
   alternates: {
-    canonical: '/testimonials',
+    canonical: 'https://www.magnevents.in/testimonials',
   },
   openGraph: {
     title: 'Client Testimonials & Reviews | Magnevents',
     description: 'Read reviews and testimonials from our happy clients who booked live singers and bands through Magnevents for their special events.',
-    url: '/testimonials',
+    url: 'https://www.magnevents.in/testimonials',
     siteName: 'Magnevents',
     locale: 'en_IN',
     type: 'website',

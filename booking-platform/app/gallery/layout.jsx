@@ -2,12 +2,12 @@ export const metadata = {
   title: 'Event Gallery | Live Performances & Weddings | Magnevents',
   description: 'View our gallery of past events, live performances, weddings, and corporate nights powered by Magnevents artists.',
   alternates: {
-    canonical: '/gallery',
+    canonical: 'https://www.magnevents.in/gallery',
   },
   openGraph: {
     title: 'Event Gallery | Live Performances & Weddings | Magnevents',
     description: 'View our gallery of past events, live performances, weddings, and corporate nights powered by Magnevents artists.',
-    url: '/gallery',
+    url: 'https://www.magnevents.in/gallery',
   }
 };
 

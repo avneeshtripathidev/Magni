@@ -97,12 +97,12 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: {
-      canonical: `/city/${normalizedCitySlug}`,
+      canonical: `https://www.magnevents.in/city/${normalizedCitySlug}`,
     },
     openGraph: {
       title,
       description,
-      url: `/city/${normalizedCitySlug}`,
+      url: `https://www.magnevents.in/city/${normalizedCitySlug}`,
       siteName: 'Magnevents',
       images: [
         {

@@ -41,6 +41,20 @@ export async function generateMetadata({ params }) {
     };
   }
 
+  // Canonical consolidation for prefix variants
+  let canonicalSlug = parsed.slug;
+  if (canonicalSlug.startsWith('book-singer-in-')) {
+    canonicalSlug = canonicalSlug.replace('book-singer-in-', 'singer-in-');
+  } else if (canonicalSlug.startsWith('live-singer-in-')) {
+    canonicalSlug = canonicalSlug.replace('live-singer-in-', 'singer-in-');
+  } else if (canonicalSlug.startsWith('book-dj-in-')) {
+    canonicalSlug = canonicalSlug.replace('book-dj-in-', 'dj-in-');
+  } else if (canonicalSlug.startsWith('book-live-band-in-')) {
+    canonicalSlug = canonicalSlug.replace('book-live-band-in-', 'live-band-in-');
+  } else if (canonicalSlug.startsWith('hire-singer-in-')) {
+    canonicalSlug = canonicalSlug.replace('hire-singer-in-', 'singer-in-');
+  }
+
   const citySuffix = parsed.parsedCity !== 'All Cities' ? ` in ${parsed.parsedCity}` : ' in India';
   const displayTitle = `Book ${parsed.formattedTitle}${citySuffix.includes(parsed.parsedCity) ? '' : citySuffix} | Magnevents`;
   const metaDescription = `Book verified ${parsed.formattedTitle.toLowerCase()} starting from ₹5,999. Direct artist booking with 0% agency fees and 100% Artist Arrival Guarantee across ${parsed.parsedCity === 'All Cities' ? 'India' : parsed.parsedCity}.`;
@@ -49,12 +63,12 @@ export async function generateMetadata({ params }) {
     title: displayTitle.length > 65 ? `${parsed.formattedTitle} | Magnevents` : displayTitle,
     description: metaDescription,
     alternates: {
-      canonical: `/${parsed.slug}`,
+      canonical: `https://www.magnevents.in/${canonicalSlug}`,
     },
     openGraph: {
       title: displayTitle,
       description: metaDescription,
-      url: `/${parsed.slug}`,
+      url: `https://www.magnevents.in/${canonicalSlug}`,
       type: 'website'
     },
     twitter: {
@@ -74,8 +88,22 @@ export default async function LocationServicePage({ params }) {
     redirect(`/city/${parsed.slug}`);
   }
 
-  if (rawSlug !== parsed.slug) {
-    redirect(`/${parsed.slug}`);
+  // Canonical consolidation for prefix variants
+  let canonicalSlug = parsed.slug;
+  if (canonicalSlug.startsWith('book-singer-in-')) {
+    canonicalSlug = canonicalSlug.replace('book-singer-in-', 'singer-in-');
+  } else if (canonicalSlug.startsWith('live-singer-in-')) {
+    canonicalSlug = canonicalSlug.replace('live-singer-in-', 'singer-in-');
+  } else if (canonicalSlug.startsWith('book-dj-in-')) {
+    canonicalSlug = canonicalSlug.replace('book-dj-in-', 'dj-in-');
+  } else if (canonicalSlug.startsWith('book-live-band-in-')) {
+    canonicalSlug = canonicalSlug.replace('book-live-band-in-', 'live-band-in-');
+  } else if (canonicalSlug.startsWith('hire-singer-in-')) {
+    canonicalSlug = canonicalSlug.replace('hire-singer-in-', 'singer-in-');
+  }
+
+  if (rawSlug !== canonicalSlug) {
+    redirect(`/${canonicalSlug}`);
   }
 
   if (!parsed.isValidKeyword) {

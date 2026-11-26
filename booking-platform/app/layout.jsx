@@ -26,6 +26,9 @@ export const viewport = {
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.magnevents.in'),
+  alternates: {
+    canonical: 'https://www.magnevents.in',
+  },
   title: 'Book a Singer for House Party, DJs, Live Bands & Private Events | Magnevents',
   description: 'Book verified live singers for house parties, DJs near you, live bands in Pune & Delhi-NCR, house gigs, weddings, and corporate events across India. Transparent direct pricing with 0% agency fees.',
   keywords: [
