@@ -18,8 +18,8 @@ export const VALID_KEYWORDS = [
   'mehndi', 'mehendi', 'haldi', 'acoustic', 'corporate', 'wedding', 'shaadi', 'party', 'parties', 
   'function', 'reception', 'engagement', 'anniversary', 'birthday', 'house-party', 'chowki',
   'cocktail', 'college', 'fest', 'rock', 'bachelor', 'terrace', 'group',
-  'bollywood', 'punjabi', 'retro', 'classical', 'invitation', 'invitations',
-  'card', 'cards', 'patrika', 'best-wishes', 'book', 'hire', 'live'
+  'bollywood', 'punjabi', 'retro', 'classical',
+  'best-wishes', 'book', 'hire', 'live'
 ];
 
 const CORE_MAJOR_CITIES = [

@@ -13,13 +13,11 @@ import {
   ExternalLink,
   X,
   Mic2,
-  Sparkles,
   IdCard,
   UserPlus,
   Lock,
   MousePointerClick,
-  Send,
-  Globe
+  Send
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -87,17 +85,6 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
           name: 'Booking Inquiries',
           href: '/admin/bookings',
           icon: CalendarCheck,
-        },
-        {
-          name: 'Wedding Inquiries',
-          href: '/admin/wedding-invitations',
-          icon: Sparkles,
-        },
-        {
-          name: 'Crawler & SEO Hub',
-          href: '/admin/crawler',
-          icon: Globe,
-          badge: '41k',
         },
         {
           name: 'Admin Access (3 Max)',

@@ -47,6 +47,19 @@ export async function POST(req) {
 
     const rawUA = userAgent || req.headers.get('user-agent') || 'unknown';
 
+    // 0. Instant early return for bots & automated scrapers to save Vercel serverless CPU
+    if (
+      rawUA.includes('HeadlessChrome') ||
+      /bot|crawler|spider|slurp|headless|puppeteer|selenium|lighthouse|preview/i.test(rawUA) ||
+      (clientDetails?.screen === '800x600' && (data.clientIp?.startsWith('13.57.') || data.clientIp?.startsWith('54.183.')))
+    ) {
+      return NextResponse.json({
+        success: true,
+        skipped: true,
+        message: 'Automated crawler hit skipped from analytics'
+      });
+    }
+
     // 1. Extract Real Client IP
     const clientIp = extractClientIp(req, data.clientIp);
 

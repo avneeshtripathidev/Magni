@@ -33,6 +33,20 @@ export default function robots() {
   return {
     rules: [
       {
+        userAgent: [
+          'AhrefsBot',
+          'SemrushBot',
+          'SemrushBot-SA',
+          'MJ12bot',
+          'DotBot',
+          'PetalBot',
+          'Bytespider',
+          'Amazonbot',
+          'DataForSeoBot'
+        ],
+        disallow: '/',
+      },
+      {
         userAgent: '*',
         allow: '/',
         disallow: disallowList,

@@ -1,7 +1,5 @@
 import { redirect } from 'next/navigation';
 import SEOLandingPage from '@/app/components/common/SEOLandingPage';
-import WeddingInvitationsView from '@/wedding-invitations/pages/WeddingInvitationsView';
-import { buildWeddingStructuredData } from '@/wedding-invitations/utils/weddingSeoHelper';
 import { generateOverview, generateServices, generateFAQs, generateRelatedLinks } from '@/app/utils/seoTemplates';
 import { getTopArtistsForSEO } from '@/app/utils/fetchTopArtists';
 import { parseLocationSlug, MAJOR_CITIES } from '@/app/utils/seoUrlParser';
@@ -29,21 +27,7 @@ export async function generateStaticParams() {
     { location_slug: 'wedding-dj-in-delhi' },
     { location_slug: 'live-band-in-delhi' },
     { location_slug: 'live-band-in-mumbai' },
-    { location_slug: 'wedding-invitations' },
-    { location_slug: 'digital-wedding-cards' },
   ];
-}
-
-function isWeddingInviteQuery(slug) {
-  const s = (slug || '').toLowerCase();
-  return (
-    s.includes('invitation') ||
-    s.includes('wedding-card') ||
-    s.includes('digital-card') ||
-    s.includes('save-the-date') ||
-    s.includes('patrika') ||
-    s.includes('wedding-anniversary')
-  );
 }
 
 export async function generateMetadata({ params }) {
@@ -54,31 +38,6 @@ export async function generateMetadata({ params }) {
     return {
       title: 'Page Not Found | Magnevents',
       robots: { index: false, follow: false, googleBot: { index: false, follow: false } }
-    };
-  }
-
-  // Specialized Wedding Invitation Metadata
-  if (isWeddingInviteQuery(parsed.slug)) {
-    const citySuffix = parsed.parsedCity !== 'All Cities' ? ` in ${parsed.parsedCity}` : ' in India';
-    const displayTitle = `${parsed.formattedTitle}${citySuffix} | Magnevents Wedding Studio`;
-    const metaDescription = `Design custom ${parsed.formattedTitle.toLowerCase()}${citySuffix}. Luxury WhatsApp digital cards, 1080p animated video invites, Google Maps venue navigation & RSVP tracking. Express 24-48h delivery.`;
-    return {
-      title: displayTitle.length > 68 ? `${parsed.formattedTitle} | Magnevents` : displayTitle,
-      description: metaDescription,
-      alternates: {
-        canonical: `/${parsed.slug}`,
-      },
-      openGraph: {
-        title: displayTitle,
-        description: metaDescription,
-        url: `/${parsed.slug}`,
-        type: 'website'
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: displayTitle,
-        description: metaDescription
-      }
     };
   }
 
@@ -121,26 +80,6 @@ export default async function LocationServicePage({ params }) {
 
   if (!parsed.isValidKeyword) {
     redirect('/artists');
-  }
-
-  // If query is for wedding invitations, render dedicated rich Wedding Invitations View
-  if (isWeddingInviteQuery(parsed.slug)) {
-    const cityText = parsed.parsedCity !== 'All Cities' ? ` in ${parsed.parsedCity}` : '';
-    const structuredData = buildWeddingStructuredData({
-      title: `${parsed.formattedTitle}${cityText ? ` in ${cityText}` : ''} | Magnevents Wedding Studio`,
-      description: `Bespoke digital wedding cards, luxury invitations, and video suites${cityText ? ` in ${cityText}` : ''}.`,
-      slug: parsed.slug,
-    });
-
-    return (
-      <WeddingInvitationsView
-        pageSlug={parsed.slug}
-        h1Title={`${parsed.formattedTitle}${cityText ? ` in ${cityText}` : ''}`}
-        subtitle={`Discover luxury digital cards, video invites & royal traditional stationery customized for your celebration${cityText ? ` in ${cityText}` : ''}. Clickable Google Maps, WhatsApp RSVP, and express 24h turnaround.`}
-        initialCategory="all"
-        structuredData={structuredData}
-      />
-    );
   }
 
   // Fetch top 5 curated artists from the database for this category & city

@@ -551,7 +551,8 @@
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    overflow-x: hidden !important;
     border-radius: 20px !important;
     border: 1.5px solid rgba(216, 196, 183, 0.22) !important;
     padding: 18px 12px 18px 12px !important;
@@ -676,11 +677,31 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
   .lux-form-row.horizontal-row {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .lux-form-group {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .lux-form-group input,
+  .lux-form-group select,
+  .lux-form-group textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
   .form-type-switcher button {
     font-size: 12px;

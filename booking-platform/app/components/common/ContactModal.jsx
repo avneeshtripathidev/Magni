@@ -311,7 +311,7 @@ function InnerContactForm({ formType, initialArtist, initialPlan, initialService
               <input id="modal-date" name="date" type="date" required value={formData.date} min={new Date().toISOString().split('T')[0]} max="2030-12-31" onChange={handleChange} onClick={(e) => e.target.showPicker && e.target.showPicker()} />
             </div>
           </div>
-          <div className="lux-form-row horizontal-row">
+          <div className="lux-form-row">
             <div className="lux-form-group">
               <label htmlFor="modal-event-type">Event Type</label>
               <select id="modal-event-type" required value={selectedEventType} onChange={(e) => setSelectedEventType(e.target.value)}>

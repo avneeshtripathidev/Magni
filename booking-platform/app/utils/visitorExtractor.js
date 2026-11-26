@@ -116,75 +116,7 @@ export async function extractLocality(req, ip, clientLocation = null) {
     source = 'client_gps_or_cached';
   }
 
-  // 4. Fallback to server-side IP Geolocation if edge headers didn't provide city & IP is public
-  if ((!city || !country) && !isPrivateIp(ip)) {
-    const cached = ipGeoCache.get(ip);
-    const now = Date.now();
-
-    if (cached && now - cached.timestamp < CACHE_TTL_MS) {
-      const geo = cached.data;
-      city = city || geo.city || '';
-      region = region || geo.region || '';
-      country = country || geo.country || '';
-      postal = postal || geo.postal || '';
-      latitude = latitude || geo.latitude || null;
-      longitude = longitude || geo.longitude || null;
-      timezone = timezone || geo.timezone || '';
-      isp = isp || geo.isp || '';
-      source = 'ip_geo_cache';
-    } else {
-      try {
-        // Fast timeout to never block request
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-        const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, {
-          signal: controller.signal,
-          headers: { 'Accept': 'application/json' },
-          cache: 'no-store'
-        });
-        clearTimeout(timeoutId);
-
-        if (res.ok) {
-          const geo = await res.json();
-          if (geo && geo.success) {
-            city = city || geo.city || '';
-            region = region || geo.region || '';
-            country = country || geo.country || '';
-            postal = postal || geo.postal || '';
-            latitude = latitude || geo.latitude || null;
-            longitude = longitude || geo.longitude || null;
-            timezone = timezone || geo.timezone?.id || '';
-            isp = isp || geo.connection?.isp || geo.connection?.org || '';
-            source = 'ipwhois_api';
-
-            // Cache result
-            if (ipGeoCache.size >= MAX_CACHE_SIZE) {
-              const oldestKey = ipGeoCache.keys().next().value;
-              ipGeoCache.delete(oldestKey);
-            }
-            ipGeoCache.set(ip, {
-              timestamp: now,
-              data: {
-                city: geo.city || '',
-                region: geo.region || '',
-                country: geo.country || '',
-                postal: geo.postal || '',
-                latitude: geo.latitude || null,
-                longitude: geo.longitude || null,
-                timezone: geo.timezone?.id || '',
-                isp: geo.connection?.isp || geo.connection?.org || ''
-              }
-            });
-          }
-        }
-      } catch (err) {
-        // Non-fatal fallback
-      }
-    }
-  }
-
-  // Fallback defaults for local environment / unspecified
+  // 4. Fallback: Edge CDN headers or client GPS (zero blocking network calls to minimize Serverless CPU)
   if (!city && isPrivateIp(ip)) {
     city = 'Local Development';
     country = 'Localhost';
