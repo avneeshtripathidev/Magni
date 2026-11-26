@@ -400,6 +400,14 @@
   gap: 8px;
 }
 
+.diw-desktop-only {
+  display: flex !important;
+}
+
+.diw-mobile-only {
+  display: none !important;
+}
+
 @media (max-width: 600px) {
   .diw-modal-card {
     max-width: calc(100vw - 20px) !important;
@@ -445,6 +453,14 @@
   .diw-form-grid {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .diw-desktop-only {
+    display: none !important;
+  }
+
+  .diw-mobile-only {
+    display: flex !important;
   }
 
   .diw-hide-mobile {

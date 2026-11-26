@@ -271,8 +271,13 @@ export default function GoogleAdsOfferInstantForm() {
 
   const validate = () => {
     const errs = {};
-    const nameErr = validateName(formData.name);
-    if (nameErr) errs.name = nameErr;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
+
+    // Name is required on desktop; on mobile view where only date & phone are requested, it falls back to 'Direct Client'
+    if (!isMobile) {
+      const nameErr = validateName(formData.name);
+      if (nameErr) errs.name = nameErr;
+    }
 
     const phoneErr = validatePhone(formData.phone);
     if (phoneErr) errs.phone = phoneErr;
@@ -297,7 +302,7 @@ export default function GoogleAdsOfferInstantForm() {
 
     try {
       await bookingService.submitInstantRequest({
-        name: formData.name.trim(),
+        name: formData.name ? formData.name.trim() : 'Direct Client',
         phone: formData.phone.trim(),
         eventType: formData.eventType || 'Wedding Ceremony',
         location: formData.location?.trim() || 'Flexible / Pan India',
@@ -437,14 +442,14 @@ export default function GoogleAdsOfferInstantForm() {
               {/* Enquiry Form: Clean 4 Fields */}
               <form className="diw-form" onSubmit={handleSubmitLead}>
                 <div className="diw-form-grid">
-                  <div className="diw-form-group">
+                  {/* Full Name: Desktop View Only */}
+                  <div className="diw-form-group diw-desktop-only">
                     <label htmlFor="gao-name">
                       Full Name <span className="req">*</span>
                     </label>
                     <input
                       id="gao-name"
                       type="text"
-                      required
                       placeholder="e.g. Avneesh Tripathi"
                       autoComplete="off"
                       value={formData.name}
@@ -454,6 +459,23 @@ export default function GoogleAdsOfferInstantForm() {
                     {errors.name && <span className="diw-err-msg">{errors.name}</span>}
                   </div>
 
+                  {/* Event Date: Mobile View Only */}
+                  <div className="diw-form-group diw-mobile-only">
+                    <label htmlFor="gao-date">
+                      Event Date <span className="req">*</span>
+                    </label>
+                    <input
+                      id="gao-date"
+                      type="date"
+                      min={new Date().toISOString().split('T')[0]}
+                      value={formData.date}
+                      className={errors.date ? 'diw-input-err' : ''}
+                      onChange={(e) => handleInputChange('date', e.target.value)}
+                    />
+                    {errors.date && <span className="diw-err-msg">{errors.date}</span>}
+                  </div>
+
+                  {/* Mobile Number: Visible on both Desktop & Mobile */}
                   <div className="diw-form-group">
                     <label htmlFor="gao-phone">
                       Mobile Number <span className="req">*</span>
@@ -475,7 +497,8 @@ export default function GoogleAdsOfferInstantForm() {
                   </div>
                 </div>
 
-                <div className="diw-form-grid">
+                {/* Event Type & Budget: Desktop View Only (Hidden on Mobile) */}
+                <div className="diw-form-grid diw-hide-mobile">
                   <div className="diw-form-group">
                     <label htmlFor="gao-event-type">
                       Event Type <span className="req">*</span>
@@ -531,9 +554,6 @@ export default function GoogleAdsOfferInstantForm() {
                 >
                   <span>{isSubmitting ? 'Checking Availability...' : 'Lock Best Price & Date →'}</span>
                 </button>
-                <p className="diw-trust-line">
-                  100% Artist Arrival Guarantee • No hidden charges
-                </p>
               </form>
             </div>
           ) : (

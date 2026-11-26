@@ -512,7 +512,8 @@ export default function SEOLandingHero({
     setBookPhoneError("");
     setBookNameError("");
 
-    if (!bookName || !bookName.trim()) {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
+    if (!isMobile && (!bookName || !bookName.trim())) {
       setBookNameError("Please enter your full name");
       if (bookNameInputRef.current) bookNameInputRef.current.focus();
       return;
@@ -533,7 +534,7 @@ export default function SEOLandingHero({
       const chosenBudget = BUDGET_OPTIONS.find(b => b.value === Number(bookBudgetAmount))?.label || `₹${Number(bookBudgetAmount).toLocaleString('en-IN')}`;
 
       const res = bookingService.submitInstantRequest({
-        name: bookName.trim(),
+        name: bookName ? bookName.trim() : 'Direct Client',
         phone: cleanPhone,
         eventType: bookEventType,
         date: bookEventDate || getNextWeekDate(),
@@ -2189,8 +2190,8 @@ export default function SEOLandingHero({
                   {/* Form */}
                   <form className="diw-form" onSubmit={handleBookModalSubmit}>
                     <div className="diw-form-grid">
-                      {/* Full Name */}
-                      <div className="diw-form-group">
+                      {/* Full Name: Desktop View Only */}
+                      <div className="diw-form-group diw-desktop-only">
                         <label htmlFor="seo-modal-name">
                           Full Name <span className="req">*</span>
                         </label>
@@ -2198,7 +2199,6 @@ export default function SEOLandingHero({
                           id="seo-modal-name"
                           ref={bookNameInputRef}
                           type="text"
-                          required
                           placeholder="e.g. Avneesh Tripathi"
                           autoComplete="off"
                           value={bookName}
@@ -2211,7 +2211,21 @@ export default function SEOLandingHero({
                         {bookNameError && <span className="diw-err-msg">{bookNameError}</span>}
                       </div>
 
-                      {/* Mobile Number */}
+                      {/* Event Date: Mobile View Only */}
+                      <div className="diw-form-group diw-mobile-only">
+                        <label htmlFor="seo-modal-date">
+                          Event Date <span className="req">*</span>
+                        </label>
+                        <input
+                          id="seo-modal-date"
+                          type="date"
+                          min={new Date().toISOString().split('T')[0]}
+                          value={bookEventDate}
+                          onChange={(e) => setBookEventDate(e.target.value)}
+                        />
+                      </div>
+
+                      {/* Mobile Number: Visible on both Desktop & Mobile */}
                       <div className="diw-form-group">
                         <label htmlFor="seo-modal-phone">
                           Mobile Number <span className="req">*</span>
@@ -2236,7 +2250,10 @@ export default function SEOLandingHero({
                         />
                         {bookPhoneError && <span className="diw-err-msg">{bookPhoneError}</span>}
                       </div>
+                    </div>
 
+                    {/* Event Type & Budget: Desktop View Only (Hidden on Mobile) */}
+                    <div className="diw-form-grid diw-hide-mobile">
                       {/* Event Type */}
                       <div className="diw-form-group">
                         <label htmlFor="seo-modal-event-type">
@@ -2282,9 +2299,6 @@ export default function SEOLandingHero({
                     >
                       <span>{bookSubmitting ? 'Checking Availability...' : 'Lock Best Price & Date →'}</span>
                     </button>
-                    <p className="diw-trust-line">
-                      100% Artist Arrival Guarantee • No hidden charges
-                    </p>
                   </form>
                 </div>
               ) : (
