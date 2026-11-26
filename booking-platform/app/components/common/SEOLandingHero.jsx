@@ -12,13 +12,13 @@ import '@/app/styles/components/SEOLandingHero.css';
 import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
 const BUDGET_OPTIONS = [
-  { value: 10000, label: '₹10,000 - ₹20,000 (Eligible for 30% Off)' },
-  { value: 25000, label: '₹20,000 - ₹35,000 (Eligible for 35% Off)' },
-  { value: 35000, label: '₹35,000 - ₹50,000 (Eligible for 40% Off)' },
-  { value: 50000, label: '₹50,000 - ₹80,000 (Eligible for 50% Off)' },
-  { value: 80000, label: '₹80,000 - ₹1,20,000 (Eligible for 55% Off)' },
-  { value: 120000, label: '₹1,20,000 - ₹2,00,000 (Eligible for 60% Off)' },
-  { value: 200000, label: '₹2,00,000+ (Eligible for 70% Total Off)' },
+  { value: 10000, label: '₹10,000 - ₹20,000' },
+  { value: 25000, label: '₹20,000 - ₹35,000' },
+  { value: 35000, label: '₹35,000 - ₹50,000' },
+  { value: 50000, label: '₹50,000 - ₹80,000' },
+  { value: 80000, label: '₹80,000 - ₹1,20,000' },
+  { value: 120000, label: '₹1,20,000 - ₹2,00,000' },
+  { value: 200000, label: '₹2,00,000+' },
 ];
 
 const MODAL_EVENT_TYPES = [
@@ -2146,8 +2146,8 @@ export default function SEOLandingHero({
               <div className={`diw-promo-header ${bookSubmitted ? 'is-success-header' : ''}`}>
                 <div className="diw-header-top">
                   <div className="diw-badge-tag">
-                    <span>🎁</span>
-                    <span>{bookSubmitted ? 'OFFICIAL PASS' : 'FIRST BOOKING WELCOME OFFER'}</span>
+                    <span>⚡</span>
+                    <span>{bookSubmitted ? 'OFFICIAL PASS' : 'DIRECT ARTIST BOOKING'}</span>
                   </div>
 
                   <button
@@ -2165,9 +2165,8 @@ export default function SEOLandingHero({
                     <h2 className="diw-title">Your Dream Event Starts Here!</h2>
                     <div className="diw-date-lock-card">
                       <div className="diw-lock-info-col">
-                        <span className="diw-lock-badge">✨ NEW USER WELCOME DEAL</span>
                         <span className="diw-lock-headline">
-                          {modalArtist ? modalArtist.name : 'Live Singers Starting at 30%–70% Off'}
+                          {modalArtist ? modalArtist.name : 'Artist at Best prices in Delhi NCR'}
                         </span>
                       </div>
                       <div className="diw-lock-price-badge">
@@ -2187,35 +2186,6 @@ export default function SEOLandingHero({
               {!bookSubmitted ? (
                 /* 2. WARM IVORY FORM BODY */
                 <div className="diw-form-body">
-                  {/* Triple Discount Showcase Grid */}
-                  <div className="diw-triple-discount-wrap">
-                    <div className="diw-triple-discount-header">
-                      <span>GET 30% TO 70% OFF ON YOUR BOOKING</span>
-                    </div>
-                    <div className="diw-triple-cards-grid">
-                      {/* Card 1: Base Offer */}
-                      <div className="diw-triple-card">
-                        <span className="diw-triple-pill">BASE OFFER</span>
-                        <span className="diw-triple-val">30%–50% OFF</span>
-                        <span className="diw-triple-lbl">Instant Event Discount</span>
-                      </div>
-
-                      {/* Card 2: Welcome Gift (Featured for 1st-time user) */}
-                      <div className="diw-triple-card diw-triple-card-featured">
-                        <span className="diw-triple-pill diw-pill-gold">1ST TIME USER 🎁</span>
-                        <span className="diw-triple-val diw-val-gold">+15% EXTRA OFF</span>
-                        <span className="diw-triple-lbl diw-lbl-gold">Code: FIRST15</span>
-                      </div>
-
-                      {/* Card 3: Date Lock Bonus */}
-                      <div className="diw-triple-card">
-                        <span className="diw-triple-pill">DATE LOCK BONUS ⚡</span>
-                        <span className="diw-triple-val">+5% EXTRA</span>
-                        <span className="diw-triple-lbl">Early Date Lock-In</span>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Form */}
                   <form className="diw-form" onSubmit={handleBookModalSubmit}>
                     <div className="diw-form-grid">
@@ -2310,10 +2280,10 @@ export default function SEOLandingHero({
                       disabled={bookSubmitting}
                       className="diw-submit-btn"
                     >
-                      <span>{bookSubmitting ? 'Checking Availability...' : 'Unlock My Offer & Lock Date →'}</span>
+                      <span>{bookSubmitting ? 'Checking Availability...' : 'Lock Best Price & Date →'}</span>
                     </button>
                     <p className="diw-trust-line">
-                      Lock your discount for any event date • No hidden charges
+                      100% Artist Arrival Guarantee • No hidden charges
                     </p>
                   </form>
                 </div>

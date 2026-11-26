@@ -18,13 +18,13 @@ import '@/app/styles/components/DiwaliOfferBookingForm.css';
 
 
 export const BUDGET_OPTIONS_MAP = {
-  10000: '₹10,000 - ₹20,000 (Eligible for 30% Off)',
-  25000: '₹20,000 - ₹35,000 (Eligible for 35% Off)',
-  35000: '₹35,000 - ₹50,000 (Eligible for 40% Off)',
-  50000: '₹50,000 - ₹80,000 (Eligible for 50% Off)',
-  80000: '₹80,000 - ₹1,20,000 (Eligible for 55% Off)',
-  120000: '₹1,20,000 - ₹2,00,000 (Eligible for 60% Off)',
-  200000: '₹2,00,000+ (Eligible for 70% Total Off)'
+  10000: '₹10,000 - ₹20,000',
+  25000: '₹20,000 - ₹35,000',
+  35000: '₹35,000 - ₹50,000',
+  50000: '₹50,000 - ₹80,000',
+  80000: '₹80,000 - ₹1,20,000',
+  120000: '₹1,20,000 - ₹2,00,000',
+  200000: '₹2,00,000+'
 };
 
 export default function GoogleAdsOfferInstantForm() {
@@ -399,8 +399,8 @@ export default function GoogleAdsOfferInstantForm() {
             {/* Top Bar with Badge & Close Button */}
             <div className="diw-header-top">
               <div className="diw-badge-tag">
-                <span>🎁</span>
-                <span>{isSuccess ? 'OFFICIAL PASS' : 'FIRST BOOKING WELCOME OFFER'}</span>
+                <span>⚡</span>
+                <span>{isSuccess ? 'OFFICIAL PASS' : 'DIRECT ARTIST BOOKING'}</span>
               </div>
 
               <button
@@ -419,8 +419,7 @@ export default function GoogleAdsOfferInstantForm() {
                 <h2 className="diw-title">Your Dream Event Starts Here!</h2>
                 <div className="diw-date-lock-card">
                   <div className="diw-lock-info-col">
-                    <span className="diw-lock-badge">✨ NEW USER WELCOME DEAL</span>
-                    <span className="diw-lock-headline">Live Singers Starting at 30%–70% Off</span>
+                    <span className="diw-lock-headline">Artist at Best prices in Delhi NCR</span>
                   </div>
                   <div className="diw-lock-price-badge">
                     <span className="diw-lock-original-price">₹10,000</span>
@@ -435,36 +434,7 @@ export default function GoogleAdsOfferInstantForm() {
           {!isSuccess ? (
             /* 2. WARM IVORY FORM BODY */
             <div className="diw-form-body">
-              {/* Triple Discount Showcase Grid */}
-              <div className="diw-triple-discount-wrap">
-                <div className="diw-triple-discount-header">
-                  <span>GET 30% TO 70% OFF ON YOUR BOOKING</span>
-                </div>
-                <div className="diw-triple-cards-grid">
-                  {/* Card 1: Base Offer */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">BASE OFFER</span>
-                    <span className="diw-triple-val">30%–50% OFF</span>
-                    <span className="diw-triple-lbl">Instant Event Discount</span>
-                  </div>
-
-                  {/* Card 2: First Booking Gift (Highlighted for 1st-time user) */}
-                  <div className="diw-triple-card diw-triple-card-featured">
-                    <span className="diw-triple-pill diw-pill-gold">1ST TIME USER 🎁</span>
-                    <span className="diw-triple-val diw-val-gold">+15% EXTRA OFF</span>
-                    <span className="diw-triple-lbl diw-lbl-gold">Code: FIRST15</span>
-                  </div>
-
-                  {/* Card 3: Date Lock Bonus */}
-                  <div className="diw-triple-card">
-                    <span className="diw-triple-pill">DATE LOCK BONUS ⚡</span>
-                    <span className="diw-triple-val">+5% EXTRA</span>
-                    <span className="diw-triple-lbl">Early Date Lock-In</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enquiry Form: Clean 4 Fields (City & Date removed per user request) */}
+              {/* Enquiry Form: Clean 4 Fields */}
               <form className="diw-form" onSubmit={handleSubmitLead}>
                 <div className="diw-form-grid">
                   <div className="diw-form-group">
@@ -542,13 +512,13 @@ export default function GoogleAdsOfferInstantForm() {
                         handleInputChange('budgetRange', label);
                       }}
                     >
-                      <option value={10000}>₹10,000 - ₹20,000 (Eligible for 30% Off)</option>
-                      <option value={25000}>₹20,000 - ₹35,000 (Eligible for 35% Off)</option>
-                      <option value={35000}>₹35,000 - ₹50,000 (Eligible for 40% Off)</option>
-                      <option value={50000}>₹50,000 - ₹80,000 (Eligible for 50% Off)</option>
-                      <option value={80000}>₹80,000 - ₹1,20,000 (Eligible for 55% Off)</option>
-                      <option value={120000}>₹1,20,000 - ₹2,00,000 (Eligible for 60% Off)</option>
-                      <option value={200000}>₹2,00,000+ (Eligible for 70% Total Off)</option>
+                      <option value={10000}>₹10,000 - ₹20,000</option>
+                      <option value={25000}>₹20,000 - ₹35,000</option>
+                      <option value={35000}>₹35,000 - ₹50,000</option>
+                      <option value={50000}>₹50,000 - ₹80,000</option>
+                      <option value={80000}>₹80,000 - ₹1,20,000</option>
+                      <option value={120000}>₹1,20,000 - ₹2,00,000</option>
+                      <option value={200000}>₹2,00,000+</option>
                     </select>
                   </div>
                 </div>
@@ -559,10 +529,10 @@ export default function GoogleAdsOfferInstantForm() {
                   className="diw-submit-btn"
                   disabled={isSubmitting}
                 >
-                  <span>{isSubmitting ? 'Securing Your Offer & Date...' : 'Unlock My Offer & Lock Date →'}</span>
+                  <span>{isSubmitting ? 'Checking Availability...' : 'Lock Best Price & Date →'}</span>
                 </button>
                 <p className="diw-trust-line">
-                  Lock your discount for any event date • No hidden charges
+                  100% Artist Arrival Guarantee • No hidden charges
                 </p>
               </form>
             </div>
