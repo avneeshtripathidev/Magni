@@ -368,9 +368,16 @@ function AdminVerificationQueueContent() {
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-3">
                           <img
-                            src={artist.profile_image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200'}
+                            src={artist.profile_image_url || '/logo.webp'}
                             alt={artist.name}
-                            className="w-11 h-11 rounded-xl object-cover border border-slate-200 flex-shrink-0 bg-slate-100"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = '/logo.webp';
+                            }}
+                            className={`w-11 h-11 rounded-xl flex-shrink-0 ${
+                              artist.profile_image_url && artist.profile_image_url !== '/logo.webp'
+                                ? 'object-cover border border-slate-200 bg-slate-100'
+                                : 'object-contain p-1.5 bg-slate-900 border border-slate-800'
+                            }`}
                           />
                           <div>
                             <span className="font-bold text-slate-900 block text-sm">{artist.name}</span>
@@ -512,9 +519,16 @@ function AdminVerificationQueueContent() {
               <div className="sidebar-dark px-4 py-4 sm:px-6 sm:py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 flex-shrink-0">
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <img
-                    src={selectedArtist.profile_image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200'}
+                    src={selectedArtist.profile_image_url || '/logo.webp'}
                     alt={selectedArtist.name}
-                    className="w-14 h-14 rounded-xl object-cover object-top ring-2 ring-white/20 flex-shrink-0 bg-slate-800"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/logo.webp';
+                    }}
+                    className={`w-14 h-14 rounded-xl flex-shrink-0 ring-2 ring-white/20 ${
+                      selectedArtist.profile_image_url && selectedArtist.profile_image_url !== '/logo.webp'
+                        ? 'object-cover object-top bg-slate-800'
+                        : 'object-contain p-2 bg-slate-950'
+                    }`}
                   />
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -1589,13 +1603,20 @@ function AdminVerificationQueueContent() {
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Primary Profile Photo</span>
                         <div className="flex items-center gap-3">
                           <img
-                            src={selectedArtist.profile_image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200'}
+                            src={selectedArtist.profile_image_url || '/logo.webp'}
                             alt={selectedArtist.name}
-                            className="w-16 h-16 rounded-xl object-cover ring-2 ring-slate-200"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = '/logo.webp';
+                            }}
+                            className={`w-16 h-16 rounded-xl ring-2 ring-slate-200 ${
+                              selectedArtist.profile_image_url && selectedArtist.profile_image_url !== '/logo.webp'
+                                ? 'object-cover'
+                                : 'object-contain p-2 bg-slate-950'
+                            }`}
                           />
                           <div className="min-w-0">
                             <span className="font-bold text-slate-900 text-xs block truncate">
-                              {selectedArtist.profile_image_url ? 'Profile Photo Uploaded' : 'Default Avatar Applied'}
+                              {selectedArtist.profile_image_url && selectedArtist.profile_image_url !== '/logo.webp' ? 'Profile Photo Uploaded' : 'Magnevents Logo Avatar Applied'}
                             </span>
                             {selectedArtist.profile_image_url && (
                               <a

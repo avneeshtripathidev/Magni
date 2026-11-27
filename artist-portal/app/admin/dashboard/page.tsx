@@ -221,9 +221,16 @@ export default function AdminDashboardPage() {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={artist.profile_image_url || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=200'}
+                          src={artist.profile_image_url || '/logo.webp'}
                           alt={artist.name}
-                          className="w-10 h-10 rounded-xl object-cover border border-slate-200 flex-shrink-0"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/logo.webp';
+                          }}
+                          className={`w-10 h-10 rounded-xl flex-shrink-0 ${
+                            artist.profile_image_url && artist.profile_image_url !== '/logo.webp'
+                              ? 'object-cover border border-slate-200'
+                              : 'object-contain p-1.5 bg-slate-900 border border-slate-800'
+                          }`}
                         />
                         <div>
                           <span className="font-bold text-slate-900 block">{artist.name}</span>
@@ -352,10 +359,17 @@ export default function AdminDashboardPage() {
                   <img
                     src={
                       reviewingArtist.profile_image_url ||
-                      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200'
+                      '/logo.webp'
                     }
                     alt={reviewingArtist.name}
-                    className="w-14 h-14 rounded-2xl object-cover object-top ring-2 ring-white/20 flex-shrink-0 bg-slate-800"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/logo.webp';
+                    }}
+                    className={`w-14 h-14 rounded-2xl ring-2 ring-white/20 flex-shrink-0 ${
+                      reviewingArtist.profile_image_url && reviewingArtist.profile_image_url !== '/logo.webp'
+                        ? 'object-cover object-top bg-slate-800'
+                        : 'object-contain p-2 bg-slate-950'
+                    }`}
                   />
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">

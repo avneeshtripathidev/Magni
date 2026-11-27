@@ -475,7 +475,7 @@ export default function AdminArtistRegistrationPage() {
           cover_image_url: row.cover_image_url || '',
           profile_image_url:
             row.cover_image_url ||
-            'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop',
+            '/logo.webp',
           cloudflare_video_url: row.cloudflare_video_url || '',
           youtube_links: row.youtube_url ? [row.youtube_url] : [],
           audio_samples: [],
@@ -637,7 +637,7 @@ export default function AdminArtistRegistrationPage() {
         profile_image_url:
           galleryPhotos[0] ||
           coverPhotoUrl ||
-          'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop',
+          '/logo.webp',
         video_url: cleanYtVideos[0] || cleanCfVideos[0] || '',
         cloudflare_video_url: cleanCfVideos.join(', '),
         youtube_links: cleanYtVideos,

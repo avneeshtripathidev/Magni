@@ -793,14 +793,18 @@ export default function AdminProfileCardsPage() {
                       <img
                         src={
                           selectedUser.profile_image_url ||
-                          'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=300'
+                          '/logo.webp'
                         }
                         alt={selectedUser.name}
                         onError={(e) => {
                           (e.currentTarget as HTMLImageElement).src =
-                            'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=300&auto=format&fit=crop';
+                            '/logo.webp';
                         }}
-                        className="w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-2xl object-cover object-top ring-2 ring-white/20 shadow-xl bg-slate-800"
+                        className={`w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-2xl ring-2 ring-white/20 shadow-xl ${
+                          selectedUser.profile_image_url && selectedUser.profile_image_url !== '/logo.webp'
+                            ? 'object-cover object-top bg-slate-800'
+                            : 'object-contain p-2 bg-slate-950'
+                        }`}
                       />
                       {isUserApproved && (
                         <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-[#0F172A] flex items-center justify-center text-white shadow-md">

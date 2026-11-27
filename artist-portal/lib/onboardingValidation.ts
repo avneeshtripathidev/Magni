@@ -21,6 +21,7 @@ export function isDefaultAvatar(url?: string | null): boolean {
   const trimmed = url.trim().toLowerCase();
   if (trimmed === '') return true;
   if (trimmed.includes('unsplash.com/photo-1511671782779-c97d3d27a1d4')) return true;
+  if (trimmed.includes('logo.webp')) return true;
   if (trimmed.includes('default-avatar') || trimmed.includes('/placeholder') || trimmed.includes('avatar-placeholder')) return true;
   if (trimmed === '/default-avatar.png' || trimmed === '/placeholder.png') return true;
   return false;
