@@ -66,7 +66,7 @@ export default function ArtistsPage() {
   const [canScrollRight, setCanScrollRight] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   
-  const { artists, loading, totalPages, fetchArtists, fallbackNotice } = useArtists(15)
+  const { artists, loading, totalPages, fetchArtists, fallbackNotice } = useArtists(16)
 
   const checkScroll = useCallback(() => {
     if (!trackRef.current) return

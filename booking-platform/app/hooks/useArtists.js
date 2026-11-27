@@ -93,7 +93,7 @@ function formatArtistRecord(artist, selectedCity, isTravelFallback = false) {
   };
 }
 
-export const useArtists = (itemsPerPage = 15) => {
+export const useArtists = (itemsPerPage = 16) => {
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);

@@ -10,7 +10,7 @@ import '@/app/styles/pages/Artists.css';
 export default function SEOArtistsGrid({ category = 'All', city = 'All Cities', fallbackArtists = [] }) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const { artists, loading, totalPages, fetchArtists } = useArtists(15);
+  const { artists, loading, totalPages, fetchArtists } = useArtists(16);
 
   useEffect(() => {
     fetchArtists(currentPage, category, city);
