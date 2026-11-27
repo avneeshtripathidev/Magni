@@ -4,8 +4,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/app/*": ["./app/*"],
-      "@database/*": ["../database/*"],
-      "@helpers/*": ["../helpers/*"]
+      "@database/*": ["./database/*", "../database/*"],
+      "@helpers/*": ["./helpers/*", "../helpers/*"]
     }
   }
 }

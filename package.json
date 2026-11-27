@@ -1,0 +1,18 @@
+{
+  "name": "magni",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Magnevents — Premium Live Artist Booking Platform",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "dev": "npm --prefix booking-platform run dev",
+    "build": "npm --prefix booking-platform run build",
+    "start": "npm --prefix booking-platform run start",
+    "lint": "npm --prefix booking-platform run lint"
+  },
+  "dependencies": {
+    "next": "^14.2.0"
+  }
+}

@@ -2,6 +2,9 @@
   "name": "magnevents-platform",
   "version": "2.0.0",
   "description": "Magnevents — Premium Live Artist Booking Platform",
+  "engines": {
+    "node": ">=18.17.0"
+  },
   "scripts": {
     "dev": "next dev",
     "prebuild": "node scripts/generate_sitemap_xml.mjs",

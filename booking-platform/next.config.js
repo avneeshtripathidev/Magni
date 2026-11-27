@@ -22,8 +22,16 @@ const nextConfig = {
   },
   webpack: (config) => {
     const path = require('path');
-    config.resolve.alias['@database'] = path.resolve(__dirname, '../database');
-    config.resolve.alias['@helpers'] = path.resolve(__dirname, '../helpers');
+    const fs = require('fs');
+
+    const localDb = path.resolve(__dirname, 'database');
+    const rootDb = path.resolve(__dirname, '../database');
+    config.resolve.alias['@database'] = fs.existsSync(localDb) ? localDb : rootDb;
+
+    const localHelpers = path.resolve(__dirname, 'helpers');
+    const rootHelpers = path.resolve(__dirname, '../helpers');
+    config.resolve.alias['@helpers'] = fs.existsSync(localHelpers) ? localHelpers : rootHelpers;
+
     config.resolve.alias['framer-motion'] = path.resolve(__dirname, 'lib/framer-motion-mock.js');
     config.resolve.modules = [
       path.resolve(__dirname, 'node_modules'),
@@ -182,19 +190,7 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      // 1. Permanently redirect any *.vercel.app domain directly to canonical https://www.magnevents.in
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: '(.*)\\.vercel\\.app',
-          },
-        ],
-        destination: 'https://www.magnevents.in/:path*',
-        permanent: true,
-      },
-      // 2. Canonicalize apex magnevents.in to www.magnevents.in
+      // 1. Canonicalize apex magnevents.in to www.magnevents.in
       {
         source: '/:path*',
         has: [
