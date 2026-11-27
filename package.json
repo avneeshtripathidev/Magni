@@ -6,6 +6,10 @@
   "engines": {
     "node": ">=18.17.0"
   },
+  "workspaces": [
+    "booking-platform",
+    "artist-portal"
+  ],
   "scripts": {
     "dev": "npm --prefix booking-platform run dev",
     "build": "npm --prefix booking-platform run build",

@@ -1,9 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "cd booking-platform && npm run build",
-  "outputDirectory": "booking-platform/.next",
-  "installCommand": "cd booking-platform && npm install",
+  "installCommand": "if [ -d \"booking-platform\" ]; then cd booking-platform; fi && npm install",
+  "buildCommand": "if [ -d \"booking-platform\" ]; then cd booking-platform && npm run build && (cp -r .next .. 2>/dev/null || true); else npm run build; fi",
   "crons": [
     {
       "path": "/api/cron/daily-report",
