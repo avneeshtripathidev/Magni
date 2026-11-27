@@ -295,44 +295,29 @@ export function EventKYCModal({
                 <div>
                   <label className="form-label">Government ID Type *</label>
                   <select
-                    value={formData.id_type}
+                    value={formData.id_type || 'aadhaar'}
                     onChange={(e) => setFormData({ ...formData, id_type: e.target.value })}
-                    className="form-input"
+                    className="form-input font-semibold"
                   >
-                    <option value="aadhaar">Aadhaar Card</option>
-                    <option value="pan">PAN Card</option>
-                    <option value="passport">Passport</option>
-                    <option value="voter_id">Voter ID</option>
-                    <option value="driving_license">Driving License</option>
+                    <option value="aadhaar">Aadhaar Card (UIDAI Verified)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="form-label">Masked ID Number *</label>
+                  <label className="form-label">Aadhaar Card Number *</label>
                   <input
                     type="text"
                     required
                     value={formData.id_number_masked}
                     onChange={(e) => setFormData({ ...formData, id_number_masked: e.target.value })}
-                    placeholder="XXXX-XXXX-4589"
+                    placeholder="XXXX-XXXX-4589 or 12-digit Aadhaar"
                     className="form-input"
                   />
                 </div>
 
                 <div>
-                  <label className="form-label">PAN / Tax ID</label>
-                  <input
-                    type="text"
-                    value={formData.pan_or_tax_id}
-                    onChange={(e) => setFormData({ ...formData, pan_or_tax_id: e.target.value.toUpperCase() })}
-                    placeholder="ABCDE1234F"
-                    className="form-input uppercase font-mono"
-                  />
-                </div>
-
-                <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="form-label mb-0">Govt ID Document</label>
+                    <label className="form-label mb-0">Aadhaar Card Document</label>
                     <label className="cursor-pointer inline-flex items-center gap-1 text-[11px] font-bold text-sky-600 hover:underline">
                       {uploadingField === 'id_document_url' ? (
                         <Loader2 className="w-3 h-3 animate-spin" />

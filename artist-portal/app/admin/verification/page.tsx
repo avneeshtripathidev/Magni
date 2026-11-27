@@ -1118,16 +1118,10 @@ function AdminVerificationQueueContent() {
                               {(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? docs.id_type : 'Not submitted'}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
+                          <div className="flex items-center justify-between gap-2">
                             <span className="text-slate-500 font-medium">Aadhaar / ID Number</span>
                             <span className={docs?.id_number_masked ? 'font-mono font-bold text-slate-900' : 'font-medium text-slate-400'}>
                               {docs?.id_number_masked || 'Not filled'}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-slate-500 font-medium">PAN / Tax ID</span>
-                            <span className={docs?.pan_or_tax_id ? 'font-mono font-bold text-slate-900' : 'font-medium text-slate-400'}>
-                              {docs?.pan_or_tax_id || 'Not filled'}
                             </span>
                           </div>
                         </div>
@@ -1751,9 +1745,9 @@ function AdminVerificationQueueContent() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 space-y-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Legal Name on Government ID</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Legal Name on Aadhaar / ID</span>
                         <span className="text-base font-extrabold text-slate-900 block">{docs?.legal_name || 'Not filled'}</span>
                         <span className="text-[11px] text-amber-700">Must match settlement bank account</span>
                       </div>
@@ -1761,21 +1755,15 @@ function AdminVerificationQueueContent() {
                       <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 space-y-1">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Government ID Document Type</span>
                         <span className="text-base font-extrabold text-slate-900 uppercase block">
-                          {(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? docs.id_type : 'Not submitted'}
+                          {(docs?.id_document_url || docs?.id_number_masked) && docs?.id_type ? docs.id_type : 'AADHAAR'}
                         </span>
-                        <span className="text-[11px] text-amber-700">Aadhaar / PAN / Passport</span>
+                        <span className="text-[11px] text-amber-700">Aadhaar Card (UIDAI Verified)</span>
                       </div>
 
                       <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 space-y-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Aadhaar / ID Number</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Aadhaar Card Number</span>
                         <span className="text-base font-mono font-extrabold text-slate-900 block">{docs?.id_number_masked || 'Not filled'}</span>
                         <span className="text-[11px] text-amber-700">Masked for privacy compliance</span>
-                      </div>
-
-                      <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 space-y-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">PAN / Tax ID</span>
-                        <span className="text-base font-mono font-extrabold text-slate-900 block">{docs?.pan_or_tax_id || 'Not filled'}</span>
-                        <span className="text-[11px] text-amber-700">For TDS deduction &amp; payouts</span>
                       </div>
                     </div>
 

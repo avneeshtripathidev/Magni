@@ -535,12 +535,6 @@ export default function AdminDashboardPage() {
                         {docs?.id_number_masked || 'Not filled'}
                       </span>
                     </div>
-                    <div className="flex justify-between gap-2">
-                      <span className="text-slate-400">PAN / Tax ID</span>
-                      <span className={docs?.pan_or_tax_id ? 'font-mono font-bold text-slate-900' : 'text-slate-400'}>
-                        {docs?.pan_or_tax_id || 'Not filled'}
-                      </span>
-                    </div>
                     <div className="flex flex-wrap gap-2 pt-2">
                       {docs?.id_document_url ? (
                         <a

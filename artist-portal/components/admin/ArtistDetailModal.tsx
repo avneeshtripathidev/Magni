@@ -674,7 +674,7 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Legal Name on ID</span>
                     <span className={`text-sm block mt-1 ${artist.verification_documents?.legal_name ? 'font-black text-slate-900' : 'font-medium text-slate-400'}`}>
@@ -682,22 +682,16 @@ export function ArtistDetailModal({ artist, onClose }: ArtistDetailModalProps) {
                     </span>
                   </div>
                   <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Govt ID &amp; Number</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Aadhaar / Govt ID &amp; Number</span>
                     <span className={`text-sm block mt-1 ${artist.verification_documents?.id_type || artist.verification_documents?.id_number_masked ? 'font-black text-slate-900 uppercase' : 'font-medium text-slate-400'}`}>
                       {artist.verification_documents?.id_type || artist.verification_documents?.id_number_masked
                         ? [
-                            artist.verification_documents?.id_type,
+                            artist.verification_documents?.id_type || 'AADHAAR',
                             artist.verification_documents?.id_number_masked,
                           ]
                             .filter(Boolean)
                             .join(' • ')
                         : 'Not filled'}
-                    </span>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">PAN / Tax ID</span>
-                    <span className={`text-sm font-mono block mt-1 ${artist.verification_documents?.pan_or_tax_id ? 'font-black text-slate-900' : 'font-medium text-slate-400'}`}>
-                      {artist.verification_documents?.pan_or_tax_id || 'Not filled'}
                     </span>
                   </div>
                 </div>

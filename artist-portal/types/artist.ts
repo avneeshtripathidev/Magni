@@ -33,7 +33,7 @@ export interface VerificationDocuments {
   id_number_masked: string;
   id_document_url: string;
   address_proof_url: string;
-  pan_or_tax_id: string;
+  pan_or_tax_id?: string;
 }
 
 export interface ArtistProfile {

@@ -95,7 +95,7 @@ export function PerformerTermsModal({
                 <strong>We never share your private data:</strong> Phone numbers, email, and KYC documents are never shared or sold to clients or third parties.
               </li>
               <li>
-                <strong>Encrypted storage:</strong> Bank and government ID details (PAN, Aadhaar) are stored with 256-bit encryption strictly for payout processing.
+                <strong>Encrypted storage:</strong> Bank and government Aadhaar details are stored with 256-bit encryption strictly for identity verification and payout processing.
               </li>
               <li>
                 <strong>Public profile:</strong> Only your stage name, approved photos, and performance videos are shown to event organizers.

@@ -579,16 +579,9 @@ export function PortalArtistVerificationView() {
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-700">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">ID Type & Number</span>
+                    <span className="text-slate-400 block text-[10px] uppercase">Aadhaar Card & Number</span>
                     <span className="font-semibold capitalize">
-                      {selectedArtist.verification_documents?.id_type || 'Unspecified'} — {selectedArtist.verification_documents?.id_number_masked || 'No number entered'}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">PAN / Tax ID</span>
-                    <span className="font-mono font-semibold">
-                      {selectedArtist.verification_documents?.pan_or_tax_id || 'N/A'}
+                      {selectedArtist.verification_documents?.id_type || 'Aadhaar'} — {selectedArtist.verification_documents?.id_number_masked || 'No number entered'}
                     </span>
                   </div>
 

@@ -153,9 +153,8 @@ export default function AdminArtistRegistrationPage() {
   const [dragOverGallery, setDragOverGallery] = useState(false);
 
   // 6. Private KYC Documents (Cloudflare R2: artist-private-kyc/)
-  const [kycIdType, setKycIdType] = useState<'aadhaar' | 'pan' | 'passport' | 'voter_id' | 'driving_license' | ''>('');
+  const [kycIdType, setKycIdType] = useState<'aadhaar' | 'pan' | 'passport' | 'voter_id' | 'driving_license' | ''>('aadhaar');
   const [kycIdMasked, setKycIdMasked] = useState('');
-  const [kycPan, setKycPan] = useState('');
   const [kycDocUrl, setKycDocUrl] = useState('');
   const [kycAddressUrl, setKycAddressUrl] = useState('');
   const [uploadingKycField, setUploadingKycField] = useState<'id' | 'address' | null>(null);
@@ -563,9 +562,8 @@ export default function AdminArtistRegistrationPage() {
     setGalleryPhotos([]);
     setCloudflareVideos(['']);
     setYoutubeVideos(['']);
-    setKycIdType('');
+    setKycIdType('aadhaar');
     setKycIdMasked('');
-    setKycPan('');
     setKycDocUrl('');
     setKycAddressUrl('');
     setSpotlightStatus('standard');
@@ -668,11 +666,11 @@ export default function AdminArtistRegistrationPage() {
         },
         verification_documents: {
           legal_name: fullName.trim(),
-          id_type: (kycDocUrl.trim() || kycIdMasked.trim()) ? kycIdType : '',
+          id_type: (kycDocUrl.trim() || kycIdMasked.trim()) ? kycIdType : 'aadhaar',
           id_number_masked: kycIdMasked.trim(),
           id_document_url: kycDocUrl.trim(),
           address_proof_url: kycAddressUrl.trim(),
-          pan_or_tax_id: kycPan.trim().toUpperCase(),
+          pan_or_tax_id: '',
         },
         verification_status: isLive ? 'approved' : 'pending',
         profile_completion: Math.min(
@@ -1603,12 +1601,12 @@ export default function AdminArtistRegistrationPage() {
             <div>
               <h2 className="text-sm font-extrabold text-slate-900">Private KYC Documents (Optional)</h2>
               <p className="text-xs text-slate-500">
-                Aadhaar, PAN &amp; Address Proof stored separately in Cloudflare R2 <code className="text-[11px]">artist-private-kyc/</code>
+                Aadhaar &amp; Address Proof stored securely in Cloudflare R2 <code className="text-[11px]">artist-private-kyc/</code>
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">ID Type</label>
               <select
@@ -1616,33 +1614,18 @@ export default function AdminArtistRegistrationPage() {
                 onChange={(e) => setKycIdType(e.target.value as any)}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 font-semibold"
               >
-                <option value="aadhaar">Aadhaar Card</option>
-                <option value="pan">PAN Card</option>
-                <option value="passport">Passport</option>
-                <option value="voter_id">Voter ID</option>
-                <option value="driving_license">Driving License</option>
+                <option value="aadhaar">Aadhaar Card (UIDAI Verified)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">ID Number (Masked)</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Aadhaar Card Number</label>
               <input
                 type="text"
                 value={kycIdMasked}
                 onChange={(e) => setKycIdMasked(e.target.value)}
-                placeholder="XXXX-XXXX-1234"
+                placeholder="XXXX-XXXX-1234 or 12-digit Aadhaar"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">PAN / Tax ID</label>
-              <input
-                type="text"
-                value={kycPan}
-                onChange={(e) => setKycPan(e.target.value.toUpperCase())}
-                placeholder="ABCDE1234F"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 font-mono uppercase"
               />
             </div>
           </div>

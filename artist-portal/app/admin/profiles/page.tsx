@@ -1389,7 +1389,7 @@ export default function AdminProfileCardsPage() {
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
                           <span className="text-[10px] uppercase font-bold text-slate-400 block">Legal Name on ID</span>
                           <span className={`text-sm block mt-1 ${selectedUser.verification_documents?.legal_name ? 'font-black text-slate-900' : 'font-medium text-slate-400'}`}>
@@ -1397,22 +1397,16 @@ export default function AdminProfileCardsPage() {
                           </span>
                         </div>
                         <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
-                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Govt ID &amp; Aadhaar Number</span>
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Aadhaar / Govt ID &amp; Number</span>
                           <span className={`text-sm block mt-1 ${(selectedUser.verification_documents?.id_document_url || selectedUser.verification_documents?.id_number_masked) && selectedUser.verification_documents?.id_type ? 'font-black text-slate-900 uppercase' : 'font-medium text-slate-400'}`}>
                             {(selectedUser.verification_documents?.id_document_url || selectedUser.verification_documents?.id_number_masked)
                               ? [
-                                  selectedUser.verification_documents?.id_type,
+                                  selectedUser.verification_documents?.id_type || 'AADHAAR',
                                   selectedUser.verification_documents?.id_number_masked,
                                 ]
                                   .filter(Boolean)
                                   .join(' • ')
                               : 'Not submitted'}
-                          </span>
-                        </div>
-                        <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100">
-                          <span className="text-[10px] uppercase font-bold text-slate-400 block">PAN / Tax ID</span>
-                          <span className={`text-sm font-mono block mt-1 ${selectedUser.verification_documents?.pan_or_tax_id ? 'font-black text-slate-900' : 'font-medium text-slate-400'}`}>
-                            {selectedUser.verification_documents?.pan_or_tax_id || 'Not filled'}
                           </span>
                         </div>
                       </div>
