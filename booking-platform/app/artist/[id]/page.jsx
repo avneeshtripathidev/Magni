@@ -8,6 +8,7 @@ import Image from 'next/image';
 import '@/app/styles/pages/ArtistProfile.css';
 import { findArtistBySlugOrId } from '@/app/utils/artistLookup';
 import ArtistAvailabilityModal from '@/app/components/artists/ArtistAvailabilityModal';
+import { formatArtistDisplayName } from '@/app/utils/nameFormatter';
 
 const CLOUDFLARE_BASE = process.env.NEXT_PUBLIC_CLOUDFLARE_BASE_URL || 'https://customer-placeholder.cloudflarestream.com/';
 
@@ -233,7 +234,7 @@ export default function ArtistProfilePage({ params }) {
     if (artist && typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('book') === 'true') {
-        const name = artist.alias || artist.name;
+        const name = formatArtistDisplayName(artist.name, artist.stage_name || artist.alias);
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent('open-contact-modal', { detail: { type: 'booking', artist: { name, category: artist.category } } }));
         }, 100);
@@ -303,7 +304,7 @@ export default function ArtistProfilePage({ params }) {
     return null;
   }
 
-  const name = artist.stage_name || artist.alias || artist.name;
+  const name = formatArtistDisplayName(artist.name, artist.stage_name || artist.alias);
   const categories = [artist.category, artist.sub_category, artist.genre, artist.genres, artist.tags].filter(Boolean).join(', ');
   const coverImage = artist.cover_image_url || artist.profile_image_url || (artist.artist_images && artist.artist_images.length > 0 
     ? artist.artist_images[0].image_url 
@@ -717,7 +718,7 @@ export default function ArtistProfilePage({ params }) {
         onClose={() => setShowAvailabilityModal(false)}
         artist={artist}
         onSelectDate={(selectedDate) => {
-          const aName = artist?.alias || artist?.name || 'Artist';
+          const aName = formatArtistDisplayName(artist?.name, artist?.stage_name || artist?.alias);
           window.dispatchEvent(
             new CustomEvent('open-contact-modal', {
               detail: {

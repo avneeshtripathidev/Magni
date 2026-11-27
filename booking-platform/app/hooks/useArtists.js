@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@database/connection/supabase';
 import { buildCityFilter, isNearbyLocation } from '@/app/utils/cityProximity';
+import { formatArtistDisplayName } from '@/app/utils/nameFormatter';
 
 const CLOUDFLARE_BASE = process.env.NEXT_PUBLIC_CLOUDFLARE_BASE_URL || 'https://customer-placeholder.cloudflarestream.com/';
 
@@ -62,7 +63,7 @@ function formatArtistRecord(artist, selectedCity, isTravelFallback = false) {
   return {
     id: artist.id,
     artist_no: artist.artist_no,
-    name: artist.stage_name || artist.alias || artist.name,
+    name: formatArtistDisplayName(artist.name, artist.stage_name || artist.alias),
     slug: artist.slug || (artist.stage_name || artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
     category: artist.category,
     subCategory: artist.sub_category,
@@ -229,7 +230,7 @@ export const useFeaturedArtists = (limit = 6) => {
       const formatArtistData = (artists) => artists.map(artist => ({
         id: artist.id,
         artist_no: artist.artist_no,
-        name: artist.stage_name || artist.alias || artist.name,
+        name: formatArtistDisplayName(artist.name, artist.stage_name || artist.alias),
         slug: artist.slug || (artist.stage_name || artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
         category: artist.category,
         subCategory: artist.sub_category,

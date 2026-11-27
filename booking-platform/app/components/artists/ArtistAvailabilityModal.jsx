@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import '@/app/styles/components/ArtistAvailabilityModal.css';
+import { formatArtistDisplayName } from '@/app/utils/nameFormatter';
 
 export default function ArtistAvailabilityModal({
   isOpen = false,
@@ -96,7 +97,7 @@ export default function ArtistAvailabilityModal({
     return { days, leadingBlanks: firstDayOfWeek };
   }, [calYear, calMonthIdx, blockedDates]);
 
-  const artistName = artist?.alias || artist?.stage_name || artist?.name || 'Artist';
+  const artistName = formatArtistDisplayName(artist?.name, artist?.alias || artist?.stage_name);
   const category = artist?.category || artist?.sub_category || 'Live Performer';
   const city = artist?.city || 'India';
 

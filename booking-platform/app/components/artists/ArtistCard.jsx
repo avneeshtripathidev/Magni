@@ -7,6 +7,7 @@ import TiltCard from '@/app/components/common/TiltCard'
 import Stars from '@/app/components/common/Stars'
 import ImageWithLoader from '@/app/components/common/ImageWithLoader'
 import ArtistAvailabilityModal from '@/app/components/artists/ArtistAvailabilityModal'
+import { formatArtistDisplayName } from '@/app/utils/nameFormatter'
 import '@/app/styles/pages/Artists.css'
 
 function parseJsonArray(val, fallbackStr) {
@@ -39,6 +40,7 @@ const ArtistCard = forwardRef(({ artist }, ref) => {
 
   const location = [artist.city, artist.state].filter(Boolean).join(', ') || 'Jaipur'
   const rating = artist.rating !== undefined && artist.rating !== null ? Number(artist.rating).toFixed(1) : '0.0'
+  const displayName = formatArtistDisplayName(artist.name, artist.stage_name || artist.alias)
   
   const imgSrc = (!artist.img || imageError) 
     ? 'https://pub-1802bb19214743ffa99aa227f25e7ede.r2.dev/assets/lux-singer-session.webp'
@@ -61,14 +63,14 @@ const ArtistCard = forwardRef(({ artist }, ref) => {
           <div className="modern-img-wrap relative">
             <ImageWithLoader
               src={typeof imgSrc === "object" ? imgSrc?.src : imgSrc}
-              alt={artist.name}
+              alt={displayName}
               style={{ objectFit: "cover", width: "100%", height: "100%", position: "absolute", inset: 0 }}
               onError={() => setImageError(true)}
             />
             <div className="modern-overlay-gradient"></div>
           </div>
           <div className="modern-info-overlay">
-            <h3 className="modern-artist-name">{artist.name}</h3>
+            <h3 className="modern-artist-name">{displayName}</h3>
 
             <div className="modern-badges-container">
               {allTags.slice(0, 3).map((tag, idx) => (

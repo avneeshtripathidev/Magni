@@ -1,5 +1,6 @@
 import { supabase } from '@database/connection/supabase';
 import { isNearbyLocation } from '@/app/utils/cityProximity';
+import { formatArtistDisplayName } from '@/app/utils/nameFormatter';
 
 // In-memory cache for SEO artist results (1 hour TTL)
 const seoArtistCache = new Map();
@@ -112,7 +113,7 @@ export const VERIFIED_FALLBACK_ARTISTS = [
 function formatArtist(artist, isFromCity = false) {
   const alias = artist.alias ? artist.alias.trim() : '';
   const name = artist.name ? artist.name.trim() : '';
-  const displayName = alias || name || 'Verified Artist';
+  const displayName = formatArtistDisplayName(name, alias);
   const slug = (alias || name || artist.id).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
   const img = artist.cover_image_url || artist.artist_images?.[0]?.image_url || null;
   const galleryImages = [

@@ -29,7 +29,6 @@ export default function DashboardLayout({
           router.replace('/login');
         }
       } else if (!isOnboardingComplete && !hasSkippedOnboarding) {
-
         router.replace('/onboarding');
       }
     }

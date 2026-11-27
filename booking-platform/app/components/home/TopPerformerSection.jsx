@@ -6,6 +6,7 @@ import FadeSection from '@/app/components/common/FadeSection';
 import Stars from '@/app/components/common/Stars';
 import { formatINR } from '@helpers/formatters';
 import { supabase } from '@database/connection/supabase';
+import { formatArtistDisplayName } from '@/app/utils/nameFormatter';
 
 // Module-level in-memory cache for instant re-render across navigations
 let cachedArtistOfMonth = null;
@@ -57,16 +58,19 @@ function TopPerformerSection() {
              genres = topArtist.sub_category.split(',').map(g => g.trim().toUpperCase());
           }
 
+          const rawStageName = topArtist.stage_name || topArtist.alias;
+          const cleanDisplayName = formatArtistDisplayName(topArtist.name, rawStageName);
+
           const parsedArtist = {
-            name: topArtist.stage_name || topArtist.alias || topArtist.name,
-            alias: topArtist.stage_name || topArtist.alias,
+            name: cleanDisplayName,
+            alias: cleanDisplayName,
             image: topArtist.cover_image_url || topArtist.profile_image_url || topArtist.artist_images?.[0]?.image_url || '/placeholder.png',
             genres: genres,
             originalPrice: topArtist.original_price || topArtist.price_max || 0,
             exclusivePrice: topArtist.exclusive_price || topArtist.price_min || 0,
             rating: topArtist.rating || 0,
             bookings: topArtist.successful_bookings || 0,
-            slug: topArtist.slug || (topArtist.stage_name || topArtist.alias || topArtist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            slug: topArtist.slug || cleanDisplayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
           };
 
           cachedArtistOfMonth = parsedArtist;

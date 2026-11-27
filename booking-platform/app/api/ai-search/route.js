@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { formatArtistDisplayName } from '@/app/utils/nameFormatter';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -129,7 +130,7 @@ export async function POST(req) {
           const alias = a.alias ? a.alias.trim() : '';
           const name = a.name ? a.name.trim() : '';
           const stageName = a.stage_name ? a.stage_name.trim() : '';
-          const displayName = stageName || alias || name;
+          const displayName = formatArtistDisplayName(name, stageName || alias);
           const slug = a.slug || (stageName || alias || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
           const img = a.cover_image_url || a.profile_image_url || a.artist_images?.[0]?.image_url || null;
 

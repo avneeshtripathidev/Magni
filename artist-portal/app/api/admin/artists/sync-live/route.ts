@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { formatArtistDisplayName } from '@/lib/utils/nameFormatter';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,8 +25,9 @@ export async function POST(req: NextRequest) {
 
     if (makeLive) {
       const art = artist || {};
-      const stageName = art.stage_name || art.alias || art.name || 'Performer';
-      const cleanName = art.name || stageName;
+      const rawStageName = art.stage_name || art.alias || art.name || 'Performer';
+      const cleanName = art.name || rawStageName;
+      const stageName = formatArtistDisplayName(cleanName, rawStageName);
       const photoUrl = art.cover_image_url || art.profile_image_url || '';
 
       const minPrice = Number(art.price_min) || Number(art.submitted_pricing?.starting_price) || 15000;
