@@ -10,7 +10,21 @@ import '@/app/styles/pages/Artists.css';
 export default function SEOArtistsGrid({ category = 'All', city = 'All Cities', fallbackArtists = [] }) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const { artists, loading, totalPages, fetchArtists } = useArtists(16);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (typeof window !== 'undefined') {
+        const isMobile = window.innerWidth <= 768;
+        setItemsPerPage(isMobile ? 16 : 15);
+      }
+    };
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  const { artists, loading, totalPages, fetchArtists } = useArtists(itemsPerPage);
 
   useEffect(() => {
     fetchArtists(currentPage, category, city);

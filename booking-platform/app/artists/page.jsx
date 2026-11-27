@@ -65,8 +65,21 @@ export default function ArtistsPage() {
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(15)
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (typeof window !== 'undefined') {
+        const isMobile = window.innerWidth <= 768
+        setItemsPerPage(isMobile ? 16 : 15)
+      }
+    }
+    updateItemsPerPage()
+    window.addEventListener('resize', updateItemsPerPage)
+    return () => window.removeEventListener('resize', updateItemsPerPage)
+  }, [])
   
-  const { artists, loading, totalPages, fetchArtists, fallbackNotice } = useArtists(16)
+  const { artists, loading, totalPages, fetchArtists, fallbackNotice } = useArtists(itemsPerPage)
 
   const checkScroll = useCallback(() => {
     if (!trackRef.current) return

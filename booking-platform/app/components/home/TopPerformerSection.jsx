@@ -169,7 +169,7 @@ function TopPerformerSection() {
                 >
                   Book Now
                 </button>
-                <Link href={`/artist/${encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''))}`} target="_blank" rel="noopener noreferrer" style={{ flex: 1, textDecoration: 'none', display: 'flex' }}>
+                <Link href={`/artist/${encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''))}`} style={{ flex: 1, textDecoration: 'none', display: 'flex' }}>
                   <button
                     className="hp-btn hp-aom-profile-btn"
                     style={{ 

@@ -1282,8 +1282,6 @@ export default function SEOLandingHero({
 
                         <Link
                           href={`/artist/${artist.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
                           className="seo-card-btn-profile"
                           onClick={(e) => e.stopPropagation()}
                         >
