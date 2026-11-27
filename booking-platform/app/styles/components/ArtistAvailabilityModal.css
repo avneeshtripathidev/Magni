@@ -1,0 +1,577 @@
+/* ==============================================================================
+   MAGNEVENTS — LUXURY ARTIST AVAILABILITY & TOUR SCHEDULE CALENDAR
+   Clean, high-performance pure CSS (no Tailwind dependency)
+   ============================================================================== */
+
+/* Modal Backdrop & Root Container */
+.aam-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999 !important;
+  background: rgba(5, 7, 10, 0.85);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  animation: aamFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes aamFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes aamScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal Card */
+.aam-card {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  margin: auto;
+  background: radial-gradient(ellipse 130% 90% at 50% -10%, rgba(126, 48, 68, 0.35) 0%, rgba(20, 22, 28, 0.98) 55%, #0F1116 100%);
+  border: 1.5px solid rgba(216, 196, 183, 0.24);
+  border-radius: 24px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9), 0 0 40px rgba(126, 48, 68, 0.22);
+  display: flex;
+  flex-direction: column;
+  max-height: 92vh;
+  overflow: hidden;
+  color: #FFFFFF;
+  animation: aamScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Embedded In-Page Container (for artist profile page) */
+.aam-inpage-card {
+  width: 100%;
+  max-width: 860px;
+  margin: 40px auto 0;
+  background: radial-gradient(ellipse 130% 90% at 50% -10%, rgba(126, 48, 68, 0.25) 0%, rgba(17, 19, 24, 0.95) 55%, #0D0E12 100%);
+  border: 1.5px solid rgba(232, 185, 67, 0.28);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(126, 48, 68, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #FFFFFF;
+}
+
+/* Header */
+.aam-header {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+}
+
+.aam-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aam-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.aam-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34D399;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.aam-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34D399;
+  box-shadow: 0 0 8px #34D399;
+  animation: aamPulse 1.8s infinite;
+}
+
+@keyframes aamPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.aam-city-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3.5px 10px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.aam-title {
+  font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(20px, 3.5vw, 24px);
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 2px 0 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.aam-subtitle {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.45;
+  margin: 2px 0 0;
+}
+
+.aam-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.aam-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  transform: scale(1.08);
+}
+
+/* Month Navigation & Legend Bar */
+.aam-month-bar {
+  padding: 14px 22px;
+  background: rgba(10, 12, 16, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aam-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.aam-month-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aam-nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aam-arrow-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+
+.aam-arrow-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* Legend Row */
+.aam-legend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+}
+
+.aam-legend-items {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.aam-legend-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.aam-legend-pill.free {
+  color: #34D399;
+}
+
+.aam-legend-pill.free .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34D399;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+}
+
+.aam-legend-pill.booked {
+  color: #F87171;
+}
+
+.aam-legend-pill.booked .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #F87171;
+}
+
+.aam-legend-tip {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* Calendar Grid */
+.aam-calendar-wrap {
+  padding: 16px 20px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.aam-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.aam-day-name {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 4px 0;
+}
+
+.aam-day-name.weekend {
+  color: #E8B943;
+}
+
+.aam-dates-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.aam-blank-cell {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.04);
+  min-height: 52px;
+}
+
+/* Date Tile Cell */
+.aam-date-cell {
+  position: relative;
+  min-height: 54px;
+  padding: 7px 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.02);
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
+.aam-cell-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.aam-day-number {
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.aam-status-icon {
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.aam-status-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Cell States */
+.aam-date-cell.is-free {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #A7F3D0;
+}
+
+.aam-date-cell.is-free .aam-status-icon {
+  color: #34D399;
+}
+
+.aam-date-cell.is-free:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
+}
+
+.aam-date-cell.is-booked {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.18);
+  color: rgba(252, 165, 165, 0.7);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.aam-date-cell.is-booked .aam-status-icon {
+  color: #F87171;
+}
+
+.aam-date-cell.is-past {
+  background: rgba(255, 255, 255, 0.015);
+  border-color: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.22);
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.aam-date-cell.is-selected {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  color: #05160E !important;
+  border-color: #34D399 !important;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45) !important;
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+.aam-date-cell.is-selected .aam-status-icon,
+.aam-date-cell.is-selected .aam-status-label {
+  color: #05160E !important;
+}
+
+/* Footer & Actions */
+.aam-footer {
+  padding: 16px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #090B0E;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.aam-footer-info {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aam-selected-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34D399;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.aam-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aam-btn-whatsapp {
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(37, 211, 102, 0.14);
+  border: 1px solid rgba(37, 211, 102, 0.38);
+  color: #25D366;
+  font-weight: 800;
+  font-size: 12.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.aam-btn-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.24);
+  transform: translateY(-1px);
+}
+
+.aam-btn-book {
+  padding: 11px 22px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  border: 1px solid #34D399;
+  color: #04140D;
+  font-weight: 900;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+  white-space: nowrap;
+}
+
+.aam-btn-book:hover {
+  background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5);
+}
+
+.aam-btn-book:active {
+  transform: scale(0.98);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .aam-overlay {
+    padding: 10px;
+  }
+
+  .aam-card {
+    border-radius: 20px;
+    max-height: 94vh;
+  }
+
+  .aam-header {
+    padding: 16px 16px 14px;
+  }
+
+  .aam-title {
+    font-size: 19px;
+  }
+
+  .aam-month-bar {
+    padding: 12px 14px;
+  }
+
+  .aam-calendar-wrap {
+    padding: 12px 12px 16px;
+  }
+
+  .aam-dates-grid,
+  .aam-days-header {
+    gap: 4px;
+  }
+
+  .aam-date-cell {
+    min-height: 46px;
+    padding: 5px 4px;
+    border-radius: 9px;
+  }
+
+  .aam-day-number {
+    font-size: 11px;
+  }
+
+  .aam-status-label {
+    font-size: 7.5px;
+  }
+
+  .aam-footer {
+    padding: 14px 14px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .aam-footer-info {
+    justify-content: center;
+    font-size: 11.5px;
+  }
+
+  .aam-footer-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .aam-btn-whatsapp,
+  .aam-btn-book {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 10px;
+    font-size: 12px;
+  }
+}
