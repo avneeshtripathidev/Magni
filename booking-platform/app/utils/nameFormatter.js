@@ -1,12 +1,13 @@
 /**
  * Formats and protects artist stage names to prevent client disintermediation / privacy breaches.
- * Ensures that full personal names/surnames are masked (e.g. "Vishall P. Live" or "Vishall P.")
+ * Ensures that full personal names/surnames are masked to safe single first names or moniker + suffix
+ * (e.g. "Vishall Live", "Vishall", "Rajvi") without exposing surnames or surname initials (e.g. no "P." or "Pandey"),
  * while preserving valid single stage names ("Rajvi", "Dhruv"), band names ("Euphonic Band", "The Local Train"),
- * and DJ titles ("DJ Chinna").
+ * and DJ titles ("DJ Chinna", "DJ Rahul").
  *
  * @param {string} rawName - Legal or personal name of the artist (e.g., "VISHALL PANDEY")
  * @param {string} rawAlias - Stage name or alias (e.g., "Vishall pandey live", "Rajvi", "VIP Live")
- * @returns {string} - Safe display name (e.g., "Vishall P. Live", "Rajvi", "DJ Chinna")
+ * @returns {string} - Safe display name (e.g., "Vishall Live", "Rajvi", "DJ Chinna")
  */
 export function formatArtistDisplayName(rawName, rawAlias) {
   let candidate = (rawAlias && rawAlias.trim()) || (rawName && rawName.trim()) || 'Performer';
@@ -23,66 +24,57 @@ export function formatArtistDisplayName(rawName, rawAlias) {
     return parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
   }
 
-  // Preserve established initialisms / dotted stage monikers like "M.D. Live", "H24 Live", "Rohit.j Live"
-  if (candidate.includes('.')) {
-    // If it's already properly masked with a dot (e.g. "Vishall P. Live", "Rohit.j Live", "M.D. Live")
-    return candidate;
-  }
-
+  // Check if candidate starts with DJ / MC / RJ
   const firstLower = parts[0].toLowerCase();
-  // Handle DJ / MC / RJ
   if (firstLower === 'dj' || firstLower === 'mc' || firstLower === 'rj') {
     const prefix = parts[0].toUpperCase();
     if (parts.length === 2) {
       const rest = parts[1].length <= 3 ? parts[1].toUpperCase() : parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase();
       return `${prefix} ${rest}`;
     } else {
-      // E.g. "DJ Rahul Sharma" -> "DJ Rahul S."
+      // E.g. "DJ Rahul Sharma" -> minimize to "DJ Rahul"
       const first = parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase();
-      const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase().replace(/\.$/, '');
-      return `${prefix} ${first} ${lastInitial}.`;
+      return `${prefix} ${first}`;
     }
   }
 
-  // Preserve established band names: "The ...", "... Band", "... Collective", "... Project", "... Trio", "... Quartet", "... Orchestra"
+  // Preserve established band names: "The ...", "... Band", "... Collective", "... Project", "... Trio", "... Quartet", "... Orchestra", "... Group"
   const isBand = /^(the\s|.*(band|collective|project|trio|quartet|orchestra|group)$)/i.test(candidate);
   if (isBand && !candidate.toLowerCase().includes('live')) {
     return parts.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
   }
 
-  const lastLower = parts[parts.length - 1].toLowerCase();
   const suffixes = ['live', 'band', 'unplugged', 'music', 'acoustic', 'official', 'singer', 'session'];
+  const lastLower = parts[parts.length - 1].toLowerCase();
   const hasSuffix = suffixes.includes(lastLower);
 
-  // Case 1: 2 words with suffix, e.g. "Aman Live", "VIP Live" -> No surname exposed!
-  if (parts.length === 2 && hasSuffix) {
-    const first = parts[0].length <= 3 ? parts[0].toUpperCase() : parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
-    const suffix = parts[1].charAt(0).toUpperCase() + parts[1].slice(1).toLowerCase();
-    return `${first} ${suffix}`;
+  // Preserve established dotted stage monikers like "M.D. Live", "H24 Live", "Rohit.j Live"
+  // but NOT single initials like "P." or "Vishall P. Live"
+  const isSingleInitial = parts.some(p => /^[A-Za-z]\.?$/.test(p) && p.toLowerCase() !== 'dj' && p.toLowerCase() !== 'mc');
+  if (candidate.includes('.') && !isSingleInitial) {
+    return candidate;
   }
 
-  // Case 2: 2 words without suffix, e.g. "VISHALL PANDEY" -> Surname exposed! Mask to "Vishall P."
-  if (parts.length === 2 && !hasSuffix) {
-    const first = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
-    const lastInitial = parts[1].charAt(0).toUpperCase().replace(/\.$/, '');
-    return `${first} ${lastInitial}.`;
+  // If hasSuffix (e.g. "Vishall pandey live", "Vishall P. Live", "Vishall Live", "Aman Live", "VIP Live")
+  if (hasSuffix) {
+    const firstWord = parts[0];
+    const first = (firstWord.length <= 3 && firstWord === firstWord.toUpperCase()) 
+      ? firstWord 
+      : firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
+    
+    // Find suffix words at the end
+    const suffixWords = parts.slice(1).filter(w => suffixes.includes(w.toLowerCase()));
+    const suffixStr = suffixWords.length > 0 
+      ? suffixWords.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+      : parts[parts.length - 1].charAt(0).toUpperCase() + parts[parts.length - 1].slice(1).toLowerCase();
+
+    return `${first} ${suffixStr}`;
   }
 
-  // Case 3: 3+ words with suffix, e.g. "Vishall pandey live" -> Surname exposed! Mask to "Vishall P. Live"
-  if (parts.length >= 3 && hasSuffix) {
-    const first = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
-    // The middle word is the surname! e.g. "pandey"
-    const surnameInitial = parts[1].charAt(0).toUpperCase().replace(/\.$/, '');
-    const suffix = parts.slice(2).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-    return `${first} ${surnameInitial}. ${suffix}`;
+  // No suffix, multiple words (e.g. "VISHALL PANDEY", "Vishall P.", "Rajvi Jigneshkumar Prajapati", "Sarvesh Gawas")
+  const firstWord = parts[0];
+  if (firstWord.length <= 4 && firstWord === firstWord.toUpperCase()) {
+    return firstWord;
   }
-
-  // Case 4: 3+ words without suffix, e.g. "Rajvi Jigneshkumar Prajapati" (if alias wasn't provided) -> "Rajvi P."
-  if (parts.length >= 3 && !hasSuffix) {
-    const first = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
-    const surnameInitial = parts[parts.length - 1].charAt(0).toUpperCase().replace(/\.$/, '');
-    return `${first} ${surnameInitial}.`;
-  }
-
-  return candidate;
+  return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
 }

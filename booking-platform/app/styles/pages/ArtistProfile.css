@@ -22,11 +22,12 @@
 }
 
 .artist-container {
-  max-width: 1200px;
+  max-width: 1440px;
+  width: 95%;
   margin: 0 auto;
   position: relative;
   z-index: 2;
-  padding: 0 20px;
+  padding: 0 24px;
 }
 
 .artist-hero-card {
@@ -72,12 +73,13 @@
   .artist-hero-card {
     flex-direction: row;
     align-items: stretch;
+    min-height: 560px;
   }
 
   .hero-bg-image {
     position: relative;
     width: 50%;
-    min-height: 500px;
+    min-height: 560px;
     height: auto;
     order: 2;
     background-position: center;
@@ -90,7 +92,7 @@
   .hero-content {
     width: 50%;
     order: 1;
-    padding: 60px;
+    padding: 60px 50px;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
@@ -125,7 +127,7 @@
 
 .artist-name {
   font-family: 'Outfit', sans-serif;
-  font-size: clamp(48px, 6vw, 84px);
+  font-size: clamp(42px, 5vw, 76px);
   font-weight: 900;
   color: #fff;
   margin: 0 0 12px 0;
@@ -551,6 +553,8 @@
     padding: 240px 30px 40px 30px;
     gap: 40px;
   }
+}
+
 @media (max-width: 768px) {
   .gallery-grid {
     column-count: 2;
@@ -660,5 +664,4 @@
   .bio-see-more-btn {
     display: flex;
   }
-}
 }
