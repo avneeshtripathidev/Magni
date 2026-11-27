@@ -56,8 +56,8 @@
 /* Embedded In-Page Container (for artist profile page) */
 .aam-inpage-card {
   width: 100%;
-  max-width: 860px;
-  margin: 40px auto 0;
+  max-width: 100%;
+  margin: 0 auto;
   background: radial-gradient(ellipse 130% 90% at 50% -10%, rgba(126, 48, 68, 0.25) 0%, rgba(17, 19, 24, 0.95) 55%, #0D0E12 100%);
   border: 1.5px solid rgba(232, 185, 67, 0.28);
   border-radius: 24px;
@@ -509,8 +509,9 @@
     padding: 10px;
   }
 
-  .aam-card {
-    border-radius: 20px;
+  .aam-card,
+  .aam-inpage-card {
+    border-radius: 18px;
     max-height: 94vh;
   }
 

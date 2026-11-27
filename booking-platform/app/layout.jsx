@@ -1,6 +1,7 @@
 import '@/app/styles/tokens.css';
 import '@/app/styles/flow-unify.css';
 import '@/app/index.css';
+import '@/app/styles/components/ArtistAvailabilityModal.css';
 
 import { Inter, Playfair_Display } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
