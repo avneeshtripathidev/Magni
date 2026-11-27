@@ -464,26 +464,6 @@ export default function ArtistProfilePage({ params }) {
         })()}
 
 
-        {/* ARTIST LIVE AVAILABILITY & TOUR SCHEDULE SECTION */}
-        <section className="info-section" id="artist-schedule-section" style={{ marginTop: '50px' }}>
-          <ArtistAvailabilityModal
-            isInPage={true}
-            artist={artist}
-            onSelectDate={(selectedDate) => {
-              const aName = artist?.alias || artist?.name || 'Artist';
-              window.dispatchEvent(
-                new CustomEvent('open-contact-modal', {
-                  detail: {
-                    type: 'booking',
-                    artist: { name: aName, category: artist?.category },
-                    preferredDate: selectedDate,
-                  },
-                })
-              );
-            }}
-          />
-        </section>
-
 
         {/* SHARE ARTIST ON WHATSAPP & CLIENT PITCH */}
         {(() => {
