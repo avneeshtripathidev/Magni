@@ -25,6 +25,7 @@ import {
   Users,
   UserPlus,
   Check,
+  Trash2,
 } from 'lucide-react';
 import { useAdminAuth } from '../../../lib/auth/adminAuthContext';
 import { LocationFilter, matchesLocationFilter } from '../../../components/shared/LocationFilter';
@@ -44,6 +45,7 @@ export default function AdminBookingsPage() {
   const [startingId, setStartingId] = useState<string | null>(null);
   const [inspectEvent, setInspectEvent] = useState<EventVerificationRecord | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Create New Event Modal state
   const [showNewModal, setShowNewModal] = useState(false);
@@ -227,6 +229,34 @@ export default function AdminBookingsPage() {
       }
     } finally {
       setStartingId(null);
+    }
+  };
+
+  const handleDeleteEvent = async (bookingId: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete booking #${bookingId}? This cannot be undone.`)) {
+      return;
+    }
+    setDeletingId(bookingId);
+    try {
+      const res = await fetch('/api/artist/event-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_event', booking_id: bookingId }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setEvents((prev) => prev.filter((e) => e.booking_id !== bookingId));
+        if (inspectEvent?.booking_id === bookingId) {
+          setInspectEvent(null);
+        }
+        showToast(`Booking #${bookingId} deleted successfully.`);
+      } else {
+        alert(data.error || 'Failed to delete booking.');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Network error while deleting booking.');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -622,6 +652,21 @@ export default function AdminBookingsPage() {
                         <span>{isVerified ? 'Inspect Verified Proofs' : `Inspect Proofs (${proof.completedCount}/4)`}</span>
                       </button>
                     )}
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteEvent(item.booking_id)}
+                      disabled={deletingId === item.booking_id}
+                      className="p-2.5 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-slate-200 hover:border-rose-200 transition-all active:scale-95"
+                      title={`Delete query #${item.booking_id}`}
+                      aria-label="Delete booking query"
+                    >
+                      {deletingId === item.booking_id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-3.5 h-3.5" />
+                      )}
+                    </button>
                   </div>
                 </div>
               );
@@ -1047,12 +1092,27 @@ export default function AdminBookingsPage() {
                   Assigned Artists: <strong>{inspectEvent.artist_name}</strong> • Client: <strong>{inspectEvent.client_name}</strong> • {inspectEvent.city}
                 </p>
               </div>
-              <button
-                onClick={() => setInspectEvent(null)}
-                className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteEvent(inspectEvent.booking_id)}
+                  disabled={deletingId === inspectEvent.booking_id}
+                  className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all"
+                  title="Delete this booking query"
+                >
+                  {deletingId === inspectEvent.booking_id ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setInspectEvent(null)}
+                  className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1197,15 +1257,31 @@ export default function AdminBookingsPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => handleResetEvent(inspectEvent.booking_id)}
-                className="btn-secondary text-xs text-slate-600"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset Proofs (Re-request)</span>
-              </button>
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100 gap-3">
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleResetEvent(inspectEvent.booking_id)}
+                  className="btn-secondary text-xs text-slate-600"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Reset Proofs (Re-request)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteEvent(inspectEvent.booking_id)}
+                  disabled={deletingId === inspectEvent.booking_id}
+                  className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold inline-flex items-center gap-1.5 transition-all"
+                  title="Permanently delete this booking query"
+                >
+                  {deletingId === inspectEvent.booking_id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-3.5 h-3.5" />
+                  )}
+                  <span>Delete Query</span>
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() => setInspectEvent(null)}

@@ -349,6 +349,30 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    if (action === 'delete_event' && booking_id) {
+      const idx = records.findIndex((r) => r.booking_id === booking_id);
+      if (idx !== -1) {
+        records.splice(idx, 1);
+        writeStore(records);
+      }
+
+      if (supabase) {
+        try {
+          await supabase.from('event_verifications').delete().eq('booking_id', booking_id);
+        } catch (sErr) {
+          console.warn('Could not delete from Supabase event_verifications:', sErr);
+        }
+        try {
+          await supabase.from('bookings').delete().eq('booking_id', booking_id);
+        } catch {}
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: `Booking #${booking_id} deleted successfully.`,
+      });
+    }
+
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (err: any) {
     return NextResponse.json(
@@ -418,6 +442,46 @@ export async function PATCH(request: NextRequest) {
   } catch (err: any) {
     return NextResponse.json(
       { error: err.message || 'Failed to update event verification proofs' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/artist/event-verification
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const booking_id = searchParams.get('booking_id') || searchParams.get('id');
+
+    if (!booking_id) {
+      return NextResponse.json({ error: 'booking_id is required' }, { status: 400 });
+    }
+
+    const records = await readStore();
+    const idx = records.findIndex((r) => r.booking_id === booking_id);
+    if (idx !== -1) {
+      records.splice(idx, 1);
+      writeStore(records);
+    }
+
+    if (supabase) {
+      try {
+        await supabase.from('event_verifications').delete().eq('booking_id', booking_id);
+      } catch (sErr) {
+        console.warn('Could not delete from Supabase event_verifications:', sErr);
+      }
+      try {
+        await supabase.from('bookings').delete().eq('booking_id', booking_id);
+      } catch {}
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Booking #${booking_id} deleted successfully.`,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err.message || 'Failed to delete event' },
       { status: 500 }
     );
   }
