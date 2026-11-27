@@ -273,6 +273,8 @@ function FeaturedArtistsSection() {
               >
                 <Link
                   href={`/artist/${encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''))}`}
+                  target={isDesktop ? "_blank" : undefined}
+                  rel={isDesktop ? "noopener noreferrer" : undefined}
                   style={{
                     textDecoration: "none",
                     display: "flex",

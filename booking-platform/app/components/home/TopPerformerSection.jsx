@@ -14,6 +14,16 @@ let cachedArtistOfMonth = null;
 function TopPerformerSection() {
   const [artist, setArtist] = useState(cachedArtistOfMonth);
   const [loading, setLoading] = useState(!cachedArtistOfMonth);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const check = () => setIsDesktop(window.innerWidth > 768);
+      check();
+      window.addEventListener('resize', check);
+      return () => window.removeEventListener('resize', check);
+    }
+  }, []);
 
   useEffect(() => {
     if (cachedArtistOfMonth) {
@@ -169,7 +179,7 @@ function TopPerformerSection() {
                 >
                   Book Now
                 </button>
-                <Link href={`/artist/${encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''))}`} style={{ flex: 1, textDecoration: 'none', display: 'flex' }}>
+                <Link href={`/artist/${encodeURIComponent((artist.alias || artist.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''))}`} target={isDesktop ? "_blank" : undefined} rel={isDesktop ? "noopener noreferrer" : undefined} style={{ flex: 1, textDecoration: 'none', display: 'flex' }}>
                   <button
                     className="hp-btn hp-aom-profile-btn"
                     style={{ 

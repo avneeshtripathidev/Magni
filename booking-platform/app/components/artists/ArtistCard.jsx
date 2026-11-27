@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, forwardRef, memo } from 'react'
+import React, { useState, useEffect, forwardRef, memo } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import TiltCard from '@/app/components/common/TiltCard'
@@ -29,6 +29,16 @@ function parseJsonArray(val, fallbackStr) {
 const ArtistCard = forwardRef(({ artist }, ref) => {
   const [imageError, setImageError] = useState(false)
   const [showAvailability, setShowAvailability] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkDesktop = () => setIsDesktop(window.innerWidth > 768);
+      checkDesktop();
+      window.addEventListener('resize', checkDesktop);
+      return () => window.removeEventListener('resize', checkDesktop);
+    }
+  }, []);
 
   const bookings = Number(artist.successful_bookings) || 0;
   const subCats = parseJsonArray(artist.subCategory, artist.subCategory);
@@ -58,7 +68,12 @@ const ArtistCard = forwardRef(({ artist }, ref) => {
       transition={{ duration: 0.3 }}
       style={{ display: 'flex', width: '100%', height: '100%' }}
     >
-      <Link href={`/artist/${artistSlug}`} style={{ textDecoration: 'none', display: 'flex', width: '100%', height: '100%' }}>
+      <Link 
+        href={`/artist/${artistSlug}`} 
+        target={isDesktop ? "_blank" : undefined}
+        rel={isDesktop ? "noopener noreferrer" : undefined}
+        style={{ textDecoration: 'none', display: 'flex', width: '100%', height: '100%' }}
+      >
         <TiltCard className="modern-artist-card">
           <div className="modern-img-wrap relative">
             <ImageWithLoader

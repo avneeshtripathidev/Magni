@@ -1282,6 +1282,8 @@ export default function SEOLandingHero({
 
                         <Link
                           href={`/artist/${artist.slug}`}
+                          target={typeof window !== 'undefined' && window.innerWidth > 768 ? "_blank" : undefined}
+                          rel={typeof window !== 'undefined' && window.innerWidth > 768 ? "noopener noreferrer" : undefined}
                           className="seo-card-btn-profile"
                           onClick={(e) => e.stopPropagation()}
                         >
